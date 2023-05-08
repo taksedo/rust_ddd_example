@@ -1,0 +1,9 @@
+{
+    "rust-analyzer.linkedProjects": [
+        ".\\Cargo.toml",
+        ".\\Cargo.toml",
+        ".\\Cargo.toml",
+        ".\\in_memory_persistence\\Cargo.toml",
+        ".\\usecase\\Cargo.toml"
+    ]
+}

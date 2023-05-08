@@ -1,0 +1,13 @@
+[package]
+name = "usecase"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+thiserror = "1.0.40"
+derive-new = "0.5.9"
+structmap = "0.1.6"
+structmap-derive = "0.1.6"
+domain = {path = "../domain"}

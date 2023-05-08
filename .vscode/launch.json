@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'rust_hex_sandbox'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust_hex_sandbox",
+                    "--package=rust_hex_sandbox"
+                ],
+                "filter": {
+                    "name": "rust_hex_sandbox",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'rust_hex_sandbox'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=rust_hex_sandbox",
+                    "--package=rust_hex_sandbox"
+                ],
+                "filter": {
+                    "name": "rust_hex_sandbox",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
