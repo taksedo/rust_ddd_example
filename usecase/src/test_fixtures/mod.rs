@@ -1,2 +1,2 @@
-// #[cfg(test)]
+#[cfg(test)]
 pub mod fixtures;

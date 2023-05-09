@@ -1,5 +1,3 @@
-#![allow(unused_imports)]
-#![allow(unused_variables)]
 use crate::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuRequest};
 use crate::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use crate::test_fixtures::fixtures::TestMealPersister;
@@ -8,10 +6,7 @@ use derive_new::new;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::rnd_meal_id;
 use domain::test_fixtures::fixtures::rnd_meal_name;
-use std::any::TypeId;
-use std::collections::HashMap;
 use std::fmt::Debug;
-use std::ops::Deref;
 use std::rc::Rc;
 
 #[test]
@@ -22,25 +17,33 @@ fn successfully_added() {
 
     let id_generator = TestMealIdGenerator::new();
 
-    // let id_watcher = &id_generator.id;
-
     let mut add_to_menu_use_case =
         AddMealToMenuUseCase::new(Box::new(meal_persister), Rc::new(id_generator));
     let result = &add_to_menu_use_case
-        .execute(AddMealToMenuRequest::new(rnd_meal_name))
+        .execute(AddMealToMenuRequest::new(rnd_meal_name.clone()))
         .unwrap();
 
-    let id_generator = add_to_menu_use_case.id_generator.clone();
+    let meal_id = add_to_menu_use_case.id_generator.get_id();
 
-    let id = TestMealIdGenerator { id: *result };
+    assert_eq!(result, meal_id);
 
-    assert_eq!(*id_generator, id);
+    let meal_from_usecase = add_to_menu_use_case
+        .meal_persister
+        .get_meal_by_id(meal_id)
+        .unwrap();
+
+    assert_eq!(&meal_from_usecase.id, meal_id);
+    assert_eq!(&meal_from_usecase.name, &rnd_meal_name);
 }
 
 #[derive(new, Default, Debug, Clone, PartialEq)]
 pub(crate) struct TestMealIdGenerator {
     #[new(value = "rnd_meal_id()")]
     id: MealId,
+}
+
+trait TestMealIdGeneratorTrait: MealIdGenerator {
+    fn get_id(&self) -> &MealId;
 }
 
 impl MealIdGenerator for TestMealIdGenerator {
@@ -50,5 +53,9 @@ impl MealIdGenerator for TestMealIdGenerator {
 
     fn as_any(&self) -> &dyn Any {
         self
+    }
+
+    fn get_id(&self) -> &MealId {
+        &self.id
     }
 }

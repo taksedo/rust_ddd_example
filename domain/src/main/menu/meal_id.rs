@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use core::any::Any;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -11,7 +9,7 @@ pub struct MealId {
 }
 
 impl MealId {
-    fn to_long_value(self) -> i64 {
+    fn _to_long_value(self) -> i64 {
         self.value
     }
 }
@@ -19,6 +17,7 @@ impl MealId {
 pub trait MealIdGenerator: Debug + Any {
     fn generate(&self) -> MealId;
     fn as_any(&self) -> &dyn Any;
+    fn get_id(&self) -> &MealId;
 }
 
 // impl<T: Any + Debug> MealIdGenerator for T {
