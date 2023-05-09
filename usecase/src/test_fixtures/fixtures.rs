@@ -37,8 +37,11 @@ pub struct TestMealPersister {
 
 impl MealPersister for TestMealPersister {
     fn save(&mut self, meal: Meal) {
-        dbg!(&meal);
         self.value.insert(meal.id, meal);
+    }
+
+    fn get_meal_by_id(&self, id: &MealId) -> Option<&Meal> {
+        self.value.get(&id).map(|meal| meal)
     }
 }
 

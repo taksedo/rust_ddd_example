@@ -4,7 +4,7 @@ use crate::main::menu::add_meal_to_menu::{
 };
 use derive_new::new;
 use domain;
-use domain::main::menu::meal::{Meal, MealError};
+use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use std::rc::Rc;
 
