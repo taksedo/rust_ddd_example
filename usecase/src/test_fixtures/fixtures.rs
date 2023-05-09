@@ -37,7 +37,6 @@ pub struct TestMealPersister {
 
 impl MealPersister for TestMealPersister {
     fn save(&mut self, meal: Meal) {
-        dbg!(&meal);
         self.value.insert(meal.id, meal);
     }
 }
