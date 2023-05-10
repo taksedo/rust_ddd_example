@@ -9,6 +9,8 @@
       <sourceFolder url="file://$MODULE_DIR$/in_memory_persistence/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/usecase/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/events/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common/types/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/domain/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>

@@ -1,4 +1,5 @@
 use crate::main::menu::access::meal_persister::MealPersister;
+use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_id::MealId;
@@ -30,18 +31,19 @@ use std::collections::HashMap;
 //
 
 #[derive(new, Debug, Clone)]
-pub struct TestMealPersister {
+pub struct TestEvent {}
+
+impl DomainEventTrait for TestEvent {}
+
+#[derive(new, Debug, Clone)]
+pub struct TestMealPersister<E: DomainEventTrait> {
     #[new(value = "HashMap::new()")]
-    pub value: HashMap<MealId, Meal>,
+    pub value: HashMap<MealId, Meal<E>>,
 }
 
-impl MealPersister for TestMealPersister {
-    fn save(&mut self, meal: Meal) {
+impl<E: DomainEventTrait> MealPersister<E> for TestMealPersister<E> {
+    fn save(&mut self, meal: Meal<E>) {
         self.value.insert(meal.id, meal);
-    }
-
-    fn get_meal_by_id(&self, id: &MealId) -> Option<&Meal> {
-        self.value.get(&id).map(|meal| meal)
     }
 }
 

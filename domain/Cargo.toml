@@ -1,7 +1,7 @@
 [package]
 name = "domain"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -17,4 +17,9 @@ mockall = "0.11.3"
 fake = { version="2.5.0", features=["derive", "bigdecimal"] }
 rand = "0.8.5"
 rstest = "0.17.0"
-common = { path = "../common" }
+derivative = "2.2.0"
+
+common_types = { path = "../common/types" }
+common_events = { path = "../common/events" }
+
+[dev-dependencies]
