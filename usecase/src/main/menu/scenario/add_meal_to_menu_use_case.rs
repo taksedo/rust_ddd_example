@@ -15,7 +15,7 @@ pub struct AddMealToMenuUseCase<'a, MP, I, E>
 where
     MP: MealPersister<E>,
     I: MealIdGenerator,
-    E: DomainEventTrait,
+    E: DomainEventTrait + Clone,
 {
     pub meal_persister: &'a mut MP,
     pub id_generator: &'a I,
@@ -23,8 +23,11 @@ where
     phantom: PhantomData<E>,
 }
 
-impl<'a, MP: MealPersister<E>, I: MealIdGenerator, E: DomainEventTrait> AddMealToMenu
-    for AddMealToMenuUseCase<'a, MP, I, E>
+impl<'a, MP, I, E> AddMealToMenu for AddMealToMenuUseCase<'a, MP, I, E>
+where
+    MP: MealPersister<E>,
+    I: MealIdGenerator,
+    E: DomainEventTrait + Clone,
 {
     fn execute(
         &mut self,
@@ -39,7 +42,10 @@ impl<'a, MP: MealPersister<E>, I: MealIdGenerator, E: DomainEventTrait> AddMealT
     }
 }
 
-impl<'a, MP: MealPersister<E>, I: MealIdGenerator, E: DomainEventTrait> DomainEventTrait
-    for AddMealToMenuUseCase<'a, MP, I, E>
+impl<'a, MP, I, E> DomainEventTrait for AddMealToMenuUseCase<'a, MP, I, E>
+where
+    MP: MealPersister<E>,
+    I: MealIdGenerator,
+    E: DomainEventTrait + Clone,
 {
 }

@@ -1,13 +1,12 @@
 use derive_new::new;
-use std::fmt::{Debug, Formatter};
+use std::fmt::Debug;
 use time::OffsetDateTime;
 use uuid::Uuid;
 
 #[derive(new, Debug, Clone)]
-pub struct DomainEvent<E: DomainEventTrait> {
+pub struct DomainEvent {
     #[new(value = "EventId::new()")]
-    id: EventId,
-    events: Vec<E>,
+    pub id: EventId,
 }
 
 #[derive(new, PartialEq, Eq, Debug, Clone)]
@@ -22,4 +21,4 @@ pub trait DomainEventTrait: Debug {}
 // todo возможно понадобится
 // serialize_trait_object!(DomainEventTrait<T>);
 
-impl<E: DomainEventTrait> DomainEventTrait for DomainEvent<E> {}
+impl DomainEventTrait for DomainEvent {}

@@ -1,3 +1,4 @@
+use crate::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
 use crate::main::menu::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::meal_name::MealName;
 use common_types::main::base::domain_entity::{DomainEntityTrait, Version};
@@ -9,7 +10,7 @@ use std::fmt::Error;
 
 #[derive(new, Debug, Derivative, Clone)]
 #[derivative(PartialEq)]
-pub struct Meal<E: DomainEventTrait> {
+pub struct Meal<E: DomainEventTrait + Clone> {
     pub id: MealId,
     pub name: MealName,
     version: Version,
@@ -18,7 +19,7 @@ pub struct Meal<E: DomainEventTrait> {
     pub events: Vec<E>,
 }
 
-impl<E: DomainEventTrait> Meal<E> {
+impl<E: DomainEventTrait + Clone> Meal<E> {
     pub fn add_meal_to_menu<I: MealIdGenerator>(
         id_generator: &I,
         name: MealName,
@@ -26,6 +27,13 @@ impl<E: DomainEventTrait> Meal<E> {
         Ok(id_generator.generate())
             .map_err(|_e: Error| MealError::IdGenerationError)
             .map(|id| Meal::new(id, name, Version::new()))
+    }
+}
+
+impl Meal<MealRemovedFromMenuDomainEvent> {
+    pub fn remove_meal_from_menu(&mut self) {
+        let remove_event = MealRemovedFromMenuDomainEvent::new(self.id);
+        self.add_event(remove_event)
     }
 }
 
@@ -42,8 +50,8 @@ impl<E: DomainEventTrait + Clone> DomainEntityTrait<E> for Meal<E> {
         if self.events.is_empty() {}
         self.events.push(event)
     }
-    fn pop_events(&self) -> Vec<E> {
-        self.clone().events
+    fn pop_events(&self) -> &Vec<E> {
+        &self.events
     }
 }
 

@@ -36,12 +36,12 @@ pub struct TestEvent {}
 impl DomainEventTrait for TestEvent {}
 
 #[derive(new, Debug, Clone)]
-pub struct TestMealPersister<E: DomainEventTrait> {
+pub struct TestMealPersister<E: DomainEventTrait + Clone> {
     #[new(value = "HashMap::new()")]
     pub value: HashMap<MealId, Meal<E>>,
 }
 
-impl<E: DomainEventTrait> MealPersister<E> for TestMealPersister<E> {
+impl<E: DomainEventTrait + Clone> MealPersister<E> for TestMealPersister<E> {
     fn save(&mut self, meal: Meal<E>) {
         self.value.insert(meal.id, meal);
     }

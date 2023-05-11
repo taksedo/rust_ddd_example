@@ -1,5 +1,8 @@
+use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_id::MealId;
 use crate::main::menu::meal_name::MealName;
+use common_types::main::base::domain_entity::Version;
+use common_types::main::base::domain_event::DomainEventTrait;
 use fake::faker::name::raw::*;
 use fake::locales::*;
 use fake::Fake;
@@ -21,10 +24,10 @@ pub fn rnd_meal_id() -> MealId {
     MealId { value: id }
 }
 
-// pub fn rnd_meal(id: MealId, removed: bool) -> Meal {
-//     MealRestorer::restore_meal(id, rnd_meal_name())
-// }
-//
+pub fn rnd_meal<E: DomainEventTrait + Clone>() -> Meal<E> {
+    Meal::new(rnd_meal_id(), rnd_meal_name(), Version::default()) //TODO Переделать на ресторер
+}
+
 // fn customerId() = CustomerId(UUID.randomUUID().toString())
 //
 // fn cartId() = CartId(faker.number().randomNumber())

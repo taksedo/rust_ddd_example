@@ -4,7 +4,6 @@ use derive_new::new;
 use serde::Deserialize;
 use serde::Serialize;
 use std::fmt::Debug;
-use std::rc::Rc;
 
 #[derive(new, Debug, Clone, Default)]
 pub struct DomainEntity<I, E> {
@@ -15,15 +14,15 @@ pub struct DomainEntity<I, E> {
 
 pub trait DomainEntityTrait<E: DomainEventTrait>: Clone {
     fn add_event(&mut self, event: E);
-    fn pop_events(&self) -> Vec<E>;
+    fn pop_events(&self) -> &Vec<E>;
 }
 
 impl<I: Clone, E: DomainEventTrait + Clone> DomainEntityTrait<E> for DomainEntity<I, E> {
     fn add_event(&mut self, event: E) {
         self.events.push(event)
     }
-    fn pop_events(&self) -> Vec<E> {
-        self.clone().events
+    fn pop_events(&self) -> &Vec<E> {
+        &self.events
     }
 }
 
