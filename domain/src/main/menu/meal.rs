@@ -14,6 +14,9 @@ pub struct Meal<E: DomainEventTrait + Clone> {
     pub id: MealId,
     pub name: MealName,
     version: Version,
+    #[new(value = "false")]
+    pub removed: bool,
+
     #[derivative(PartialEq = "ignore")]
     #[new(value = "vec![] as Vec<E>")]
     pub events: Vec<E>,
@@ -28,12 +31,19 @@ impl<E: DomainEventTrait + Clone> Meal<E> {
             .map_err(|_e: Error| MealError::IdGenerationError)
             .map(|id| Meal::new(id, name, Version::new()))
     }
+
+    pub fn visible(&self) -> bool {
+        !self.removed
+    }
 }
 
 impl Meal<MealRemovedFromMenuDomainEvent> {
     pub fn remove_meal_from_menu(&mut self) {
-        let remove_event = MealRemovedFromMenuDomainEvent::new(self.id);
-        self.add_event(remove_event)
+        if !self.removed {
+            self.removed = true;
+            let removing_event = MealRemovedFromMenuDomainEvent::new(self.id);
+            self.add_event(removing_event)
+        }
     }
 }
 

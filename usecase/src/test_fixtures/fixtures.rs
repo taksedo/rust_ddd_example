@@ -1,13 +1,19 @@
+use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
 use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use domain::main::menu::meal::Meal;
+use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
 use domain::main::menu::meal_id::MealId;
+use domain::main::menu::meal_name::MealName;
+use domain::test_fixtures::fixtures::rnd_meal;
 use std::collections::HashMap;
 
-// pub fn removed_meal() -> Meal {
-//     rnd_meal(rnd_meal_id(), true)
-// }
+pub fn removed_meal() -> Meal<MealRemovedFromMenuDomainEvent> {
+    let mut meal = rnd_meal();
+    meal.remove_meal_from_menu();
+    meal
+}
 
 // fn orderReadyForPay() = order(state = OrderState.WAITING_FOR_PAYMENT)
 //
@@ -187,85 +193,31 @@ impl<E: DomainEventTrait + Clone> MealPersister<E> for TestMealPersister<E> {
 // }
 // }
 
-// #[derive(new, Clone, PartialEq, Debug)]
-// pub struct MockMealExtractor {
-//     #[new(default)]
-//     pub meal: Option<Meal>,
-//     #[new(default)]
-//     pub id: Option<MealId>,
-//     #[new(default)]
-//     pub name: Option<MealName>,
-//     #[new(default)]
-//     pub all: bool,
-// }
-//
-// impl Default for MockMealExtractor {
-//     fn default() -> Self {
-//         Self {
-//             meal: None,
-//             id: None,
-//             name: None,
-//             all: false,
-//         }
-//     }
-// }
-//
-// impl MealExtractor for MockMealExtractor {
-//     fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
-//         self.id = Option::from(id);
-//         if Some(&self.meal).is_some() && &self.id == &Some(id) {
-//             self.to_owned().meal
-//         } else {
-//             None
-//         }
-//     }
-//
-//     fn get_by_name(&mut self, name: MealName) -> Option<Meal> {
-//         self.name = Option::from(name.to_owned());
-//         if Some(&self.meal).is_some() && self.to_owned().name.unwrap() == name.to_owned() {
-//             self.to_owned().meal
-//         } else {
-//             None
-//         }
-//     }
-//
-//     fn get_all(&mut self) -> Vec<Meal> {
-//         self.all = true;
-//         if self.meal.is_some() {
-//             vec![self.to_owned().meal.unwrap()]
-//         } else {
-//             vec![]
-//         }
-//     }
-// }
-//
-// impl MockMealExtractor {
-//     pub fn verify_invoked_get_by_id(&self, id: MealId) {
-//         // dbg!(&self);
-//         // dbg!(&self.id);
-//         assert_eq!(&self.id.unwrap(), &id);
-//         assert!(!&self.all);
-//         assert!(&self.name.is_none());
-//     }
-//
-//     pub fn verify_invoked_get_by_name(&self, name: MealName) {
-//         assert_eq!(&self.to_owned().name.unwrap(), &name);
-//         assert!(!&self.all);
-//         assert!(&self.id.is_none());
-//     }
-//
-//     pub fn verify_invoked_get_all(&self) {
-//         assert!(&self.all);
-//         assert!(&self.id.is_none());
-//         assert!(&self.name.is_none());
-//     }
-//
-//     pub fn verify_empty(&self) {
-//         assert!(!&self.all);
-//         assert!(&self.id.is_none());
-//         assert!(&self.name.is_none());
-//     }
-// }
+#[derive(new, Clone, PartialEq, Debug)]
+pub struct TestMealExtractor<E: DomainEventTrait + Clone> {
+    #[new(value = "HashMap::new()")]
+    pub value: HashMap<MealId, Meal<E>>,
+}
+
+impl<E: DomainEventTrait + Clone> MealExtractor<E> for TestMealExtractor<E> {
+    fn get_by_id(&mut self, id: MealId) -> Option<&Meal<E>> {
+        self.value.get(&id)
+    }
+
+    fn get_by_name(&mut self, name: MealName) -> Option<Meal<E>> {
+        let result = self
+            .clone()
+            .value
+            .iter()
+            .find_map(|(key, val)| if val.name == name { Some(key) } else { None })
+            .and_then(|meal_id| self.get_by_id(*meal_id).cloned());
+        result
+    }
+
+    fn get_all(&mut self) -> Vec<Meal<E>> {
+        self.value.clone().into_values().collect()
+    }
+}
 
 //
 // class MockShopOrderExtractor : ShopOrderExtractor {

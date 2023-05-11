@@ -29,7 +29,7 @@ impl AddMealToMenuRequest {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum InvalidMealParametersError {
     #[error("Неверные параметры еды")]
     InvalidParameters,
