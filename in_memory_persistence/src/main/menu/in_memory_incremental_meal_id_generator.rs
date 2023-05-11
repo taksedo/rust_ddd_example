@@ -1,4 +1,3 @@
-use std::any::Any;
 use derive_new::new;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use std::sync::atomic::{AtomicI64, Ordering};
@@ -13,13 +12,5 @@ impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
     fn generate(&self) -> MealId {
         let meal_id = self.counter.fetch_add(1, Ordering::SeqCst);
         MealId { value: meal_id }
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        todo!()
-    }
-
-    fn get_id(&self) -> &MealId {
-        &MealId { value: 0 }
     }
 }

@@ -36,8 +36,8 @@ where
         Meal::add_meal_to_menu(self.id_generator, request.name)
             .map_err(|_| AddMealToMenuUseCaseError::AlreadyExists)
             .map(|new_meal_in_menu| {
-                self.meal_persister.save(new_meal_in_menu);
-                *self.id_generator.get_id()
+                self.meal_persister.save(new_meal_in_menu.clone());
+                new_meal_in_menu.id
             })
     }
 }

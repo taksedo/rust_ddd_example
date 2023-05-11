@@ -1,8 +1,6 @@
 use crate::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuRequest};
 use crate::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use crate::test_fixtures::fixtures::{TestEvent, TestMealPersister};
-use common_types::main::base::domain_event::DomainEventTrait;
-use core::any::Any;
 use derive_new::new;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::rnd_meal_id;
@@ -43,13 +41,5 @@ pub(crate) struct TestMealIdGenerator {
 impl MealIdGenerator for TestMealIdGenerator {
     fn generate(&self) -> MealId {
         self.id
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-
-    fn get_id(&self) -> &MealId {
-        &self.id
     }
 }
