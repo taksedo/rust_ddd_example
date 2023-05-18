@@ -10,7 +10,7 @@ use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
 
-#[derive(new, Debug, Clone, PartialEq)]
+#[derive(new, Debug, Clone, PartialEq, Default)]
 pub struct Meal {
     pub domain_entity_field: DomainEntity<MealId>,
     pub name: MealName,

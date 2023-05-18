@@ -2,7 +2,7 @@ use common_types::main::base::value_object::ValueObject;
 use common_types::main::errors::error::BusinessError;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash, Default)]
 pub struct MealName {
     pub value: String,
 }

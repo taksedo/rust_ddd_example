@@ -72,27 +72,87 @@ impl MealPersister for MockMealPersister {
 }
 
 #[derive(new, Clone, PartialEq, Debug)]
-pub struct TestMealExtractor {
-    #[new(value = "HashMap::new()")]
-    pub value: HashMap<MealId, Meal>,
+pub struct MockMealExtractor {
+    #[new(default)]
+    pub meal: Option<Meal>,
+    #[new(default)]
+    pub id: Option<MealId>,
+    #[new(default)]
+    pub name: Option<MealName>,
+    #[new(default)]
+    pub all: bool,
 }
 
-impl MealExtractor for TestMealExtractor {
-    fn get_by_id(&mut self, id: MealId) -> Option<&Meal> {
-        self.value.get(&id)
+impl Default for MockMealExtractor {
+    fn default() -> Self {
+        Self {
+            meal: None,
+            id: None,
+            name: None,
+            all: false,
+        }
+    }
+}
+
+impl MealExtractor for MockMealExtractor {
+    fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
+        self.id = Option::from(id);
+        if Some(&self.meal).is_some() && &self.id == &Some(id) {
+            self.to_owned().meal
+        } else {
+            None
+        }
     }
 
     fn get_by_name(&mut self, name: MealName) -> Option<Meal> {
-        let result = self
-            .clone()
-            .value
-            .iter()
-            .find_map(|(key, val)| if val.name == name { Some(key) } else { None })
-            .and_then(|meal_id| self.get_by_id(*meal_id).cloned());
-        result
+        self.name = Option::from(name.to_owned());
+        if Some(&self.meal).is_some() && self.to_owned().name.unwrap() == name.to_owned() {
+            self.to_owned().meal
+        } else {
+            None
+        }
     }
 
     fn get_all(&mut self) -> Vec<Meal> {
-        self.value.clone().into_values().collect()
+        self.all = true;
+        if self.meal.is_some() {
+            vec![self.to_owned().meal.unwrap()]
+        } else {
+            vec![]
+        }
+    }
+}
+
+impl MockMealExtractor {
+    pub fn verify_invoked_get_by_id(&self, id: MealId) {
+        // dbg!(&self);
+        // dbg!(&self.id);
+        assert_eq!(&self.id.unwrap(), &id);
+        assert!(!&self.all);
+        assert!(&self.name.is_none());
+    }
+
+    pub fn verify_invoked_get_by_name(&self, name: MealName) {
+        assert_eq!(&self.to_owned().name.unwrap(), &name);
+        assert!(!&self.all);
+        assert!(&self.id.is_none());
+    }
+
+    pub fn verify_invoked_get_all(&self) {
+        assert!(&self.all);
+        assert!(&self.id.is_none());
+        assert!(&self.name.is_none());
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(!&self.all);
+        assert!(&self.id.is_none());
+        assert!(&self.name.is_none());
+    }
+}
+
+impl dyn MealExtractor + 'static {
+    pub fn downcast_ref<T: MealExtractor + 'static>(&self) -> Option<&T> {
+        unsafe { Some(&*(self as *const dyn MealExtractor as *const T)) }
     }
 }

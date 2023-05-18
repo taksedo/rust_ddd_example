@@ -16,14 +16,14 @@ impl GetMealById for GetMealByIdUseCase {
         self.meal_extractor.borrow_mut().get_by_id(id);
         // dbg!(&self.meal_extractor);
         match self.meal_extractor.borrow_mut().get_by_id(id) {
-            res if res.is_some() && res.unwrap().visible() => {
+            res if res.is_some() && res.clone().unwrap().visible() => {
                 let res = res.unwrap();
                 Ok(MealInfo {
-                    id: res.clone().domain_entity_field.id,
+                    id: res.domain_entity_field.id,
                     name: res.clone().name,
                     // description: res.to_owned().unwrap().description,
                     // price: res.to_owned().unwrap().price,
-                    version: res.clone().domain_entity_field.version,
+                    version: res.domain_entity_field.version,
                 })
             }
             _ => Err(GetMealByIdUseCaseError::MealNotFound),
