@@ -1,5 +1,5 @@
-use common::main::types::base::value_object::ValueObject;
-use common::main::types::errors::error::BusinessError;
+use common_types::main::base::value_object::ValueObject;
+use common_types::main::errors::error::BusinessError;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash)]
@@ -13,8 +13,8 @@ impl MealName {
     }
 
     pub fn from(name: String) -> Result<Self, CreateMealNameError> {
-        if name == *"" {
-            Err(CreateMealNameError::EmptyString)
+        if name == *"" || name == *" " {
+            Err(CreateMealNameError::EmptyMealNameError)
         } else {
             Ok(Self { value: name })
         }
@@ -23,10 +23,10 @@ impl MealName {
 
 impl ValueObject for MealName {}
 
-#[derive(thiserror::Error, Debug)]
+#[derive(thiserror::Error, Debug, PartialEq)]
 pub enum CreateMealNameError {
     #[error("Название еды не может быть пустым")]
-    EmptyString,
+    EmptyMealNameError,
 }
 
 impl BusinessError for CreateMealNameError {}

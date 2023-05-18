@@ -1,5 +1,3 @@
-#![allow(special_module_name)]
-pub mod main;
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }

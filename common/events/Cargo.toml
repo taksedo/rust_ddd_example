@@ -1,0 +1,15 @@
+[package]
+name = "common_events"
+version.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+derive-new = "0.5.9"
+time = { version = "0.3.21", features = ["default","serde-well-known"] }
+serde = { version = "1.0.162", features = ["derive","rc","alloc"] }
+serde_derive = "1.0.162"
+erased-serde = "0.3.25"
+
+common_types = { path = "../types" }

@@ -1,5 +1,9 @@
+use crate::main::menu::meal::Meal;
+use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_id::MealId;
 use crate::main::menu::meal_name::MealName;
+use common_types::main::base::domain_entity::{DomainEntity, Version};
+use derive_new::new;
 use fake::faker::name::raw::*;
 use fake::locales::*;
 use fake::Fake;
@@ -12,6 +16,10 @@ use rand::Rng;
 // building = faker.address().streetAddressNumber().toInt() + 1
 // ).getOrElse { error("Address should be right") }
 
+pub fn print_type_of<T>(_: &T) -> &str {
+    std::any::type_name::<T>()
+}
+
 pub fn rnd_meal_name() -> MealName {
     MealName::from(Name(EN).fake()).unwrap()
 }
@@ -21,10 +29,17 @@ pub fn rnd_meal_id() -> MealId {
     MealId { value: id }
 }
 
-// pub fn rnd_meal(id: MealId, removed: bool) -> Meal {
-//     MealRestorer::restore_meal(id, rnd_meal_name())
-// }
-//
+pub fn version() -> Version {
+    Version::new()
+}
+
+pub fn rnd_meal() -> Meal {
+    Meal::new(
+        DomainEntity::new(rnd_meal_id(), Version::default()),
+        rnd_meal_name(),
+    ) //TODO Переделать на ресторер
+}
+
 // fn customerId() = CustomerId(UUID.randomUUID().toString())
 //
 // fn cartId() = CartId(faker.number().randomNumber())
@@ -71,3 +86,15 @@ pub fn rnd_meal_id() -> MealId {
 // version = version()
 // )
 // }
+
+#[derive(Debug, new, Default, Clone, Copy)]
+pub struct TestMealAlreadyExists {
+    #[new(value = "false")]
+    pub value: bool,
+}
+
+impl MealAlreadyExists for TestMealAlreadyExists {
+    fn invoke(&mut self, _name: &MealName) -> bool {
+        self.value
+    }
+}

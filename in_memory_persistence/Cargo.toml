@@ -1,13 +1,19 @@
 [package]
 name = "in_memory_persistence"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-derive-new = "0.5.9"
-common = { path = "../common" }
+derive-new.workspace = true
+serde.workspace = true
+serde_derive.workspace = true
+erased-serde.workspace = true
+derivative.workspace = true
+
+common_types = { path = "../common/types" }
+common_events = { path = "../common/events" }
 domain = { path = "../domain" }
 usecase = { path = "../usecase" }
 
