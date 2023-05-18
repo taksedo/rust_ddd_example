@@ -1,4 +1,3 @@
-use core::any::Any;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
@@ -9,11 +8,11 @@ pub struct MealId {
 }
 
 impl MealId {
-    fn _to_long_value(self) -> i64 {
+    pub fn to_i64(self) -> i64 {
         self.value
     }
 }
 
-pub trait MealIdGenerator: Debug + Any {
+pub trait MealIdGenerator: Debug {
     fn generate(&self) -> MealId;
 }

@@ -13,8 +13,8 @@ impl MealName {
     }
 
     pub fn from(name: String) -> Result<Self, CreateMealNameError> {
-        if name == *"" {
-            Err(CreateMealNameError::EmptyString)
+        if name == *"" || name == *" " {
+            Err(CreateMealNameError::EmptyMealNameError)
         } else {
             Ok(Self { value: name })
         }
@@ -23,10 +23,10 @@ impl MealName {
 
 impl ValueObject for MealName {}
 
-#[derive(thiserror::Error, Debug)]
+#[derive(thiserror::Error, Debug, PartialEq)]
 pub enum CreateMealNameError {
     #[error("Название еды не может быть пустым")]
-    EmptyString,
+    EmptyMealNameError,
 }
 
 impl BusinessError for CreateMealNameError {}

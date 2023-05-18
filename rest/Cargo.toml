@@ -1,0 +1,22 @@
+[package]
+name = "rest"
+version.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = { workspace = true, features = ["rustls"] }
+actix-cors.workspace = true
+derive-new.workspace = true
+const_format = "0.2.30"
+serde = { version = "1.0.162", features = ["derive"] }
+serde_json = "1.0.96"
+futures = "0.3.28"
+env_logger = "0.10.0"
+
+domain = { path = "../domain" }
+usecase = { path = "../usecase" }
+common_types = { path = "../common/types" }
+common_rest = { path = "../common/rest" }
+in_memory_persistence = { path = "../in_memory_persistence" }
