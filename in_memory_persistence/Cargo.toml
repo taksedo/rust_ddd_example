@@ -6,10 +6,11 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-derive-new = "0.5.9"
-serde = { version = "1.0.162", features = ["derive","rc","alloc"] }
-serde_derive = "1.0.162"
-erased-serde = "0.3.25"
+derive-new.workspace = true
+serde.workspace = true
+serde_derive.workspace = true
+erased-serde.workspace = true
+derivative.workspace = true
 
 common_types = { path = "../common/types" }
 common_events = { path = "../common/events" }

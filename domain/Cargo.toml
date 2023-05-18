@@ -6,18 +6,19 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0.162", features = ["derive","rc","alloc"] }
-serde_derive = "1.0.162"
-erased-serde = "0.3.25"
-serde_json = "1.0.96"
-derive-new = "0.5.9"
-thiserror = "1.0.40"
-bigdecimal = { version = "0.3.0", features = ["serde"] }
-mockall = "0.11.3"
-fake = { version="2.5.0", features=["derive", "bigdecimal"] }
-rand = "0.8.5"
-rstest = "0.17.0"
-derivative = "2.2.0"
+serde.workspace = true
+serde_derive.workspace = true
+erased-serde.workspace = true
+serde_json.workspace = true
+derive-new.workspace = true
+thiserror.workspace = true
+bigdecimal.workspace = true
+mockall.workspace = true
+fake.workspace = true
+rand.workspace = true
+rstest.workspace = true
+derivative.workspace = true
+time.workspace = true
 
 common_types = { path = "../common/types" }
 common_events = { path = "../common/events" }

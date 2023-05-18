@@ -11,6 +11,6 @@ derive-new = "0.5.9"
 structmap = "0.1.6"
 structmap-derive = "0.1.6"
 
-domain = {path = "../domain"}
-common_types = {path = "../common/types"}
-common_events = {path = "../common/events"}
+domain = { path = "../domain" }
+common_types = { path = "../common/types" }
+common_events = { path = "../common/events" }

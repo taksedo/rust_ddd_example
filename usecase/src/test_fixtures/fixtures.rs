@@ -3,208 +3,86 @@ use crate::main::menu::access::meal_persister::MealPersister;
 use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
 use domain::main::menu::meal_id::MealId;
 use domain::main::menu::meal_name::MealName;
 use domain::test_fixtures::fixtures::rnd_meal;
 use std::collections::HashMap;
 
-pub fn removed_meal() -> Meal<MealRemovedFromMenuDomainEvent> {
+pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();
     meal.remove_meal_from_menu();
     meal
 }
-
-// fn orderReadyForPay() = order(state = OrderState.WAITING_FOR_PAYMENT)
-//
-// fn orderNotReadyForPay() = order(state = OrderState.COMPLETED)
-//
-// fn orderReadyForCancel() = order(state = OrderState.PAID)
-//
-// fn orderNotReadyForCancel() = order(state = OrderState.COMPLETED)
-//
-// fn orderReadyForConfirm() = order(state = OrderState.PAID)
-//
-// fn orderNotReadyForConfirm() = order(state = OrderState.WAITING_FOR_PAYMENT)
-//
-// fn orderReadyForComplete() = order(state = OrderState.CONFIRMED)
-//
-// fn orderNotReadyForComplete() = order(state = OrderState.CANCELLED)
-//
-// fn activeOrder() = order(state = OrderState.CONFIRMED)
-//
-// fn nonActiveOrder() = order(state = OrderState.CANCELLED)
-//
-
 #[derive(new, Debug, Clone)]
 pub struct TestEvent {}
 
 impl DomainEventTrait for TestEvent {}
 
 #[derive(new, Debug, Clone)]
-pub struct TestMealPersister<E: DomainEventTrait + Clone> {
-    #[new(value = "HashMap::new()")]
-    pub value: HashMap<MealId, Meal<E>>,
+pub struct MockMealPersister {
+    #[new(value = "None")]
+    pub meal: Option<Meal>,
 }
 
-impl<E: DomainEventTrait + Clone> MealPersister<E> for TestMealPersister<E> {
-    fn save(&mut self, meal: Meal<E>) {
-        self.value.insert(meal.id, meal);
+impl MockMealPersister {
+    pub fn verify_invoked(
+        &self,
+        id: Option<MealId>,
+        name: Option<MealName>,
+        // description: Option<MealDescription>,
+        // price: Option<Price>,
+    ) {
+        if id.is_some() {
+            assert_eq!(
+                self.to_owned().meal.unwrap().domain_entity_field.id,
+                id.unwrap()
+            )
+        }
+        if name.is_some() {
+            assert_eq!(self.to_owned().meal.unwrap().name, name.unwrap())
+        }
+        // if description.is_some() {
+        //     assert_eq!(
+        //         self.to_owned().meal.unwrap().description,
+        //         description.unwrap()
+        //     )
+        // }
+        // if price.is_some() {
+        //     assert_eq!(self.to_owned().meal.unwrap().price, price.unwrap())
+        // }
+    }
+    pub fn verify_invoked_meal(&self, meal: Option<Meal>) {
+        if meal.is_some() {
+            assert_eq!(self.to_owned().meal, meal)
+        }
+    }
+    // pub fn verify_events_after_deletion(&mut self, id: MealId) {
+    //     let event_enum: DomainEventEnum = MealRemovedFromMenuDomainEvent::new(id).into();
+    //     assert_eq!(self.to_owned().meal.unwrap().pop_events(), vec![event_enum]);
+    // }
+    pub fn verify_empty(&self) {
+        assert!(&self.meal.is_none());
     }
 }
 
-//
-// class MockCartPersister : CartPersister {
-//
-// lateinit var cart: Cart
-//
-// override fn save(cart: Cart) {
-// this.cart = cart
-// }
-//
-// fn verify_invoked(cart: Cart) {
-// this.cart shouldBe cart
-// }
-//
-// fn verify_invoked(cart: Cart, idMeal: MealId) {
-// this.cart shouldBe cart
-// this.cart.meals() shouldContainExactly mapOf(idMeal to count(1))
-// }
-//
-// fn verify_invoked(id: CartId, customerId: CustomerId, idMeal: MealId) {
-// this.cart.id shouldBe id
-// this.cart.forCustomer shouldBe customerId
-// this.cart.meals() shouldContainExactly mapOf(idMeal to count(1))
-// }
-//
-// fn verify_empty() {
-// ::cart.isInitialized shouldBe false
-// }
-// }
-//
-// class MockShopOrderPersister : ShopOrderPersister {
-//
-// lateinit var order: ShopOrder
-//
-// override fn save(order: ShopOrder) {
-// this.order = order
-// }
-//
-// fn verify_invoked(order: ShopOrder) {
-// this.order shouldBe order
-// }
-//
-// fn verify_invoked(
-// orderId: ShopOrderId, address: Address, customerId: CustomerId,
-// mealId: MealId, countItems: Count, priceItems: Price
-// ) {
-// this.order.id shouldBe orderId
-// this.order.address shouldBe address
-// this.order.forCustomer shouldBe customerId
-// this.order.orderItems.shouldHaveSize(1)
-//
-// val orderItem = this.order.orderItems.first()
-// orderItem.mealId shouldBe mealId
-// orderItem.count shouldBe countItems
-// orderItem.price shouldBe priceItems
-// }
-//
-// fn verifyEventsAfterCancellation(id: ShopOrderId) {
-// this.order.popEvents() shouldContainExactly listOf(ShopOrderCancelledDomainEvent(id))
-// }
-//
-// fn verifyEventsAfterCompletion(id: ShopOrderId) {
-// this.order.popEvents() shouldContainExactly listOf(ShopOrderCompletedDomainEvent(id))
-// }
-//
-// fn verifyEventsAfterConfirmation(id: ShopOrderId) {
-// this.order.popEvents() shouldContainExactly listOf(ShopOrderConfirmedDomainEvent(id))
-// }
-//
-// fn verifyEventsAfterPayment(id: ShopOrderId) {
-// this.order.popEvents() shouldContainExactly listOf(ShopOrderPaidDomainEvent(id))
-// }
-//
-// fn verifyPrice(price: Price) {
-// this.order.totalPrice() shouldBe price
-// }
-//
-// fn verify_empty() {
-// ::order.isInitialized shouldBe false
-// }
-// }
-//
-// class MockCartRemover : CartRemover {
-//
-// lateinit var id: CartId
-//
-// override fn deleteCart(cart: Cart) {
-// this.id = cart.id
-// }
-//
-// fn verify_invoked(cartId: CartId) {
-// this.id shouldBe cartId
-// }
-//
-// fn verify_empty() {
-// ::id.isInitialized shouldBe false
-// }
-// }
-//
-// class MockCartExtractor : CartExtractor {
-//
-// lateinit var cart: Cart
-// lateinit var forCustomer: CustomerId
-//
-// constructor()
-// constructor(cart: Cart) {
-// this.cart = cart
-// }
-//
-// override fn getCart(forCustomer: CustomerId): Cart? {
-// this.forCustomer = forCustomer
-// return if (::cart.isInitialized) this.cart else null
-// }
-//
-// fn verify_invoked(forCustomer: CustomerId) {
-// this.forCustomer shouldBe forCustomer
-// }
-//
-// fn verify_empty() {
-// ::forCustomer.isInitialized shouldBe false
-// }
-// }
-//
-// class MockCustomerHasActiveOrder(val hasActive: Boolean) : CustomerHasActiveOrder {
-//
-// lateinit var forCustomer: CustomerId
-//
-// override fn invoke(forCustomer: CustomerId): Boolean {
-// this.forCustomer = forCustomer
-// return hasActive
-// }
-//
-// fn verify_invoked(forCustomer: CustomerId) {
-// this.forCustomer shouldBe forCustomer
-// }
-//
-// fn verify_empty() {
-// ::forCustomer.isInitialized shouldBe false
-// }
-// }
-
-#[derive(new, Clone, PartialEq, Debug)]
-pub struct TestMealExtractor<E: DomainEventTrait + Clone> {
-    #[new(value = "HashMap::new()")]
-    pub value: HashMap<MealId, Meal<E>>,
+impl MealPersister for MockMealPersister {
+    fn save(&mut self, meal: Meal) {
+        self.meal = Some(meal);
+    }
 }
 
-impl<E: DomainEventTrait + Clone> MealExtractor<E> for TestMealExtractor<E> {
-    fn get_by_id(&mut self, id: MealId) -> Option<&Meal<E>> {
+#[derive(new, Clone, PartialEq, Debug)]
+pub struct TestMealExtractor {
+    #[new(value = "HashMap::new()")]
+    pub value: HashMap<MealId, Meal>,
+}
+
+impl MealExtractor for TestMealExtractor {
+    fn get_by_id(&mut self, id: MealId) -> Option<&Meal> {
         self.value.get(&id)
     }
 
-    fn get_by_name(&mut self, name: MealName) -> Option<Meal<E>> {
+    fn get_by_name(&mut self, name: MealName) -> Option<Meal> {
         let result = self
             .clone()
             .value
@@ -214,79 +92,7 @@ impl<E: DomainEventTrait + Clone> MealExtractor<E> for TestMealExtractor<E> {
         result
     }
 
-    fn get_all(&mut self) -> Vec<Meal<E>> {
+    fn get_all(&mut self) -> Vec<Meal> {
         self.value.clone().into_values().collect()
     }
 }
-
-//
-// class MockShopOrderExtractor : ShopOrderExtractor {
-//
-// lateinit var order: ShopOrder
-//
-// lateinit var id: ShopOrderId
-// lateinit var forCustomer: CustomerId
-// var all: Boolean = false
-//
-// constructor()
-// constructor(order: ShopOrder) {
-// this.order = order
-// }
-//
-// override fn getById(orderId: ShopOrderId): ShopOrder? {
-// this.id = orderId
-// return if (::order.isInitialized && this.order.id == id) this.order else null
-// }
-//
-// override fn getLastOrder(forCustomer: CustomerId): ShopOrder? {
-// this.forCustomer = forCustomer
-// return if (::order.isInitialized && this.order.forCustomer == forCustomer) this.order else null
-// }
-//
-// override fn getAll(startId: ShopOrderId, limit: Int): List<ShopOrder> {
-// this.all = true
-// return if (::order.isInitialized) return listOf(this.order) else emptyList()
-// }
-//
-// fn verify_invoked_get_by_id(id: ShopOrderId) {
-// this.id shouldBe id
-// this.all shouldBe false
-// ::forCustomer.isInitialized shouldBe false
-// }
-//
-// fn verifyInvokedGetLastOrder(forCustomer: CustomerId) {
-// this.forCustomer shouldBe forCustomer
-// this.all shouldBe false
-// ::id.isInitialized shouldBe false
-// }
-//
-// fn verify_invoked_get_all() {
-// this.all shouldBe true
-// ::id.isInitialized shouldBe false
-// ::forCustomer.isInitialized shouldBe false
-// }
-//
-// fn verify_empty() {
-// this.all shouldBe false
-// ::id.isInitialized shouldBe false
-// ::forCustomer.isInitialized shouldBe false
-// }
-// }
-//
-// class MockOrderExporter : OrderExporter {
-// lateinit var id: ShopOrderId
-// lateinit var customerId: CustomerId
-// lateinit var totalPrice: Price
-//
-// override fn exportOrder(id: ShopOrderId, customerId: CustomerId, totalPrice: Price) {
-// this.id = id
-// this.customerId = customerId
-// this.totalPrice = totalPrice
-// }
-//
-// fn verify_invoked(id: ShopOrderId, customerId: CustomerId, totalPrice: Price) {
-// this.id shouldBe id
-// this.customerId shouldBe customerId
-// this.totalPrice shouldBe totalPrice
-// }
-// }
