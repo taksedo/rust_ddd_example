@@ -1,7 +1,7 @@
 use crate::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
 use crate::test_fixtures::fixtures::{removed_meal, MockMealExtractor};
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
-use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name};
+use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_name};
 use std::cell::RefCell;
 use std::rc::Rc;
 

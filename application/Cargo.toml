@@ -6,3 +6,12 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+derive-new.workspace = true
+enum_dispatch.workspace = true
+unbox-box = "0.1.0"
+named_type = "0.2.2"
+named_type_derive = "0.2.2"
+
+common_types = { path = "../common/types" }
+common_events = { path = "../common/events" }
+domain = { path = "../domain" }

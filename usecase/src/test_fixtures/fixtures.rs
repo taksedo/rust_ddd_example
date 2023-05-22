@@ -1,22 +1,16 @@
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
-use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_id::MealId;
 use domain::main::menu::meal_name::MealName;
 use domain::test_fixtures::fixtures::rnd_meal;
-use std::collections::HashMap;
 
 pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();
     meal.remove_meal_from_menu();
     meal
 }
-#[derive(new, Debug, Clone)]
-pub struct TestEvent {}
-
-impl DomainEventTrait for TestEvent {}
 
 #[derive(new, Debug, Clone)]
 pub struct MockMealPersister {
@@ -98,7 +92,7 @@ impl MealExtractor for MockMealExtractor {
     fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
         self.id = Option::from(id);
         if Some(&self.meal).is_some() && &self.id == &Some(id) {
-            self.to_owned().meal
+            self.clone().meal
         } else {
             None
         }

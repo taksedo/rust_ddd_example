@@ -3,6 +3,7 @@ use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_id::MealId;
 use crate::main::menu::meal_name::MealName;
 use common_types::main::base::domain_entity::{DomainEntity, Version};
+use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use fake::faker::name::raw::*;
 use fake::locales::*;
@@ -39,6 +40,11 @@ pub fn rnd_meal() -> Meal {
         rnd_meal_name(),
     ) //TODO Переделать на ресторер
 }
+
+#[derive(new, Debug, Clone, PartialEq)]
+pub struct TestEvent {}
+
+impl DomainEventTrait for TestEvent {}
 
 // fn customerId() = CustomerId(UUID.randomUUID().toString())
 //

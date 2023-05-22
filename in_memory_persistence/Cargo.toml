@@ -11,6 +11,9 @@ serde.workspace = true
 serde_derive.workspace = true
 erased-serde.workspace = true
 derivative.workspace = true
+enum_dispatch.workspace = true
+smart-default.workspace = true
+time.workspace = true
 
 common_types = { path = "../common/types" }
 common_events = { path = "../common/events" }

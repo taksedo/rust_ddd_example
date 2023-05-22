@@ -1,11 +1,9 @@
 use common_events::main::domain_event_publisher::DomainEventPublisher;
-use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use domain::main::menu::meal::Meal;
+use domain::main::menu::meal_events::DomainEventEnum;
 use domain::test_fixtures::fixtures::rnd_meal;
 use std::any::type_name;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 pub fn meal_with_events() -> Meal {
     let mut meal = rnd_meal();
@@ -16,11 +14,11 @@ pub fn meal_with_events() -> Meal {
 #[derive(new, Clone, Debug)]
 pub struct TestEventPublisher {
     #[new(value = "vec![]")]
-    pub storage: Vec<Rc<RefCell<dyn DomainEventTrait>>>,
+    pub storage: Vec<DomainEventEnum>,
 }
 
-impl DomainEventPublisher for TestEventPublisher {
-    fn publish(&mut self, events: &Vec<Rc<RefCell<dyn DomainEventTrait>>>) {
+impl DomainEventPublisher<DomainEventEnum> for TestEventPublisher {
+    fn publish(&mut self, events: &Vec<DomainEventEnum>) {
         self.storage.extend(events.clone());
     }
 }
