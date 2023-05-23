@@ -1,9 +1,14 @@
 use crate::main::menu::meal_id::MealId;
-use common_types::main::base::domain_event::{DomainEventTrait, EventId};
+// #[cfg(test)]
+use crate::test_fixtures::fixtures::TestEvent;
+use common_types::main::base::domain_event::EventId;
 use derive_new::new;
+use enum_dispatch::enum_dispatch;
+
+use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-#[derive(new, Debug, Clone)]
+#[derive(new, Debug, Clone, PartialEq)]
 pub struct MealAddedToMenuDomainEvent {
     #[new(value = "EventId::new()")]
     pub id: EventId,
@@ -12,7 +17,17 @@ pub struct MealAddedToMenuDomainEvent {
     pub created: OffsetDateTime,
 }
 
-#[derive(new, Debug, Clone)]
+impl Default for MealAddedToMenuDomainEvent {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            meal_id: Default::default(),
+            created: OffsetDateTime::now_utc(),
+        }
+    }
+}
+
+#[derive(new, Debug, Clone, PartialEq)]
 pub struct MealRemovedFromMenuDomainEvent {
     #[new(value = "EventId::new()")]
     pub id: EventId,
@@ -21,6 +36,28 @@ pub struct MealRemovedFromMenuDomainEvent {
     pub created: OffsetDateTime,
 }
 
+impl Default for MealRemovedFromMenuDomainEvent {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            meal_id: Default::default(),
+            created: OffsetDateTime::now_utc(),
+        }
+    }
+}
+#[enum_dispatch]
+trait DomainEventTrait {}
+
 impl DomainEventTrait for MealAddedToMenuDomainEvent {}
 
 impl DomainEventTrait for MealRemovedFromMenuDomainEvent {}
+
+#[enum_dispatch(DomainEventTrait)]
+#[derive(PartialEq, Debug, Clone, SmartDefault)]
+pub enum DomainEventEnum {
+    #[default]
+    MealRemovedFromMenuDomainEvent,
+    MealAddedToMenuDomainEvent,
+    // #[cfg(test)]
+    TestEvent,
+}

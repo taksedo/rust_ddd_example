@@ -3,6 +3,7 @@ use common_types::main::base::domain_entity::DomainEntityTrait;
 use derivative::Derivative;
 use derive_new::new;
 use domain::main::menu::meal::Meal;
+use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::meal_id::MealId;
 use domain::main::menu::meal_name::MealName;
 use std::cell::RefCell;
@@ -14,7 +15,7 @@ use usecase::main::menu::access::meal_persister::MealPersister;
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryMealRepository {
-    pub event_publisher: Rc<RefCell<dyn DomainEventPublisher>>,
+    pub event_publisher: Rc<RefCell<dyn DomainEventPublisher<DomainEventEnum>>>,
     #[new(value = "HashMap::new()")]
     pub storage: HashMap<MealId, Meal>,
 }
@@ -33,8 +34,8 @@ impl MealPersister for InMemoryMealRepository {
 // }
 
 impl MealExtractor for InMemoryMealRepository {
-    fn get_by_id(&mut self, id: MealId) -> Option<&Meal> {
-        self.storage.get(&id)
+    fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
+        self.storage.get(&id).map(|x| x.to_owned()).take()
     }
 
     fn get_by_name(&mut self, name: MealName) -> Option<Meal> {

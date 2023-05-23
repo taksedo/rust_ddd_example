@@ -16,7 +16,7 @@ use std::rc::Rc;
 
 // use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuRequest};
 // use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
-// use usecase::test_fixtures::fixtures::TestMealPersister;
+// use usecase::test_fixtures::test_fixtures::TestMealPersister;
 
 fn main() {
     // let mut id_generator = InMemoryIncrementalMealIdGenerator::new();

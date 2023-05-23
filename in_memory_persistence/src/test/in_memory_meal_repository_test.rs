@@ -1,10 +1,9 @@
 use crate::main::menu::in_memory_meal_repository::InMemoryMealRepository;
 use crate::test_fixtures::fixtures::{meal_with_events, type_of, TestEventPublisher};
-
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
 use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name};
 use std::cell::RefCell;
-use std::ops::Deref;
+use std::convert::TryInto;
 use std::rc::Rc;
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
@@ -28,11 +27,8 @@ fn saving_meal__meal_doesnt_exist() {
     let storage = &storage_binding.borrow().storage;
     assert_eq!(storage.len(), 1);
 
-    let event = dbg!(storage.get(0).unwrap().borrow());
-    let event = event
-        .deref()
-        .downcast_ref::<MealRemovedFromMenuDomainEvent>()
-        .unwrap();
+    let event: MealRemovedFromMenuDomainEvent =
+        storage.get(0).unwrap().to_owned().try_into().unwrap();
     assert_eq!(event.meal_id, meal.domain_entity_field.id);
 }
 
@@ -52,13 +48,10 @@ fn saving_meal__meal_exists() {
     meal_repository.save(updated_meal.clone());
 
     let storage = &storage_binding.borrow().storage;
-    let event = dbg!(storage.get(0).unwrap().borrow());
-    let event = event
-        .deref()
-        .downcast_ref::<MealRemovedFromMenuDomainEvent>()
-        .unwrap();
+    let event = dbg!(storage.get(0).unwrap().to_owned());
+    let event: MealRemovedFromMenuDomainEvent = event.try_into().unwrap();
     assert_eq!(
-        type_of(event),
+        type_of(&event),
         "&domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent"
     );
     assert_eq!(event.meal_id, updated_meal.domain_entity_field.id);
@@ -78,7 +71,7 @@ fn get_by_id__meal_exists() {
     let meal = meal_repository
         .get_by_id(existing_meal.domain_entity_field.id.to_owned())
         .unwrap();
-    assert_eq!(type_of(meal), type_of(&existing_meal));
+    assert_eq!(type_of(meal), type_of(existing_meal));
 }
 
 #[test]

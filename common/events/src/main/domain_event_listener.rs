@@ -1,6 +1,8 @@
-use common_types::main::base::domain_event::DomainEventTrait;
+use std::fmt::Debug;
+use std::mem::Discriminant;
 
-pub trait DomainEventListener<T: DomainEventTrait> {
-    fn event_type() -> T;
-    fn handle(event: T);
+pub trait DomainEventListener<E: Clone>: Debug {
+    fn event_type(&self) -> Discriminant<E>;
+    fn handle(&mut self, event: &E);
+    fn get_events(&self) -> &Vec<E>;
 }

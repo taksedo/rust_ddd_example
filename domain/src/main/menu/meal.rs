@@ -1,18 +1,19 @@
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_events::{MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent};
+use crate::main::menu::meal_events::{
+    DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
+};
 use crate::main::menu::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::meal_name::MealName;
 use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
-use common_types::main::base::domain_event::DomainEventTrait;
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
 
-#[derive(new, Debug, Clone, PartialEq)]
+#[derive(new, Debug, Clone, PartialEq, Default)]
 pub struct Meal {
-    pub domain_entity_field: DomainEntity<MealId>,
+    pub domain_entity_field: DomainEntity<MealId, DomainEventEnum>,
     pub name: MealName,
     #[new(value = "false")]
     pub removed: bool,
@@ -31,7 +32,9 @@ impl Meal {
 
             //     .map_err(|_e: Error| MealError::IdGenerationError)?;
             let mut meal = Meal::new(DomainEntity::new(id, Version::new()), name);
-            meal.add_event(Rc::new(RefCell::new(MealAddedToMenuDomainEvent::new(id))));
+            meal.add_event(DomainEventEnum::MealAddedToMenuDomainEvent(
+                MealAddedToMenuDomainEvent::new(id),
+            ));
             Ok(meal)
         }
     }
@@ -43,10 +46,10 @@ impl Meal {
     pub fn remove_meal_from_menu(&mut self) {
         if !self.removed {
             self.removed = true;
-            let removing_event = Rc::new(RefCell::new(MealRemovedFromMenuDomainEvent::new(
-                self.domain_entity_field.id,
-            )));
-            self.add_event(removing_event)
+            let removing_event = MealRemovedFromMenuDomainEvent::new(self.domain_entity_field.id);
+            self.add_event(DomainEventEnum::MealRemovedFromMenuDomainEvent(
+                removing_event,
+            ))
         }
     }
 }
@@ -59,12 +62,12 @@ pub enum MealError {
     IdGenerationError,
 }
 
-impl DomainEntityTrait for Meal {
-    fn add_event(&mut self, event: Rc<RefCell<dyn DomainEventTrait>>) {
+impl DomainEntityTrait<DomainEventEnum> for Meal {
+    fn add_event(&mut self, event: DomainEventEnum) {
         if self.domain_entity_field.events.is_empty() {}
         self.domain_entity_field.events.push(event)
     }
-    fn pop_events(&self) -> &Vec<Rc<RefCell<dyn DomainEventTrait>>> {
+    fn pop_events(&self) -> &Vec<DomainEventEnum> {
         &self.domain_entity_field.events
     }
 }

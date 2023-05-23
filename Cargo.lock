@@ -283,6 +283,16 @@ dependencies = [
 [[package]]
 name = "application"
 version = "0.1.0"
+dependencies = [
+ "common_events",
+ "common_types",
+ "derive-new",
+ "domain",
+ "enum_dispatch",
+ "named_type",
+ "named_type_derive",
+ "unbox-box",
+]
 
 [[package]]
 name = "arrayvec"
@@ -504,6 +514,8 @@ version = "0.1.0"
 dependencies = [
  "derivative",
  "derive-new",
+ "enum_access",
+ "enum_dispatch",
  "erased-serde",
  "serde",
  "serde_derive",
@@ -677,6 +689,8 @@ dependencies = [
  "common_types",
  "derivative",
  "derive-new",
+ "enum_access",
+ "enum_dispatch",
  "erased-serde",
  "fake",
  "mockall",
@@ -685,6 +699,7 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
+ "smart-default",
  "thiserror",
  "time 0.3.21",
 ]
@@ -726,6 +741,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "071a31f4ee85403370b58aca746f01041ede6f0da2730960ad001edc2b71b394"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "enum_access"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "35c51fed296f530c4ea40439f4a35af1f0ad661f0337b3f4647872453a0f895d"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+ "syn_util",
+ "synstructure",
+]
+
+[[package]]
+name = "enum_dispatch"
+version = "0.3.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11f36e95862220b211a6e2aa5eca09b4fa391b13cd52ceb8035a24bf65a79de2"
+dependencies = [
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
 ]
 
 [[package]]
@@ -929,6 +969,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "gcc"
+version = "0.3.55"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f5f3913fa0bfe7ee1fd8248b6b9f42a5af4b9d65ec2dd2c3c26132b950ecfc2"
+
+[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1078,9 +1124,12 @@ dependencies = [
  "derivative",
  "derive-new",
  "domain",
+ "enum_dispatch",
  "erased-serde",
  "serde",
  "serde_derive",
+ "smart-default",
+ "time 0.3.21",
  "usecase",
 ]
 
@@ -1266,6 +1315,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "22ce75669015c4f47b289fd4d4f56e894e4c96003ffdf3ac51313126f94c6cbb"
 dependencies = [
  "cfg-if",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "named_type"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15a5dfeba8d99223c168c86dfecb0740a819843df03ae316147224d3fd0396b9"
+
+[[package]]
+name = "named_type_derive"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6538e20c3892dcb2dad27130a96a77962d53009a4b33b257985a921b910fc0c2"
+dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -1640,6 +1706,7 @@ dependencies = [
  "domain",
  "dotenv",
  "fern",
+ "gcc",
  "log",
  "usecase",
 ]
@@ -1798,6 +1865,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
+name = "smart-default"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0eb01866308440fc64d6c44d9e86c5cc17adfe33c4d6eed55da9145044d0ffc1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.15",
+]
+
+[[package]]
 name = "socket2"
 version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1859,6 +1937,29 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "syn_util"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6754c4559b79657554e9d8a0d56e65e490c76d382b9c23108364ec4125dea23c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "synstructure"
+version = "0.12.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f36bdaa60a83aca3921b5259d5400cbf5e90fc51931376a9bd4a0eb79aa7210f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+ "unicode-xid",
 ]
 
 [[package]]
@@ -2030,6 +2131,12 @@ name = "typenum"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "497961ef93d974e23eb6f433eb5fe1b7930b659f06d12dec6fc44a8f554c0bba"
+
+[[package]]
+name = "unbox-box"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9970b705b2014e635342202059cda8269302baf7792291cd9704499330ca923"
 
 [[package]]
 name = "unicode-bidi"

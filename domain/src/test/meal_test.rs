@@ -1,14 +1,15 @@
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal::MealError::AlreadyExistsWithSameNameError;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_events::{MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent};
+use crate::main::menu::meal_events::{
+    DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
+};
 use crate::main::menu::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::meal_name::MealName;
 use crate::test_fixtures::fixtures::{print_type_of, rnd_meal, rnd_meal_id, rnd_meal_name};
 use common_types::main::base::domain_entity::DomainEntityTrait;
-use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
-use std::cell::{Ref, RefCell};
+use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::atomic::AtomicI64;
 
@@ -59,14 +60,13 @@ fn add_meal__success() {
     assert_eq!(test_meal.name, name);
     assert!(test_meal.visible());
 
-    let popped_events = test_meal.pop_events().to_owned();
-    let received_event = popped_events.get(0).unwrap().borrow();
+    let popped_events = test_meal.pop_events().get(0).unwrap();
 
-    let expected_event_binding =
-        RefCell::new(MealAddedToMenuDomainEvent::new(id_generator.meal_id));
-    let expected_event: Ref<dyn DomainEventTrait> = expected_event_binding.borrow();
+    let expected_event = &DomainEventEnum::MealAddedToMenuDomainEvent(
+        MealAddedToMenuDomainEvent::new(id_generator.meal_id),
+    );
     assert_eq!(
-        print_type_of(&received_event),
+        print_type_of(&popped_events),
         print_type_of(&expected_event)
     );
 }
@@ -96,13 +96,11 @@ fn remove_meal_from_menu__success() {
     assert!(test_meal.removed);
     assert!(!test_meal.visible());
 
-    let popped_events_binding = test_meal.pop_events().to_owned();
-    let popped_events = popped_events_binding.get(0).unwrap().borrow();
+    let popped_events = test_meal.pop_events().get(0).unwrap();
 
-    let expected_event_binding = RefCell::new(MealRemovedFromMenuDomainEvent::new(
-        test_meal.domain_entity_field.id,
-    ));
-    let expected_event: Ref<dyn DomainEventTrait> = expected_event_binding.borrow();
+    let expected_event = &DomainEventEnum::MealRemovedFromMenuDomainEvent(
+        MealRemovedFromMenuDomainEvent::new(test_meal.domain_entity_field.id),
+    );
     assert_eq!(
         print_type_of(&popped_events),
         print_type_of(&expected_event)
