@@ -7,11 +7,12 @@ use crate::main::menu::meal_name::MealName;
 use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
 
-#[derive(new, Debug, Clone, PartialEq, Default)]
+#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Meal {
     pub domain_entity_field: DomainEntity<MealId, DomainEventEnum>,
     pub name: MealName,
@@ -21,14 +22,14 @@ pub struct Meal {
 
 impl Meal {
     pub fn add_meal_to_menu(
-        id_generator: Rc<dyn MealIdGenerator>,
+        id_generator: Rc<RefCell<dyn MealIdGenerator>>,
         meal_exists: Rc<RefCell<dyn MealAlreadyExists>>,
         name: MealName,
     ) -> Result<Meal, MealError> {
         if meal_exists.borrow_mut().invoke(&name) {
             Err(MealError::AlreadyExistsWithSameNameError)
         } else {
-            let id = id_generator.generate();
+            let id = id_generator.borrow().generate();
 
             //     .map_err(|_e: Error| MealError::IdGenerationError)?;
             let mut meal = Meal::new(DomainEntity::new(id, Version::new()), name);

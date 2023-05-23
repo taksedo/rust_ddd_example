@@ -1,5 +1,6 @@
 use derive_new::new;
 use enum_dispatch::enum_dispatch;
+use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use time::OffsetDateTime;
 use uuid::Uuid;
@@ -12,7 +13,7 @@ pub struct DomainEvent {
     created: OffsetDateTime,
 }
 
-#[derive(new, PartialEq, Eq, Debug, Clone, Default)]
+#[derive(new, PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, Hash)]
 pub struct EventId {
     #[new(value = "Uuid::new_v4()")]
     value: Uuid,

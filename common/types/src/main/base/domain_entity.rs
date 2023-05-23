@@ -1,11 +1,10 @@
 use crate::main::base::value_object::ValueObject;
 use derivative::Derivative;
 use derive_new::new;
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
-#[derive(new, Clone, Default, Derivative)]
+#[derive(new, Clone, Default, Derivative, Serialize, Deserialize)]
 #[derivative(PartialEq, Debug)]
 pub struct DomainEntity<T, E> {
     pub id: T,

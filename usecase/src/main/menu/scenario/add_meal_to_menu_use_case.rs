@@ -14,7 +14,7 @@ use std::rc::Rc;
 #[derive(new, Debug)]
 pub struct AddMealToMenuUseCase {
     pub meal_persister: Rc<RefCell<dyn MealPersister>>,
-    pub id_generator: Rc<dyn MealIdGenerator>,
+    pub id_generator: Rc<RefCell<dyn MealIdGenerator>>,
     pub meal_exists: Rc<RefCell<dyn MealAlreadyExists>>,
 }
 

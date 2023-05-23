@@ -4,7 +4,7 @@ use std::sync::atomic::{AtomicI64, Ordering};
 
 #[derive(Debug, new)]
 pub struct InMemoryIncrementalMealIdGenerator {
-    #[new(value = "AtomicI64::from(0)")]
+    #[new(value = "AtomicI64::from(1)")]
     counter: AtomicI64,
 }
 
