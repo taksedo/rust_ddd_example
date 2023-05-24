@@ -8,9 +8,8 @@ use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, V
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use std::cell::RefCell;
 use std::fmt::Debug;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Meal {
@@ -22,14 +21,14 @@ pub struct Meal {
 
 impl Meal {
     pub fn add_meal_to_menu(
-        id_generator: Rc<RefCell<dyn MealIdGenerator>>,
-        meal_exists: Rc<RefCell<dyn MealAlreadyExists>>,
+        id_generator: Arc<Mutex<dyn MealIdGenerator>>,
+        meal_exists: Arc<Mutex<dyn MealAlreadyExists>>,
         name: MealName,
     ) -> Result<Meal, MealError> {
-        if meal_exists.borrow_mut().invoke(&name) {
+        if meal_exists.lock().unwrap().invoke(&name) {
             Err(MealError::AlreadyExistsWithSameNameError)
         } else {
-            let id = id_generator.borrow().generate();
+            let id = id_generator.lock().unwrap().generate();
 
             //     .map_err(|_e: Error| MealError::IdGenerationError)?;
             let mut meal = Meal::new(DomainEntity::new(id, Version::new()), name);

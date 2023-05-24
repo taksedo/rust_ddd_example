@@ -1,32 +1,31 @@
 use common_events::main::domain_event_listener::DomainEventListener;
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::mem::{discriminant, Discriminant};
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug, Default, Clone)]
 pub struct EventPublisherImpl<E: Debug> {
     logger: String, //todo переделать logger
-    pub(crate) listener_map: HashMap<Discriminant<E>, Vec<Rc<RefCell<dyn DomainEventListener<E>>>>>,
+    pub(crate) listener_map: HashMap<Discriminant<E>, Vec<Arc<Mutex<dyn DomainEventListener<E>>>>>,
 }
 
 impl<E: Debug + Clone + Hash + Eq> EventPublisherImpl<E> {
     pub fn register_listener(&mut self, listener: impl DomainEventListener<E> + 'static) {
         let event_type = listener.event_type();
         self.listener_map.entry(event_type).or_insert_with(|| {
-            let vector: Vec<Rc<RefCell<(dyn DomainEventListener<E> + 'static)>>> =
-                vec![Rc::new(RefCell::new(listener))];
+            let vector: Vec<Arc<Mutex<(dyn DomainEventListener<E> + 'static)>>> =
+                vec![Arc::new(Mutex::new(listener))];
             vector
         });
     }
 
-    fn send_events(&self, listeners: Vec<Rc<RefCell<dyn DomainEventListener<E>>>>, event: E) {
+    fn send_events(&self, listeners: Vec<Arc<Mutex<dyn DomainEventListener<E>>>>, event: E) {
         for l in listeners {
-            l.borrow_mut().handle(&event);
+            l.lock().unwrap().handle(&event);
         }
     }
 }
