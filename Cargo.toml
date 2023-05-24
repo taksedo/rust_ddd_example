@@ -42,8 +42,8 @@ smart-default = "0.7.1"
 
 domain = { path = "./domain" }
 usecase = { path = "./usecase" }
-#in_memory_persistence = { path = "./in_memory_persistence" }
-#rest = { path = "rest" }
+in_memory_persistence = { path = "./in_memory_persistence" }
+rest = { path = "rest" }
 common_types = { path = "./common/types" }
 common_events = { path = "./common/events" }
 common_telnet = { path = "./common/telnet" }
@@ -58,8 +58,8 @@ chrono = { workspace = true }
 
 domain = { path = "./domain" }
 usecase = { path = "./usecase" }
-#in_memory_persistence = { path = "./in_memory_persistence" }
-#rest = { path = "rest" }
+in_memory_persistence = { path = "./in_memory_persistence" }
+rest = { path = "rest" }
 common_types = { path = "./common/types" }
 common_events = { path = "./common/events" }
 common_telnet = { path = "./common/telnet" }

@@ -1,3 +1,4 @@
+use bigdecimal::ToPrimitive;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
@@ -9,10 +10,10 @@ pub struct MealId {
 
 impl MealId {
     pub fn to_i64(self) -> i64 {
-        self.value
+        self.value.to_i64().unwrap()
     }
 }
 
-pub trait MealIdGenerator: Debug {
-    fn generate(&self) -> MealId;
+pub trait MealIdGenerator: Debug + Send {
+    fn generate(&mut self) -> MealId;
 }

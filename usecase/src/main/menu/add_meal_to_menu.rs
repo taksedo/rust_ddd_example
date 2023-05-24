@@ -3,7 +3,7 @@ use domain::main::menu::meal_name::MealName;
 use std::fmt::Debug;
 use thiserror::Error;
 
-pub trait AddMealToMenu {
+pub trait AddMealToMenu: Debug + Send {
     fn execute(&mut self, name: MealName) -> Result<MealId, AddMealToMenuUseCaseError>;
 }
 

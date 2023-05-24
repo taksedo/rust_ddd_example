@@ -7,28 +7,28 @@ use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::main::menu::meal_name::MealName;
-use std::cell::RefCell;
 use std::fmt::Debug;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug)]
 pub struct AddMealToMenuUseCase {
-    pub meal_persister: Rc<RefCell<dyn MealPersister>>,
-    pub id_generator: Rc<dyn MealIdGenerator>,
-    pub meal_exists: Rc<RefCell<dyn MealAlreadyExists>>,
+    pub meal_persister: Arc<Mutex<dyn MealPersister>>,
+    pub id_generator: Arc<Mutex<dyn MealIdGenerator>>,
+    pub meal_exists: Arc<Mutex<dyn MealAlreadyExists>>,
 }
 
 impl AddMealToMenu for AddMealToMenuUseCase {
     fn execute(&mut self, name: MealName) -> Result<MealId, AddMealToMenuUseCaseError> {
         Meal::add_meal_to_menu(
-            Rc::clone(&self.id_generator),
-            Rc::clone(&self.meal_exists),
+            Arc::clone(&self.id_generator),
+            Arc::clone(&self.meal_exists),
             name,
         )
         .map_err(|_| AddMealToMenuUseCaseError::AlreadyExists)
         .map(|new_meal_in_menu| {
             self.meal_persister
-                .borrow_mut()
+                .lock()
+                .unwrap()
                 .save(new_meal_in_menu.clone());
             new_meal_in_menu.domain_entity_field.id
         })

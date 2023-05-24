@@ -4,11 +4,11 @@ use crate::test_fixtures::fixtures::TestEvent;
 use common_types::main::base::domain_event::EventId;
 use derive_new::new;
 use enum_dispatch::enum_dispatch;
-
+use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-#[derive(new, Debug, Clone, PartialEq)]
+#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq)]
 pub struct MealAddedToMenuDomainEvent {
     #[new(value = "EventId::new()")]
     pub id: EventId,
@@ -27,7 +27,7 @@ impl Default for MealAddedToMenuDomainEvent {
     }
 }
 
-#[derive(new, Debug, Clone, PartialEq)]
+#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq)]
 pub struct MealRemovedFromMenuDomainEvent {
     #[new(value = "EventId::new()")]
     pub id: EventId,
@@ -53,7 +53,7 @@ impl DomainEventTrait for MealAddedToMenuDomainEvent {}
 impl DomainEventTrait for MealRemovedFromMenuDomainEvent {}
 
 #[enum_dispatch(DomainEventTrait)]
-#[derive(PartialEq, Debug, Clone, SmartDefault)]
+#[derive(PartialEq, Debug, Clone, SmartDefault, Serialize, Deserialize, Hash, Eq)]
 pub enum DomainEventEnum {
     #[default]
     MealRemovedFromMenuDomainEvent,

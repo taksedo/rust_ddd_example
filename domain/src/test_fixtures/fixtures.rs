@@ -10,6 +10,7 @@ use fake::locales::*;
 use fake::Fake;
 use rand::thread_rng;
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 
 //
 // fn address() = Address.from(
@@ -41,7 +42,7 @@ pub fn rnd_meal() -> Meal {
     ) //TODO Переделать на ресторер
 }
 
-#[derive(new, Debug, Clone, PartialEq)]
+#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq)]
 pub struct TestEvent {}
 
 impl DomainEventTrait for TestEvent {}

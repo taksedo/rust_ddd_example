@@ -7,16 +7,9 @@ use common_types::main::base::domain_entity::Version;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::main::menu::meal_name::MealName;
-// use in_memory_persistence::main::menu::in_memory_incremental_meal_id_generator::InMemoryIncrementalMealIdGenerator;
-// use in_memory_persistence::main::menu::in_memory_meal_repository::InMemoryMealRepository;
-// use in_memory_persistence::main::menu::*;
-// use rest::main::start_web_backend;
+use rest::main::start_web_backend;
 use std::env;
 use std::rc::Rc;
-
-// use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuRequest};
-// use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
-// use usecase::test_fixtures::test_fixtures::TestMealPersister;
 
 fn main() {
     // let mut id_generator = InMemoryIncrementalMealIdGenerator::new();
@@ -25,7 +18,7 @@ fn main() {
     // dotenv::dotenv();
     // init_logger();
 
-    // let _backend = start_web_backend();
+    let _backend = start_web_backend();
 }
 
 fn init_logger() -> Result<(), fern::InitError> {

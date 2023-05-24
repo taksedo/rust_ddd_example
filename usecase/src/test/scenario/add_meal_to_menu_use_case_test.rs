@@ -5,43 +5,42 @@ use derive_new::new;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::rnd_meal_name;
 use domain::test_fixtures::fixtures::{rnd_meal_id, TestMealAlreadyExists};
-use std::cell::RefCell;
 use std::fmt::Debug;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 #[test]
 fn successfully_added() {
     let name = rnd_meal_name();
-    let id_generator = Rc::new(TestMealIdGenerator::new());
-    let persister = Rc::new(RefCell::new(MockMealPersister::new()));
-    let persister_binding = Rc::clone(&persister);
+    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
+    let persister = Arc::new(Mutex::new(MockMealPersister::new()));
+    let persister_binding = Arc::clone(&persister);
 
     let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
         persister,
-        id_generator.clone(),
-        Rc::new(RefCell::new(TestMealAlreadyExists { value: false })),
+        Arc::clone(&id_generator) as _,
+        Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
     );
     let result = add_to_menu_use_case.execute(name.clone());
 
-    let id = id_generator.id;
+    let id = id_generator.lock().unwrap().id;
 
     assert_eq!(result.unwrap(), id.to_owned());
 
-    let persister_clone = persister_binding.borrow();
-    Rc::new(persister_clone).verify_invoked(Some(id), Some(name));
+    let persister_clone = persister_binding.lock().unwrap();
+    Arc::new(persister_clone).verify_invoked(Some(id), Some(name));
 }
 
 #[test]
 fn meal_already_exists() {
     let name = rnd_meal_name();
 
-    let id_generator = Rc::new(TestMealIdGenerator::new());
-    let persister = Rc::new(RefCell::new(MockMealPersister::new()));
+    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
+    let persister = Arc::new(Mutex::new(MockMealPersister::new()));
 
     let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
         persister,
         id_generator,
-        Rc::new(RefCell::new(TestMealAlreadyExists { value: true })),
+        Arc::new(Mutex::new(TestMealAlreadyExists { value: true })),
     );
     let result = add_to_menu_use_case.execute(name);
 

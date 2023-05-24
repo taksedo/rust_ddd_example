@@ -20,3 +20,4 @@ usecase = { path = "../usecase" }
 common_types = { path = "../common/types" }
 common_rest = { path = "../common/rest" }
 in_memory_persistence = { path = "../in_memory_persistence" }
+application = { path = "../application" }

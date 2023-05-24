@@ -2,17 +2,16 @@ use crate::main::menu::in_memory_meal_repository::InMemoryMealRepository;
 use crate::test_fixtures::fixtures::{meal_with_events, type_of, TestEventPublisher};
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
 use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name};
-use std::cell::RefCell;
 use std::convert::TryInto;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
 
 #[allow(non_snake_case)]
 #[test]
 fn saving_meal__meal_doesnt_exist() {
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
-    let storage_binding = Rc::clone(&event_publisher);
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+    let storage_binding = Arc::clone(&event_publisher);
     let mut meal_repository = InMemoryMealRepository::new(event_publisher);
     let meal = meal_with_events();
 
@@ -24,7 +23,7 @@ fn saving_meal__meal_doesnt_exist() {
         .unwrap();
     assert_eq!(&meal, stored_meal);
 
-    let storage = &storage_binding.borrow().storage;
+    let storage = &storage_binding.lock().unwrap().storage;
     assert_eq!(storage.len(), 1);
 
     let event: MealRemovedFromMenuDomainEvent =
@@ -37,8 +36,8 @@ fn saving_meal__meal_doesnt_exist() {
 fn saving_meal__meal_exists() {
     let existing_meal = rnd_meal();
 
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
-    let storage_binding = Rc::clone(&event_publisher);
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+    let storage_binding = Arc::clone(&event_publisher);
     let mut meal_repository = InMemoryMealRepository::new(event_publisher);
     meal_repository
         .storage
@@ -47,7 +46,7 @@ fn saving_meal__meal_exists() {
     let updated_meal = meal_with_events();
     meal_repository.save(updated_meal.clone());
 
-    let storage = &storage_binding.borrow().storage;
+    let storage = &storage_binding.lock().unwrap().storage;
     let event = dbg!(storage.get(0).unwrap().to_owned());
     let event: MealRemovedFromMenuDomainEvent = event.try_into().unwrap();
     assert_eq!(
@@ -61,7 +60,7 @@ fn saving_meal__meal_exists() {
 #[allow(non_snake_case)]
 fn get_by_id__meal_exists() {
     let existing_meal = rnd_meal();
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
 
     let mut meal_repository = InMemoryMealRepository::new(event_publisher);
     meal_repository
@@ -77,7 +76,7 @@ fn get_by_id__meal_exists() {
 #[test]
 #[allow(non_snake_case)]
 fn get_by_id__meal_doesnt_exist() {
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
     let meal = repository.get_by_id(rnd_meal_id());
     assert!(meal.is_none());
@@ -86,7 +85,7 @@ fn get_by_id__meal_doesnt_exist() {
 #[test]
 #[allow(non_snake_case)]
 fn get_by_name__repository_is_empty() {
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
     let meal = repository.get_by_name(rnd_meal_name());
     assert!(meal.is_none());
@@ -96,7 +95,7 @@ fn get_by_name__repository_is_empty() {
 #[allow(non_snake_case)]
 fn get_meal_by_name__success() {
     let stored_meal = rnd_meal();
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
     repository.save(stored_meal.clone());
 
@@ -107,7 +106,7 @@ fn get_meal_by_name__success() {
 #[test]
 #[allow(non_snake_case)]
 fn get_all_meals__repository_is_empty() {
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
     let meals = repository.get_all();
     assert!(meals.is_empty());
@@ -116,7 +115,7 @@ fn get_all_meals__repository_is_empty() {
 #[test]
 #[allow(non_snake_case)]
 fn get_all_meals__success() {
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
     let stored_meal = rnd_meal();
     repository
@@ -130,7 +129,7 @@ fn get_all_meals__success() {
 #[test]
 #[allow(non_snake_case)]
 fn get_all_meals__removed_is_not_returned() {
-    let event_publisher = Rc::new(RefCell::new(TestEventPublisher::new()));
+    let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
     let mut stored_meal = rnd_meal();
     stored_meal.removed = true;

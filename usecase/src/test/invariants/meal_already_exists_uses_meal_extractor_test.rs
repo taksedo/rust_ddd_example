@@ -2,13 +2,12 @@ use crate::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealA
 use crate::test_fixtures::fixtures::{removed_meal, MockMealExtractor};
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
 use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_name};
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 #[test]
 fn meal_already_exists() {
     let meal = rnd_meal();
-    let extractor = Rc::new(RefCell::new(MockMealExtractor {
+    let extractor = Arc::new(Mutex::new(MockMealExtractor {
         meal: Some(meal.to_owned()),
         ..MockMealExtractor::default()
     }));
@@ -19,7 +18,8 @@ fn meal_already_exists() {
     assert!(result);
 
     rule.extractor
-        .borrow_mut()
+        .lock()
+        .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
         .verify_invoked_get_by_name(meal.to_owned().name);
@@ -27,7 +27,7 @@ fn meal_already_exists() {
 #[test]
 fn meal_already_exists_but_removed() {
     let meal = removed_meal();
-    let extractor = Rc::new(RefCell::new(MockMealExtractor {
+    let extractor = Arc::new(Mutex::new(MockMealExtractor {
         meal: Some(meal.to_owned()),
         ..MockMealExtractor::default()
     }));
@@ -37,7 +37,8 @@ fn meal_already_exists_but_removed() {
 
     assert!(!result);
     rule.extractor
-        .borrow_mut()
+        .lock()
+        .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
         .verify_invoked_get_by_name(meal.to_owned().name);
@@ -45,7 +46,7 @@ fn meal_already_exists_but_removed() {
 
 #[test]
 fn meal_already_exists_doesnt_exist() {
-    let extractor = Rc::new(RefCell::new(MockMealExtractor::new()));
+    let extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
     let mut rule = MealAlreadyExistsUsesMealExtractor::new(extractor);
 
     let meal_name = rnd_meal_name();
@@ -53,7 +54,8 @@ fn meal_already_exists_doesnt_exist() {
 
     assert!(!result);
     rule.extractor
-        .borrow_mut()
+        .lock()
+        .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
         .verify_invoked_get_by_name(meal_name);

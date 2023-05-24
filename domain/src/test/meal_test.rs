@@ -9,9 +9,8 @@ use crate::main::menu::meal_name::MealName;
 use crate::test_fixtures::fixtures::{print_type_of, rnd_meal, rnd_meal_id, rnd_meal_name};
 use common_types::main::base::domain_entity::DomainEntityTrait;
 use derive_new::new;
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::atomic::AtomicI64;
+use std::sync::{Arc, Mutex};
 
 #[derive(Debug, new, Default)]
 pub(crate) struct TestMealIdGenerator {
@@ -42,13 +41,13 @@ impl MealAlreadyExists for TestMealAlreadyExists {
 #[test]
 #[allow(non_snake_case)]
 fn add_meal__success() {
-    let id_generator = Rc::new(TestMealIdGenerator::new());
-    let meal_exists = Rc::new(RefCell::new(TestMealAlreadyExists { value: false }));
+    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
+    let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: false }));
     let name = rnd_meal_name();
     // let description = rnd_meal_description();
     // let price = rnd_price();
     let result = Meal::add_meal_to_menu(
-        id_generator.to_owned(),
+        Arc::clone(&id_generator) as _,
         meal_exists,
         name.to_owned(),
         // description.to_owned(),
@@ -56,14 +55,17 @@ fn add_meal__success() {
     );
 
     let test_meal = result.unwrap();
-    assert_eq!(test_meal.domain_entity_field.id, id_generator.meal_id);
+    assert_eq!(
+        &test_meal.domain_entity_field.id,
+        &id_generator.lock().unwrap().meal_id
+    );
     assert_eq!(test_meal.name, name);
     assert!(test_meal.visible());
 
     let popped_events = test_meal.pop_events().get(0).unwrap();
 
     let expected_event = &DomainEventEnum::MealAddedToMenuDomainEvent(
-        MealAddedToMenuDomainEvent::new(id_generator.meal_id),
+        MealAddedToMenuDomainEvent::new(id_generator.lock().unwrap().meal_id),
     );
     assert_eq!(
         print_type_of(&popped_events),
@@ -74,8 +76,8 @@ fn add_meal__success() {
 #[test]
 #[allow(non_snake_case)]
 fn add_meal_to_menu__already_exists_with_the_same_name() {
-    let id_generator = Rc::new(TestMealIdGenerator::new());
-    let meal_exists = Rc::new(RefCell::new(TestMealAlreadyExists { value: true }));
+    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
+    let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: true }));
     let name = rnd_meal_name();
     let result = Meal::add_meal_to_menu(
         id_generator,

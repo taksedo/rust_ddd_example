@@ -65,7 +65,7 @@ impl MealPersister for MockMealPersister {
     }
 }
 
-#[derive(new, Clone, PartialEq, Debug)]
+#[derive(new, Clone, PartialEq, Debug, Default)]
 pub struct MockMealExtractor {
     #[new(default)]
     pub meal: Option<Meal>,
@@ -77,21 +77,10 @@ pub struct MockMealExtractor {
     pub all: bool,
 }
 
-impl Default for MockMealExtractor {
-    fn default() -> Self {
-        Self {
-            meal: None,
-            id: None,
-            name: None,
-            all: false,
-        }
-    }
-}
-
 impl MealExtractor for MockMealExtractor {
     fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
         self.id = Option::from(id);
-        if Some(&self.meal).is_some() && &self.id == &Some(id) {
+        if Some(&self.meal).is_some() && self.id == Some(id) {
             self.clone().meal
         } else {
             None
@@ -100,7 +89,7 @@ impl MealExtractor for MockMealExtractor {
 
     fn get_by_name(&mut self, name: MealName) -> Option<Meal> {
         self.name = Option::from(name.to_owned());
-        if Some(&self.meal).is_some() && self.to_owned().name.unwrap() == name.to_owned() {
+        if Some(&self.meal).is_some() && self.to_owned().name.unwrap() == name {
             self.to_owned().meal
         } else {
             None
