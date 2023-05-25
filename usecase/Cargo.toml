@@ -6,10 +6,11 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-thiserror = "1.0.40"
-derive-new = "0.5.9"
+thiserror.workspace = true
+derive-new.workspace = true
 structmap = "0.1.6"
 structmap-derive = "0.1.6"
+actix-web.workspace = true
 
 domain = { path = "../domain" }
 common_types = { path = "../common/types" }

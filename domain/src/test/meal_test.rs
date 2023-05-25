@@ -21,7 +21,7 @@ pub(crate) struct TestMealIdGenerator {
 }
 
 impl MealIdGenerator for TestMealIdGenerator {
-    fn generate(&self) -> MealId {
+    fn generate(&mut self) -> MealId {
         self.meal_id
     }
 }

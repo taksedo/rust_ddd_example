@@ -27,7 +27,7 @@ pub fn rnd_meal_name() -> MealName {
 }
 
 pub fn rnd_meal_id() -> MealId {
-    let id: i64 = thread_rng().gen_range(0..i64::MAX);
+    let id: u64 = thread_rng().gen_range(0..u64::MAX);
     MealId { value: id }
 }
 
