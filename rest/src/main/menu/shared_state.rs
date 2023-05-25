@@ -9,13 +9,13 @@ use usecase::main::menu::access::meal_persister::MealPersister;
 use usecase::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
 use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
+use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
 
 pub fn meal_create_repository() -> Arc<Mutex<InMemoryMealRepository>> {
     let meal_publisher = EventPublisherImpl::<DomainEventEnum>::default();
-    let meal_repository = Arc::new(Mutex::new(InMemoryMealRepository::new(Arc::new(
+    Arc::new(Mutex::new(InMemoryMealRepository::new(Arc::new(
         Mutex::new(meal_publisher),
-    ))));
-    meal_repository
+    ))))
 }
 
 pub fn meal_create_shared_state<U, V>(
@@ -43,5 +43,13 @@ where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {
     let usecase = GetMealByIdUseCase::new(Arc::clone(&meal_repository) as _);
+    Arc::new(Mutex::new(usecase))
+}
+
+pub fn mea_get_menu_shared_state<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMenuUseCase>>
+where
+    U: Debug + Send + MealExtractor + MealPersister + 'static,
+{
+    let usecase = GetMenuUseCase::new(Arc::clone(&meal_repository) as _);
     Arc::new(Mutex::new(usecase))
 }

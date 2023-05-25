@@ -6,8 +6,19 @@ use std::string::ToString;
 use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 use usecase::main::menu::dto::meal_info::MealInfo;
 use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
+use usecase::main::menu::get_menu::GetMenu;
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";
+
+struct MockGetMenu {
+    meal_info: MealInfo,
+}
+
+impl GetMenu for MockGetMenu {
+    fn execute(&self) -> Vec<MealInfo> {
+        vec![self.meal_info.clone()]
+    }
+}
 
 #[derive(Debug)]
 pub struct MockAddMealToMenu {
