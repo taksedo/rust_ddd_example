@@ -31,20 +31,30 @@ impl<E, T> DomainEntityTrait<E> for DomainEntity<T, E> {
 
 #[derive(new, Debug, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Default)]
 pub struct Version {
-    #[new(value = "0_i64")]
-    value: i64,
+    #[new(value = "0_u64")]
+    value: u64,
 }
 
 impl Version {
-    pub fn increment(&self) -> Version {
+    pub fn next(&self) -> Version {
         Self {
             value: &self.value + 1,
         }
     }
+
+    pub fn previous(&self) -> Version {
+        Self {
+            value: &self.value - 1,
+        }
+    }
+
+    pub fn to_u64(&self) -> u64 {
+        self.value
+    }
 }
 
-impl From<i64> for Version {
-    fn from(value: i64) -> Self {
+impl From<u64> for Version {
+    fn from(value: u64) -> Self {
         Self { value }
     }
 }

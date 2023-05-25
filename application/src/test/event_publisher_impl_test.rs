@@ -3,8 +3,8 @@ use common_events::main::domain_event_listener::DomainEventListener;
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use enum_dispatch::enum_dispatch;
+use smart_default::SmartDefault;
 use std::fmt::Debug;
-use std::mem;
 use std::mem::{discriminant, Discriminant};
 use std::sync::{Arc, Mutex};
 
@@ -85,17 +85,18 @@ impl DomainEventListener<DomainEventEnum> for AnotherTestEventListener {
 }
 
 #[enum_dispatch(DomainEventTrait)]
-#[derive(Debug, Clone, PartialEq, Hash, Eq)]
+#[derive(Debug, Clone, PartialEq, Hash, Eq, SmartDefault)]
 enum DomainEventEnum {
+    #[default]
     TestEvent(TestEvent),
     AnotherTestEvent(AnotherTestEvent),
 }
 
-impl Default for DomainEventEnum {
-    fn default() -> Self {
-        Self::TestEvent(TestEvent::default())
-    }
-}
+// impl Default for DomainEventEnum {
+//     fn default() -> Self {
+//         Self::TestEvent(TestEvent::default())
+//     }
+// }
 
 #[enum_dispatch]
 trait DomainEventTrait {}

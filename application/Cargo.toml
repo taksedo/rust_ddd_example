@@ -11,6 +11,7 @@ enum_dispatch.workspace = true
 unbox-box = "0.1.0"
 named_type = "0.2.2"
 named_type_derive = "0.2.2"
+smart-default.workspace = true
 
 common_types = { path = "../common/types" }
 common_events = { path = "../common/events" }
