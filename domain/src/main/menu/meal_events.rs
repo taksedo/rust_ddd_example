@@ -8,23 +8,16 @@ use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq)]
+#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, SmartDefault)]
 pub struct MealAddedToMenuDomainEvent {
     #[new(value = "EventId::new()")]
+    #[default(Default::default())]
     pub id: EventId,
+    #[default(Default::default())]
     pub meal_id: MealId,
     #[new(value = "OffsetDateTime::now_utc()")]
+    #[default(_code = "OffsetDateTime::now_utc()")]
     pub created: OffsetDateTime,
-}
-
-impl Default for MealAddedToMenuDomainEvent {
-    fn default() -> Self {
-        Self {
-            id: Default::default(),
-            meal_id: Default::default(),
-            created: OffsetDateTime::now_utc(),
-        }
-    }
 }
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq)]
