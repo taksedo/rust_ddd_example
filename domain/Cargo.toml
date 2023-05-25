@@ -22,6 +22,7 @@ time.workspace = true
 enum_access.workspace = true
 enum_dispatch.workspace = true
 smart-default.workspace = true
+actix-web.workspace = true
 
 common_types = { path = "../common/types" }
 common_events = { path = "../common/events" }

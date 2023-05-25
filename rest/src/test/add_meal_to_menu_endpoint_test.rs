@@ -1,6 +1,7 @@
 use crate::main::menu::add_meal_to_menu_endpoint;
-use crate::main::menu::add_meal_to_menu_endpoint::{AddMealToMenuEndPointSharedState, MealStruct};
+use crate::main::menu::add_meal_to_menu_endpoint::{AddMealToMenuEndpointSharedState, MealStruct};
 use crate::test_fixtures::fixtures::MockAddMealToMenu;
+use actix_web::http::{header, StatusCode};
 use actix_web::{web, web::Json};
 use domain::test_fixtures::fixtures::{rnd_meal_id, rnd_meal_name};
 use std::sync::{Arc, Mutex};
@@ -28,7 +29,7 @@ async fn created_successfully() {
     let mock_add_meal_to_menu = Arc::new(Mutex::new(MockAddMealToMenu::default()));
     mock_add_meal_to_menu.lock().unwrap().response = Ok(meal_id);
 
-    let mock_shared_state = web::Data::new(AddMealToMenuEndPointSharedState {
+    let mock_shared_state = web::Data::new(AddMealToMenuEndpointSharedState {
         add_meal_to_menu: Arc::clone(&mock_add_meal_to_menu),
     });
 
@@ -40,8 +41,19 @@ async fn created_successfully() {
         .lock()
         .unwrap()
         .verify_invoked(meal_name);
+    let resp = resp.unwrap();
 
-    assert_eq!(resp, format!("=========={meal_id:?}========="));
+    let header = resp
+        .headers()
+        .get(header::LOCATION)
+        .unwrap()
+        .to_str()
+        .unwrap();
+
+    println!("{:?}", &resp);
+
+    assert_eq!(&resp.status(), &StatusCode::OK);
+    assert_eq!(header, &meal_id.to_u64().to_string());
 }
 // #[actix_web::test]
 // async fn test_index_not_ok() {

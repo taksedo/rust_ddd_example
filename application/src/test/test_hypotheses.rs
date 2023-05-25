@@ -1,15 +1,15 @@
 use derive_new::new;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
-use std::sync::atomic::{AtomicI64, Ordering};
+use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(Debug, new)]
 pub struct InMemoryIncrementalMealIdGenerator {
-    #[new(value = "AtomicI64::from(1)")]
-    counter: AtomicI64,
+    #[new(value = "AtomicU64::from(1)")]
+    counter: AtomicU64,
 }
 
 impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
-    fn generate(&self) -> MealId {
+    fn generate(&mut self) -> MealId {
         let meal_id = self.counter.fetch_add(1, Ordering::SeqCst);
         MealId { value: meal_id }
     }
@@ -17,7 +17,7 @@ impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
 
 #[test]
 fn test() {
-    let counter = InMemoryIncrementalMealIdGenerator::new();
+    let mut counter = InMemoryIncrementalMealIdGenerator::new();
     let c = counter.generate();
     dbg!(c);
     let c = counter.generate();

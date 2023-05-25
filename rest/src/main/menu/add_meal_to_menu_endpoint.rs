@@ -1,15 +1,15 @@
-use crate::main::endpoint_url::MENU_GET_BY_ID;
 use crate::main::menu::validation::Validated;
-use actix_web::{get, post, web, HttpResponse, Responder};
+use actix_web::http::header::ContentType;
+use actix_web::{get, post, web, HttpResponse, Responder, Result};
 use derive_new::new;
 use domain::main::menu::meal_name::MealName;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
-use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
+use usecase::main::menu::add_meal_to_menu::AddMealToMenu;
 
 #[derive(Debug, new)]
-pub struct AddMealToMenuEndPointSharedState<T: AddMealToMenu + Send + Debug> {
+pub struct AddMealToMenuEndpointSharedState<T: AddMealToMenu + Send + Debug> {
     pub add_meal_to_menu: Arc<Mutex<T>>,
 }
 
@@ -34,9 +34,9 @@ pub struct MealStruct {
 }
 
 pub async fn execute<T>(
-    shared_state: web::Data<AddMealToMenuEndPointSharedState<T>>,
+    shared_state: web::Data<AddMealToMenuEndpointSharedState<T>>,
     request: web::Json<MealStruct>,
-) -> String
+) -> Result<HttpResponse>
 where
     T: AddMealToMenu + Send + Debug,
 {
@@ -45,12 +45,14 @@ where
 
     let meal_id = MealName::validated(request.name.clone())
         .map(|meal_name| add_meal_to_menu.lock().unwrap().execute(meal_name.clone()))
-        .unwrap_or_else(|_e| Err(AddMealToMenuUseCaseError::AlreadyExists))
+        .map_err(|e| e)?
         .map(|adding_meal_to_menu_result| adding_meal_to_menu_result)
-        .unwrap();
-    println!("{}", MENU_GET_BY_ID);
-    // dbg!(&add_meal_to_menu);
-    format!("=========={meal_id:?}=========")
+        .map_err(|e| e)?;
+
+    Ok(HttpResponse::Ok()
+        .content_type(ContentType::plaintext())
+        .insert_header(("Location", meal_id.to_u64()))
+        .body(""))
 }
 
 #[post("/submit/info")]

@@ -1,3 +1,4 @@
+use actix_web::ResponseError;
 use common_types::main::base::value_object::ValueObject;
 use common_types::main::errors::error::BusinessError;
 use serde::{Deserialize, Serialize};
@@ -30,3 +31,5 @@ pub enum CreateMealNameError {
 }
 
 impl BusinessError for CreateMealNameError {}
+
+impl ResponseError for CreateMealNameError {}
