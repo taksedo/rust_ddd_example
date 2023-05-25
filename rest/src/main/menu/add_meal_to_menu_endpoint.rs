@@ -44,10 +44,7 @@ where
     println!("Request {request:?} to add meal to menu received");
 
     let meal_id = MealName::validated(request.name.clone())
-        .map(|meal_name| add_meal_to_menu.lock().unwrap().execute(meal_name.clone()))
-        .map_err(|e| e)?
-        .map(|adding_meal_to_menu_result| adding_meal_to_menu_result)
-        .map_err(|e| e)?;
+        .map(|meal_name| add_meal_to_menu.lock().unwrap().execute(meal_name))??;
 
     Ok(HttpResponse::Ok()
         .content_type(ContentType::plaintext())

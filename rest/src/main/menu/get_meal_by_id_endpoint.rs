@@ -22,8 +22,7 @@ pub async fn execute<T: GetMealById + Send + Debug>(
     let meal_info = get_meal_by_id_use_case
         .lock()
         .unwrap()
-        .execute(MealId::new(id))
-        .map_err(|e| e)?;
+        .execute(MealId::new(id))?;
     let resp = HttpResponse::Ok()
         .content_type(ContentType::json())
         .body(format!("{:?}", MealModel::from(meal_info)));

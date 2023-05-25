@@ -10,9 +10,9 @@ pub struct MealModel {
 impl MealModel {
     pub fn from(meal_info: MealInfo) -> Self {
         Self {
-            id: meal_info.id.to_u64().clone(),
+            id: meal_info.id.to_u64(),
             name: meal_info.name.to_string_value().clone(),
-            version: meal_info.version.to_u64().clone(),
+            version: meal_info.version.to_u64(),
         }
     }
 }
