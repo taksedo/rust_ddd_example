@@ -6,7 +6,9 @@ use crate::main::menu::meal_events::{
 };
 use crate::main::menu::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::meal_name::MealName;
-use crate::test_fixtures::fixtures::{print_type_of, rnd_meal, rnd_meal_id, rnd_meal_name};
+use crate::test_fixtures::fixtures::{
+    print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
+};
 use common_types::main::base::domain_entity::DomainEntityTrait;
 use derive_new::new;
 use std::sync::atomic::AtomicI64;
@@ -44,14 +46,14 @@ fn add_meal__success() {
     let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
     let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: false }));
     let name = rnd_meal_name();
-    // let description = rnd_meal_description();
-    // let price = rnd_price();
+    let description = rnd_meal_description();
+    let price = rnd_price();
     let result = Meal::add_meal_to_menu(
         Arc::clone(&id_generator) as _,
         meal_exists,
         name.to_owned(),
-        // description.to_owned(),
-        // price.to_owned(),
+        description.to_owned(),
+        price.to_owned(),
     );
 
     let test_meal = result.unwrap();
@@ -79,13 +81,9 @@ fn add_meal_to_menu__already_exists_with_the_same_name() {
     let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
     let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: true }));
     let name = rnd_meal_name();
-    let result = Meal::add_meal_to_menu(
-        id_generator,
-        meal_exists,
-        name,
-        // description.to_owned(),
-        // price.to_owned(),
-    );
+    let description = rnd_meal_description();
+    let price = rnd_price();
+    let result = Meal::add_meal_to_menu(id_generator, meal_exists, name, description, price);
 
     assert_eq!(result.unwrap_err(), AlreadyExistsWithSameNameError);
 }

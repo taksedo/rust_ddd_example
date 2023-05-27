@@ -1,8 +1,11 @@
 use crate::main::menu::validation::Validated;
 use actix_web::http::header::ContentType;
 use actix_web::{get, post, web, HttpResponse, Responder, Result};
+use bigdecimal::BigDecimal;
 use derive_new::new;
+use domain::main::menu::meal_description::MealDescription;
 use domain::main::menu::meal_name::MealName;
+use domain::main::menu::price::Price;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
@@ -31,6 +34,8 @@ pub async fn manual_hello() -> impl Responder {
 #[derive(new, Serialize, Deserialize, Debug)]
 pub struct MealStruct {
     name: String,
+    description: String,
+    price: BigDecimal,
 }
 
 pub async fn execute<T>(
@@ -43,8 +48,16 @@ where
     let add_meal_to_menu = &shared_state.add_meal_to_menu;
     println!("Request {request:?} to add meal to menu received");
 
-    let meal_id = MealName::validated(request.name.clone())
-        .map(|meal_name| add_meal_to_menu.lock().unwrap().execute(meal_name))??;
+    let meal_name = MealName::validated(request.name.clone())?;
+    let meal_description = MealDescription::validated(request.description.clone())?;
+    let price = Price::validated(request.price.clone())?;
+
+    let meal_id = add_meal_to_menu
+        .lock()
+        .unwrap()
+        .execute(meal_name, meal_description, price)?;
+
+    println!("{meal_id:?}");
 
     Ok(HttpResponse::Ok()
         .content_type(ContentType::plaintext())

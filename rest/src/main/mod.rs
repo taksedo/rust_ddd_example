@@ -23,8 +23,6 @@ pub mod menu;
 
 #[actix_web::main]
 pub async fn start_web_backend() -> std::io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
-
     let id_generator = Arc::new(Mutex::new(InMemoryIncrementalMealIdGenerator::new()));
     let meal_repository = meal_create_repository();
 

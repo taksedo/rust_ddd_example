@@ -1,6 +1,10 @@
+use domain::main::menu::meal_description::MealDescription;
 use domain::main::menu::meal_id::MealId;
 use domain::main::menu::meal_name::MealName;
-use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name};
+use domain::main::menu::price::Price;
+use domain::test_fixtures::fixtures::{
+    rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
+};
 use smart_default::SmartDefault;
 use std::string::ToString;
 use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
@@ -24,7 +28,9 @@ impl GetMenu for MockGetMenu {
 pub struct MockAddMealToMenu {
     pub(crate) response: Result<MealId, AddMealToMenuUseCaseError>,
     name: MealName, // lateinit var description: MealDescription
-                    // lateinit var price: Price
+    // lateinit var price: Price
+    pub description: MealDescription,
+    pub price: Price,
 }
 
 impl Default for MockAddMealToMenu {
@@ -32,6 +38,8 @@ impl Default for MockAddMealToMenu {
         Self {
             response: Ok(rnd_meal_id()),
             name: rnd_meal_name(),
+            description: rnd_meal_description(),
+            price: rnd_price(),
         }
     }
 }
@@ -40,12 +48,12 @@ impl AddMealToMenu for MockAddMealToMenu {
     fn execute(
         &mut self,
         name: MealName,
-        // description: MealDescription,
-        // price: Price,
+        description: MealDescription,
+        price: Price,
     ) -> Result<MealId, AddMealToMenuUseCaseError> {
         self.name = name;
-        // self.description.clone() = description
-        // this.price = price
+        self.description = description;
+        self.price = price;
         self.response.to_owned()
     }
 }

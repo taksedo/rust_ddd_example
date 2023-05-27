@@ -7,9 +7,16 @@ edition = "2021"
 
 [package]
 name = "rust_hex_sandbox"
+authors = ["Ruslan Valiev"]
+description = "Developped in Rust"
 version.workspace = true
 edition.workspace = true
+#build = "_build"
 
+[package.metadata.winresource]
+ProductVersion = "0.1.0"
+ProductName = "Rust DDD Sample Project"
+LegalCopyright = "Taksedo (C) 2023"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
@@ -26,7 +33,7 @@ chrono = "0.4.24"
 derivative = "2.2.0"
 erased-serde = "0.3.25"
 serde_derive = "1.0.163"
-serde = { version = "1.0.162", features = ["derive","rc","alloc"] }
+serde = { version = "1.0.163", features = ["derive","rc","alloc"] }
 serde_json = "1.0.96"
 thiserror = "1.0.40"
 bigdecimal = { version = "0.3.0", features = ["serde"] }
@@ -38,7 +45,7 @@ time = "0.3.21"
 enum_access = "0.4.0"
 enum_dispatch = "0.3.11"
 smart-default = "0.7.1"
-
+const_format = "0.2.30"
 
 domain = { path = "./domain" }
 usecase = { path = "./usecase" }
@@ -65,5 +72,6 @@ common_events = { path = "./common/events" }
 common_telnet = { path = "./common/telnet" }
 common_rest = { path = "./common/rest" }
 
+
 [build-dependencies]
-gcc = "0.3"
+winresource = "0.1.15"

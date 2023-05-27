@@ -1,7 +1,10 @@
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
+use crate::main::menu::meal_description::MealDescription;
 use crate::main::menu::meal_id::MealId;
 use crate::main::menu::meal_name::MealName;
+use crate::main::menu::price::Price;
+use bigdecimal::{BigDecimal, FromPrimitive};
 use common_types::main::base::domain_entity::{DomainEntity, Version};
 use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
@@ -22,13 +25,23 @@ pub fn print_type_of<T>(_: &T) -> &str {
     std::any::type_name::<T>()
 }
 
+pub fn rnd_meal_id() -> MealId {
+    let id: u64 = thread_rng().gen_range(0..u64::MAX);
+    MealId { value: id }
+}
+
 pub fn rnd_meal_name() -> MealName {
     MealName::from(Name(EN).fake()).unwrap()
 }
 
-pub fn rnd_meal_id() -> MealId {
-    let id: u64 = thread_rng().gen_range(0..u64::MAX);
-    MealId { value: id }
+pub fn rnd_meal_description() -> MealDescription {
+    MealDescription::from(Name(EN).fake()).unwrap()
+}
+
+pub fn rnd_price() -> Price {
+    let random_price: u64 = thread_rng().gen_range(0..500000);
+    let price = Price::from(BigDecimal::from_u64(random_price).unwrap()).unwrap();
+    Price::from(price.value.with_scale(2)).unwrap()
 }
 
 pub fn version() -> Version {
@@ -39,6 +52,8 @@ pub fn rnd_meal() -> Meal {
     Meal::new(
         DomainEntity::new(rnd_meal_id(), Version::default()),
         rnd_meal_name(),
+        rnd_meal_description(),
+        rnd_price(),
     ) //TODO Переделать на ресторер
 }
 
