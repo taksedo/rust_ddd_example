@@ -15,7 +15,7 @@ pub async fn execute<T: GetMenu + Send + Debug>(
     shared_state: web::Data<GetMenuEndpointSharedState<T>>,
 ) -> Result<HttpResponse> {
     let get_menu_use_case = &shared_state.meal_get_menu;
-    let meal_info: Vec<MealModel> = get_menu_use_case
+    let meal_info_list: Vec<MealModel> = get_menu_use_case
         .lock()
         .unwrap()
         .execute()
@@ -24,7 +24,7 @@ pub async fn execute<T: GetMenu + Send + Debug>(
         .collect();
     let resp = HttpResponse::Ok()
         .content_type(ContentType::json())
-        .body(format!("{:?}", meal_info));
+        .body(format!("{:?}", meal_info_list));
 
     Ok(resp)
 }
