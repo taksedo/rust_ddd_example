@@ -8,7 +8,7 @@ fn create_name__success() {
     let result = MealName::from(value.clone());
 
     let meal_name = result.unwrap();
-    assert_eq!(meal_name.to_string_value(), &value);
+    assert_eq!(meal_name.to_string_value(), value);
 }
 
 #[rstest]

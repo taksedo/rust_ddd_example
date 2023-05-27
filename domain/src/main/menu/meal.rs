@@ -1,9 +1,11 @@
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
+use crate::main::menu::meal_description::MealDescription;
 use crate::main::menu::meal_events::{
     DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
 };
 use crate::main::menu::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::meal_name::MealName;
+use crate::main::menu::price::Price;
 use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
@@ -15,6 +17,8 @@ use std::sync::{Arc, Mutex};
 pub struct Meal {
     pub domain_entity_field: DomainEntity<MealId, DomainEventEnum>,
     pub name: MealName,
+    pub description: MealDescription,
+    pub price: Price,
     #[new(value = "false")]
     pub removed: bool,
 }
@@ -24,6 +28,8 @@ impl Meal {
         id_generator: Arc<Mutex<dyn MealIdGenerator>>,
         meal_exists: Arc<Mutex<dyn MealAlreadyExists>>,
         name: MealName,
+        description: MealDescription,
+        price: Price,
     ) -> Result<Meal, MealError> {
         if meal_exists.lock().unwrap().invoke(&name) {
             Err(MealError::AlreadyExistsWithSameNameError)
@@ -31,7 +37,12 @@ impl Meal {
             let id = id_generator.lock().unwrap().generate();
 
             //     .map_err(|_e: Error| MealError::IdGenerationError)?;
-            let mut meal = Meal::new(DomainEntity::new(id, Version::new()), name);
+            let mut meal = Meal::new(
+                DomainEntity::new(id, Version::new()),
+                name,
+                description,
+                price,
+            );
             meal.add_event(DomainEventEnum::MealAddedToMenuDomainEvent(
                 MealAddedToMenuDomainEvent::new(id),
             ));

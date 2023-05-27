@@ -92,12 +92,6 @@ enum DomainEventEnum {
     AnotherTestEvent(AnotherTestEvent),
 }
 
-// impl Default for DomainEventEnum {
-//     fn default() -> Self {
-//         Self::TestEvent(TestEvent::default())
-//     }
-// }
-
 #[enum_dispatch]
 trait DomainEventTrait {}
 

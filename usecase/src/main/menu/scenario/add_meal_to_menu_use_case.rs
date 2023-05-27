@@ -5,8 +5,10 @@ use derive_new::new;
 use domain;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
+use domain::main::menu::meal_description::MealDescription;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::main::menu::meal_name::MealName;
+use domain::main::menu::price::Price;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 
@@ -18,11 +20,18 @@ pub struct AddMealToMenuUseCase {
 }
 
 impl AddMealToMenu for AddMealToMenuUseCase {
-    fn execute(&mut self, name: MealName) -> Result<MealId, AddMealToMenuUseCaseError> {
+    fn execute(
+        &mut self,
+        name: MealName,
+        description: MealDescription,
+        price: Price,
+    ) -> Result<MealId, AddMealToMenuUseCaseError> {
         Meal::add_meal_to_menu(
             Arc::clone(&self.id_generator),
             Arc::clone(&self.meal_exists),
             name,
+            description,
+            price,
         )
         .map_err(|_| AddMealToMenuUseCaseError::AlreadyExists)
         .map(|new_meal_in_menu| {

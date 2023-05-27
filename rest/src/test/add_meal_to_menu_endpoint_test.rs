@@ -3,7 +3,9 @@ use crate::main::menu::add_meal_to_menu_endpoint::{AddMealToMenuEndpointSharedSt
 use crate::test_fixtures::fixtures::MockAddMealToMenu;
 use actix_web::http::{header, StatusCode};
 use actix_web::{web, web::Json};
-use domain::test_fixtures::fixtures::{rnd_meal_id, rnd_meal_name};
+use domain::test_fixtures::fixtures::{
+    rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
+};
 use std::sync::{Arc, Mutex};
 
 // #[actix_web::test]
@@ -25,6 +27,8 @@ use std::sync::{Arc, Mutex};
 async fn created_successfully() {
     let meal_id = rnd_meal_id();
     let meal_name = rnd_meal_name();
+    let meal_description = rnd_meal_description();
+    let price = rnd_price();
 
     let mock_add_meal_to_menu = Arc::new(Mutex::new(MockAddMealToMenu::default()));
     mock_add_meal_to_menu.lock().unwrap().response = Ok(meal_id);
@@ -33,7 +37,11 @@ async fn created_successfully() {
         add_meal_to_menu: Arc::clone(&mock_add_meal_to_menu),
     });
 
-    let meal = Json(MealStruct::new(meal_name.clone().value));
+    let meal = Json(MealStruct::new(
+        meal_name.clone().to_string_value(),
+        meal_description.clone().to_string_value(),
+        price.clone().to_bigdecimal_value(),
+    ));
 
     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state, meal).await;
 

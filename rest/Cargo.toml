@@ -9,12 +9,11 @@ edition.workspace = true
 actix-web = { workspace = true, features = ["rustls"] }
 actix-cors.workspace = true
 derive-new.workspace = true
-const_format = "0.2.30"
+const_format.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-futures = "0.3.28"
-env_logger = "0.10.0"
-smart-default = "0.7.1"
+smart-default.workspace = true
+bigdecimal.workspace = true
 
 domain = { path = "../domain" }
 usecase = { path = "../usecase" }
