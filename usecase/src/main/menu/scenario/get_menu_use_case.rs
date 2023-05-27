@@ -20,6 +20,8 @@ impl GetMenu for GetMenuUseCase {
             .map(|s: Meal| MealInfo {
                 id: s.domain_entity_field.id,
                 name: s.name,
+                description: s.description,
+                price: s.price,
                 version: s.domain_entity_field.version,
             })
             .collect()

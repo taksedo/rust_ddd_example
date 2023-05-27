@@ -20,8 +20,8 @@ impl GetMealById for GetMealByIdUseCase {
                 Ok(MealInfo {
                     id: res.domain_entity_field.id,
                     name: res.clone().name,
-                    // description: res.to_owned().unwrap().description,
-                    // price: res.to_owned().unwrap().price,
+                    description: res.to_owned().description,
+                    price: res.to_owned().price,
                     version: res.domain_entity_field.version,
                 })
             }
