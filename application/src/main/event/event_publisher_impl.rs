@@ -10,6 +10,7 @@ use std::sync::{Arc, Mutex};
 #[derive(new, Debug, Default, Clone)]
 pub struct EventPublisherImpl<E: Debug> {
     logger: String, //todo переделать logger
+    #[allow(clippy::type_complexity)]
     pub(crate) listener_map: HashMap<Discriminant<E>, Vec<Arc<Mutex<dyn DomainEventListener<E>>>>>,
 }
 

@@ -15,6 +15,7 @@ pub async fn execute<T: GetMenu + Send + Debug>(
     shared_state: web::Data<GetMenuEndpointSharedState<T>>,
 ) -> Result<HttpResponse> {
     let get_menu_use_case = &shared_state.meal_get_menu;
+    #[allow(clippy::redundant_closure)]
     let meal_info_list: Vec<MealModel> = get_menu_use_case
         .lock()
         .unwrap()
