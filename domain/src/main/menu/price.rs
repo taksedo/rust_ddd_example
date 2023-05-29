@@ -13,7 +13,7 @@ pub struct Price {
 
 impl Price {
     pub fn from(value: BigDecimal) -> Result<Price, CreatePriceError> {
-        let price_scale = value.clone().normalized().into_bigint_and_exponent().1;
+        let price_scale = value.normalized().into_bigint_and_exponent().1;
         match &value {
             _ if price_scale > Self::SCALE as i64 => Err(CreatePriceError::InvalidScale),
             _ if value < BigDecimal::zero() => Err(CreatePriceError::NegativeValue),

@@ -96,6 +96,8 @@ pub fn rnd_meal_info() -> MealInfo {
     MealInfo {
         id: meal.domain_entity_field.id.clone(),
         name: meal.name.clone(),
+        description: meal.description.clone(),
+        price: meal.price.clone(),
         version: meal.domain_entity_field.version.clone(),
     }
 }

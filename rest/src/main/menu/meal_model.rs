@@ -1,4 +1,3 @@
-use bigdecimal::BigDecimal;
 use usecase::main::menu::dto::meal_info::MealInfo;
 
 #[derive(Debug, Clone, PartialEq)]
