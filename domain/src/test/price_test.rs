@@ -7,9 +7,9 @@ use rstest::rstest;
 use std::str::FromStr;
 
 #[rstest]
-#[case(0_i64)]
-#[case(1_i64)]
-fn create_price__success(#[case] value: i64) {
+#[case(0_u64)]
+#[case(1_u64)]
+fn create_price__success(#[case] value: u64) {
     let input = BigDecimal::from(value);
     let price = Price::from(input.to_owned()).unwrap();
     assert_eq!(price.to_bigdecimal_value(), input.with_scale(2));

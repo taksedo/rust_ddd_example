@@ -11,9 +11,7 @@ impl Count {
         match value {
             _ if value > u32::MAX => Err(CountError::MaxValueReachedError),
             _ if value < 0 => Err(CountError::NegativeValueError),
-            _ => Ok(Self {
-                value: value as u32,
-            }),
+            _ => Ok(Self { value }),
         }
     }
 
