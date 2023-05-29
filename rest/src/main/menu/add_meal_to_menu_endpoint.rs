@@ -1,6 +1,6 @@
 use crate::main::menu::validation::Validated;
 use actix_web::http::header::ContentType;
-use actix_web::{get, post, web, HttpResponse, Responder, Result};
+use actix_web::{web, HttpResponse, Result};
 use bigdecimal::BigDecimal;
 use derive_new::new;
 use domain::main::menu::meal_description::MealDescription;
@@ -14,21 +14,6 @@ use usecase::main::menu::add_meal_to_menu::AddMealToMenu;
 #[derive(Debug, new)]
 pub struct AddMealToMenuEndpointSharedState<T: AddMealToMenu + Send + Debug> {
     pub add_meal_to_menu: Arc<Mutex<T>>,
-}
-
-#[get("/")]
-pub async fn hello() -> impl Responder {
-    println!("Hello world is happening");
-    HttpResponse::Ok().body("Hello world!")
-}
-
-#[post("/echo")]
-pub async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-pub async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
 }
 
 #[derive(new, Serialize, Deserialize, Debug)]
@@ -63,23 +48,4 @@ where
         .content_type(ContentType::plaintext())
         .insert_header(("Location", meal_id.to_u64()))
         .body(""))
-}
-
-#[post("/submit/info")]
-pub async fn info(info: web::Json<Info>) -> web::Json<Info> {
-    println!("=========={info:?}=========");
-    web::Json(Info {
-        username: info.username.clone(),
-        email: info.email.clone(),
-        password: info.password.clone(),
-        confirm_password: info.confirm_password.clone(),
-    })
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-pub struct Info {
-    username: String,
-    email: String,
-    password: String,
-    confirm_password: String,
 }

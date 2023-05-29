@@ -62,6 +62,8 @@ fn add_meal__success() {
         &id_generator.lock().unwrap().meal_id
     );
     assert_eq!(test_meal.name, name);
+    assert_eq!(test_meal.description, description);
+    assert_eq!(test_meal.price, price);
     assert!(test_meal.visible());
 
     let popped_events = test_meal.pop_events().get(0).unwrap();

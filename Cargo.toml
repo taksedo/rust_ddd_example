@@ -28,8 +28,6 @@ structmap = "0.1.6"
 structmap-derive = "0.1.6"
 dotenv = "0.15.0"
 log = "0.4.17"
-fern = "0.6.2"
-chrono = "0.4.24"
 derivative = "2.2.0"
 erased-serde = "0.3.25"
 serde_derive = "1.0.163"
@@ -61,8 +59,6 @@ common_rest = { path = "./common/rest" }
 actix-web = { workspace = true }
 dotenv = { workspace = true }
 log = { workspace = true }
-fern = { workspace = true }
-chrono = { workspace = true }
 
 domain = { path = "./domain" }
 usecase = { path = "./usecase" }

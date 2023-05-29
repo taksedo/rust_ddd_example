@@ -1,5 +1,5 @@
 use crate::main::endpoint_url::{MENU_ADD_TO_MENU, MENU_GET_ALL, MENU_GET_BY_ID};
-use crate::main::menu::add_meal_to_menu_endpoint::{echo, info, AddMealToMenuEndpointSharedState};
+use crate::main::menu::add_meal_to_menu_endpoint::AddMealToMenuEndpointSharedState;
 use crate::main::menu::get_meal_by_id_endpoint::GetMealByIdEndpointSharedState;
 use crate::main::menu::get_menu_endpoint::GetMenuEndpointSharedState;
 use crate::main::menu::shared_state::{
@@ -59,8 +59,6 @@ pub async fn start_web_backend() -> std::io::Result<()> {
                     .max_age(3600),
             )
             .wrap(Logger::default())
-            .service(info)
-            .service(echo)
             .route(
                 MENU_ADD_TO_MENU,
                 web::post().to(add_meal_to_menu_endpoint::execute::<AddMealToMenuUseCase>),

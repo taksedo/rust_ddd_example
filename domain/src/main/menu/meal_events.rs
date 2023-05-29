@@ -1,5 +1,5 @@
 use crate::main::menu::meal_id::MealId;
-// #[cfg(test)]
+#[cfg(test)]
 use crate::test_fixtures::fixtures::TestEvent;
 use common_types::main::base::domain_event::EventId;
 use derive_new::new;
@@ -51,6 +51,6 @@ pub enum DomainEventEnum {
     #[default]
     MealRemovedFromMenuDomainEvent,
     MealAddedToMenuDomainEvent,
-    // #[cfg(test)]
+    #[cfg(test)]
     TestEvent,
 }
