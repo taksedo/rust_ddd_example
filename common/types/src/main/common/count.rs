@@ -7,36 +7,36 @@ pub struct Count {
 
 #[allow(clippy::absurd_extreme_comparisons)]
 impl Count {
-    pub fn new(value: u32) -> Result<Self, CountError> {
-        if value < 0 {
-            Err(CountError::NegativeValueError)
-        } else if value > u32::MAX {
-            Err(CountError::MaxValueReachedError)
-        } else {
-            Ok(Self { value })
+    pub fn from(value: u32) -> Result<Self, CountError> {
+        match value {
+            _ if value > u32::MAX => Err(CountError::MaxValueReachedError),
+            _ if value < 0 => Err(CountError::NegativeValueError),
+            _ => Ok(Self {
+                value: value as u32,
+            }),
         }
     }
 
-    pub fn one() -> Result<Self, CountError> {
-        Ok(Self { value: 1 })
+    pub fn one() -> Self {
+        Self { value: 1 }
     }
 
     #[no_mangle]
     pub fn increment(&self) -> Result<Self, CountError> {
-        let result: u32 = &self.value.to_owned() + 1;
-        if result > self.value {
-            Ok(Self { value: result })
-        } else {
-            Err(CountError::MaxValueReachedError)
+        match self.value {
+            u32::MAX => Err(CountError::MaxValueReachedError),
+            _ => Ok(Self {
+                value: &self.value + 1,
+            }),
         }
     }
 
     pub fn decrement(&self) -> Result<Self, CountError> {
-        let result: u32 = &self.value.to_owned() - 1;
-        if result >= 0 {
-            Ok(Self { value: result })
-        } else {
-            Err(CountError::MinValueReachedError)
+        match &self.value {
+            0 => Err(CountError::MinValueReachedError),
+            _ => Ok(Self {
+                value: &self.value - 1,
+            }),
         }
     }
 

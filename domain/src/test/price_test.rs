@@ -57,7 +57,7 @@ fn add_price() {
 #[test]
 fn multiple_to_count() {
     let price = Price::from(BigDecimal::from_str("1.5").unwrap()).unwrap();
-    let count = Count::new(3).unwrap();
+    let count = Count::from(3).unwrap();
     let result = price.multiple(count);
     assert_eq!(
         result.to_bigdecimal_value(),
