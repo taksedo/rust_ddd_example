@@ -15,10 +15,10 @@ impl Price {
     pub fn from(value: BigDecimal) -> Result<Price, CreatePriceError> {
         let price_scale = value.normalized().into_bigint_and_exponent().1;
         match &value {
-            _ if price_scale > Self::SCALE as i64 => Err(CreatePriceError::InvalidScale),
+            _ if price_scale > Self::SCALE => Err(CreatePriceError::InvalidScale),
             _ if value < BigDecimal::zero() => Err(CreatePriceError::NegativeValue),
             _ => Ok(Self {
-                value: value.with_scale(Self::SCALE as i64),
+                value: value.with_scale(Self::SCALE),
             }),
         }
     }
@@ -53,7 +53,7 @@ impl Price {
         self.to_owned().value.to_string()
     }
 
-    const SCALE: i8 = 2;
+    pub const SCALE: i64 = 2;
 
     fn _zero(&self) -> Self {
         Self {
