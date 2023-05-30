@@ -12,14 +12,14 @@ fn create_event__check_event_id_is_unique() {
 
 struct EmptyEvent {
     id: EventId,
-    created: OffsetDateTime,
+    _created: OffsetDateTime,
 }
 
 impl EmptyEvent {
     pub fn new() -> Self {
         Self {
             id: EventId::new(),
-            created: OffsetDateTime::now_utc(),
+            _created: OffsetDateTime::now_utc(),
         }
     }
 }
