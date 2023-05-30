@@ -16,7 +16,7 @@ pub struct DomainEvent {
 #[derive(new, PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, Hash)]
 pub struct EventId {
     #[new(value = "Uuid::new_v4()")]
-    value: Uuid,
+    pub(crate) value: Uuid,
 }
 
 #[enum_dispatch]
