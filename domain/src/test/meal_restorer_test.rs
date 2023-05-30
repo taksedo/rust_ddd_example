@@ -16,7 +16,7 @@ fn restore_meal__success() {
     let removed = true;
     let version = version();
 
-    let meal: Meal = MealRestorer::restore_meal(
+    let mut meal: Meal = MealRestorer::restore_meal(
         mealId,
         name.clone(),
         description,

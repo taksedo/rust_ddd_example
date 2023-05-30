@@ -17,15 +17,20 @@ pub struct DomainEntity<T, E> {
 
 pub trait DomainEntityTrait<E> {
     fn add_event(&mut self, event: E);
-    fn pop_events(&self) -> &Vec<E>;
+    fn pop_events(&mut self) -> Vec<E>;
 }
 
-impl<E, T> DomainEntityTrait<E> for DomainEntity<T, E> {
+impl<E: Clone, T> DomainEntityTrait<E> for DomainEntity<T, E> {
     fn add_event(&mut self, event: E) {
+        if self.events.is_empty() {
+            self.version = self.version.next();
+        }
         self.events.push(event)
     }
-    fn pop_events(&self) -> &Vec<E> {
-        &self.events
+    fn pop_events(&mut self) -> Vec<E> {
+        let res = self.events.clone();
+        self.events = Vec::new();
+        res
     }
 }
 
