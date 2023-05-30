@@ -16,6 +16,7 @@ enum_dispatch.workspace = true
 enum_access.workspace = true
 thiserror.workspace = true
 rstest.workspace = true
+rand.workspace = true
 
 
 [dependencies.uuid]
