@@ -1,0 +1,7 @@
+comment: false
+
+ignore: # ignore codecoverage on following paths
+  - ".github"
+  - ".idea"
+  - "**/test"
+  - "**/test_fixtures"
