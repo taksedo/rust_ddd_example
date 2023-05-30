@@ -56,7 +56,7 @@ fn add_meal__success() {
         price.to_owned(),
     );
 
-    let test_meal = result.unwrap();
+    let mut test_meal = result.unwrap();
     assert_eq!(
         &test_meal.domain_entity_field.id,
         &id_generator.lock().unwrap().meal_id
@@ -66,7 +66,8 @@ fn add_meal__success() {
     assert_eq!(test_meal.price, price);
     assert!(test_meal.visible());
 
-    let popped_events = test_meal.pop_events().get(0).unwrap();
+    let popped_events = test_meal.pop_events();
+    let popped_events = popped_events.get(0).unwrap();
 
     let expected_event = &DomainEventEnum::MealAddedToMenuDomainEvent(
         MealAddedToMenuDomainEvent::new(id_generator.lock().unwrap().meal_id),
@@ -98,7 +99,8 @@ fn remove_meal_from_menu__success() {
     assert!(test_meal.removed);
     assert!(!test_meal.visible());
 
-    let popped_events = test_meal.pop_events().get(0).unwrap();
+    let popped_events = test_meal.pop_events();
+    let popped_events = popped_events.get(0).unwrap();
 
     let expected_event = &DomainEventEnum::MealRemovedFromMenuDomainEvent(
         MealRemovedFromMenuDomainEvent::new(test_meal.domain_entity_field.id),
@@ -120,5 +122,5 @@ fn remove_meal_from_menu__already_removed() {
     assert!(!test_meal.visible());
 
     let popped_events = test_meal.pop_events().to_owned();
-    assert_eq!(popped_events.len(), 0);
+    assert!(popped_events.is_empty());
 }

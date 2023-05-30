@@ -78,8 +78,10 @@ impl DomainEntityTrait<DomainEventEnum> for Meal {
         if self.domain_entity_field.events.is_empty() {}
         self.domain_entity_field.events.push(event)
     }
-    fn pop_events(&self) -> &Vec<DomainEventEnum> {
-        &self.domain_entity_field.events
+    fn pop_events(&mut self) -> Vec<DomainEventEnum> {
+        let res = self.domain_entity_field.events.clone();
+        self.domain_entity_field.events = vec![];
+        res
     }
 }
 

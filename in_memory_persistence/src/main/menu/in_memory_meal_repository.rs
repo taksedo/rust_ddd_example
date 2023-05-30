@@ -20,11 +20,11 @@ pub struct InMemoryMealRepository {
 }
 
 impl MealPersister for InMemoryMealRepository {
-    fn save(&mut self, meal: Meal) {
+    fn save(&mut self, mut meal: Meal) {
         self.event_publisher
             .lock()
             .unwrap()
-            .publish(meal.pop_events());
+            .publish(&meal.pop_events());
         self.storage.insert(meal.domain_entity_field.id, meal);
     }
 }
