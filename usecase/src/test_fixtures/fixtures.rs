@@ -1,9 +1,14 @@
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
+use common_types::main::base::domain_entity::DomainEntityTrait;
 use derive_new::new;
 use domain::main::menu::meal::Meal;
+use domain::main::menu::meal_description::MealDescription;
+use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
 use domain::main::menu::meal_id::MealId;
 use domain::main::menu::meal_name::MealName;
+use domain::main::menu::price::Price;
 use domain::test_fixtures::fixtures::rnd_meal;
 
 pub fn removed_meal() -> Meal {
@@ -23,8 +28,8 @@ impl MockMealPersister {
         &self,
         id: Option<MealId>,
         name: Option<MealName>,
-        // description: Option<MealDescription>,
-        // price: Option<Price>,
+        description: Option<MealDescription>,
+        price: Option<Price>,
     ) {
         if id.is_some() {
             assert_eq!(
@@ -35,25 +40,25 @@ impl MockMealPersister {
         if name.is_some() {
             assert_eq!(self.to_owned().meal.unwrap().name, name.unwrap())
         }
-        // if description.is_some() {
-        //     assert_eq!(
-        //         self.to_owned().meal.unwrap().description,
-        //         description.unwrap()
-        //     )
-        // }
-        // if price.is_some() {
-        //     assert_eq!(self.to_owned().meal.unwrap().price, price.unwrap())
-        // }
+        if description.is_some() {
+            assert_eq!(
+                self.to_owned().meal.unwrap().description,
+                description.unwrap()
+            )
+        }
+        if price.is_some() {
+            assert_eq!(self.to_owned().meal.unwrap().price, price.unwrap())
+        }
     }
     pub fn verify_invoked_meal(&self, meal: Option<Meal>) {
         if meal.is_some() {
             assert_eq!(self.to_owned().meal, meal)
         }
     }
-    // pub fn verify_events_after_deletion(&mut self, id: MealId) {
-    //     let event_enum: DomainEventEnum = MealRemovedFromMenuDomainEvent::new(id).into();
-    //     assert_eq!(self.to_owned().meal.unwrap().pop_events(), vec![event_enum]);
-    // }
+    pub fn verify_events_after_deletion(&mut self, id: MealId) {
+        let event_enum: DomainEventEnum = MealRemovedFromMenuDomainEvent::new(id).into();
+        assert_eq!(self.to_owned().meal.unwrap().pop_events(), vec![event_enum]);
+    }
     pub fn verify_empty(&self) {
         assert!(&self.meal.is_none());
     }
@@ -108,8 +113,6 @@ impl MealExtractor for MockMealExtractor {
 
 impl MockMealExtractor {
     pub fn verify_invoked_get_by_id(&self, id: MealId) {
-        // dbg!(&self);
-        // dbg!(&self.id);
         assert_eq!(&self.id.unwrap(), &id);
         assert!(!&self.all);
         assert!(&self.name.is_none());

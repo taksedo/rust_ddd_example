@@ -7,7 +7,7 @@ use std::sync::{Arc, Mutex};
 
 #[derive(Debug, new)]
 pub struct GetMenuUseCase {
-    meal_extractor: Arc<Mutex<dyn MealExtractor>>,
+    pub(crate) meal_extractor: Arc<Mutex<dyn MealExtractor>>,
 }
 
 impl GetMenu for GetMenuUseCase {
