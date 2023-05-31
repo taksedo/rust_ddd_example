@@ -3,17 +3,15 @@ use crate::main::menu::add_meal_to_menu_endpoint::AddMealToMenuEndpointSharedSta
 use crate::main::menu::get_meal_by_id_endpoint::GetMealByIdEndpointSharedState;
 use crate::main::menu::get_menu_endpoint::GetMenuEndpointSharedState;
 use crate::main::menu::shared_state::{
-    mea_get_menu_shared_state, meal_create_repository, meal_create_shared_state,
-    meal_get_by_id_shared_state,
+    mea_get_menu_shared_state, meal_create_id_generator, meal_create_repository,
+    meal_create_shared_state, meal_get_by_id_shared_state,
 };
 use crate::main::menu::{add_meal_to_menu_endpoint, get_meal_by_id_endpoint, get_menu_endpoint};
 use actix_cors::Cors;
 use actix_web::http::header;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
-use in_memory_persistence::main::menu::in_memory_incremental_meal_id_generator::InMemoryIncrementalMealIdGenerator;
-use in_memory_persistence::main::menu::in_memory_meal_repository::InMemoryMealRepository;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
@@ -23,14 +21,13 @@ pub mod menu;
 
 #[actix_web::main]
 pub async fn start_web_backend() -> std::io::Result<()> {
-    let id_generator = Arc::new(Mutex::new(InMemoryIncrementalMealIdGenerator::new()));
+    let meal_id_generator = meal_create_id_generator();
     let meal_repository = meal_create_repository();
 
-    let add_meal_to_menu_shared_state =
-        meal_create_shared_state::<InMemoryMealRepository, InMemoryIncrementalMealIdGenerator>(
-            Arc::clone(&meal_repository) as _,
-            Arc::clone(&id_generator) as _,
-        );
+    let add_meal_to_menu_shared_state = meal_create_shared_state(
+        Arc::clone(&meal_repository) as _,
+        Arc::clone(&meal_id_generator) as _,
+    );
     let meal_add_counter = web::Data::new(AddMealToMenuEndpointSharedState::new(
         add_meal_to_menu_shared_state,
     ));
@@ -43,6 +40,10 @@ pub async fn start_web_backend() -> std::io::Result<()> {
     let get_menu_shared_state = mea_get_menu_shared_state(Arc::clone(&meal_repository));
     let meal_get_menu_counter =
         web::Data::new(GetMenuEndpointSharedState::new(get_menu_shared_state));
+
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
+
+    log::info!("starting HTTP server at http://localhost:8080");
 
     HttpServer::new(move || {
         App::new()

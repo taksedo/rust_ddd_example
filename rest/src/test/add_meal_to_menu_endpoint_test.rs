@@ -43,8 +43,6 @@ async fn created_successfully() {
         .to_str()
         .unwrap();
 
-    println!("{:?}", &resp);
-
     assert_eq!(&resp.status(), &StatusCode::OK);
     assert_eq!(header, &meal_id.to_u64().to_string());
 }

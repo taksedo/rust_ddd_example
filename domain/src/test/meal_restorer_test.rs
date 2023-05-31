@@ -30,6 +30,5 @@ fn restore_meal__success() {
     assert_eq!(meal.name, name);
     assert_eq!(meal.removed, removed);
     assert_eq!(meal.domain_entity_field.version, version);
-    dbg!(meal.pop_events());
     assert_eq!(meal.pop_events().len(), 0)
 }

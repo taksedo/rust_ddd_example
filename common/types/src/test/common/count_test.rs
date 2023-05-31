@@ -38,7 +38,6 @@ fn increment__success() {
 #[allow(non_snake_case)]
 fn increment__max_value_reached() {
     let count = Count::from(u32::MAX).unwrap();
-    println!("it's fine");
     let result = count.increment();
     assert_eq!(result, Err(CountError::MaxValueReachedError));
 }

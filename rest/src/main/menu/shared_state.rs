@@ -1,6 +1,7 @@
 use application::main::event::event_publisher_impl::EventPublisherImpl;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::meal_id::MealIdGenerator;
+use in_memory_persistence::main::menu::in_memory_incremental_meal_id_generator::InMemoryIncrementalMealIdGenerator;
 use in_memory_persistence::main::menu::in_memory_meal_repository::InMemoryMealRepository;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
@@ -10,6 +11,10 @@ use usecase::main::menu::invariant::meal_already_exists_uses_meal_extractor::Mea
 use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
+
+pub fn meal_create_id_generator() -> Arc<Mutex<InMemoryIncrementalMealIdGenerator>> {
+    Arc::new(Mutex::new(InMemoryIncrementalMealIdGenerator::new()))
+}
 
 pub fn meal_create_repository() -> Arc<Mutex<InMemoryMealRepository>> {
     let meal_publisher = EventPublisherImpl::<DomainEventEnum>::default();
