@@ -15,7 +15,7 @@ pub async fn execute<T: GetMealById + Send + Debug>(
     let meal_info = shared_state.lock().unwrap().execute(MealId::new(id))?;
     let resp = HttpResponse::Ok()
         .content_type(ContentType::json())
-        .body(format!("{:?}", MealModel::from(meal_info)));
+        .body(serde_json::to_string(&MealModel::from(meal_info))?);
 
     Ok(resp)
 }

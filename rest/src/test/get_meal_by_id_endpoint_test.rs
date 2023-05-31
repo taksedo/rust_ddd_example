@@ -28,10 +28,11 @@ async fn returned_successfully() {
     let resp = resp.unwrap();
 
     let body = resp.into_body().try_into_bytes().unwrap();
-    let body_text = std::str::from_utf8(&body);
+    let body_json = std::str::from_utf8(&body).unwrap();
 
     let meal_info = MealModel::from(meal_info);
-    assert_eq!(body_text.unwrap(), format!("{:?}", &meal_info));
+    let meal_info_json = serde_json::to_string(&meal_info).unwrap();
+    assert_eq!(body_json, &meal_info_json);
 
     mock_get_meal_by_id.lock().unwrap().verify_invoked(MealId {
         value: meal_info.id,
