@@ -1,5 +1,5 @@
 use crate::main::menu::add_meal_to_menu_endpoint;
-use crate::main::menu::add_meal_to_menu_endpoint::{AddMealToMenuEndpointSharedState, MealStruct};
+use crate::main::menu::add_meal_to_menu_endpoint::MealStruct;
 use crate::test_fixtures::fixtures::MockAddMealToMenu;
 use actix_web::http::{header, StatusCode};
 use actix_web::{web, web::Json};
@@ -18,9 +18,7 @@ async fn created_successfully() {
     let mock_add_meal_to_menu = Arc::new(Mutex::new(MockAddMealToMenu::default()));
     mock_add_meal_to_menu.lock().unwrap().response = Ok(meal_id);
 
-    let mock_shared_state = web::Data::new(AddMealToMenuEndpointSharedState {
-        add_meal_to_menu: Arc::clone(&mock_add_meal_to_menu),
-    });
+    let mock_shared_state = web::Data::new(Arc::clone(&mock_add_meal_to_menu));
 
     let meal = Json(MealStruct::new(
         meal_name.clone().to_string_value(),
@@ -42,8 +40,6 @@ async fn created_successfully() {
         .unwrap()
         .to_str()
         .unwrap();
-
-    println!("{:?}", &resp);
 
     assert_eq!(&resp.status(), &StatusCode::OK);
     assert_eq!(header, &meal_id.to_u64().to_string());

@@ -47,7 +47,7 @@ fn saving_meal__meal_exists() {
     meal_repository.save(updated_meal.clone());
 
     let storage = &storage_binding.lock().unwrap().storage;
-    let event = dbg!(storage.get(0).unwrap().to_owned());
+    let event = storage.get(0).unwrap().to_owned();
     let event: MealRemovedFromMenuDomainEvent = event.try_into().unwrap();
     assert_eq!(
         type_of(&event),
