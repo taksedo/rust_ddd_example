@@ -1,7 +1,6 @@
 use crate::main::menu::meal_model::MealModel;
 use actix_web::http::header::ContentType;
 use actix_web::{web, HttpRequest, HttpResponse, Result};
-use derive_new::new;
 use domain::main::menu::meal_id::MealId;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
