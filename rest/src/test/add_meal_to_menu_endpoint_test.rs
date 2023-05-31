@@ -21,8 +21,8 @@ async fn created_successfully() {
     let mock_shared_state = web::Data::new(Arc::clone(&mock_add_meal_to_menu));
 
     let meal = Json(MealStruct::new(
-        meal_name.clone().to_string_value(),
-        meal_description.clone().to_string_value(),
+        meal_name.clone().to_string(),
+        meal_description.clone().to_string(),
         price.clone().to_bigdecimal_value(),
     ));
 

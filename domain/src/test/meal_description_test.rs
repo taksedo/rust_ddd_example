@@ -15,7 +15,7 @@ fn create_description__success() {
         "domain::main::menu::meal_description::MealDescription"
     );
     let description = result;
-    assert_eq!(description.to_string_value(), value);
+    assert_eq!(description.to_string(), value);
 }
 
 #[rstest]

@@ -18,8 +18,7 @@ impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
 #[test]
 fn test() {
     let mut counter = InMemoryIncrementalMealIdGenerator::new();
-    let c = counter.generate();
-    dbg!(c);
-    let c = counter.generate();
-    dbg!(c);
+    let _c = counter.generate();
+
+    let _c = counter.generate();
 }
