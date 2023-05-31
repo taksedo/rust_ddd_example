@@ -51,7 +51,7 @@ where
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn mea_get_menu_shared_state<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMenuUseCase>>
+pub fn meal_get_menu_shared_state<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMenuUseCase>>
 where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {

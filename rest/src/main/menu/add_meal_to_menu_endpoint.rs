@@ -10,11 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 use usecase::main::menu::add_meal_to_menu::AddMealToMenu;
-
-#[derive(Debug, new)]
-pub struct AddMealToMenuEndpointSharedState<T: AddMealToMenu + Send + Debug> {
-    pub add_meal_to_menu: Arc<Mutex<T>>,
-}
+use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 
 #[derive(new, Serialize, Deserialize, Debug)]
 pub struct MealStruct {
@@ -24,20 +20,19 @@ pub struct MealStruct {
 }
 
 pub async fn execute<T>(
-    shared_state: web::Data<AddMealToMenuEndpointSharedState<T>>,
+    shared_state: web::Data<Arc<Mutex<AddMealToMenuUseCase>>>,
     request: web::Json<MealStruct>,
 ) -> Result<HttpResponse>
 where
     T: AddMealToMenu + Send + Debug,
 {
-    let add_meal_to_menu = &shared_state.add_meal_to_menu;
     println!("Request {request:?} to add meal to menu received");
 
     let meal_name = MealName::validated(request.name.clone())?;
     let meal_description = MealDescription::validated(request.description.clone())?;
     let price = Price::validated(request.price.clone())?;
 
-    let meal_id = add_meal_to_menu
+    let meal_id = shared_state
         .lock()
         .unwrap()
         .execute(meal_name, meal_description, price)?;
