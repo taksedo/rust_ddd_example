@@ -19,7 +19,7 @@ pub async fn execute<T: GetMenu + Send + Debug>(
 
     let resp = HttpResponse::Ok()
         .content_type(ContentType::json())
-        .body(format!("{:?}", meal_info_list));
+        .body(serde_json::to_string(&meal_info_list)?);
 
     Ok(resp)
 }
