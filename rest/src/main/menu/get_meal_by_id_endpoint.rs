@@ -5,10 +5,9 @@ use domain::main::menu::meal_id::MealId;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 use usecase::main::menu::get_meal_by_id::GetMealById;
-use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 
 pub async fn execute<T: GetMealById + Send + Debug>(
-    shared_state: web::Data<Arc<Mutex<GetMealByIdUseCase>>>,
+    shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let id: u64 = req.match_info().get("id").unwrap().parse().unwrap();

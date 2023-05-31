@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 use usecase::main::menu::add_meal_to_menu::AddMealToMenu;
-use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 
 #[derive(new, Serialize, Deserialize, Debug)]
 pub struct MealStruct {
@@ -20,7 +19,7 @@ pub struct MealStruct {
 }
 
 pub async fn execute<T>(
-    shared_state: web::Data<Arc<Mutex<AddMealToMenuUseCase>>>,
+    shared_state: web::Data<Arc<Mutex<T>>>,
     request: web::Json<MealStruct>,
 ) -> Result<HttpResponse>
 where
