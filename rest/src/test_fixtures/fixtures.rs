@@ -14,8 +14,10 @@ use usecase::main::menu::get_menu::GetMenu;
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";
 
-struct MockGetMenu {
-    meal_info: MealInfo,
+#[derive(SmartDefault, Debug)]
+pub struct MockGetMenu {
+    #[default(MealInfo::default())]
+    pub meal_info: MealInfo,
 }
 
 impl GetMenu for MockGetMenu {
