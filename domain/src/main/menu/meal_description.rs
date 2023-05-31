@@ -3,6 +3,8 @@ use common_types::main::base::value_object::ValueObject;
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
+use std::fmt;
+use std::fmt::Formatter;
 
 #[derive(Debug, Clone, new, PartialEq, Eq, Default, Deserialize, Serialize)]
 pub struct MealDescription {
@@ -10,10 +12,6 @@ pub struct MealDescription {
 }
 
 impl MealDescription {
-    pub fn to_string(&self) -> String {
-        self.value.clone()
-    }
-
     pub fn from(description: String) -> Result<MealDescription, CreateMealDescriptionError> {
         match description {
             x if x == *"" || x == *" " => Err(CreateMealDescriptionError::EmptyDescriptionError),
@@ -33,3 +31,9 @@ pub enum CreateMealDescriptionError {
 impl BusinessError for CreateMealDescriptionError {}
 
 impl ResponseError for CreateMealDescriptionError {}
+
+impl fmt::Display for MealDescription {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", &self.value)
+    }
+}
