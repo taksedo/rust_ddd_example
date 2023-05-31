@@ -4,10 +4,9 @@ use actix_web::{web, HttpResponse, Result};
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 use usecase::main::menu::get_menu::GetMenu;
-use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
 
 pub async fn execute<T: GetMenu + Send + Debug>(
-    shared_state: web::Data<Arc<Mutex<GetMenuUseCase>>>,
+    shared_state: web::Data<Arc<Mutex<T>>>,
 ) -> Result<HttpResponse> {
     #[allow(clippy::redundant_closure)]
     let meal_info_list: Vec<MealModel> = shared_state
