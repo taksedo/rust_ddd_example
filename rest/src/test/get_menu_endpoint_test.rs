@@ -35,15 +35,15 @@ async fn get_menu() {
     );
     assert_eq!(
         list_of_meal_model_from_resp.get(0).unwrap().name,
-        meal_info.name.to_string_value()
+        meal_info.name.to_string()
     );
     assert_eq!(
         list_of_meal_model_from_resp.get(0).unwrap().description,
-        meal_info.description.to_string_value()
+        meal_info.description.to_string()
     );
     assert_eq!(
         list_of_meal_model_from_resp.get(0).unwrap().price,
-        meal_info.price.to_f64_value()
+        meal_info.price.to_f64()
     );
     assert_eq!(
         list_of_meal_model_from_resp.get(0).unwrap().version,

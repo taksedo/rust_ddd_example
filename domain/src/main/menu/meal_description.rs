@@ -10,7 +10,7 @@ pub struct MealDescription {
 }
 
 impl MealDescription {
-    pub fn to_string_value(&self) -> String {
+    pub fn to_string(&self) -> String {
         self.value.clone()
     }
 

@@ -55,12 +55,12 @@ impl DamageCounter {
 
 #[test]
 fn monster_test() {
-    let mut rng = dbg!(rand::thread_rng());
-    let counter = dbg!(Rc::new(RefCell::new(DamageCounter::default())));
-    let mut monsters: Vec<_> = dbg!((0..5).map(|_| Monster::default()).collect());
+    let mut rng = rand::thread_rng();
+    let counter = Rc::new(RefCell::new(DamageCounter::default()));
+    let mut monsters: Vec<_> = (0..5).map(|_| Monster::default()).collect();
 
     for monster in &mut monsters {
-        let counter = dbg!(Rc::clone(&counter));
+        let counter = Rc::clone(&counter);
         monster.add_listener(Box::new(move |damage| {
             counter.borrow_mut().on_damage_received(damage)
         }));
