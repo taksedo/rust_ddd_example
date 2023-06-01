@@ -46,6 +46,7 @@ enum_dispatch = "0.3.11"
 smart-default = "0.7.1"
 const_format = "0.2.30"
 cargo-watch = "8.4.0"
+lazy_static = "1.4.0"
 
 domain = { path = "./domain" }
 usecase = { path = "./usecase" }

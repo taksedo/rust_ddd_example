@@ -1,8 +1,7 @@
-use application::main::event::event_publisher_impl::EventPublisherImpl;
-use domain::main::menu::meal_events::DomainEventEnum;
+use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_RESPOSITORY};
+use actix_web::web::Data;
 use domain::main::menu::meal_id::MealIdGenerator;
-use in_memory_persistence::main::menu::in_memory_incremental_meal_id_generator::InMemoryIncrementalMealIdGenerator;
-use in_memory_persistence::main::menu::in_memory_meal_repository::InMemoryMealRepository;
+use lazy_static::lazy_static;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
@@ -12,18 +11,21 @@ use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCa
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
 
-pub fn meal_create_id_generator() -> Arc<Mutex<InMemoryIncrementalMealIdGenerator>> {
-    Arc::new(Mutex::new(InMemoryIncrementalMealIdGenerator::new()))
+lazy_static! {
+    pub static ref ADD_MEAL_TO_MEANU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =
+        Data::new(Arc::clone(&add_meal_to_menu_use_case(
+            Arc::clone(&MEAL_RESPOSITORY) as _,
+            Arc::clone(&MEAL_ID_GENERATOR) as _,
+        )));
+    pub static ref GET_MEAL_BY_ID_USE_CASE: Data<Arc<Mutex<GetMealByIdUseCase>>> = Data::new(
+        Arc::clone(&get_meal_by_id_use_case(Arc::clone(&MEAL_RESPOSITORY,)))
+    );
+    pub static ref GET_MENU_USE_CASE: Data<Arc<Mutex<GetMenuUseCase>>> = Data::new(Arc::clone(
+        &get_menu_use_case(Arc::clone(&MEAL_RESPOSITORY,))
+    ));
 }
 
-pub fn meal_create_repository() -> Arc<Mutex<InMemoryMealRepository>> {
-    let meal_publisher = EventPublisherImpl::<DomainEventEnum>::default();
-    Arc::new(Mutex::new(InMemoryMealRepository::new(Arc::new(
-        Mutex::new(meal_publisher),
-    ))))
-}
-
-pub fn meal_create_shared_state<U, V>(
+pub fn add_meal_to_menu_use_case<U, V>(
     meal_repository: Arc<Mutex<U>>,
     meal_id_generator: Arc<Mutex<V>>,
 ) -> Arc<Mutex<AddMealToMenuUseCase>>
@@ -41,9 +43,7 @@ where
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn meal_get_by_id_shared_state<U>(
-    meal_repository: Arc<Mutex<U>>,
-) -> Arc<Mutex<GetMealByIdUseCase>>
+pub fn get_meal_by_id_use_case<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMealByIdUseCase>>
 where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {
@@ -51,7 +51,7 @@ where
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn meal_get_menu_shared_state<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMenuUseCase>>
+pub fn get_menu_use_case<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMenuUseCase>>
 where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {

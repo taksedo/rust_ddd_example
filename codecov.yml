@@ -3,5 +3,6 @@ comment: false
 ignore: # ignore codecoverage on following paths
   - ".github"
   - ".idea"
+  - "application"
   - "**/test"
   - "**/test_fixtures"
