@@ -50,6 +50,31 @@ impl Meal {
         }
     }
 
+    pub fn add_meal_to_menu_fn(
+        id_generator: Arc<Mutex<impl MealIdGenerator>>,
+        meal_exists: Arc<Mutex<impl MealAlreadyExists>>,
+        name: MealName,
+        description: MealDescription,
+        price: Price,
+    ) -> Result<Meal, MealError> {
+        if meal_exists.lock().unwrap().invoke(&name) {
+            Err(MealError::AlreadyExistsWithSameNameError)
+        } else {
+            let id = id_generator.lock().unwrap().generate();
+
+            let mut meal = Meal::new(
+                DomainEntity::new(id, Version::new()),
+                name,
+                description,
+                price,
+            );
+            meal.add_event(DomainEventEnum::MealAddedToMenuDomainEvent(
+                MealAddedToMenuDomainEvent::new(id),
+            ));
+            Ok(meal)
+        }
+    }
+
     pub fn visible(&self) -> bool {
         !self.removed
     }

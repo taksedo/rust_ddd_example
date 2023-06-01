@@ -1,9 +1,14 @@
-use crate::main::endpoint_url::{MENU_ADD_TO_MENU, MENU_GET_ALL, MENU_GET_BY_ID};
+use crate::main::endpoint_url::{
+    MENU_ADD_TO_MENU, MENU_GET_ALL, MENU_GET_BY_ID, MENU_GET_BY_ID_TEST,
+};
 use crate::main::menu::shared_state::{
     meal_create_id_generator, meal_create_repository, meal_create_shared_state,
     meal_get_by_id_shared_state, meal_get_menu_shared_state,
 };
-use crate::main::menu::{add_meal_to_menu_endpoint, get_meal_by_id_endpoint, get_menu_endpoint};
+use crate::main::menu::{
+    add_meal_to_menu_endpoint, get_meal_by_id_endpoint, get_meal_by_id_endpoint_fn,
+    get_menu_endpoint,
+};
 use actix_cors::Cors;
 use actix_web::http::header;
 use actix_web::middleware::Logger;
@@ -19,12 +24,16 @@ pub mod menu;
 #[actix_web::main]
 pub async fn start_web_backend() -> std::io::Result<()> {
     let meal_repository = meal_create_repository();
+
     let meal_id_generator = meal_create_id_generator();
 
     let add_meal_to_menu_shared_state = meal_create_shared_state(
         Arc::clone(&meal_repository) as _,
         Arc::clone(&meal_id_generator) as _,
     );
+    ///
+    let meal_repository_counter = web::Data::new(Arc::clone(&meal_repository));
+
     let meal_add_counter = web::Data::new(Arc::clone(&add_meal_to_menu_shared_state));
 
     let get_meal_by_id_shared_state = meal_get_by_id_shared_state(Arc::clone(&meal_repository));
@@ -40,8 +49,9 @@ pub async fn start_web_backend() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(meal_add_counter.clone())
-            .app_data(meal_get_by_id_counter.clone())
+            // .app_data(meal_get_by_id_counter.clone())
             .app_data(meal_get_menu_counter.clone())
+            .app_data(meal_repository_counter.clone())
             .wrap(
                 Cors::default()
                     .allowed_origin("http://localhost:8080")
@@ -60,6 +70,10 @@ pub async fn start_web_backend() -> std::io::Result<()> {
                 MENU_GET_BY_ID,
                 web::get().to(get_meal_by_id_endpoint::execute::<GetMealByIdUseCase>),
             )
+            // .route(
+            //     MENU_GET_BY_ID_TEST,
+            //     web::get().to(get_meal_by_id_endpoint_fn::execute),
+            // )
             .route(
                 MENU_GET_ALL,
                 web::get().to(get_menu_endpoint::execute::<GetMenuUseCase>),
