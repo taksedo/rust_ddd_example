@@ -13,10 +13,10 @@ fn publish_events() {
     let mut publisher = EventPublisherImpl::default();
 
     let test_event_listener = TestEventListener::default();
-    publisher.register_listener(test_event_listener.to_owned());
+    publisher.register_listener(test_event_listener);
 
     let another_test_event_listener = AnotherTestEventListener::default();
-    publisher.register_listener(another_test_event_listener.clone());
+    publisher.register_listener(another_test_event_listener);
 
     let test_event: DomainEventEnum =
         DomainEventEnum::TestEvent(TestEvent::new("TestEvent".to_string()));

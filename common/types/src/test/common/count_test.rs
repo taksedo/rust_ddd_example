@@ -1,4 +1,3 @@
-#[allow(non_snake_case)]
 use crate::main::common::count::{Count, CountError};
 use rstest::rstest;
 
@@ -9,7 +8,7 @@ use rstest::rstest;
 fn create_count_success(#[case] value: u32) {
     let result = Count::from(value);
     let count = result.unwrap();
-    assert_eq!(count.to_u32_value(), value as u32);
+    assert_eq!(count.to_u32_value(), value);
 }
 
 #[test]

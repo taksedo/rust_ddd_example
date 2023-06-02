@@ -29,8 +29,7 @@ impl GetMenu for MockGetMenu {
 #[derive(Debug)]
 pub struct MockAddMealToMenu {
     pub(crate) response: Result<MealId, AddMealToMenuUseCaseError>,
-    name: MealName, // lateinit var description: MealDescription
-    // lateinit var price: Price
+    name: MealName,
     pub description: MealDescription,
     pub price: Price,
 }
@@ -96,11 +95,11 @@ impl MockGetMealById {
 pub fn rnd_meal_info() -> MealInfo {
     let meal = rnd_meal();
     MealInfo {
-        id: meal.domain_entity_field.id.clone(),
+        id: meal.domain_entity_field.id,
         name: meal.name.clone(),
         description: meal.description.clone(),
         price: meal.price.clone(),
-        version: meal.domain_entity_field.version.clone(),
+        version: meal.domain_entity_field.version,
     }
 }
 
@@ -114,7 +113,7 @@ pub trait StringMethodsForRestTestExt {
 
 impl StringMethodsForRestTestExt for String {
     fn with_parameter(&mut self, name: String, value: String) -> String {
-        self.replace(&*format!("{{{name}}}"), &*format!("{value}"))
+        self.replace(&*format!("{{{name}}}"), &value)
     }
 
     fn with_host(&self) -> String {

@@ -121,6 +121,6 @@ fn remove_meal_from_menu__already_removed() {
     assert!(test_meal.removed);
     assert!(!test_meal.visible());
 
-    let popped_events = test_meal.pop_events().to_owned();
+    let popped_events = test_meal.pop_events();
     assert!(popped_events.is_empty());
 }
