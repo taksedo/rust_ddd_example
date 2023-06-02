@@ -25,3 +25,4 @@ jobs:
         with:
           name: ${{ env.PROJECT_NAME_UNDERSCORE }}
           path: target/release/${{ env.PROJECT_NAME_UNDERSCORE }}
+
