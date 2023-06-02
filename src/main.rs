@@ -1,7 +1,5 @@
-#![allow(unused_imports)]
-
-use rest::main::start_web_backend;
+use application::main::configuration::rest_configuration::start_web_backend;
 
 fn main() {
-    start_web_backend();
+    let _ = start_web_backend();
 }

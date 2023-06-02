@@ -48,28 +48,8 @@ const_format = "0.2.30"
 cargo-watch = "8.4.0"
 lazy_static = "1.4.0"
 
-domain = { path = "./domain" }
-usecase = { path = "./usecase" }
-in_memory_persistence = { path = "./in_memory_persistence" }
-rest = { path = "rest" }
-common_types = { path = "./common/types" }
-common_events = { path = "./common/events" }
-common_telnet = { path = "./common/telnet" }
-common_rest = { path = "./common/rest" }
-
 [dependencies]
-actix-web = { workspace = true }
-dotenv = { workspace = true }
-log = { workspace = true }
-
-domain = { path = "./domain" }
-usecase = { path = "./usecase" }
-in_memory_persistence = { path = "./in_memory_persistence" }
-rest = { path = "rest" }
-common_types = { path = "./common/types" }
-common_events = { path = "./common/events" }
-common_telnet = { path = "./common/telnet" }
-common_rest = { path = "./common/rest" }
+application = { path = "./application"}
 
 
 [build-dependencies]

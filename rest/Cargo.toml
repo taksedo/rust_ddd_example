@@ -15,12 +15,8 @@ serde_json.workspace = true
 serde_derive.workspace = true
 smart-default.workspace = true
 bigdecimal.workspace = true
-log.workspace = true
-env_logger.workspace = true
 
 domain = { path = "../domain" }
 usecase = { path = "../usecase" }
 common_types = { path = "../common/types" }
 common_rest = { path = "../common/rest" }
-in_memory_persistence = { path = "../in_memory_persistence" }
-application = { path = "../application" }
