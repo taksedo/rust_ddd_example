@@ -18,7 +18,7 @@ async fn get_menu() {
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();
 
-    let list_of_meal_model_from_resp: Vec<MealModel> = serde_json::from_str(&body_text).unwrap();
+    let list_of_meal_model_from_resp: Vec<MealModel> = serde_json::from_str(body_text).unwrap();
 
     assert_eq!(list_of_meal_model_from_resp.len(), 1);
     assert_eq!(
