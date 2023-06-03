@@ -6,7 +6,7 @@ version = "0.1.0"
 edition = "2021"
 
 [package]
-name = "rust_ddd_sandbox"
+name = "rust_ddd_example"
 authors = ["Ruslan Valiev"]
 description = "Developped in Rust"
 version.workspace = true
