@@ -6,7 +6,9 @@ use actix_web::http::header;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 use rest::main::endpoint_url::{MENU_ADD_TO_MENU, MENU_GET_ALL, MENU_GET_BY_ID};
-use rest::main::menu::{add_meal_to_menu_endpoint, get_meal_by_id_endpoint, get_menu_endpoint};
+use rest::main::menu::{
+    add_meal_to_menu_endpoint, get_health_status, get_meal_by_id_endpoint, get_menu_endpoint,
+};
 use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
@@ -44,6 +46,7 @@ pub async fn start_web_backend() -> std::io::Result<()> {
                 MENU_GET_ALL,
                 web::get().to(get_menu_endpoint::execute::<GetMenuUseCase>),
             )
+            .route("/health", web::get().to(get_health_status::execute))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
