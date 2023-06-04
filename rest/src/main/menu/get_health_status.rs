@@ -1,6 +1,6 @@
-use actix_web::{HttpResponse, Responder};
+use actix_web::HttpResponse;
 
-pub async fn execute() -> impl Responder {
+pub async fn execute() -> HttpResponse {
     HttpResponse::Ok()
         .content_type("application/json")
         .body("Healthy!")
