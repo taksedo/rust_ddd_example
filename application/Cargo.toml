@@ -14,6 +14,7 @@ smart-default.workspace = true
 lazy_static.workspace = true
 log.workspace = true
 env_logger.workspace = true
+dotenv.workspace = true
 
 common_types = { path = "../common/types" }
 common_events = { path = "../common/events" }
