@@ -1,0 +1,37 @@
+version: "3.9"
+name: rust_ddd_example
+services:
+  application-backend:
+    build:
+      context: $(pwd)/../..
+      dockerfile: tools/docker/Dockerfile
+    image: rust_ddd_example
+    # todo fix healthcheck
+    healthcheck:
+      test: curl --fail http://0.0.0.0:8080/health || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 0s
+      timeout: 10s
+    container_name: rust_ddd_example
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - application-network
+    ports:
+      - "8080:8080"
+
+  yandex-tank:
+    image: direvius/yandex-tank:latest
+    container_name: yandex-tank
+    restart: unless-stopped
+    depends_on:
+      - application-backend
+    volumes:
+      - .:/var/loadtest
+    networks:
+      - application-network
+
+networks:
+  application-network:
