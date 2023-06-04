@@ -1,0 +1,23 @@
+version: "3.9"
+name: rust_ddd_example
+services:
+  application-backend:
+    image: rust_ddd_example
+    container_name: rust_ddd_example
+    restart: unless-stopped
+    networks:
+      - application-network
+    ports:
+      - "8080:8080"
+
+  yandex-tank:
+    image: direvius/yandex-tank:latest
+    container_name: yandex-tank
+    restart: unless-stopped
+    depends_on:
+      - application-backend
+    networks:
+      - application-network
+
+networks:
+  application-network:
