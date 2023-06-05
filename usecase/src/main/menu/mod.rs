@@ -4,4 +4,5 @@ pub mod dto;
 pub mod get_meal_by_id;
 pub mod get_menu;
 pub mod invariant;
+pub mod remove_meal_from_menu;
 pub mod scenario;

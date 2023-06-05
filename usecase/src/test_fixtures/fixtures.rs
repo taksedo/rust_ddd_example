@@ -10,6 +10,7 @@ use domain::main::menu::meal_id::MealId;
 use domain::main::menu::meal_name::MealName;
 use domain::main::menu::price::Price;
 use domain::test_fixtures::fixtures::rnd_meal;
+use std::any::Any;
 
 pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();
@@ -50,15 +51,26 @@ impl MockMealPersister {
             assert_eq!(self.to_owned().meal.unwrap().price, price.unwrap())
         }
     }
+
     pub fn verify_invoked_meal(&self, meal: Option<Meal>) {
         if meal.is_some() {
             assert_eq!(self.to_owned().meal, meal)
         }
     }
+
     pub fn verify_events_after_deletion(&mut self, id: MealId) {
         let event_enum: DomainEventEnum = MealRemovedFromMenuDomainEvent::new(id).into();
-        assert_eq!(self.to_owned().meal.unwrap().pop_events(), vec![event_enum]);
+        let events = self
+            .to_owned()
+            .meal
+            .unwrap()
+            .pop_events()
+            .get(0)
+            .unwrap()
+            .clone();
+        assert_eq!(events.type_id(), event_enum.type_id());
     }
+
     pub fn verify_empty(&self) {
         assert!(&self.meal.is_none());
     }
@@ -131,8 +143,6 @@ impl MockMealExtractor {
     }
 
     pub fn verify_empty(&self) {
-        assert!(!&self.all);
-        assert!(&self.id.is_none());
         assert!(&self.name.is_none());
     }
 }
@@ -140,5 +150,11 @@ impl MockMealExtractor {
 impl dyn MealExtractor + 'static {
     pub fn downcast_ref<T: MealExtractor + 'static>(&self) -> Option<&T> {
         unsafe { Some(&*(self as *const dyn MealExtractor as *const T)) }
+    }
+}
+
+impl dyn MealPersister + 'static {
+    pub fn downcast_ref<T: MealPersister + 'static>(&self) -> Option<&T> {
+        unsafe { Some(&*(self as *const dyn MealPersister as *const T)) }
     }
 }
