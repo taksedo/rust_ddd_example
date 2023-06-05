@@ -1,0 +1,84 @@
+use crate::main::menu::remove_meal_from_menu::{
+    RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
+};
+use crate::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
+use crate::test_fixtures::fixtures::{MockMealExtractor, MockMealPersister};
+use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id};
+use std::sync::{Arc, Mutex};
+
+#[test]
+fn successfully_removed() {
+    let mut meal = rnd_meal();
+
+    let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
+    let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+    meal_extractor.lock().unwrap().meal = Some(meal.clone());
+
+    let mut use_case = RemoveMealFromMenuUseCase::new(
+        Arc::clone(&meal_extractor) as _,
+        Arc::clone(&meal_persister) as _,
+    );
+    let result = use_case
+        .execute(meal.clone().domain_entity_field.id)
+        .unwrap();
+
+    assert_eq!(result, ());
+
+    meal.removed = true;
+
+    use_case
+        .meal_persister
+        .lock()
+        .unwrap()
+        .downcast_ref::<MockMealPersister>()
+        .unwrap()
+        .verify_invoked_meal(Some(meal.clone()));
+
+    use_case
+        .meal_extractor
+        .lock()
+        .unwrap()
+        .downcast_ref::<MockMealExtractor>()
+        .unwrap()
+        .verify_invoked_get_by_id(meal.domain_entity_field.id.clone());
+
+    use_case
+        .meal_persister
+        .lock()
+        .unwrap()
+        .downcast_ref::<MockMealPersister>()
+        .unwrap()
+        .clone()
+        .verify_events_after_deletion(meal.domain_entity_field.id.clone());
+}
+
+#[test]
+fn meal_not_found() {
+    let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
+    let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+    let mut use_case = RemoveMealFromMenuUseCase::new(
+        Arc::clone(&meal_extractor) as _,
+        Arc::clone(&meal_persister) as _,
+    );
+
+    let meal_id = rnd_meal_id();
+
+    let result = use_case.execute(meal_id);
+
+    assert_eq!(result, Err(RemoveMealFromMenuUseCaseError::MealNotFound));
+    use_case
+        .meal_extractor
+        .lock()
+        .unwrap()
+        .downcast_ref::<MockMealExtractor>()
+        .unwrap()
+        .verify_empty();
+
+    use_case
+        .meal_extractor
+        .lock()
+        .unwrap()
+        .downcast_ref::<MockMealExtractor>()
+        .unwrap()
+        .verify_invoked_get_by_id(meal_id);
+}
