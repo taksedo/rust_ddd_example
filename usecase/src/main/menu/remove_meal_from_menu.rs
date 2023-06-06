@@ -1,3 +1,4 @@
+use actix_web::ResponseError;
 use domain::main::menu::meal_id::MealId;
 
 pub trait RemoveMealFromMenu {
@@ -9,3 +10,5 @@ pub enum RemoveMealFromMenuUseCaseError {
     #[error("Еда не найдена")]
     MealNotFound,
 }
+
+impl ResponseError for RemoveMealFromMenuUseCaseError {}
