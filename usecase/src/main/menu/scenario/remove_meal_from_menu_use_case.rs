@@ -15,13 +15,16 @@ pub struct RemoveMealFromMenuUseCase {
 
 impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
     fn execute(&mut self, id: MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
-        match self.meal_extractor.lock().unwrap().get_by_id(id) {
-            None => Err(RemoveMealFromMenuUseCaseError::MealNotFound),
-            Some(mut meal) => {
-                meal.remove_meal_from_menu();
-                self.meal_persister.lock().unwrap().save(meal);
-                Ok(())
-            }
-        }
+        let mut meal = self
+            .meal_extractor
+            .lock()
+            .unwrap()
+            .get_by_id(id)
+            .map_or(Err(RemoveMealFromMenuUseCaseError::MealNotFound), |meal| {
+                Ok(meal)
+            })?;
+        meal.remove_meal_from_menu();
+        self.meal_persister.lock().unwrap().save(meal);
+        Ok(())
     }
 }

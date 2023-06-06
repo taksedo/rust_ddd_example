@@ -10,6 +10,7 @@ use usecase::main::menu::invariant::meal_already_exists_uses_meal_extractor::Mea
 use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
+use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
 
 lazy_static! {
     pub static ref ADD_MEAL_TO_MEANU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =
@@ -23,6 +24,10 @@ lazy_static! {
     pub static ref GET_MENU_USE_CASE: Data<Arc<Mutex<GetMenuUseCase>>> = Data::new(Arc::clone(
         &get_menu_use_case(Arc::clone(&MEAL_RESPOSITORY,))
     ));
+    pub static ref REMOVE_MEAL_FROM_MENU_USECASE: Data<Arc<Mutex<RemoveMealFromMenuUseCase>>> =
+        Data::new(Arc::clone(&remove_meal_from_menu_usecase(Arc::clone(
+            &MEAL_RESPOSITORY,
+        ))));
 }
 
 pub fn add_meal_to_menu_use_case<U, V>(
@@ -56,5 +61,18 @@ where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {
     let usecase = GetMenuUseCase::new(Arc::clone(&meal_repository) as _);
+    Arc::new(Mutex::new(usecase))
+}
+
+pub fn remove_meal_from_menu_usecase<U>(
+    meal_repository: Arc<Mutex<U>>,
+) -> Arc<Mutex<RemoveMealFromMenuUseCase>>
+where
+    U: Debug + Send + MealExtractor + MealPersister + 'static,
+{
+    let usecase = RemoveMealFromMenuUseCase::new(
+        Arc::clone(&meal_repository) as _,
+        Arc::clone(&meal_repository) as _,
+    );
     Arc::new(Mutex::new(usecase))
 }
