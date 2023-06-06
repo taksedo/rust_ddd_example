@@ -11,6 +11,9 @@ use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseE
 use usecase::main::menu::dto::meal_info::MealInfo;
 use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
 use usecase::main::menu::get_menu::GetMenu;
+use usecase::main::menu::remove_meal_from_menu::{
+    RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
+};
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";
 
@@ -60,15 +63,10 @@ impl AddMealToMenu for MockAddMealToMenu {
 }
 
 impl MockAddMealToMenu {
-    pub fn verify_invoked(
-        &self,
-        name: MealName,
-        // description: MealDescription,
-        // price: Price,
-    ) {
+    pub fn verify_invoked(&self, name: MealName, description: MealDescription, price: Price) {
         assert_eq!(name, self.name.clone());
-        // description shouldBe this.description
-        // price shouldBe this.price
+        assert_eq!(description, self.description.clone());
+        assert_eq!(price, self.price.clone());
     }
 }
 
@@ -122,5 +120,19 @@ impl StringMethodsForRestTestExt for String {
 
     fn with_id(&mut self, id: u64) -> String {
         self.with_parameter("id".to_string(), id.to_string())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, SmartDefault)]
+pub struct MockRemoveMealFromMenu {
+    #[default(Ok(()))]
+    pub response: Result<(), RemoveMealFromMenuUseCaseError>,
+    pub id: MealId,
+}
+
+impl RemoveMealFromMenu for MockRemoveMealFromMenu {
+    fn execute(&mut self, id: MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
+        self.id = id;
+        self.response
     }
 }

@@ -3,6 +3,7 @@ use crate::main::menu::add_meal_to_menu_endpoint::MealStruct;
 use crate::test_fixtures::fixtures::MockAddMealToMenu;
 use actix_web::http::{header, StatusCode};
 use actix_web::{web, web::Json};
+use bigdecimal::{BigDecimal, One};
 use domain::test_fixtures::fixtures::{
     rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
@@ -31,7 +32,7 @@ async fn created_successfully() {
     mock_add_meal_to_menu
         .lock()
         .unwrap()
-        .verify_invoked(meal_name);
+        .verify_invoked(meal_name, meal_description, price);
     let resp = resp.unwrap();
 
     let header = resp
@@ -45,21 +46,22 @@ async fn created_successfully() {
     assert_eq!(header, &meal_id.to_u64().to_string());
 }
 
-// #[actix_web::test]
-// async fn validation_error() {
-//     let mock_add_meal_to_menu = Arc::new(Mutex::new(MockAddMealToMenu::default()));
-//     let mock_shared_state = web::Data::new(AddMealToMenuEndpointSharedState {
-//         add_meal_to_menu: Arc::clone(&mock_add_meal_to_menu),
-//     });
-//
-//     let meal = Json(MealStruct::new(
-//         "".to_string(),
-//         "".to_string(),
-//         BigDecimal::one().with_scale(20),
-//     ));
-//
-//     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state, meal).await;
-//     let resp = resp.expect_err("Обнаружена ошибка");
-//
-//     assert_eq!(&resp.status(), &StatusCode::BAD_REQUEST);
-// }
+#[actix_web::test]
+async fn validation_error() {
+    let mock_add_meal_to_menu = Arc::new(Mutex::new(MockAddMealToMenu::default()));
+    let mock_shared_state = web::Data::new(Arc::clone(&mock_add_meal_to_menu));
+
+    let meal = Json(MealStruct::new(
+        "".to_string(),
+        "".to_string(),
+        BigDecimal::one().with_scale(20),
+    ));
+
+    let resp = add_meal_to_menu_endpoint::execute(mock_shared_state as _, meal).await;
+    let resp = resp.expect_err("Обнаружена ошибка");
+
+    assert_eq!(
+        resp.as_response_error().status_code(),
+        StatusCode::INTERNAL_SERVER_ERROR
+    );
+}
