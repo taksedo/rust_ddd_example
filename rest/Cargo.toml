@@ -16,7 +16,7 @@ serde_derive.workspace = true
 smart-default.workspace = true
 bigdecimal.workspace = true
 
-domain = { path = "../domain" }
-usecase = { path = "../usecase" }
-common_types = { path = "../common/types" }
-common_rest = { path = "../common/rest" }
+domain.workspace = true
+usecase.workspace = true
+common_types.workspace = true
+common_rest.workspace = true

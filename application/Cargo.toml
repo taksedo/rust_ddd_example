@@ -16,9 +16,9 @@ log.workspace = true
 env_logger.workspace = true
 dotenv.workspace = true
 
-common_types = { path = "../common/types" }
-common_events = { path = "../common/events" }
-domain = { path = "../domain" }
-in_memory_persistence = { path = "../in_memory_persistence" }
-usecase = { path = "../usecase" }
-rest = {path = "../rest"}
+common_types.workspace = true
+common_events.workspace = true
+domain.workspace = true
+in_memory_persistence.workspace = true
+usecase.workspace = true
+rest.workspace = true

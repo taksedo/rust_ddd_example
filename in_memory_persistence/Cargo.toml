@@ -15,8 +15,8 @@ enum_dispatch.workspace = true
 smart-default.workspace = true
 time.workspace = true
 
-common_types = { path = "../common/types" }
-common_events = { path = "../common/events" }
-domain = { path = "../domain" }
-usecase = { path = "../usecase" }
+common_types.workspace = true
+common_events.workspace = true
+domain.workspace = true
+usecase.workspace = true
 
