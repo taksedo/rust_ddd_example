@@ -106,7 +106,7 @@ pub trait StringMethodsForRestTestExt {
 
     fn with_host(&self) -> String;
 
-    fn with_id(&mut self, id: u64) -> String;
+    fn with_id(&mut self, id: i64) -> String;
 }
 
 impl StringMethodsForRestTestExt for String {
@@ -118,7 +118,7 @@ impl StringMethodsForRestTestExt for String {
         format!("{API_V1_TYPE_BASE_URL}{self}")
     }
 
-    fn with_id(&mut self, id: u64) -> String {
+    fn with_id(&mut self, id: i64) -> String {
         self.with_parameter("id".to_string(), id.to_string())
     }
 }

@@ -3,7 +3,7 @@ use rand::{thread_rng, Rng};
 
 #[test]
 fn check_equality() {
-    let id: u64 = thread_rng().gen();
+    let id: i64 = thread_rng().gen();
 
     let meal_id1 = MealId::new(id);
     let meal_id2 = MealId::new(id);

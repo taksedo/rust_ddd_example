@@ -24,28 +24,28 @@ impl Price {
     }
 
     pub fn add(&self, additional: Self) -> Self {
-        let additional_price_value = additional.to_i64();
-        let current_price_value = &self.to_i64();
+        let additional_price_value = additional.to_f64();
+        let current_price_value = &self.to_f64();
         let total_price_value = current_price_value.add(additional_price_value);
         Self {
-            value: BigDecimal::from_i64(total_price_value).unwrap(),
+            value: BigDecimal::from_f64(total_price_value).unwrap(),
         }
     }
 
     pub fn multiple(&self, multiplicator: Count) -> Self {
         let count = multiplicator.value.to_i64().unwrap();
-        let current_price_value = &self.to_i64();
-        let multiplied_price_value = current_price_value.mul(count);
+        let current_price_value = self.to_f64();
+        let multiplied_price_value = current_price_value.mul(count as f64);
         Self {
-            value: BigDecimal::from_i64(multiplied_price_value).unwrap(),
+            value: BigDecimal::from_f64(multiplied_price_value).unwrap(),
         }
     }
 
-    pub fn to_i64(&self) -> i64 {
-        self.to_owned().value.to_i64().unwrap()
+    pub fn to_f64(&self) -> f64 {
+        self.to_owned().value.to_f64().unwrap()
     }
 
-    pub fn to_bigdecimal_value(&self) -> BigDecimal {
+    pub fn to_bigdecimal(&self) -> BigDecimal {
         self.to_owned().value
     }
 

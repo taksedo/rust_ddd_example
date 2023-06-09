@@ -1,4 +1,4 @@
-use crate::main::meal_result_set_extractor::establish_connection;
+use crate::main::meal_db_dto::establish_connection;
 use derive_new::new;
 use diesel::sql_types;
 use diesel::{select, sql_function, RunQueryDsl};

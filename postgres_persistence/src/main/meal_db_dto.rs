@@ -1,7 +1,6 @@
 use bigdecimal::BigDecimal;
 use common_types::main::base::domain_entity::{DomainEntity, Version};
 use diesel::prelude::*;
-use diesel::sql_types::BigInt;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_description::MealDescription;
 use domain::main::menu::meal_id::MealId;
@@ -40,7 +39,7 @@ impl From<Meal> for MealDbDto {
             id: value.domain_entity_field.id.to_i64(),
             name: value.name.to_string(),
             description: Some(value.description.to_string()),
-            price: value.price.to_bigdecimal_value(),
+            price: value.price.to_bigdecimal(),
             removed: value.removed,
             version: value.domain_entity_field.version.to_i64(),
         }
@@ -57,7 +56,7 @@ impl From<MealDbDto> for Meal {
             },
             name: MealName::from(value.name).unwrap(),
             description: MealDescription::from(value.description.unwrap()).unwrap(),
-            price: Price::default(),
+            price: Price::from(value.price).unwrap(),
             removed: value.removed,
         }
     }

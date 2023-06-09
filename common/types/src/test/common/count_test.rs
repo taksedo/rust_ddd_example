@@ -2,10 +2,10 @@ use crate::main::common::count::{Count, CountError};
 use rstest::rstest;
 
 #[rstest]
-#[case(0_u32)]
-#[case(1_u32)]
-#[case(u32::MAX)]
-fn create_count_success(#[case] value: u32) {
+#[case(0_i32)]
+#[case(1_i32)]
+#[case(i32::MAX)]
+fn create_count_success(#[case] value: i32) {
     let result = Count::from(value);
     let count = result.unwrap();
     assert_eq!(count.to_i32(), value);
@@ -36,15 +36,15 @@ fn increment__success() {
 #[test]
 #[allow(non_snake_case)]
 fn increment__max_value_reached() {
-    let count = Count::from(u32::MAX).unwrap();
+    let count = Count::from(i32::MAX).unwrap();
     let result = count.increment();
     assert_eq!(result, Err(CountError::MaxValueReachedError));
 }
 
 #[rstest]
-#[case(1_u32)]
-#[case(u32::MAX)]
-fn decrement_success(#[case] value: u32) {
+#[case(1_i32)]
+#[case(i32::MAX)]
+fn decrement_success(#[case] value: i32) {
     let count = Count::from(value).unwrap();
     let increment = count.decrement();
     assert_eq!(increment, Count::from(count.to_i32() - 1));
@@ -75,7 +75,7 @@ fn check_is_min_value__false() {
 #[test]
 #[allow(non_snake_case)]
 fn check_is_max_value__true() {
-    let count = Count::from(u32::MAX).unwrap();
+    let count = Count::from(i32::MAX).unwrap();
     assert!(count.is_max());
 }
 

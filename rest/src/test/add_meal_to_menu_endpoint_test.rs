@@ -24,7 +24,7 @@ async fn created_successfully() {
     let meal = Json(MealStruct::new(
         meal_name.clone().to_string(),
         meal_description.clone().to_string(),
-        price.clone().to_bigdecimal_value(),
+        price.clone().to_bigdecimal(),
     ));
 
     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state, meal).await;

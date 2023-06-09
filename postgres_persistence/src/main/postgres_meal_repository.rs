@@ -1,4 +1,4 @@
-use crate::main::meal_result_set_extractor::{establish_connection, MealDbDto};
+use crate::main::meal_db_dto::{establish_connection, MealDbDto};
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use common_types::main::base::domain_entity::DomainEntityTrait;
 use derivative::Derivative;
@@ -45,7 +45,7 @@ impl MealExtractor for PostgresMealRepository {
 
         match result {
             Ok(meal_res) => {
-                if meal_res.len() != 0 {
+                if !meal_res.is_empty() {
                     let res: Vec<Meal> = meal_res
                         .iter()
                         .map(|meal_res_iter| Meal::from(meal_res_iter.clone()))
@@ -70,7 +70,7 @@ impl MealExtractor for PostgresMealRepository {
 
         match result {
             Ok(meal_res) => {
-                if meal_res.len() != 0 {
+                if !meal_res.is_empty() {
                     let res: Vec<Meal> = meal_res
                         .iter()
                         .map(|meal_res_iter| Meal::from(meal_res_iter.clone()))

@@ -1,3 +1,4 @@
+use bigdecimal::BigDecimal;
 use serde::Deserialize;
 use serde_derive::Serialize;
 use usecase::main::menu::dto::meal_info::MealInfo;
@@ -7,7 +8,7 @@ pub struct MealModel {
     pub id: i64,
     pub name: String,
     pub description: String,
-    pub price: i64,
+    pub price: BigDecimal,
     pub version: i64,
 }
 
@@ -17,7 +18,7 @@ impl MealModel {
             id: meal_info.id.to_i64(),
             name: meal_info.name.to_string(),
             description: meal_info.description.to_string(),
-            price: meal_info.price.to_i64(),
+            price: meal_info.price.to_bigdecimal(),
             version: meal_info.version.to_i64(),
         }
     }
