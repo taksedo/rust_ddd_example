@@ -43,7 +43,7 @@ async fn created_successfully() {
         .unwrap();
 
     assert_eq!(&resp.status(), &StatusCode::OK);
-    assert_eq!(header, &meal_id.to_u64().to_string());
+    assert_eq!(header, &meal_id.to_i64().to_string());
 }
 
 #[actix_web::test]

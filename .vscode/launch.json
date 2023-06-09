@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug executable 'rust_hex_sandbox'",
-            "sourceLanguages": ["rust"]
+            "sourceLanguages": ["rust"],
             "cargo": {
                 "args": [
                     "build",

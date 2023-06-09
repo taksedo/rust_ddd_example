@@ -23,7 +23,7 @@ async fn get_menu() {
     assert_eq!(list_of_meal_model_from_resp.len(), 1);
     assert_eq!(
         list_of_meal_model_from_resp.get(0).unwrap().id,
-        meal_info.id.to_u64()
+        meal_info.id.to_i64()
     );
     assert_eq!(
         list_of_meal_model_from_resp.get(0).unwrap().name,

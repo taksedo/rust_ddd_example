@@ -10,7 +10,7 @@ pub async fn execute<T: GetMealById + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> Result<HttpResponse> {
-    let id: u64 = req.match_info().get("id").unwrap().parse().unwrap();
+    let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
     let meal_info = shared_state.lock().unwrap().execute(MealId::new(id))?;
     let resp = HttpResponse::Ok()

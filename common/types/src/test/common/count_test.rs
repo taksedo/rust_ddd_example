@@ -8,14 +8,14 @@ use rstest::rstest;
 fn create_count_success(#[case] value: u32) {
     let result = Count::from(value);
     let count = result.unwrap();
-    assert_eq!(count.to_u32_value(), value);
+    assert_eq!(count.to_i32(), value);
 }
 
 #[test]
 #[allow(non_snake_case)]
 fn create_count__one() {
     let result = Count::one();
-    assert_eq!(result.to_u32_value(), 1)
+    assert_eq!(result.to_i32(), 1)
 }
 
 // #[test]
@@ -30,7 +30,7 @@ fn create_count__one() {
 fn increment__success() {
     let count = Count::from(1).unwrap();
     let increment = count.increment();
-    assert_eq!(increment, Count::from(count.to_u32_value() + 1));
+    assert_eq!(increment, Count::from(count.to_i32() + 1));
 }
 
 #[test]
@@ -47,7 +47,7 @@ fn increment__max_value_reached() {
 fn decrement_success(#[case] value: u32) {
     let count = Count::from(value).unwrap();
     let increment = count.decrement();
-    assert_eq!(increment, Count::from(count.to_u32_value() - 1));
+    assert_eq!(increment, Count::from(count.to_i32() - 1));
 }
 
 #[test]

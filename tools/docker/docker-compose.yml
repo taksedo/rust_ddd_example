@@ -1,0 +1,125 @@
+version: "3.9"
+name: rust_ddd_example
+services:
+  application-backend:
+    build:
+      context: $(pwd)/../..
+      dockerfile: tools/docker/build-app.docker-compose.yml
+    image: rust_ddd_example
+    # todo fix healthcheck
+    healthcheck:
+      test: curl --fail http://0.0.0.0:8080/health || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 0s
+      timeout: 10s
+    container_name: rust_ddd_example
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - application-network
+    ports:
+      - "8080:8080"
+  application-db:
+    user: root
+    container_name: restapp_postgres_container
+    image: postgres:13
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=50"
+      - "-c"
+      - "shared_buffers=1GB"
+      - "-c"
+      - "effective_cache_size=4GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=10GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    env_file:
+      - .env
+    volumes:
+      - restapp_postgres_volume:/docker-entrypoint-initdb.d
+      - restapp_postgres_volume:/var/lib/postgresql/data
+      - restapp_postgres_volume:/db
+    ports:
+      - "5001:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d restappdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+    networks:
+      - application-network
+
+  pgadmin:
+    user: root
+    container_name: restapp_pgadmin_container
+    image: dpage/pgadmin4:latest
+    env_file:
+      - .env
+    volumes:
+      - restapp_pgadmin_volume:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - application-network
+
+  postgres_exporter:
+    user: root
+    container_name: restapp_exporter_container
+    image: prometheuscommunity/postgres-exporter:v0.10.1
+    env_file:
+      - .env
+    volumes:
+      -   restapp_exporter_volume:/etc/postgres_exporter/queries.yaml:ro
+    ports:
+      - "9200:9187"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 500M
+    networks:
+      - application-network
+
+networks:
+  application-network:
+
+volumes:
+  restapp_postgres_volume:
+  restapp_pgadmin_volume:
+  restapp_exporter_volume:
