@@ -12,6 +12,6 @@ structmap = "0.1.6"
 structmap-derive = "0.1.6"
 actix-web.workspace = true
 
-domain = { path = "../domain" }
-common_types = { path = "../common/types" }
-common_events = { path = "../common/events" }
+domain.workspace = true
+common_types.workspace = true
+common_events.workspace = true
