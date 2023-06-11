@@ -1,15 +1,12 @@
 use bigdecimal::BigDecimal;
 use common_types::main::base::domain_entity::{DomainEntity, Version};
 use diesel::prelude::*;
-use diesel_migrations::{embed_migrations, EmbeddedMigrations};
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_description::MealDescription;
 use domain::main::menu::meal_id::MealId;
 use domain::main::menu::meal_name::MealName;
 use domain::main::menu::price::Price;
-use dotenvy::dotenv;
 use serde::*;
-use std::env;
 
 #[derive(
     Insertable, Queryable, QueryableByName, Selectable, Serialize, Deserialize, Clone, Debug,

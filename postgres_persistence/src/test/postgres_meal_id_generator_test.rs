@@ -1,4 +1,4 @@
-use crate::main::database::MIGRATIONS;
+use crate::main::database_start::MIGRATIONS;
 use crate::main::postgres_meal_id_generator::PostgresMealIdGenerator;
 use crate::test_fixtures::TestDb;
 use diesel::sql_types::{BigInt, VarChar};
@@ -6,8 +6,6 @@ use diesel::{select, sql_function, RunQueryDsl};
 use diesel_migrations::MigrationHarness;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::rnd_meal_id;
-use sea_orm::{DatabaseBackend, MockDatabase, Transaction};
-use std::fmt::format;
 
 #[test]
 fn generate_id_integration_test() {

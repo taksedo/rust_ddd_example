@@ -1,4 +1,3 @@
-use crate::main::database::establish_connection;
 use crate::main::meal_db_dto::MealDbDto;
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use common_types::main::base::domain_entity::DomainEntityTrait;
@@ -40,7 +39,7 @@ impl MealPersister for PostgresMealRepository {
 impl MealExtractor for PostgresMealRepository {
     fn get_by_id(&mut self, meal_id: MealId) -> Option<Meal> {
         use super::schema::shop::meal::dsl::*;
-        let connection = &mut establish_connection();
+        let connection = &mut self.connection;
         let result = meal
             .find(meal_id.to_i64())
             .select(MealDbDto::as_select())
@@ -96,6 +95,7 @@ impl MealExtractor for PostgresMealRepository {
         result
             .unwrap()
             .iter()
+            .filter(|meal_res_iter| !meal_res_iter.removed)
             .map(|meal_res_iter| Meal::from(meal_res_iter.clone()))
             .collect::<Vec<Meal>>()
     }

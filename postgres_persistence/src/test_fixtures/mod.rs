@@ -1,15 +1,15 @@
+use common_events::main::domain_event_publisher::DomainEventPublisher;
+use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
+use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+
 use dotenvy::dotenv;
 use log::warn;
-use std::env;
-use std::rc::Rc;
 use std::sync::atomic::AtomicU32;
-use testcontainers::clients::Cli;
-use testcontainers::core::env::command;
+use testcontainers::clients;
 use testcontainers::core::WaitFor;
 use testcontainers::images::generic::GenericImage;
-use testcontainers::images::postgres::Postgres;
-use testcontainers::{clients, Container, Image};
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
@@ -89,5 +89,43 @@ impl Drop for TestDb {
         sql_query(format!("DROP DATABASE {}", self.curr_test_db_name))
             .execute(&mut conn)
             .unwrap();
+    }
+}
+
+#[derive(new, Debug, Default)]
+pub struct MockEventPublisher {
+    events: Vec<DomainEventEnum>,
+}
+
+impl MockEventPublisher {
+    pub fn verify_contains(&self, events: Vec<DomainEventEnum>) {
+        let matching = &self
+            .events
+            .iter()
+            .zip(&events)
+            .filter(|&(a, b)| a == b)
+            .count();
+        assert_eq!(matching, &0_usize)
+    }
+
+    pub fn verify_event_is_empty(&self) {
+        assert!(&self.events.is_empty())
+    }
+}
+
+impl DomainEventPublisher<DomainEventEnum> for MockEventPublisher {
+    fn publish(&mut self, events: &Vec<DomainEventEnum>) {
+        self.events.extend(events.clone())
+    }
+}
+
+#[derive(Debug, new, Default)]
+pub(crate) struct TestMealIdGenerator {
+    pub meal_id: MealId,
+}
+
+impl MealIdGenerator for TestMealIdGenerator {
+    fn generate(&mut self) -> MealId {
+        self.meal_id
     }
 }

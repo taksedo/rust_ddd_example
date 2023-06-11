@@ -1,6 +1,6 @@
 use crate::main::configuration::application_configuration::EVENT_PUBLISHER;
 use lazy_static::lazy_static;
-use postgres_persistence::main::database::establish_connection;
+use postgres_persistence::main::database_start::establish_connection;
 use postgres_persistence::main::postgres_meal_id_generator::PostgresMealIdGenerator as IdGenerator;
 use postgres_persistence::main::postgres_meal_repository::PostgresMealRepository as MealRepository;
 use std::sync::{Arc, Mutex};
