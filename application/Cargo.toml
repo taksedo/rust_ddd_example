@@ -17,6 +17,8 @@ env_logger.workspace = true
 dotenvy.workspace = true
 diesel.workspace = true
 
+
+
 common_types.workspace = true
 common_events.workspace = true
 domain.workspace = true

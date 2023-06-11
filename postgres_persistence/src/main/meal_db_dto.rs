@@ -1,6 +1,7 @@
 use bigdecimal::BigDecimal;
 use common_types::main::base::domain_entity::{DomainEntity, Version};
 use diesel::prelude::*;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations};
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_description::MealDescription;
 use domain::main::menu::meal_id::MealId;
@@ -9,14 +10,6 @@ use domain::main::menu::price::Price;
 use dotenvy::dotenv;
 use serde::*;
 use std::env;
-
-pub fn establish_connection() -> PgConnection {
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    PgConnection::establish(&database_url)
-        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
-}
 
 #[derive(
     Insertable, Queryable, QueryableByName, Selectable, Serialize, Deserialize, Clone, Debug,

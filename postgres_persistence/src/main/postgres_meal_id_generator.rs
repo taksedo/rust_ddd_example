@@ -1,16 +1,20 @@
-use crate::main::meal_db_dto::establish_connection;
+use derivative::Derivative;
 use derive_new::new;
-use diesel::sql_types;
 use diesel::{select, sql_function, RunQueryDsl};
+use diesel::{sql_types, PgConnection};
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use std::fmt::Debug;
 
-#[derive(new, Debug)]
-pub struct PostgresMealIdGenerator {}
+#[derive(new, Derivative)]
+#[derivative(Debug)]
+pub struct PostgresMealIdGenerator {
+    #[derivative(Debug = "ignore")]
+    connection: PgConnection,
+}
 
 impl MealIdGenerator for PostgresMealIdGenerator {
     fn generate(&mut self) -> MealId {
-        let connection = &mut establish_connection();
+        let connection = &mut self.connection;
         let id = select(nextval("shop.meal_id_seq"))
             .get_result::<i64>(connection)
             .unwrap();

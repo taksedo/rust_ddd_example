@@ -100,3 +100,4 @@
 //     })
 //     .await;
 // }
+mod postgres_meal_id_generator_test;
