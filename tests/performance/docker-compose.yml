@@ -4,7 +4,7 @@ services:
   application-backend:
     build:
       context: $(pwd)/../..
-      dockerfile: tools/docker/Dockerfile
+      dockerfile: tools/docker/build-app.docker-compose.yml
     image: rust_ddd_example
     # todo fix healthcheck
     healthcheck:

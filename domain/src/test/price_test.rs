@@ -12,7 +12,7 @@ use std::str::FromStr;
 fn create_price__success(#[case] value: u64) {
     let input = BigDecimal::from(value);
     let price = Price::from(input.to_owned()).unwrap();
-    assert_eq!(price.to_bigdecimal_value(), input.with_scale(2));
+    assert_eq!(price.to_bigdecimal(), input.with_scale(2));
 }
 
 #[test]
@@ -20,10 +20,7 @@ fn create_price__change_scale() {
     let value = BigDecimal::from_str("1.4").unwrap();
     let price = Price::from(value).unwrap();
 
-    assert_eq!(
-        price.to_bigdecimal_value(),
-        BigDecimal::from_str("1.40").unwrap()
-    )
+    assert_eq!(price.to_bigdecimal(), BigDecimal::from_str("1.40").unwrap())
 }
 
 #[test]
@@ -49,7 +46,7 @@ fn add_price() {
 
     let result = price1.add(price2);
     assert_eq!(
-        result.to_bigdecimal_value(),
+        result.to_bigdecimal(),
         BigDecimal::from_str("2.89").unwrap()
     );
 }
@@ -60,7 +57,7 @@ fn multiple_to_count() {
     let count = Count::from(3).unwrap();
     let result = price.multiple(count);
     assert_eq!(
-        result.to_bigdecimal_value(),
+        result.to_bigdecimal(),
         BigDecimal::from_str("4.50").unwrap()
     );
 }

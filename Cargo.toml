@@ -26,7 +26,7 @@ actix-cors = "0.6.4"
 actix-service = "2.0.2"
 structmap = "0.1.6"
 structmap-derive = "0.1.6"
-dotenv = "0.15.0"
+dotenvy = "0.15"
 log = "0.4.18"
 env_logger = "0.10.0"
 derivative = "2.2.0"
@@ -35,7 +35,8 @@ serde_derive = "1.0.163"
 serde = { version = "1.0.163", features = ["derive", "rc", "alloc"] }
 serde_json = "1.0.96"
 thiserror = "1.0.40"
-bigdecimal = { version = "0.3.0", features = ["serde"] }
+bigdecimal = { version = ">=0.0.13, < 0.4.0", features = ["serde"] }
+#numeric = {version = "0.1.4", features = ["bigedecimal"]}
 mockall = "0.11.3"
 fake = { version = "2.5.0", features = ["derive", "bigdecimal"] }
 rand = "0.8.5"
@@ -47,6 +48,8 @@ smart-default = "0.7.1"
 const_format = "0.2.30"
 cargo-watch = "8.4.0"
 lazy_static = "1.4.0"
+diesel = { version = "2.1.0", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
+
 common_types = { path = "common/types" }
 common_events = { path = "common/events" }
 common_rest = { path = "common/rest" }
@@ -59,6 +62,7 @@ application = { path = "application" }
 
 [dependencies]
 application = { path = "application" }
+postgres_persistence = { path = "postgres_persistence" }
 
 
 [build-dependencies]

@@ -18,10 +18,9 @@ fn publish_events() {
     let another_test_event_listener = AnotherTestEventListener::default();
     publisher.register_listener(another_test_event_listener);
 
-    let test_event: DomainEventEnum =
-        DomainEventEnum::TestEvent(TestEvent::new("TestEvent".to_string()));
+    let test_event: DomainEventEnum = TestEvent::new("TestEvent".to_string()).into();
     let another_test_event: DomainEventEnum =
-        DomainEventEnum::AnotherTestEvent(AnotherTestEvent::new("AnotherTestEvent".to_string()));
+        AnotherTestEvent::new("AnotherTestEvent".to_string()).into();
     let events: Vec<DomainEventEnum> = vec![test_event.clone(), another_test_event.clone()];
 
     publisher.publish(&events);

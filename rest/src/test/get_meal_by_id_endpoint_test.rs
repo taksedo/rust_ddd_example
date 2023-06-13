@@ -16,12 +16,12 @@ async fn returned_successfully() {
 
     let url = MENU_GET_BY_ID
         .to_string()
-        .with_id(meal_info.id.to_u64())
+        .with_id(meal_info.id.to_i64())
         .with_host();
 
     let req = test::TestRequest::default()
         .uri(&url)
-        .param("id", meal_info.id.to_u64().clone().to_string())
+        .param("id", meal_info.id.to_i64().clone().to_string())
         .to_http_request();
 
     let resp = get_meal_by_id_endpoint::execute(mock_shared_state, req).await;

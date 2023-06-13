@@ -40,6 +40,6 @@ where
 
     Ok(HttpResponse::Ok()
         .content_type(ContentType::plaintext())
-        .insert_header(("Location", meal_id.to_u64()))
+        .insert_header(("Location", meal_id.to_i64()))
         .body(""))
 }

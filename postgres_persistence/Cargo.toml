@@ -1,8 +1,32 @@
 [package]
 name = "postgres_persistence"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+derive-new.workspace = true
+derivative.workspace = true
+diesel.workspace = true
+serde.workspace = true
+dotenvy.workspace = true
+pg-embed = { version = "0.7", default-features = false, features = ["rt_tokio"] }
+serial_test = "2.0.0"
+tokio = "1.28.2"
+bigdecimal.workspace = true
+diesel_logger = "0.3.0"
+log = "^0.4.14"
+env_logger = "0.10.0"
+url = "2.3.1"
+diesel_migrations = "2.1.0"
+sea-orm = { version = "0.11.3", features = ["mock"] }
+testcontainers = "0.14.0"
+rstest.workspace = true
+pretty_env_logger = "0.5.0"
+reqwest = { version = "0.11.14", features = [ "blocking" ] }
+
+common_events.workspace = true
+common_types.workspace = true
+usecase.workspace = true
+domain.workspace = true

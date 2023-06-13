@@ -14,11 +14,15 @@ smart-default.workspace = true
 lazy_static.workspace = true
 log.workspace = true
 env_logger.workspace = true
-dotenv.workspace = true
+dotenvy.workspace = true
+diesel.workspace = true
+
+
 
 common_types.workspace = true
 common_events.workspace = true
 domain.workspace = true
 in_memory_persistence.workspace = true
+postgres_persistence.workspace = true
 usecase.workspace = true
 rest.workspace = true

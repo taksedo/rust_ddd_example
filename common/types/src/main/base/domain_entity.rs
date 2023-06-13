@@ -11,7 +11,6 @@ pub struct DomainEntity<T, E> {
     pub version: Version,
     #[new(value = "vec![]")]
     #[derivative(PartialEq = "ignore")]
-    #[derivative(Debug = "ignore")]
     pub events: Vec<E>,
 }
 
@@ -36,8 +35,8 @@ impl<E: Clone, T> DomainEntityTrait<E> for DomainEntity<T, E> {
 
 #[derive(new, Debug, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Default)]
 pub struct Version {
-    #[new(value = "0_u64")]
-    value: u64,
+    #[new(value = "0_i64")]
+    value: i64,
 }
 
 impl Version {
@@ -53,13 +52,13 @@ impl Version {
         }
     }
 
-    pub fn to_u64(&self) -> u64 {
+    pub fn to_i64(&self) -> i64 {
         self.value
     }
 }
 
-impl From<u64> for Version {
-    fn from(value: u64) -> Self {
+impl From<i64> for Version {
+    fn from(value: i64) -> Self {
         Self { value }
     }
 }

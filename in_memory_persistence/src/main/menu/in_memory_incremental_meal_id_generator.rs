@@ -5,7 +5,7 @@ use std::sync::Mutex;
 #[derive(Debug, new)]
 pub struct InMemoryIncrementalMealIdGenerator {
     #[new(value = "Mutex::new(0)")]
-    counter: Mutex<u64>,
+    counter: Mutex<i64>,
 }
 
 impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {

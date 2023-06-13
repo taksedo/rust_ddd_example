@@ -1,12 +1,12 @@
 use crate::main::configuration::use_case_configuration::{
-    ADD_MEAL_TO_MEANU_USE_CASE, GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE,
+    ADD_MEAL_TO_MENU_USE_CASE, GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE,
     REMOVE_MEAL_FROM_MENU_USECASE,
 };
 use actix_cors::Cors;
 use actix_web::http::{header, Uri};
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use rest::main::endpoint_url::{MENU_ADD_TO_MENU, MENU_DELETE_BY_ID, MENU_GET_ALL, MENU_GET_BY_ID};
 use rest::main::menu::{
     add_meal_to_menu_endpoint, get_health_status, get_meal_by_id_endpoint, get_menu_endpoint,
@@ -36,7 +36,7 @@ pub async fn start_web_backend() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(ADD_MEAL_TO_MEANU_USE_CASE.clone())
+            .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())
             .app_data(GET_MEAL_BY_ID_USE_CASE.clone())
             .app_data(GET_MENU_USE_CASE.clone())
             .app_data(REMOVE_MEAL_FROM_MENU_USECASE.clone())

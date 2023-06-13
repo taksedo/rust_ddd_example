@@ -9,11 +9,11 @@ pub async fn execute<T: RemoveMealFromMenu + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> Result<HttpResponse> {
-    let id: u64 = req.match_info().get("id").unwrap().parse().unwrap();
+    let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
     let meal_id = MealId::new(id);
 
-    let _ = shared_state.lock().unwrap().execute(meal_id)?;
+    shared_state.lock().unwrap().execute(meal_id)?;
 
     Ok(HttpResponse::Ok()
         .content_type(ContentType::plaintext())

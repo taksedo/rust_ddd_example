@@ -33,9 +33,9 @@ impl Price {
     }
 
     pub fn multiple(&self, multiplicator: Count) -> Self {
-        let count = multiplicator.value.to_f64().unwrap();
-        let current_price_value = &self.to_f64();
-        let multiplied_price_value = current_price_value.mul(count);
+        let count = multiplicator.value.to_i64().unwrap();
+        let current_price_value = self.to_f64();
+        let multiplied_price_value = current_price_value.mul(count as f64);
         Self {
             value: BigDecimal::from_f64(multiplied_price_value).unwrap(),
         }
@@ -45,7 +45,7 @@ impl Price {
         self.to_owned().value.to_f64().unwrap()
     }
 
-    pub fn to_bigdecimal_value(&self) -> BigDecimal {
+    pub fn to_bigdecimal(&self) -> BigDecimal {
         self.to_owned().value
     }
 

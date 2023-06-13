@@ -2,14 +2,14 @@ use crate::main::base::value_object::ValueObject;
 
 #[derive(Debug, Clone, PartialEq, Copy)]
 pub struct Count {
-    pub value: u32,
+    pub value: i32,
 }
 
 #[allow(clippy::absurd_extreme_comparisons)]
 impl Count {
-    pub fn from(value: u32) -> Result<Self, CountError> {
+    pub fn from(value: i32) -> Result<Self, CountError> {
         match value {
-            _ if value > u32::MAX => Err(CountError::MaxValueReachedError),
+            _ if value > i32::MAX => Err(CountError::MaxValueReachedError),
             _ if value < 0 => Err(CountError::NegativeValueError),
             _ => Ok(Self { value }),
         }
@@ -22,7 +22,7 @@ impl Count {
     #[no_mangle]
     pub fn increment(&self) -> Result<Self, CountError> {
         match self.value {
-            u32::MAX => Err(CountError::MaxValueReachedError),
+            i32::MAX => Err(CountError::MaxValueReachedError),
             _ => Ok(Self {
                 value: &self.value + 1,
             }),
@@ -43,10 +43,10 @@ impl Count {
     }
 
     pub fn is_max(&self) -> bool {
-        self.value == u32::MAX
+        self.value == i32::MAX
     }
 
-    pub fn to_u32_value(&self) -> u32 {
+    pub fn to_i32(&self) -> i32 {
         self.value
     }
 }

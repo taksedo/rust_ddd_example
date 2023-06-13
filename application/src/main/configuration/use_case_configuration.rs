@@ -1,4 +1,4 @@
-use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_RESPOSITORY};
+use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_REPOSITORY};
 use actix_web::web::Data;
 use domain::main::menu::meal_id::MealIdGenerator;
 use lazy_static::lazy_static;
@@ -13,20 +13,20 @@ use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
 use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
 
 lazy_static! {
-    pub static ref ADD_MEAL_TO_MEANU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =
+    pub static ref ADD_MEAL_TO_MENU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =
         Data::new(Arc::clone(&add_meal_to_menu_use_case(
-            Arc::clone(&MEAL_RESPOSITORY) as _,
+            Arc::clone(&MEAL_REPOSITORY) as _,
             Arc::clone(&MEAL_ID_GENERATOR) as _,
         )));
     pub static ref GET_MEAL_BY_ID_USE_CASE: Data<Arc<Mutex<GetMealByIdUseCase>>> = Data::new(
-        Arc::clone(&get_meal_by_id_use_case(Arc::clone(&MEAL_RESPOSITORY,)))
+        Arc::clone(&get_meal_by_id_use_case(Arc::clone(&MEAL_REPOSITORY,)))
     );
     pub static ref GET_MENU_USE_CASE: Data<Arc<Mutex<GetMenuUseCase>>> = Data::new(Arc::clone(
-        &get_menu_use_case(Arc::clone(&MEAL_RESPOSITORY,))
+        &get_menu_use_case(Arc::clone(&MEAL_REPOSITORY,))
     ));
     pub static ref REMOVE_MEAL_FROM_MENU_USECASE: Data<Arc<Mutex<RemoveMealFromMenuUseCase>>> =
         Data::new(Arc::clone(&remove_meal_from_menu_usecase(Arc::clone(
-            &MEAL_RESPOSITORY,
+            &MEAL_REPOSITORY,
         ))));
 }
 

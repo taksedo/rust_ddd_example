@@ -5,12 +5,12 @@ use std::fmt::Debug;
 
 #[derive(new, Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
 pub struct MealId {
-    pub value: u64,
+    pub value: i64,
 }
 
 impl MealId {
-    pub fn to_u64(self) -> u64 {
-        self.value.to_u64().unwrap()
+    pub fn to_i64(self) -> i64 {
+        self.value.to_i64().unwrap()
     }
 }
 

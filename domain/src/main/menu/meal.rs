@@ -43,9 +43,7 @@ impl Meal {
                 description,
                 price,
             );
-            meal.add_event(DomainEventEnum::MealAddedToMenuDomainEvent(
-                MealAddedToMenuDomainEvent::new(id),
-            ));
+            meal.add_event(MealAddedToMenuDomainEvent::new(id).into());
             Ok(meal)
         }
     }
@@ -58,9 +56,7 @@ impl Meal {
         if !self.removed {
             self.removed = true;
             let removing_event = MealRemovedFromMenuDomainEvent::new(self.domain_entity_field.id);
-            self.add_event(DomainEventEnum::MealRemovedFromMenuDomainEvent(
-                removing_event,
-            ))
+            self.add_event(removing_event.into())
         }
     }
 }
