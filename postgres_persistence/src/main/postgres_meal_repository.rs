@@ -32,16 +32,18 @@ impl PostgresMealRepository {
             .filter(version.eq(previous_version.to_i64()))
             .set(&new_meal)
             .execute(connection)
-            .expect(&*format!(
-                "Meal #{} [version = {}] is outdated",
-                meal_id,
-                meal_param.domain_entity_field.version.to_i64()
-            ));
+            .unwrap_or_else(|_| {
+                panic!(
+                    "Meal #{} [version = {}] is outdated",
+                    meal_id,
+                    meal_param.domain_entity_field.version.to_i64()
+                )
+            });
     }
 
     fn insert(&mut self, meal_param: Meal) {
         let connection = &mut self.connection;
-        let new_meal = MealDbDto::from(meal_param.clone());
+        let new_meal = MealDbDto::from(meal_param);
         diesel::insert_into(meal)
             .values(&new_meal)
             .returning(MealDbDto::as_returning())
@@ -56,13 +58,10 @@ impl MealPersister for PostgresMealRepository {
         let mut res_vec = vec![];
         if !events.is_empty() {
             for event in &events {
-                match event {
-                    DomainEventEnum::MealAddedToMenuDomainEvent(ev) => {
-                        if ev.meal_id == meal_param.domain_entity_field.id {
-                            res_vec.insert(res_vec.len(), ev);
-                        }
+                if let DomainEventEnum::MealAddedToMenuDomainEvent(ev) = event {
+                    if ev.meal_id == meal_param.domain_entity_field.id {
+                        res_vec.insert(res_vec.len(), ev);
                     }
-                    _ => {}
                 }
             }
             if !res_vec.is_empty() {
