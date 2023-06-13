@@ -12,7 +12,7 @@ use usecase::main::menu::access::meal_persister::MealPersister;
 
 #[test]
 fn save_new_instance() {
-    let rnd_meal = rnd_meal_with_event();
+    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
 
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -36,7 +36,7 @@ fn save_new_instance() {
 }
 
 #[test]
-// #[should_panic]
+#[should_panic]
 fn save_new_instance_but_already_exists_with_the_same_id() {
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -48,8 +48,8 @@ fn save_new_instance_but_already_exists_with_the_same_id() {
     let mut repository = PostgresMealRepository::new(conn, Arc::clone(&publisher) as _);
 
     let meal_id = rnd_meal_id();
-    let mut first = rnd_meal_with_event();
-    let mut second = rnd_meal_with_event();
+    let mut first = rnd_meal_with_event(meal_id);
+    let mut second = rnd_meal_with_event(meal_id);
     first.domain_entity_field.id = meal_id;
     second.domain_entity_field.id = meal_id;
 
@@ -70,8 +70,8 @@ fn save_new_instance_but_already_exists_with_the_same_name() {
     let mut repository = PostgresMealRepository::new(conn, Arc::clone(&publisher) as _);
 
     let meal_name = rnd_meal_name();
-    let mut first = rnd_meal_with_event();
-    let mut second = rnd_meal_with_event();
+    let mut first = rnd_meal_with_event(rnd_meal_id());
+    let mut second = rnd_meal_with_event(rnd_meal_id());
     first.name = meal_name.clone();
     second.name = meal_name.clone();
 
@@ -90,7 +90,7 @@ fn create_new_instance_and_then_update_it() {
 
     let mut repository = PostgresMealRepository::new(conn, Arc::clone(&publisher) as _);
 
-    let rnd_meal = rnd_meal_with_event();
+    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
     let meal_id = rnd_meal.domain_entity_field.id;
     repository.save(rnd_meal);
 
@@ -116,7 +116,7 @@ fn save_again_without_changes() {
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
     let mut repository = PostgresMealRepository::new(conn, Arc::clone(&publisher) as _);
 
-    let rnd_meal = rnd_meal_with_event();
+    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
     let meal_id = rnd_meal.domain_entity_field.id;
     repository.save(rnd_meal);
 
@@ -143,7 +143,7 @@ fn saving_failed_if_version_outdated() {
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
     let mut repository = PostgresMealRepository::new(conn, Arc::clone(&publisher) as _);
 
-    let rnd_meal = rnd_meal_with_event();
+    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
     repository.save(rnd_meal.clone());
 
     let mut copy_of_rnd_meal = rnd_meal.clone();
