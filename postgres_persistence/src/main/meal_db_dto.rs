@@ -9,7 +9,16 @@ use domain::main::menu::price::Price;
 use serde::*;
 
 #[derive(
-    Insertable, Queryable, QueryableByName, Selectable, Serialize, Deserialize, Clone, Debug,
+    Insertable,
+    Identifiable,
+    Queryable,
+    QueryableByName,
+    Selectable,
+    AsChangeset,
+    Serialize,
+    Deserialize,
+    Clone,
+    Debug,
 )]
 #[diesel(primary_key(id))]
 #[diesel(table_name = crate::main::schema::shop::meal)]

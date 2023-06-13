@@ -1,12 +1,16 @@
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
+use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
-
+use domain::test_fixtures::fixtures::{
+    rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
+};
 use dotenvy::dotenv;
 use log::warn;
 use std::sync::atomic::AtomicU32;
+use std::sync::{Arc, Mutex};
 use testcontainers::clients;
 use testcontainers::core::WaitFor;
 use testcontainers::images::generic::GenericImage;
@@ -128,4 +132,21 @@ impl MealIdGenerator for TestMealIdGenerator {
     fn generate(&mut self) -> MealId {
         self.meal_id
     }
+}
+
+pub fn rnd_meal_with_event() -> Meal {
+    let meal_id = rnd_meal_id();
+    let meal_name = rnd_meal_name();
+    let meal_description = rnd_meal_description();
+    let meal_price = rnd_price();
+    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new(meal_id)));
+
+    Meal::add_meal_to_menu(
+        Arc::clone(&id_generator) as _,
+        Arc::new(Mutex::new(TestMealAlreadyExists { value: false })) as _,
+        meal_name,
+        meal_description,
+        meal_price,
+    )
+    .unwrap()
 }

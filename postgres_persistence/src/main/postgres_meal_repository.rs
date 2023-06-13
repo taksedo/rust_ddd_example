@@ -1,4 +1,5 @@
 use crate::main::meal_db_dto::MealDbDto;
+use crate::main::schema::shop::meal::dsl::*;
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use common_types::main::base::domain_entity::DomainEntityTrait;
 use derivative::Derivative;
@@ -20,19 +21,57 @@ pub struct PostgresMealRepository {
     pub event_publisher: Arc<Mutex<dyn DomainEventPublisher<DomainEventEnum>>>,
 }
 
-impl MealPersister for PostgresMealRepository {
-    fn save(&mut self, mut meal: Meal) {
+impl PostgresMealRepository {
+    fn update(&mut self, meal_param: Meal) {
         let connection = &mut self.connection;
-        let new_meal = MealDbDto::from(meal.clone());
-        self.event_publisher
-            .lock()
-            .unwrap()
-            .publish(&meal.pop_events());
-        diesel::insert_into(crate::main::schema::shop::meal::dsl::meal)
+        let new_meal = MealDbDto::from(meal_param.clone());
+        let meal_id = meal_param.domain_entity_field.id.to_i64();
+        let previous_version = meal_param.domain_entity_field.version.previous();
+
+        diesel::update(meal)
+            .filter(version.eq(previous_version.to_i64()))
+            .set(&new_meal)
+            .execute(connection)
+            .expect(&*format!(
+                "Meal #{} [version = {}] is outdated",
+                meal_id,
+                meal_param.domain_entity_field.version.to_i64()
+            ));
+    }
+
+    fn insert(&mut self, meal_param: Meal) {
+        let connection = &mut self.connection;
+        let new_meal = MealDbDto::from(meal_param.clone());
+        diesel::insert_into(meal)
             .values(&new_meal)
             .returning(MealDbDto::as_returning())
             .get_result(connection)
             .expect("Error saving new meal");
+    }
+}
+
+impl MealPersister for PostgresMealRepository {
+    fn save(&mut self, mut meal_param: Meal) {
+        let events = meal_param.pop_events();
+        let mut res_vec = vec![];
+        if !events.is_empty() {
+            for event in &events {
+                match event {
+                    DomainEventEnum::MealAddedToMenuDomainEvent(ev) => {
+                        if ev.meal_id == meal_param.domain_entity_field.id {
+                            res_vec.insert(res_vec.len(), ev);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            if !res_vec.is_empty() {
+                self.insert(meal_param.clone())
+            } else {
+                self.update(meal_param.clone())
+            }
+        }
+        self.event_publisher.lock().unwrap().publish(&events);
     }
 }
 

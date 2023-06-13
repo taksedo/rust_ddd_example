@@ -1,8 +1,8 @@
 use crate::main::database_start::MIGRATIONS;
 use crate::main::postgres_meal_repository::PostgresMealRepository;
-use crate::test_fixtures::{MockEventPublisher, TestDb};
+use crate::test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb};
 use diesel_migrations::MigrationHarness;
-use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name};
+use domain::test_fixtures::fixtures::{rnd_meal_id, rnd_meal_name};
 use std::sync::{Arc, Mutex};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
@@ -26,7 +26,7 @@ fn get_by_id__not_found() {
 #[test]
 #[allow(non_snake_case)]
 fn get_by_id__successfully_returned() {
-    let meal = rnd_meal();
+    let meal = rnd_meal_with_event();
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -36,7 +36,7 @@ fn get_by_id__successfully_returned() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let meal_id = dbg!(meal.domain_entity_field.id.clone());
+    let meal_id = meal.domain_entity_field.id.clone();
     let result = repository.get_by_id(meal_id);
 
     assert!(result.is_some());
@@ -62,7 +62,7 @@ fn get_by_name__not_found() {
 #[test]
 #[allow(non_snake_case)]
 fn get_by_name__successfully_returned() {
-    let meal = rnd_meal();
+    let meal = rnd_meal_with_event();
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -98,7 +98,7 @@ fn get_all__table_is_empty() {
 #[test]
 #[allow(non_snake_case)]
 fn get_all__table_is_not_empty() {
-    let meal = rnd_meal();
+    let meal = rnd_meal_with_event();
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -117,7 +117,7 @@ fn get_all__table_is_not_empty() {
 #[test]
 #[allow(non_snake_case)]
 fn get_all__table_is_not_empty_but_removed() {
-    let mut meal = rnd_meal();
+    let mut meal = rnd_meal_with_event();
     meal.remove_meal_from_menu();
     let db = TestDb::new();
     let mut conn = db.conn();
