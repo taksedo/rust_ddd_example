@@ -11,7 +11,6 @@ pub struct DomainEntity<T, E> {
     pub version: Version,
     #[new(value = "vec![]")]
     #[derivative(PartialEq = "ignore")]
-    #[derivative(Debug = "ignore")]
     pub events: Vec<E>,
 }
 
