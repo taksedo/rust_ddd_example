@@ -7,13 +7,13 @@ use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::{
     rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
 };
-use dotenvy::dotenv;
 use log::warn;
 use std::sync::atomic::AtomicU32;
-use std::sync::{Arc, Mutex};
-use testcontainers::clients;
+use std::sync::{Arc, Mutex, OnceLock};
+use testcontainers::clients::Cli;
 use testcontainers::core::WaitFor;
 use testcontainers::images::generic::GenericImage;
+use testcontainers::Container;
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
@@ -24,13 +24,13 @@ pub struct TestDb {
     url: String,
     curr_test_db_name: String,
     delete_on_drop: bool,
+    container: Container<'static, GenericImage>,
 }
 impl TestDb {
     pub fn new() -> Self {
-        dotenv().ok();
-        let docker = clients::Cli::default();
+        static DOCKER: OnceLock<Cli> = OnceLock::new();
+        DOCKER.get_or_init(|| Cli::default());
         let msg = WaitFor::message_on_stderr("database system is ready to accept connections");
-        // let msg = WaitFor::message_on_stdout("database system is ready to accept connections");
 
         let pg_container = GenericImage::new("postgres", "13")
             .with_env_var("POSTGRES_DB", "postgres")
@@ -38,7 +38,7 @@ impl TestDb {
             .with_env_var("POSTGRES_PASSWORD", "123")
             .with_wait_for(msg.clone());
 
-        let node = docker.run(pg_container);
+        let node: Container<'static, GenericImage> = DOCKER.get().unwrap().run(pg_container);
         let port = &node.get_host_port_ipv4(5432);
 
         let curr_test_db_name = format!(
@@ -59,6 +59,7 @@ impl TestDb {
             url: url.to_string(),
             curr_test_db_name,
             delete_on_drop: false,
+            container: node,
         };
         db
     }
