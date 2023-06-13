@@ -26,7 +26,7 @@ fn get_by_id__not_found() {
 #[test]
 #[allow(non_snake_case)]
 fn get_by_id__successfully_returned() {
-    let meal = rnd_meal_with_event();
+    let meal = rnd_meal_with_event(rnd_meal_id());
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -62,7 +62,7 @@ fn get_by_name__not_found() {
 #[test]
 #[allow(non_snake_case)]
 fn get_by_name__successfully_returned() {
-    let meal = rnd_meal_with_event();
+    let meal = rnd_meal_with_event(rnd_meal_id());
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -72,7 +72,7 @@ fn get_by_name__successfully_returned() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let meal_name = dbg!(meal.name.clone());
+    let meal_name = meal.name.clone();
     let result = repository.get_by_name(meal_name);
 
     assert!(result.is_some());
@@ -98,7 +98,7 @@ fn get_all__table_is_empty() {
 #[test]
 #[allow(non_snake_case)]
 fn get_all__table_is_not_empty() {
-    let meal = rnd_meal_with_event();
+    let meal = rnd_meal_with_event(rnd_meal_id());
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -117,7 +117,7 @@ fn get_all__table_is_not_empty() {
 #[test]
 #[allow(non_snake_case)]
 fn get_all__table_is_not_empty_but_removed() {
-    let mut meal = rnd_meal_with_event();
+    let mut meal = rnd_meal_with_event(rnd_meal_id());
     meal.remove_meal_from_menu();
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -128,7 +128,7 @@ fn get_all__table_is_not_empty_but_removed() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let result = dbg!(repository.get_all());
+    let result = repository.get_all();
 
     assert!(result.is_empty());
 }

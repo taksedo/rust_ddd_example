@@ -5,7 +5,7 @@ use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::{
-    rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
+    rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists,
 };
 use log::warn;
 use std::sync::atomic::AtomicU32;
@@ -135,8 +135,7 @@ impl MealIdGenerator for TestMealIdGenerator {
     }
 }
 
-pub fn rnd_meal_with_event() -> Meal {
-    let meal_id = rnd_meal_id();
+pub fn rnd_meal_with_event(meal_id: MealId) -> Meal {
     let meal_name = rnd_meal_name();
     let meal_description = rnd_meal_description();
     let meal_price = rnd_price();

@@ -65,9 +65,9 @@ impl MealPersister for PostgresMealRepository {
                 }
             }
             if !res_vec.is_empty() {
-                self.insert(meal_param.clone())
+                self.insert(meal_param)
             } else {
-                self.update(meal_param.clone())
+                self.update(meal_param)
             }
         }
         self.event_publisher.lock().unwrap().publish(&events);
