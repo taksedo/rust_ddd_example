@@ -35,12 +35,12 @@ pub struct MealDbDto {
 impl From<Meal> for MealDbDto {
     fn from(value: Meal) -> Self {
         Self {
-            id: value.domain_entity_field.id.to_i64(),
+            id: value.entity_params.id.to_i64(),
             name: value.name.to_string(),
             description: Some(value.description.to_string()),
             price: value.price.to_bigdecimal(),
             removed: value.removed,
-            version: value.domain_entity_field.version.to_i64(),
+            version: value.entity_params.version.to_i64(),
         }
     }
 }
@@ -48,7 +48,7 @@ impl From<Meal> for MealDbDto {
 impl From<MealDbDto> for Meal {
     fn from(value: MealDbDto) -> Self {
         Self {
-            domain_entity_field: DomainEntity {
+            entity_params: DomainEntity {
                 id: MealId::new(value.id),
                 version: Version::from(value.version),
                 events: vec![],

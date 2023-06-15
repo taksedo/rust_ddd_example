@@ -39,7 +39,7 @@ impl AddMealToMenu for AddMealToMenuUseCase {
                 .lock()
                 .unwrap()
                 .save(new_meal_in_menu.clone());
-            new_meal_in_menu.domain_entity_field.id
+            new_meal_in_menu.entity_params.id
         })
     }
 }

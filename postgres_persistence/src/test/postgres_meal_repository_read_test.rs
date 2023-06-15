@@ -36,7 +36,7 @@ fn get_by_id__successfully_returned() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let meal_id = meal.domain_entity_field.id.clone();
+    let meal_id = meal.entity_params.id.clone();
     let result = repository.get_by_id(meal_id);
 
     assert!(result.is_some());

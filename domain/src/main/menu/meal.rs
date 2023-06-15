@@ -15,7 +15,7 @@ use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Meal {
-    pub domain_entity_field: DomainEntity<MealId, DomainEventEnum>,
+    pub entity_params: DomainEntity<MealId, DomainEventEnum>,
     pub name: MealName,
     pub description: MealDescription,
     pub price: Price,
@@ -55,7 +55,7 @@ impl Meal {
     pub fn remove_meal_from_menu(&mut self) {
         if !self.removed {
             self.removed = true;
-            let removing_event = MealRemovedFromMenuDomainEvent::new(self.domain_entity_field.id);
+            let removing_event = MealRemovedFromMenuDomainEvent::new(self.entity_params.id);
             self.add_event(removing_event.into())
         }
     }
@@ -71,12 +71,12 @@ pub enum MealError {
 
 impl DomainEntityTrait<DomainEventEnum> for Meal {
     fn add_event(&mut self, event: DomainEventEnum) {
-        if self.domain_entity_field.events.is_empty() {}
-        self.domain_entity_field.events.push(event)
+        if self.entity_params.events.is_empty() {}
+        self.entity_params.events.push(event)
     }
     fn pop_events(&mut self) -> Vec<DomainEventEnum> {
-        let res = self.domain_entity_field.events.clone();
-        self.domain_entity_field.events = vec![];
+        let res = self.entity_params.events.clone();
+        self.entity_params.events = vec![];
         res
     }
 }

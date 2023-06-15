@@ -17,11 +17,11 @@ impl GetMealById for GetMealByIdUseCase {
             res if res.is_some() && res.clone().unwrap().visible() => {
                 let res = res.unwrap();
                 Ok(MealInfo {
-                    id: res.domain_entity_field.id,
+                    id: res.entity_params.id,
                     name: res.clone().name,
                     description: res.to_owned().description,
                     price: res.to_owned().price,
-                    version: res.domain_entity_field.version,
+                    version: res.entity_params.version,
                 })
             }
             _ => Err(GetMealByIdUseCaseError::MealNotFound),

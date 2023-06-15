@@ -18,9 +18,7 @@ fn successfully_removed() {
         Arc::clone(&meal_extractor) as _,
         Arc::clone(&meal_persister) as _,
     );
-    let result = use_case
-        .execute(meal.clone().domain_entity_field.id)
-        .unwrap();
+    let result = use_case.execute(meal.clone().entity_params.id).unwrap();
 
     assert_eq!(result, ());
 
@@ -40,7 +38,7 @@ fn successfully_removed() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal.domain_entity_field.id.clone());
+        .verify_invoked_get_by_id(meal.entity_params.id.clone());
 
     use_case
         .meal_persister
@@ -49,7 +47,7 @@ fn successfully_removed() {
         .downcast_ref::<MockMealPersister>()
         .unwrap()
         .clone()
-        .verify_events_after_deletion(meal.domain_entity_field.id.clone());
+        .verify_events_after_deletion(meal.entity_params.id.clone());
 }
 
 #[test]

@@ -19,7 +19,7 @@ impl MealRestorer {
         events: Vec<DomainEventEnum>,
     ) -> Meal {
         Meal {
-            domain_entity_field: DomainEntity {
+            entity_params: DomainEntity {
                 id,
                 version,
                 events,
