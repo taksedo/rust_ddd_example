@@ -58,7 +58,7 @@ fn add_meal__success() {
 
     let mut test_meal = result.unwrap();
     assert_eq!(
-        &test_meal.domain_entity_field.id,
+        &test_meal.entity_params.id,
         &id_generator.lock().unwrap().meal_id
     );
     assert_eq!(test_meal.name, name);
