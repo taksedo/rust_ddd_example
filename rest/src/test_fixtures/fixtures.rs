@@ -93,11 +93,11 @@ impl MockGetMealById {
 pub fn rnd_meal_info() -> MealInfo {
     let meal = rnd_meal();
     MealInfo {
-        id: meal.domain_entity_field.id,
+        id: meal.entity_params.id,
         name: meal.name.clone(),
         description: meal.description.clone(),
         price: meal.price.clone(),
-        version: meal.domain_entity_field.version,
+        version: meal.entity_params.version,
     }
 }
 

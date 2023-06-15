@@ -33,10 +33,7 @@ impl MockMealPersister {
         price: Option<Price>,
     ) {
         if id.is_some() {
-            assert_eq!(
-                self.to_owned().meal.unwrap().domain_entity_field.id,
-                id.unwrap()
-            )
+            assert_eq!(self.to_owned().meal.unwrap().entity_params.id, id.unwrap())
         }
         if name.is_some() {
             assert_eq!(self.to_owned().meal.unwrap().name, name.unwrap())

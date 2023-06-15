@@ -18,11 +18,11 @@ impl GetMenu for GetMenuUseCase {
             .get_all()
             .into_iter()
             .map(|s: Meal| MealInfo {
-                id: s.domain_entity_field.id,
+                id: s.entity_params.id,
                 name: s.name,
                 description: s.description,
                 price: s.price,
-                version: s.domain_entity_field.version,
+                version: s.entity_params.version,
             })
             .collect()
     }

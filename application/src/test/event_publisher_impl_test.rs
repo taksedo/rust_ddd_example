@@ -108,8 +108,8 @@ struct AnotherTestEvent {
 
 impl DomainEventTrait for AnotherTestEvent {}
 
-impl<E: Debug> EventPublisherImpl<E> {
-    fn get_listener(&self, event_type: E) -> &Arc<Mutex<dyn DomainEventListener<E>>> {
+impl<Event: Debug> EventPublisherImpl<Event> {
+    fn get_listener(&self, event_type: Event) -> &Arc<Mutex<dyn DomainEventListener<Event>>> {
         let result = self.listener_map.get(&discriminant(&event_type)).unwrap();
         result.get(0).unwrap()
     }

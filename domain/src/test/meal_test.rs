@@ -103,7 +103,7 @@ fn remove_meal_from_menu__success() {
     let popped_events = popped_events.get(0).unwrap();
 
     let expected_event = &DomainEventEnum::MealRemovedFromMenuDomainEvent(
-        MealRemovedFromMenuDomainEvent::new(test_meal.domain_entity_field.id),
+        MealRemovedFromMenuDomainEvent::new(test_meal.entity_params.id),
     );
     assert_eq!(
         print_type_of(&popped_events),

@@ -8,34 +8,39 @@ use std::mem::{discriminant, Discriminant};
 use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug, Default, Clone)]
-pub struct EventPublisherImpl<E: Debug> {
+pub struct EventPublisherImpl<Event: Debug> {
     logger: String, //todo переделать logger
     #[allow(clippy::type_complexity)]
-    pub(crate) listener_map: HashMap<Discriminant<E>, Vec<Arc<Mutex<dyn DomainEventListener<E>>>>>,
+    pub(crate) listener_map:
+        HashMap<Discriminant<Event>, Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>>,
 }
 
-impl<E: Debug + Clone + Hash + Eq> EventPublisherImpl<E> {
-    pub fn register_listener(&mut self, listener: impl DomainEventListener<E> + 'static) {
+impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
+    pub fn register_listener(&mut self, listener: impl DomainEventListener<Event> + 'static) {
         let event_type = listener.event_type();
         self.listener_map.entry(event_type).or_insert_with(|| {
-            let vector: Vec<Arc<Mutex<(dyn DomainEventListener<E> + 'static)>>> =
+            let vector: Vec<Arc<Mutex<(dyn DomainEventListener<Event> + 'static)>>> =
                 vec![Arc::new(Mutex::new(listener))];
             vector
         });
     }
 
-    fn send_events(&self, listeners: Vec<Arc<Mutex<dyn DomainEventListener<E>>>>, event: E) {
+    fn send_events(
+        &self,
+        listeners: Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>,
+        event: Event,
+    ) {
         for l in listeners {
             l.lock().unwrap().handle(&event);
         }
     }
 }
 
-impl<E> DomainEventPublisher<E> for EventPublisherImpl<E>
+impl<Event> DomainEventPublisher<Event> for EventPublisherImpl<Event>
 where
-    E: Debug + Clone + 'static + Hash + Eq + Default,
+    Event: Debug + Clone + 'static + Hash + Eq + Default,
 {
-    fn publish(&mut self, events: &Vec<E>) {
+    fn publish(&mut self, events: &Vec<Event>) {
         for e in events {
             let _ = &self
                 .logger
