@@ -25,8 +25,8 @@ impl PostgresMealRepository {
     fn update(&mut self, meal_param: Meal) {
         let connection = &mut self.connection;
         let new_meal = MealDbDto::from(meal_param.clone());
-        let meal_id = meal_param.domain_entity_field.id.to_i64();
-        let previous_version = meal_param.domain_entity_field.version.previous();
+        let meal_id = meal_param.entity_params.id.to_i64();
+        let previous_version = meal_param.entity_params.version.previous();
 
         diesel::update(meal)
             .filter(version.eq(previous_version.to_i64()))
@@ -36,7 +36,7 @@ impl PostgresMealRepository {
                 panic!(
                     "Meal #{} [version = {}] is outdated",
                     meal_id,
-                    meal_param.domain_entity_field.version.to_i64()
+                    meal_param.entity_params.version.to_i64()
                 )
             });
     }
@@ -59,7 +59,7 @@ impl MealPersister for PostgresMealRepository {
         if !events.is_empty() {
             for event in &events {
                 if let DomainEventEnum::MealAddedToMenuDomainEvent(ev) = event {
-                    if ev.meal_id == meal_param.domain_entity_field.id {
+                    if ev.meal_id == meal_param.entity_params.id {
                         res_vec.insert(res_vec.len(), ev);
                     }
                 }

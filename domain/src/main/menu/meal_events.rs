@@ -1,7 +1,7 @@
 use crate::main::menu::meal_id::MealId;
 #[cfg(test)]
 use crate::test_fixtures::fixtures::TestEvent;
-use common_types::main::base::domain_event::EventId;
+use common_types::main::base::domain_event::{DomainEventType, EventId};
 use derive_new::new;
 use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
@@ -53,4 +53,34 @@ pub enum DomainEventEnum {
     MealAddedToMenuDomainEvent,
     #[cfg(test)]
     TestEvent,
+}
+
+#[derive(new, SmartDefault, Debug, Clone)]
+pub struct MealAddedToMenuDomainEventType {
+    #[default(Default::default())]
+    pub meal_id: MealId,
+}
+
+#[derive(new, SmartDefault, Debug, Clone)]
+pub struct MealRemovedFromMenuDomainEventType {
+    #[default(Default::default())]
+    pub meal_id: MealId,
+}
+
+impl DomainEventType for MealAddedToMenuDomainEventType {}
+
+impl DomainEventType for MealRemovedFromMenuDomainEventType {}
+
+impl From<i64> for MealAddedToMenuDomainEventType {
+    fn from(value: i64) -> Self {
+        let meal_id = MealId::new(value);
+        MealAddedToMenuDomainEventType { meal_id }
+    }
+}
+
+impl From<i64> for MealRemovedFromMenuDomainEventType {
+    fn from(value: i64) -> Self {
+        let meal_id = MealId::new(value);
+        MealRemovedFromMenuDomainEventType { meal_id }
+    }
 }

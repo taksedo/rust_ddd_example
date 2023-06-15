@@ -35,11 +35,11 @@ fn get_menu() {
     assert_eq!(
         menu,
         vec![MealInfo {
-            id: meal.domain_entity_field.id,
+            id: meal.entity_params.id,
             name: meal.name,
             description: meal.description,
             price: meal.price,
-            version: meal.domain_entity_field.version,
+            version: meal.entity_params.version,
         }]
     );
     use_case

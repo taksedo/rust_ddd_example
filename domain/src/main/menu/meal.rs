@@ -1,12 +1,14 @@
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_description::MealDescription;
 use crate::main::menu::meal_events::{
-    DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
+    DomainEventEnum, MealAddedToMenuDomainEvent, MealAddedToMenuDomainEventType,
+    MealRemovedFromMenuDomainEvent,
 };
 use crate::main::menu::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::meal_name::MealName;
 use crate::main::menu::price::Price;
 use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
+use common_types::main::base::domain_event::DomainEventNew;
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -14,8 +16,8 @@ use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
-pub struct Meal {
-    pub domain_entity_field: DomainEntity<MealId, DomainEventEnum>,
+pub struct Meal<EventType> {
+    pub entity_params: DomainEntity<MealId, DomainEventNew<EventType>>,
     pub name: MealName,
     pub description: MealDescription,
     pub price: Price,
@@ -23,14 +25,14 @@ pub struct Meal {
     pub removed: bool,
 }
 
-impl Meal {
+impl<EventType> Meal<EventType> {
     pub fn add_meal_to_menu(
         id_generator: Arc<Mutex<dyn MealIdGenerator>>,
         meal_exists: Arc<Mutex<dyn MealAlreadyExists>>,
         name: MealName,
         description: MealDescription,
         price: Price,
-    ) -> Result<Meal, MealError> {
+    ) -> Result<Meal<MealAddedToMenuDomainEventType>, MealError> {
         if meal_exists.lock().unwrap().invoke(&name) {
             Err(MealError::AlreadyExistsWithSameNameError)
         } else {
@@ -55,7 +57,7 @@ impl Meal {
     pub fn remove_meal_from_menu(&mut self) {
         if !self.removed {
             self.removed = true;
-            let removing_event = MealRemovedFromMenuDomainEvent::new(self.domain_entity_field.id);
+            let removing_event = MealRemovedFromMenuDomainEvent::new(self.entity_params.id);
             self.add_event(removing_event.into())
         }
     }
@@ -69,14 +71,14 @@ pub enum MealError {
     IdGenerationError,
 }
 
-impl DomainEntityTrait<DomainEventEnum> for Meal {
+impl<EventType> DomainEntityTrait<DomainEventEnum> for Meal<EventType> {
     fn add_event(&mut self, event: DomainEventEnum) {
-        if self.domain_entity_field.events.is_empty() {}
-        self.domain_entity_field.events.push(event)
+        if self.entity_params.events.is_empty() {}
+        self.entity_params.events.push(event)
     }
     fn pop_events(&mut self) -> Vec<DomainEventEnum> {
-        let res = self.domain_entity_field.events.clone();
-        self.domain_entity_field.events = vec![];
+        let res = self.entity_params.events.clone();
+        self.entity_params.events = vec![];
         res
     }
 }

@@ -6,27 +6,27 @@ use std::fmt::Debug;
 
 #[derive(new, Clone, Default, Derivative, Serialize, Deserialize)]
 #[derivative(PartialEq, Debug)]
-pub struct DomainEntity<T, E> {
+pub struct DomainEntity<T, Event> {
     pub id: T,
     pub version: Version,
     #[new(value = "vec![]")]
     #[derivative(PartialEq = "ignore")]
-    pub events: Vec<E>,
+    pub events: Vec<Event>,
 }
 
-pub trait DomainEntityTrait<E> {
-    fn add_event(&mut self, event: E);
-    fn pop_events(&mut self) -> Vec<E>;
+pub trait DomainEntityTrait<Event> {
+    fn add_event(&mut self, event: Event);
+    fn pop_events(&mut self) -> Vec<Event>;
 }
 
-impl<E: Clone, T> DomainEntityTrait<E> for DomainEntity<T, E> {
-    fn add_event(&mut self, event: E) {
+impl<Event: Clone, T> DomainEntityTrait<Event> for DomainEntity<T, Event> {
+    fn add_event(&mut self, event: Event) {
         if self.events.is_empty() {
             self.version = self.version.next();
         }
         self.events.push(event)
     }
-    fn pop_events(&mut self) -> Vec<E> {
+    fn pop_events(&mut self) -> Vec<Event> {
         let res = self.events.clone();
         self.events = Vec::new();
         res

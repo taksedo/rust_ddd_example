@@ -17,6 +17,7 @@ enum_access.workspace = true
 thiserror.workspace = true
 rstest.workspace = true
 rand.workspace = true
+smart-default.workspace = true
 
 
 [dependencies.uuid]

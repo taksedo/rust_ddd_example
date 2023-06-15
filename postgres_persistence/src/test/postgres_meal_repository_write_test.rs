@@ -28,7 +28,7 @@ fn save_new_instance() {
         .lock()
         .unwrap()
         .verify_contains(vec![DomainEventEnum::MealAddedToMenuDomainEvent(
-            MealAddedToMenuDomainEvent::new(rnd_meal.domain_entity_field.id),
+            MealAddedToMenuDomainEvent::new(rnd_meal.entity_params.id),
         )]);
 
     let result = repository.get_all();
@@ -50,8 +50,8 @@ fn save_new_instance_but_already_exists_with_the_same_id() {
     let meal_id = rnd_meal_id();
     let mut first = rnd_meal_with_event(meal_id);
     let mut second = rnd_meal_with_event(meal_id);
-    first.domain_entity_field.id = meal_id;
-    second.domain_entity_field.id = meal_id;
+    first.entity_params.id = meal_id;
+    second.entity_params.id = meal_id;
 
     repository.save(first);
     repository.save(second);
@@ -91,7 +91,7 @@ fn create_new_instance_and_then_update_it() {
     let mut repository = PostgresMealRepository::new(conn, Arc::clone(&publisher) as _);
 
     let rnd_meal = rnd_meal_with_event(rnd_meal_id());
-    let meal_id = rnd_meal.domain_entity_field.id;
+    let meal_id = rnd_meal.entity_params.id;
     repository.save(rnd_meal);
 
     let mut rnd_meal = repository.get_by_id(meal_id).unwrap();
@@ -117,7 +117,7 @@ fn save_again_without_changes() {
     let mut repository = PostgresMealRepository::new(conn, Arc::clone(&publisher) as _);
 
     let rnd_meal = rnd_meal_with_event(rnd_meal_id());
-    let meal_id = rnd_meal.domain_entity_field.id;
+    let meal_id = rnd_meal.entity_params.id;
     repository.save(rnd_meal);
 
     let rnd_meal = repository.get_by_id(meal_id).unwrap();
@@ -128,7 +128,7 @@ fn save_again_without_changes() {
         .lock()
         .unwrap()
         .verify_contains(vec![Into::<DomainEventEnum>::into(
-            MealAddedToMenuDomainEvent::new(rnd_meal.domain_entity_field.id),
+            MealAddedToMenuDomainEvent::new(rnd_meal.entity_params.id),
         )]);
 }
 

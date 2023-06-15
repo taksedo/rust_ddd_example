@@ -1,4 +1,5 @@
 mod meal_description_test;
+mod meal_event_test;
 mod meal_id_test;
 mod meal_name_test;
 mod meal_restorer_test;

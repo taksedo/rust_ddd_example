@@ -32,7 +32,7 @@ fn meal_removed() {
     }));
 
     let mut use_case = GetMealByIdUseCase::new(meal_extractor);
-    let result = use_case.execute(meal.domain_entity_field.id);
+    let result = use_case.execute(meal.entity_params.id);
 
     assert_eq!(result, Err(GetMealByIdUseCaseError::MealNotFound));
     use_case
@@ -41,7 +41,7 @@ fn meal_removed() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal.domain_entity_field.id);
+        .verify_invoked_get_by_id(meal.entity_params.id);
 }
 
 #[test]
@@ -53,17 +53,17 @@ fn meal_extracted_successfully() {
     }));
     let mut use_case = GetMealByIdUseCase::new(meal_extractor);
 
-    let result = use_case.execute(meal.domain_entity_field.id);
+    let result = use_case.execute(meal.entity_params.id);
     let meal_info = result;
 
     assert_eq!(
         meal_info.unwrap(),
         MealInfo {
-            id: meal.domain_entity_field.id,
+            id: meal.entity_params.id,
             name: meal.name,
             description: meal.description,
             price: meal.price,
-            version: meal.domain_entity_field.version,
+            version: meal.entity_params.version,
         }
     );
     use_case
@@ -72,5 +72,5 @@ fn meal_extracted_successfully() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal.domain_entity_field.id);
+        .verify_invoked_get_by_id(meal.entity_params.id);
 }

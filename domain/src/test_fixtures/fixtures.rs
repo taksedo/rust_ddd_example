@@ -48,7 +48,7 @@ pub fn version() -> Version {
     Version::new()
 }
 
-pub fn rnd_meal() -> Meal {
+pub fn rnd_meal<EventType>() -> Meal<EventType> {
     Meal::new(
         DomainEntity::new(rnd_meal_id(), Version::default()),
         rnd_meal_name(),
