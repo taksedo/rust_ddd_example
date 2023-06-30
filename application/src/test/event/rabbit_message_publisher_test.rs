@@ -1,30 +1,19 @@
-#![allow(unused_imports)]
-#![allow(dead_code)]
-use async_trait::async_trait;
-use derive_new::new;
-use serde::{Deserialize, Serialize};
-use tracing::{info, Level};
-use tracing_subscriber::FmtSubscriber;
-
 use crate::main::event::{
     integration_message_publisher::IntegrationMessagePublisher,
     rabbit_message_publisher::RabbitMessagePublisher,
 };
+use crate::test_fixtures::{TestRabbitMq, RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
+use derive_new::new;
 use futures_lite::stream::StreamExt;
-use lapin::message::{BasicReturnMessage, Delivery, DeliveryResult};
-use lapin::protocol::{AMQPErrorKind, AMQPSoftError};
-use lapin::{
-    options::*, publisher_confirm::Confirmation, types::FieldTable, BasicProperties, Connection,
-    ConnectionProperties, Result,
-};
+use lapin::{options::*, types::FieldTable, Connection, ConnectionProperties};
+use serde::{Deserialize, Serialize};
+use tracing::info;
 
 #[tokio::test]
-async fn message_sent_successfully() -> std::result::Result<(), Box<dyn std::error::Error>> {
-    if std::env::var("RUST_LOG").is_err() {
-        std::env::set_var("RUST_LOG", "debug");
-    }
+async fn message_sent_successfully() -> Result<(), Box<dyn std::error::Error>> {
+    let rmq = TestRabbitMq::new().await;
+    let _ = rmq.conn().await?;
 
-    tracing_subscriber::fmt::init();
     let sent_message = SimpleDto::new();
 
     let publisher = RabbitMessagePublisher::new();
@@ -34,6 +23,7 @@ async fn message_sent_successfully() -> std::result::Result<(), Box<dyn std::err
     let received_message = receiver.receive().await?;
 
     assert_eq!(sent_message, received_message);
+
     Ok(())
 }
 
@@ -47,10 +37,13 @@ struct SimpleDto {
 struct MockReceiver {}
 
 impl MockReceiver {
-    pub async fn receive(&self) -> std::result::Result<SimpleDto, Box<dyn std::error::Error>> {
-        let addr = "amqp://127.0.0.1:5672";
-        let queue_name = "test_rabbitmq_lapin_example_queue";
-        let conn = Connection::connect(addr, ConnectionProperties::default()).await?;
+    pub async fn receive(&self) -> Result<SimpleDto, Box<dyn std::error::Error>> {
+        let queue_name = RABBITMQ_QUEUE_NAME.get().unwrap().as_str();
+        let conn = Connection::connect(
+            RABBITMQ_ADDRESS.get().unwrap(),
+            ConnectionProperties::default(),
+        )
+        .await?;
         let channel = conn.create_channel().await?;
         info!("Consumer connected");
 
@@ -84,6 +77,7 @@ impl MockReceiver {
                 .await
                 .expect("basic_ack");
         }
+        conn.close(0, "").await?;
         Ok(message)
     }
 }

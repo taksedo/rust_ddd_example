@@ -1,14 +1,15 @@
+#[cfg(not(test))]
+use crate::main::configuration::messaging_configuration::{RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
 use crate::main::event::integration_message_publisher::IntegrationMessagePublisher;
-use std::sync::Arc;
-
+#[cfg(test)]
+use crate::test_fixtures::{RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
 use async_trait::async_trait;
 use derive_new::new;
 use lapin::options::{BasicPublishOptions, QueueDeclareOptions};
 use lapin::types::FieldTable;
 use lapin::{BasicProperties, Connection, ConnectionProperties};
 use serde::Serialize;
-use tracing::{info, Level};
-use tracing_subscriber::FmtSubscriber;
+use tracing::info;
 
 #[derive(new, Debug)]
 pub struct RabbitMessagePublisher;
@@ -19,8 +20,8 @@ impl IntegrationMessagePublisher for RabbitMessagePublisher {
         &self,
         message: impl Serialize + Send + Sync,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let addr = "amqp://127.0.0.1:5672";
-        let queue_name = "test_rabbitmq_lapin_example_queue";
+        let addr = RABBITMQ_ADDRESS.get().unwrap().as_str();
+        let queue_name = RABBITMQ_QUEUE_NAME.get().unwrap().as_str();
         let conn = Connection::connect(addr, ConnectionProperties::default()).await?;
         info!("Publisher connected");
 
@@ -53,6 +54,7 @@ impl IntegrationMessagePublisher for RabbitMessagePublisher {
         info!(?sent_message, " [x] Sent message");
 
         conn.close(0, "").await?;
+
         Ok(())
     }
 }
