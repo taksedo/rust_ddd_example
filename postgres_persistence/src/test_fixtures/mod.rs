@@ -29,14 +29,14 @@ pub struct TestDb {
 impl TestDb {
     pub fn new() -> Self {
         static DOCKER: OnceLock<Cli> = OnceLock::new();
-        DOCKER.get_or_init(|| Cli::default());
+        DOCKER.get_or_init(Cli::default);
         let msg = WaitFor::message_on_stderr("database system is ready to accept connections");
 
         let pg_container = GenericImage::new("postgres", "13")
             .with_env_var("POSTGRES_DB", "postgres")
             .with_env_var("POSTGRES_USER", "root")
             .with_env_var("POSTGRES_PASSWORD", "123")
-            .with_wait_for(msg.clone());
+            .with_wait_for(msg);
 
         let node: Container<'static, GenericImage> = DOCKER.get().unwrap().run(pg_container);
         let port = &node.get_host_port_ipv4(5432);
@@ -54,14 +54,13 @@ impl TestDb {
             .unwrap();
         let mut url = Url::parse(&test_container_db_url).unwrap();
         url.set_path(&curr_test_db_name);
-        let db = Self {
+        Self {
             test_container_db_url,
             url: url.to_string(),
             curr_test_db_name,
             delete_on_drop: false,
             container: node,
-        };
-        db
+        }
     }
 
     pub fn url(&self) -> &str {
@@ -69,11 +68,17 @@ impl TestDb {
     }
 
     pub fn conn(&self) -> PgConnection {
-        PgConnection::establish(&self.url.as_str()).unwrap()
+        PgConnection::establish(self.url.as_str()).unwrap()
     }
 
     pub fn leak(&mut self) {
         self.delete_on_drop = false;
+    }
+}
+
+impl Default for TestDb {
+    fn default() -> Self {
+        Self::new()
     }
 }
 impl Drop for TestDb {
