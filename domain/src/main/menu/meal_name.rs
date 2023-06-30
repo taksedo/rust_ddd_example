@@ -23,6 +23,7 @@ impl MealName {
 impl ValueObject for MealName {}
 
 #[derive(thiserror::Error, Debug, PartialEq)]
+#[error(transparent)]
 pub enum CreateMealNameError {
     #[error("Название еды пустое")]
     EmptyMealNameError,

@@ -73,7 +73,7 @@ fn save_new_instance_but_already_exists_with_the_same_name() {
     let mut first = rnd_meal_with_event(rnd_meal_id());
     let mut second = rnd_meal_with_event(rnd_meal_id());
     first.name = meal_name.clone();
-    second.name = meal_name.clone();
+    second.name = meal_name;
 
     repository.save(first);
     repository.save(second);
@@ -146,7 +146,7 @@ fn saving_failed_if_version_outdated() {
     let rnd_meal = rnd_meal_with_event(rnd_meal_id());
     repository.save(rnd_meal.clone());
 
-    let mut copy_of_rnd_meal = rnd_meal.clone();
+    let mut copy_of_rnd_meal = rnd_meal;
     copy_of_rnd_meal.remove_meal_from_menu();
 
     repository.save(copy_of_rnd_meal);
