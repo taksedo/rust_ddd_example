@@ -7,12 +7,12 @@ use std::hash::Hash;
 use std::mem::{discriminant, Discriminant};
 use std::sync::{Arc, Mutex};
 
+type VecOfDomainEventListenerType<Event> = Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>;
+
 #[derive(new, Debug, Default, Clone)]
 pub struct EventPublisherImpl<Event: Debug> {
     logger: String, //todo переделать logger
-    #[allow(clippy::type_complexity)]
-    pub(crate) listener_map:
-        HashMap<Discriminant<Event>, Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>>,
+    pub(crate) listener_map: HashMap<Discriminant<Event>, VecOfDomainEventListenerType<Event>>,
 }
 
 impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {

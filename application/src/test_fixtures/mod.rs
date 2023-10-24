@@ -3,8 +3,8 @@ use std::sync::atomic::AtomicU32;
 use std::sync::OnceLock;
 use testcontainers::clients::Cli;
 use testcontainers::core::WaitFor;
-use testcontainers::images::generic::GenericImage;
 use testcontainers::Container;
+use testcontainers::GenericImage;
 use tracing::debug;
 
 #[derive(Debug)]

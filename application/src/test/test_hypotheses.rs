@@ -11,7 +11,7 @@ pub struct InMemoryIncrementalMealIdGenerator {
 impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
     fn generate(&mut self) -> MealId {
         let meal_id = self.counter.fetch_add(1, Ordering::SeqCst);
-        MealId { value: meal_id }
+        MealId::try_from(meal_id).unwrap()
     }
 }
 

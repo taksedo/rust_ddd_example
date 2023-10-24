@@ -1,7 +1,7 @@
-use domain::main::menu::meal_description::MealDescription;
-use domain::main::menu::meal_name::MealName;
-use domain::main::menu::price::Price;
+use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
+use domain::main::menu::value_objects::meal_name::MealName;
+use domain::main::menu::value_objects::price::Price;
 use domain::test_fixtures::fixtures::{
     rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };

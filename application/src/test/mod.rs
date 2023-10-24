@@ -1,3 +1,2 @@
-mod test_hypotheses;
-
 pub mod event;
+mod test_hypotheses;

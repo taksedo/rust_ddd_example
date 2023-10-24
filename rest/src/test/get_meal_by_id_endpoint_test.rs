@@ -34,7 +34,8 @@ async fn returned_successfully() {
     let meal_info_json = serde_json::to_string(&meal_info).unwrap();
     assert_eq!(body_json, &meal_info_json);
 
-    mock_get_meal_by_id.lock().unwrap().verify_invoked(MealId {
-        value: meal_info.id,
-    });
+    mock_get_meal_by_id
+        .lock()
+        .unwrap()
+        .verify_invoked(MealId::try_from(meal_info.id).unwrap());
 }

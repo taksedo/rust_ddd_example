@@ -12,8 +12,8 @@ use std::sync::atomic::AtomicU32;
 use std::sync::{Arc, Mutex, OnceLock};
 use testcontainers::clients::Cli;
 use testcontainers::core::WaitFor;
-use testcontainers::images::generic::GenericImage;
 use testcontainers::Container;
+use testcontainers::GenericImage;
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);

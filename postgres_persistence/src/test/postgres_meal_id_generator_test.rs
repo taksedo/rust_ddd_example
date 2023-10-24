@@ -24,7 +24,7 @@ fn generate_id_integration_test() {
         .unwrap();
     let meal_id = id_generator.generate();
 
-    assert_eq!(meal_id, MealId::new(rnd_id.to_i64() + 1));
+    assert_eq!(meal_id, MealId::try_from(rnd_id.to_i64() + 1).unwrap());
 }
 
 sql_function!(fn setval(x: VarChar, y: BigInt));
