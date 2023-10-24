@@ -1,5 +1,5 @@
 use derive_new::new;
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use std::sync::atomic::{AtomicI64, Ordering};
 
 #[derive(Debug, new)]

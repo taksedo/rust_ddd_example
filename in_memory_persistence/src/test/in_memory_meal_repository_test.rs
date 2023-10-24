@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use crate::main::menu::in_memory_meal_repository::InMemoryMealRepository;
 use crate::test_fixtures::fixtures::{meal_with_events, type_of, TestEventPublisher};
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
@@ -7,7 +9,6 @@ use std::sync::{Arc, Mutex};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
 
-#[allow(non_snake_case)]
 #[test]
 fn saving_meal__meal_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
@@ -29,7 +30,6 @@ fn saving_meal__meal_doesnt_exist() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn saving_meal__meal_exists() {
     let existing_meal = rnd_meal();
 
@@ -54,7 +54,6 @@ fn saving_meal__meal_exists() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_by_id__meal_exists() {
     let existing_meal = rnd_meal();
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
@@ -71,7 +70,6 @@ fn get_by_id__meal_exists() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_by_id__meal_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
@@ -80,7 +78,6 @@ fn get_by_id__meal_doesnt_exist() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_by_name__repository_is_empty() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
@@ -89,7 +86,6 @@ fn get_by_name__repository_is_empty() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_meal_by_name__success() {
     let stored_meal = rnd_meal();
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
@@ -101,7 +97,6 @@ fn get_meal_by_name__success() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_all_meals__repository_is_empty() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
@@ -110,7 +105,6 @@ fn get_all_meals__repository_is_empty() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_all_meals__success() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);
@@ -124,7 +118,6 @@ fn get_all_meals__success() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_all_meals__removed_is_not_returned() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryMealRepository::new(event_publisher);

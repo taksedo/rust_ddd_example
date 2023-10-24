@@ -1,4 +1,4 @@
-use crate::main::menu::meal_id::MealId;
+use crate::main::menu::value_objects::meal_id::MealId;
 #[cfg(test)]
 use crate::test_fixtures::fixtures::TestEvent;
 use common_types::main::base::domain_event::EventId;

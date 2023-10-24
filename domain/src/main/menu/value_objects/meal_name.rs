@@ -7,6 +7,7 @@ use std::fmt;
 use std::fmt::Formatter;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash, Default, new)]
+#[non_exhaustive]
 pub struct MealName {
     pub value: String,
 }
@@ -30,7 +31,6 @@ pub enum CreateMealNameError {
 }
 
 impl BusinessError for CreateMealNameError {}
-
 impl ResponseError for CreateMealNameError {}
 
 impl fmt::Display for MealName {

@@ -4,7 +4,7 @@ use crate::test_fixtures::TestDb;
 use diesel::sql_types::{BigInt, VarChar};
 use diesel::{select, sql_function, RunQueryDsl};
 use diesel_migrations::MigrationHarness;
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::rnd_meal_id;
 
 #[test]

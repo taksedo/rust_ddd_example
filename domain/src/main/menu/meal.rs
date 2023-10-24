@@ -1,11 +1,12 @@
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_description::MealDescription;
 use crate::main::menu::meal_events::{
     DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
 };
-use crate::main::menu::meal_id::{MealId, MealIdGenerator};
-use crate::main::menu::meal_name::MealName;
-use crate::main::menu::price::Price;
+use crate::main::menu::value_objects::meal_description::MealDescription;
+use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
+use crate::main::menu::value_objects::meal_name::MealName;
+use crate::main::menu::value_objects::price::Price;
+use actix_web::ResponseError;
 use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
@@ -82,3 +83,4 @@ impl DomainEntityTrait<DomainEventEnum> for Meal {
 }
 
 impl BusinessError for MealError {}
+impl ResponseError for MealError {}

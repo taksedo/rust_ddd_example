@@ -2,7 +2,7 @@ use derivative::Derivative;
 use derive_new::new;
 use diesel::{select, sql_function, RunQueryDsl};
 use diesel::{sql_types, PgConnection};
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use std::fmt::Debug;
 
 #[derive(new, Derivative)]
@@ -19,7 +19,7 @@ impl MealIdGenerator for PostgresMealIdGenerator {
             .get_result::<i64>(connection)
             .unwrap();
 
-        MealId::new(id)
+        MealId::from(id).unwrap()
     }
 }
 

@@ -4,7 +4,7 @@ use crate::main::menu::remove_meal_from_menu::{
     RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
 };
 use derive_new::new;
-use domain::main::menu::meal_id::MealId;
+use domain::main::menu::value_objects::meal_id::MealId;
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug, new)]

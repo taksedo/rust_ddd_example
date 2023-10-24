@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul};
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Price {
     pub value: BigDecimal,
 }
@@ -73,5 +74,4 @@ pub enum CreatePriceError {
 }
 
 impl BusinessError for CreatePriceError {}
-
 impl ResponseError for CreatePriceError {}

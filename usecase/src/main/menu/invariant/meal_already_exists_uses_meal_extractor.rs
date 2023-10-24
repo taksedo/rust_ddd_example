@@ -1,7 +1,7 @@
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use derive_new::new;
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
-use domain::main::menu::meal_name::MealName;
+use domain::main::menu::value_objects::meal_name::MealName;
 use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug, Clone)]

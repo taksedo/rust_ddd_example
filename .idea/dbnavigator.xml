@@ -32,6 +32,9 @@
     <last-used-operator value="EQUAL" />
     <filters />
   </component>
+  <component name="DBNavigator.Project.ParserDiagnosticsManager">
+    <diagnostics-history />
+  </component>
   <component name="DBNavigator.Project.ScriptExecutionManager" clear-outputs="true">
     <recently-used-interfaces>
       <mapping database-type="POSTGRES" interface-id="b29b050e-f76b-4b25-990e-5898927d8208" />

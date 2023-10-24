@@ -1,9 +1,9 @@
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_description::MealDescription;
-use crate::main::menu::meal_id::MealId;
-use crate::main::menu::meal_name::MealName;
-use crate::main::menu::price::Price;
+use crate::main::menu::value_objects::meal_description::MealDescription;
+use crate::main::menu::value_objects::meal_id::MealId;
+use crate::main::menu::value_objects::meal_name::MealName;
+use crate::main::menu::value_objects::price::Price;
 use bigdecimal::{BigDecimal, FromPrimitive};
 use common_types::main::base::domain_entity::{DomainEntity, Version};
 use common_types::main::base::domain_event::DomainEventTrait;

@@ -1,4 +1,4 @@
-use crate::main::menu::meal_name::MealName;
+use crate::main::menu::value_objects::meal_name::MealName;
 use std::fmt::Debug;
 
 pub trait MealAlreadyExists: Debug + Send {

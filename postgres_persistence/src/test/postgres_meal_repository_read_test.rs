@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use crate::main::database_start::MIGRATIONS;
 use crate::main::postgres_meal_repository::PostgresMealRepository;
 use crate::test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb};
@@ -8,7 +10,6 @@ use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
 
 #[test]
-#[allow(non_snake_case)]
 fn get_by_id__not_found() {
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -24,7 +25,6 @@ fn get_by_id__not_found() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_by_id__successfully_returned() {
     let meal = rnd_meal_with_event(rnd_meal_id());
     let db = TestDb::new();
@@ -44,7 +44,6 @@ fn get_by_id__successfully_returned() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_by_name__not_found() {
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -60,7 +59,6 @@ fn get_by_name__not_found() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_by_name__successfully_returned() {
     let meal = rnd_meal_with_event(rnd_meal_id());
     let db = TestDb::new();
@@ -80,7 +78,6 @@ fn get_by_name__successfully_returned() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_all__table_is_empty() {
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -96,7 +93,6 @@ fn get_all__table_is_empty() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_all__table_is_not_empty() {
     let meal = rnd_meal_with_event(rnd_meal_id());
     let db = TestDb::new();
@@ -115,7 +111,6 @@ fn get_all__table_is_not_empty() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn get_all__table_is_not_empty_but_removed() {
     let mut meal = rnd_meal_with_event(rnd_meal_id());
     meal.remove_meal_from_menu();

@@ -1,7 +1,9 @@
 use bigdecimal::*;
-use domain::main::menu::meal_description::{CreateMealDescriptionError, MealDescription};
-use domain::main::menu::meal_name::{CreateMealNameError, MealName};
-use domain::main::menu::price::{CreatePriceError, Price};
+use domain::main::menu::value_objects::meal_description::{
+    CreateMealDescriptionError, MealDescription,
+};
+use domain::main::menu::value_objects::meal_name::{CreateMealNameError, MealName};
+use domain::main::menu::value_objects::price::{CreatePriceError, Price};
 
 pub trait Validated<V, R, S> {
     fn validated(val: S) -> Result<V, R>;

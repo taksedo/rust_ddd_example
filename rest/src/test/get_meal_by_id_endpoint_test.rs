@@ -4,7 +4,7 @@ use crate::main::menu::meal_model::MealModel;
 use crate::test_fixtures::fixtures::{rnd_meal_info, MockGetMealById, StringMethodsForRestTestExt};
 use actix_web::body::MessageBody;
 use actix_web::{test, web};
-use domain::main::menu::meal_id::MealId;
+use domain::main::menu::value_objects::meal_id::MealId;
 use std::sync::{Arc, Mutex};
 
 #[actix_web::test]

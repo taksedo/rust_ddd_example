@@ -1,27 +1,27 @@
 #![allow(non_snake_case)]
 
-use crate::main::menu::meal_description::{CreateMealDescriptionError, MealDescription};
+use crate::main::menu::value_objects::meal_description::{
+    CreateMealDescriptionError, MealDescription,
+};
 use mockall::Any;
 use rstest::rstest;
 
 #[test]
 fn create_description__success() {
     let value = "Some string".to_string();
-    let result = MealDescription::new(value.to_owned());
+    let result = MealDescription::from(value.to_owned()).unwrap();
 
     let type_name = result.type_name();
     assert_eq!(
         type_name,
-        "domain::main::menu::meal_description::MealDescription"
+        "domain::main::menu::value_objects::meal_description::MealDescription"
     );
     let description = result;
     assert_eq!(description.to_string(), value);
 }
 
 #[rstest]
-#[case("")]
-#[case(" ")]
-fn create_description__empty_string(#[case] input: String) {
+fn create_description__empty_string(#[values("", " ")] input: String) {
     let result = MealDescription::from(input);
     assert_eq!(
         result,

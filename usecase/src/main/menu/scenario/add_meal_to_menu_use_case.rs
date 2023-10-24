@@ -5,10 +5,10 @@ use derive_new::new;
 use domain;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
-use domain::main::menu::meal_description::MealDescription;
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
-use domain::main::menu::meal_name::MealName;
-use domain::main::menu::price::Price;
+use domain::main::menu::value_objects::meal_description::MealDescription;
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_name::MealName;
+use domain::main::menu::value_objects::price::Price;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 

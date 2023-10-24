@@ -1,15 +1,13 @@
 #![allow(non_snake_case)]
 
-use crate::main::menu::price::{CreatePriceError, Price};
+use crate::main::menu::value_objects::price::{CreatePriceError, Price};
 use bigdecimal::BigDecimal;
 use common_types::main::common::count::Count;
 use rstest::rstest;
 use std::str::FromStr;
 
 #[rstest]
-#[case(0_u64)]
-#[case(1_u64)]
-fn create_price__success(#[case] value: u64) {
+fn create_price__success(#[values(0_u64, 1_u64)] value: u64) {
     let input = BigDecimal::from(value);
     let price = Price::from(input.to_owned()).unwrap();
     assert_eq!(price.to_bigdecimal(), input.with_scale(2));
@@ -19,7 +17,6 @@ fn create_price__success(#[case] value: u64) {
 fn create_price__change_scale() {
     let value = BigDecimal::from_str("1.4").unwrap();
     let price = Price::from(value).unwrap();
-
     assert_eq!(price.to_bigdecimal(), BigDecimal::from_str("1.40").unwrap())
 }
 
@@ -27,7 +24,6 @@ fn create_price__change_scale() {
 fn create_price__invalid_scale() {
     let price = BigDecimal::from_str("1.411").unwrap();
     let result = Price::from(price);
-
     assert_eq!(result, Err(CreatePriceError::InvalidScale));
 }
 
@@ -35,7 +31,6 @@ fn create_price__invalid_scale() {
 fn create_price__negative_value() {
     let price = BigDecimal::from(-1);
     let result = Price::from(price);
-
     assert_eq!(result, Err(CreatePriceError::NegativeValue));
 }
 

@@ -1,12 +1,12 @@
 use actix_web::ResponseError;
 use common_types::main::base::value_object::ValueObject;
 use common_types::main::errors::error::BusinessError;
-use derive_new::new;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fmt::Formatter;
 
-#[derive(Debug, Clone, new, PartialEq, Eq, Default, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize, Serialize)]
+#[non_exhaustive]
 pub struct MealDescription {
     value: String,
 }
@@ -15,7 +15,7 @@ impl MealDescription {
     pub fn from(description: String) -> Result<MealDescription, CreateMealDescriptionError> {
         match description {
             x if x == *"" || x == *" " => Err(CreateMealDescriptionError::EmptyDescriptionError),
-            _ => Ok(Self::new(description)),
+            _ => Ok(MealDescription { value: description }),
         }
     }
 }
@@ -29,7 +29,6 @@ pub enum CreateMealDescriptionError {
 }
 
 impl BusinessError for CreateMealDescriptionError {}
-
 impl ResponseError for CreateMealDescriptionError {}
 
 impl fmt::Display for MealDescription {
