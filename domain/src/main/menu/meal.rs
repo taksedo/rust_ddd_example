@@ -64,9 +64,9 @@ impl Meal {
 
 #[derive(thiserror::Error, Debug, PartialEq)]
 pub enum MealError {
-    #[error("Еда с таким именем уже существует")]
+    #[error("")]
     AlreadyExistsWithSameNameError,
-    #[error("Ошибка при генерации id")]
+    #[error("")]
     IdGenerationError,
 }
 

@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 actix-web.workspace = true
 derive_more.workspace = true
+serde.workspace = true
+lazy_static = { version = "1.4.0", features = [] }

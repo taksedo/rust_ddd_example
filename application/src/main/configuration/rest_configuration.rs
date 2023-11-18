@@ -7,7 +7,9 @@ use actix_web::http::{header, Uri};
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 use dotenvy::dotenv;
-use rest::main::endpoint_url::{MENU_ADD_TO_MENU, MENU_DELETE_BY_ID, MENU_GET_ALL, MENU_GET_BY_ID};
+use rest::main::endpoint_url::{
+    API_V1_MENU_ADD_TO_MENU, API_V1_MENU_DELETE_BY_ID, API_V1_MENU_GET_ALL, API_V1_MENU_GET_BY_ID,
+};
 use rest::main::menu::{
     add_meal_to_menu_endpoint, get_health_status, get_meal_by_id_endpoint, get_menu_endpoint,
     remove_meal_from_menu_endpoint,
@@ -44,26 +46,30 @@ pub async fn start_web_backend() -> std::io::Result<()> {
                 Cors::default()
                     .allowed_origin(&env::var("HOST_URL").unwrap())
                     .allowed_methods(vec!["GET", "POST", "DELETE"])
-                    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
-                    .allowed_header(header::CONTENT_TYPE)
+                    .allowed_headers(vec![
+                        header::AUTHORIZATION,
+                        header::ACCEPT,
+                        header::LOCATION,
+                        header::CONTENT_TYPE,
+                    ])
                     .supports_credentials()
                     .max_age(3600),
             )
             .wrap(Logger::default())
             .route(
-                MENU_ADD_TO_MENU,
+                API_V1_MENU_ADD_TO_MENU,
                 web::post().to(add_meal_to_menu_endpoint::execute::<AddMealToMenuUseCase>),
             )
             .route(
-                MENU_GET_BY_ID,
+                API_V1_MENU_GET_BY_ID,
                 web::get().to(get_meal_by_id_endpoint::execute::<GetMealByIdUseCase>),
             )
             .route(
-                MENU_GET_ALL,
+                API_V1_MENU_GET_ALL,
                 web::get().to(get_menu_endpoint::execute::<GetMenuUseCase>),
             )
             .route(
-                MENU_DELETE_BY_ID,
+                API_V1_MENU_DELETE_BY_ID,
                 web::delete()
                     .to(remove_meal_from_menu_endpoint::execute::<RemoveMealFromMenuUseCase>),
             )

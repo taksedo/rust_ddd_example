@@ -1,9 +1,10 @@
 use crate::main::menu::access::meal_persister::MealPersister;
 use crate::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 use common_types::main::base::domain_event::DomainEventTrait;
+use common_types::main::errors::error::ToError;
 use derive_new::new;
 use domain;
-use domain::main::menu::meal::Meal;
+use domain::main::menu::meal::{Meal, MealError};
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
 use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
@@ -33,7 +34,7 @@ impl AddMealToMenu for AddMealToMenuUseCase {
             description,
             price,
         )
-        .map_err(|_| AddMealToMenuUseCaseError::AlreadyExists)
+        .map_err(MealError::to_error)
         .map(|new_meal_in_menu| {
             self.meal_persister
                 .lock()
@@ -41,6 +42,15 @@ impl AddMealToMenu for AddMealToMenuUseCase {
                 .save(new_meal_in_menu.clone());
             new_meal_in_menu.entity_params.id
         })
+    }
+}
+
+impl ToError<AddMealToMenuUseCaseError> for MealError {
+    fn to_error(self) -> AddMealToMenuUseCaseError {
+        match self {
+            MealError::AlreadyExistsWithSameNameError => AddMealToMenuUseCaseError::AlreadyExists,
+            _ => AddMealToMenuUseCaseError::UnknownError,
+        }
     }
 }
 

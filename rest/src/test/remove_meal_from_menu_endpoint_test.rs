@@ -1,4 +1,4 @@
-use crate::main::endpoint_url::MENU_DELETE_BY_ID;
+use crate::main::endpoint_url::API_V1_MENU_DELETE_BY_ID;
 use crate::main::menu::remove_meal_from_menu_endpoint;
 use crate::test_fixtures::fixtures::{MockRemoveMealFromMenu, StringMethodsForRestTestExt};
 use actix_web::body::MessageBody;
@@ -16,7 +16,7 @@ async fn meal_not_found() {
         Err(RemoveMealFromMenuUseCaseError::MealNotFound);
     let mock_shared_state = web::Data::new(Arc::clone(&mock_remove_meal_from_menu));
 
-    let url = MENU_DELETE_BY_ID
+    let url = API_V1_MENU_DELETE_BY_ID
         .to_string()
         .with_id(meal_id.to_i64())
         .with_host();
@@ -43,7 +43,7 @@ async fn removed_successfully() {
     let mock_remove_meal_from_menu = Arc::new(Mutex::new(MockRemoveMealFromMenu::default()));
     let mock_shared_state = web::Data::new(Arc::clone(&mock_remove_meal_from_menu));
 
-    let url = MENU_DELETE_BY_ID
+    let url = API_V1_MENU_DELETE_BY_ID
         .to_string()
         .with_id(meal_id.to_i64())
         .with_host();

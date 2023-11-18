@@ -1,4 +1,4 @@
-use crate::main::endpoint_url::MENU_GET_BY_ID;
+use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::get_meal_by_id_endpoint;
 use crate::main::menu::meal_model::MealModel;
 use crate::test_fixtures::fixtures::{rnd_meal_info, MockGetMealById, StringMethodsForRestTestExt};
@@ -14,7 +14,7 @@ async fn returned_successfully() {
     mock_get_meal_by_id.lock().unwrap().response = Ok(meal_info.clone());
     let mock_shared_state = web::Data::new(Arc::clone(&mock_get_meal_by_id));
 
-    let url = MENU_GET_BY_ID
+    let url = API_V1_MENU_GET_BY_ID
         .to_string()
         .with_id(meal_info.id.to_i64())
         .with_host();

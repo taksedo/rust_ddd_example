@@ -8,8 +8,10 @@ pub trait GetMealById {
 
 #[derive(thiserror::Error, Debug, PartialEq, Clone, Copy)]
 pub enum GetMealByIdUseCaseError {
-    #[error("Еда не найдена")]
+    #[error("")]
     MealNotFound,
 }
+
+// impl From<> for GetMealByIdUseCaseError
 
 impl ResponseError for GetMealByIdUseCaseError {}

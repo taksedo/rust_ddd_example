@@ -7,7 +7,7 @@ pub trait RemoveMealFromMenu {
 
 #[derive(thiserror::Error, Debug, PartialEq, Clone, Copy)]
 pub enum RemoveMealFromMenuUseCaseError {
-    #[error("Еда не найдена")]
+    #[error("")]
     MealNotFound,
 }
 
