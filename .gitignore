@@ -4,3 +4,5 @@ Cargo.lock
 tests/performance/token.txt
 tests/performance/logs
 tests/performance/tank_errors.log
+/.vs
+/.vscode
