@@ -4,6 +4,7 @@ use common_types::main::common::count::Count;
 use common_types::main::errors::error::BusinessError;
 use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul};
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
@@ -12,13 +13,13 @@ pub struct Price {
 }
 
 impl Price {
+    pub const SCALE: i64 = 2;
+
     pub fn add(&self, additional: Self) -> Self {
-        let additional_price_value = additional.to_f64();
-        let current_price_value = &self.to_f64();
-        let total_price_value = current_price_value.add(additional_price_value);
-        Self {
-            value: BigDecimal::from_f64(total_price_value).unwrap(),
-        }
+        let summ: BigDecimal = BigDecimal::from_str(additional.to_string_value().as_str())
+            .unwrap()
+            .add(BigDecimal::from_str(&self.to_string_value().as_str()).unwrap());
+        Self { value: summ }
     }
 
     pub fn multiple(&self, multiplicator: Count) -> Self {
@@ -41,8 +42,6 @@ impl Price {
     pub fn to_string_value(&self) -> String {
         self.to_owned().value.to_string()
     }
-
-    pub const SCALE: i64 = 2;
 
     fn _zero(&self) -> Self {
         Self {
