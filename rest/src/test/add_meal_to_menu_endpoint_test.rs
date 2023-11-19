@@ -76,6 +76,6 @@ async fn validation_error() {
         &response_dto.response_status,
         &StatusCode::BAD_REQUEST.as_u16()
     );
-    assert_eq!(&response_dto.response_title, "Bad request");
-    assert_eq!(&response_dto.invalid_params.iter().count(), &3);
+    assert_eq!(&response_dto.response_title, &"Bad request");
+    assert_eq!(response_dto.invalid_params.iter().count(), 3);
 }
