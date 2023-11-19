@@ -1,4 +1,3 @@
-use actix_web::ResponseError;
 use common_types::main::base::value_object::ValueObject;
 use common_types::main::errors::error::BusinessError;
 use serde::{Deserialize, Serialize};
@@ -26,14 +25,12 @@ impl TryFrom<&str> for MealDescription {
 
 impl ValueObject for MealDescription {}
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum CreateMealDescriptionError {
-    #[error("Описание еды пустое")]
     EmptyDescriptionError,
 }
 
 impl BusinessError for CreateMealDescriptionError {}
-impl ResponseError for CreateMealDescriptionError {}
 
 impl fmt::Display for MealDescription {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {

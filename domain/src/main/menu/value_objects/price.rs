@@ -68,11 +68,9 @@ impl TryFrom<BigDecimal> for Price {
 
 impl ValueObject for Price {}
 
-#[derive(thiserror::Error, Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum CreatePriceError {
-    #[error("Неправильное количество знаков после запятой")]
     InvalidScale,
-    #[error("Отрицательное значение")]
     NegativeValue,
 }
 

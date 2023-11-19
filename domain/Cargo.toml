@@ -11,7 +11,6 @@ serde_derive.workspace = true
 erased-serde.workspace = true
 serde_json.workspace = true
 derive-new.workspace = true
-thiserror.workspace = true
 bigdecimal.workspace = true
 mockall.workspace = true
 fake.workspace = true
