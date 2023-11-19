@@ -13,13 +13,6 @@ impl MealId {
     pub fn to_i64(self) -> i64 {
         self.value.to_i64().unwrap()
     }
-
-    pub fn from(value: i64) -> Result<MealId, MealError> {
-        match value {
-            x if x > 0 && x < i64::MAX => Ok(MealId { value }),
-            _ => Err(MealError::IdGenerationError),
-        }
-    }
 }
 
 impl TryFrom<i64> for MealId {
