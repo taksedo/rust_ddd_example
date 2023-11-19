@@ -1,11 +1,12 @@
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
+use crate::main::menu::meal_restorer::MealRestorer;
 use crate::main::menu::value_objects::meal_description::MealDescription;
 use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::meal_name::MealName;
 use crate::main::menu::value_objects::price::Price;
 use bigdecimal::{BigDecimal, FromPrimitive};
-use common_types::main::base::domain_entity::{DomainEntity, Version};
+use common_types::main::base::domain_entity::Version;
 use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use fake::faker::name::raw::*;
@@ -49,12 +50,15 @@ pub fn version() -> Version {
 }
 
 pub fn rnd_meal() -> Meal {
-    Meal::new(
-        DomainEntity::new(rnd_meal_id(), Version::default()),
+    MealRestorer::restore_meal(
+        rnd_meal_id(),
         rnd_meal_name(),
         rnd_meal_description(),
         rnd_price(),
-    ) //TODO Переделать на ресторер
+        false,
+        Version::default(),
+        vec![],
+    )
 }
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq)]

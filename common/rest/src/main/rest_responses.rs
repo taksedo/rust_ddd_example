@@ -3,7 +3,7 @@ use actix_web::http::Uri;
 use actix_web::HttpResponse;
 use derive_new::new;
 use lazy_static::lazy_static;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::sync::{Arc, Mutex, OnceLock};
 
@@ -21,7 +21,7 @@ pub fn resource_not_found() -> HttpResponse {
             .parse::<Uri>()
             .unwrap()
             .to_string(),
-        "Resource not found",
+        "Resource not found".to_string(),
         (StatusCode::NOT_FOUND).as_u16(),
     );
 
@@ -34,7 +34,7 @@ pub fn rest_business_error(title: &str, code: &str) -> HttpResponse {
             .parse::<Uri>()
             .unwrap()
             .to_string(),
-        title,
+        title.to_string(),
         (StatusCode::UNPROCESSABLE_ENTITY).as_u16(),
     );
     HttpResponse::UnprocessableEntity().json(error_response)
@@ -50,22 +50,22 @@ pub fn no_content() -> HttpResponse {
     HttpResponse::new(StatusCode::NO_CONTENT)
 }
 
-#[derive(new, Debug, Serialize)]
-pub struct GenericErrorResponse<'a> {
-    #[serde(rename(serialize = "type"))]
+#[derive(new, Debug, Serialize, Deserialize)]
+pub struct GenericErrorResponse {
+    #[serde(rename(serialize = "type", deserialize = "type"))]
     pub response_type: String,
-    #[serde(rename(serialize = "title"))]
-    pub response_title: &'a str,
-    #[serde(rename(serialize = "status"))]
+    #[serde(rename(serialize = "title", deserialize = "title"))]
+    pub response_title: String,
+    #[serde(rename(serialize = "status", deserialize = "status"))]
     pub response_status: u16,
     // #[serde(skip_serializing_if = "Vec::is_empty")]
     #[new(value = "vec![]")]
-    pub invalid_params: Vec<ValidationError<'a>>,
+    pub invalid_params: Vec<ValidationError>,
 }
 
-#[derive(new, Debug, Serialize, Copy, Clone)]
-pub struct ValidationError<'a> {
-    pub message: &'a str,
+#[derive(new, Debug, Serialize, Deserialize, Clone)]
+pub struct ValidationError {
+    pub message: String,
 }
 
 pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>) -> HttpResponse {
@@ -74,7 +74,7 @@ pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>
             .parse::<Uri>()
             .unwrap()
             .to_string(),
-        "Bad request",
+        "Bad request".to_string(),
         (StatusCode::BAD_REQUEST).as_u16(),
     );
 

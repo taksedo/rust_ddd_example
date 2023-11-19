@@ -2,9 +2,12 @@ use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::add_meal_to_menu_endpoint;
 use crate::main::menu::add_meal_to_menu_endpoint::MealStruct;
 use crate::test_fixtures::fixtures::MockAddMealToMenu;
+use actix_web::body::MessageBody;
 use actix_web::http::{header, StatusCode};
 use actix_web::{web, web::Json};
-use bigdecimal::{BigDecimal, One};
+use bigdecimal::num_bigint::BigInt;
+use bigdecimal::BigDecimal;
+use common_rest::main::rest_responses::GenericErrorResponse;
 use domain::test_fixtures::fixtures::{
     rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
@@ -60,10 +63,19 @@ async fn validation_error() {
     let meal = Json(MealStruct::new(
         "".to_string(),
         "".to_string(),
-        BigDecimal::one().with_scale(20),
+        BigDecimal::new(BigInt::from(1), 20),
     ));
 
     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state as _, meal).await;
+    let body = resp.into_body().try_into_bytes().unwrap();
+    let body_text = std::str::from_utf8(&body).unwrap();
 
-    assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+    let response_dto: GenericErrorResponse = serde_json::from_str(body_text).unwrap();
+
+    assert_eq!(
+        &response_dto.response_status,
+        &StatusCode::BAD_REQUEST.as_u16()
+    );
+    assert_eq!(&response_dto.response_title, "Bad request");
+    assert_eq!(&response_dto.invalid_params.iter().count(), &3);
 }

@@ -20,7 +20,7 @@ impl Validated<MealName, &str> for MealName {
             CreateMealNameError::EmptyMealNameError => error_list
                 .lock()
                 .unwrap()
-                .push(ValidationError::new("Meal name is empty")),
+                .push(ValidationError::new("Meal name is empty".to_string())),
         })
     }
 }
@@ -28,10 +28,9 @@ impl Validated<MealName, &str> for MealName {
 impl Validated<MealDescription, &str> for MealDescription {
     fn validated(val: &str, error_list: Arc<Mutex<Vec<ValidationError>>>) -> Result<Self, ()> {
         Self::try_from(val).map_err(|e| match e {
-            CreateMealDescriptionError::EmptyDescriptionError => error_list
-                .lock()
-                .unwrap()
-                .push(ValidationError::new("Meal description is empty")),
+            CreateMealDescriptionError::EmptyDescriptionError => error_list.lock().unwrap().push(
+                ValidationError::new("Meal description is empty".to_string()),
+            ),
         })
     }
 }
@@ -42,10 +41,9 @@ impl Validated<Price, BigDecimal> for Price {
         error_list: Arc<Mutex<Vec<ValidationError>>>,
     ) -> Result<Self, ()> {
         Self::try_from(val).map_err(|e| match e {
-            CreatePriceError::InvalidScale => error_list
-                .lock()
-                .unwrap()
-                .push(ValidationError::new("Price scale must not be > 2")),
+            CreatePriceError::InvalidScale => error_list.lock().unwrap().push(
+                ValidationError::new("Price scale must not be > 2".to_string()),
+            ),
             CreatePriceError::NegativeValue => {}
         })
     }
