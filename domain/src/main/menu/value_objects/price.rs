@@ -6,8 +6,6 @@ use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul};
 use std::str::FromStr;
 
-pub const SCALE: i64 = 2;
-
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Price {
@@ -15,6 +13,8 @@ pub struct Price {
 }
 
 impl Price {
+    pub const SCALE: i64 = 2;
+
     pub fn add(&self, additional: Self) -> Self {
         let summ: BigDecimal = BigDecimal::from_str(additional.to_string_value().as_str())
             .unwrap()
@@ -56,10 +56,10 @@ impl TryFrom<BigDecimal> for Price {
     fn try_from(value: BigDecimal) -> Result<Self, Self::Error> {
         let price_scale = value.normalized().into_bigint_and_exponent().1;
         match &value {
-            _ if price_scale > SCALE => Err(CreatePriceError::InvalidScale),
+            _ if price_scale > Self::SCALE => Err(CreatePriceError::InvalidScale),
             _ if value < BigDecimal::zero() => Err(CreatePriceError::NegativeValue),
             _ => Ok(Self {
-                value: value.with_scale(SCALE),
+                value: value.with_scale(Self::SCALE),
             }),
         }
     }
