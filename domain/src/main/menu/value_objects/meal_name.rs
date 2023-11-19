@@ -1,37 +1,36 @@
-use actix_web::ResponseError;
 use common_types::main::base::value_object::ValueObject;
 use common_types::main::errors::error::BusinessError;
-use derive_new::new;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fmt::Formatter;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash, Default, new)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash, Default)]
 #[non_exhaustive]
 pub struct MealName {
     pub value: String,
 }
 
-impl MealName {
-    pub fn from(name: String) -> Result<Self, CreateMealNameError> {
-        match name {
-            x if x == *"" || x == *" " => Err(CreateMealNameError::EmptyMealNameError),
-            _ => Ok(Self::new(name)),
+impl TryFrom<&str> for MealName {
+    type Error = CreateMealNameError;
+
+    fn try_from(value: &str) -> Result<MealName, Self::Error> {
+        match value {
+            x if x == "" || x == " " => Err(CreateMealNameError::EmptyMealNameError),
+            _ => Ok(MealName {
+                value: value.to_string(),
+            }),
         }
     }
 }
 
 impl ValueObject for MealName {}
 
-#[derive(thiserror::Error, Debug, PartialEq)]
-#[error(transparent)]
+#[derive(Debug, PartialEq)]
 pub enum CreateMealNameError {
-    #[error("Название еды пустое")]
     EmptyMealNameError,
 }
 
 impl BusinessError for CreateMealNameError {}
-impl ResponseError for CreateMealNameError {}
 
 impl fmt::Display for MealName {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {

@@ -8,8 +8,8 @@ edition.workspace = true
 [dependencies]
 thiserror.workspace = true
 derive-new.workspace = true
-structmap = "0.1.6"
-structmap-derive = "0.1.6"
+structmap.workspace = true
+structmap-derive.workspace = true
 actix-web.workspace = true
 
 domain.workspace = true

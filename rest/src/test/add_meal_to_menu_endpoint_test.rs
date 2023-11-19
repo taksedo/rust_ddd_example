@@ -1,3 +1,4 @@
+use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::add_meal_to_menu_endpoint;
 use crate::main::menu::add_meal_to_menu_endpoint::MealStruct;
 use crate::test_fixtures::fixtures::MockAddMealToMenu;
@@ -7,10 +8,12 @@ use bigdecimal::{BigDecimal, One};
 use domain::test_fixtures::fixtures::{
     rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
+use dotenvy::dotenv;
 use std::sync::{Arc, Mutex};
 
 #[actix_web::test]
 async fn created_successfully() {
+    dotenv().ok();
     let meal_id = rnd_meal_id();
     let meal_name = rnd_meal_name();
     let meal_description = rnd_meal_description();
@@ -33,7 +36,6 @@ async fn created_successfully() {
         .lock()
         .unwrap()
         .verify_invoked(meal_name, meal_description, price);
-    let resp = resp.unwrap();
 
     let header = resp
         .headers()
@@ -42,12 +44,16 @@ async fn created_successfully() {
         .to_str()
         .unwrap();
 
-    assert_eq!(&resp.status(), &StatusCode::OK);
-    assert_eq!(header, &meal_id.to_i64().to_string());
+    assert_eq!(&resp.status(), &StatusCode::CREATED);
+    assert_eq!(
+        header,
+        API_V1_MENU_GET_BY_ID.replace("{id}", meal_id.value.to_string().as_str())
+    );
 }
 
 #[actix_web::test]
 async fn validation_error() {
+    dotenv().ok();
     let mock_add_meal_to_menu = Arc::new(Mutex::new(MockAddMealToMenu::default()));
     let mock_shared_state = web::Data::new(Arc::clone(&mock_add_meal_to_menu));
 
@@ -58,10 +64,6 @@ async fn validation_error() {
     ));
 
     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state as _, meal).await;
-    let resp = resp.expect_err("Обнаружена ошибка");
 
-    assert_eq!(
-        resp.as_response_error().status_code(),
-        StatusCode::INTERNAL_SERVER_ERROR
-    );
+    assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
 }

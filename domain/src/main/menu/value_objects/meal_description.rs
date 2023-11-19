@@ -11,11 +11,15 @@ pub struct MealDescription {
     value: String,
 }
 
-impl MealDescription {
-    pub fn from(description: String) -> Result<MealDescription, CreateMealDescriptionError> {
-        match description {
-            x if x == *"" || x == *" " => Err(CreateMealDescriptionError::EmptyDescriptionError),
-            _ => Ok(MealDescription { value: description }),
+impl TryFrom<&str> for MealDescription {
+    type Error = CreateMealDescriptionError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            x if x == "" || x == " " => Err(CreateMealDescriptionError::EmptyDescriptionError),
+            _ => Ok(MealDescription {
+                value: value.to_string(),
+            }),
         }
     }
 }

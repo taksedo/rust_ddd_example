@@ -9,4 +9,5 @@ edition = "2021"
 actix-web.workspace = true
 derive_more.workspace = true
 serde.workspace = true
-lazy_static = { version = "1.4.0", features = [] }
+lazy_static.workspace = true
+derive-new.workspace = true

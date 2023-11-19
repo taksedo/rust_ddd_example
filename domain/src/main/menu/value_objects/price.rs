@@ -1,4 +1,3 @@
-use actix_web::ResponseError;
 use bigdecimal::*;
 use common_types::main::base::value_object::ValueObject;
 use common_types::main::common::count::Count;
@@ -13,17 +12,6 @@ pub struct Price {
 }
 
 impl Price {
-    pub fn from(value: BigDecimal) -> Result<Price, CreatePriceError> {
-        let price_scale = value.normalized().into_bigint_and_exponent().1;
-        match &value {
-            _ if price_scale > Self::SCALE => Err(CreatePriceError::InvalidScale),
-            _ if value < BigDecimal::zero() => Err(CreatePriceError::NegativeValue),
-            _ => Ok(Self {
-                value: value.with_scale(Self::SCALE),
-            }),
-        }
-    }
-
     pub fn add(&self, additional: Self) -> Self {
         let additional_price_value = additional.to_f64();
         let current_price_value = &self.to_f64();
@@ -63,6 +51,21 @@ impl Price {
     }
 }
 
+impl TryFrom<BigDecimal> for Price {
+    type Error = CreatePriceError;
+
+    fn try_from(value: BigDecimal) -> Result<Self, Self::Error> {
+        let price_scale = value.normalized().into_bigint_and_exponent().1;
+        match &value {
+            _ if price_scale > Self::SCALE => Err(CreatePriceError::InvalidScale),
+            _ if value < BigDecimal::zero() => Err(CreatePriceError::NegativeValue),
+            _ => Ok(Self {
+                value: value.with_scale(Self::SCALE),
+            }),
+        }
+    }
+}
+
 impl ValueObject for Price {}
 
 #[derive(thiserror::Error, Debug, PartialEq, Clone)]
@@ -74,4 +77,3 @@ pub enum CreatePriceError {
 }
 
 impl BusinessError for CreatePriceError {}
-impl ResponseError for CreatePriceError {}

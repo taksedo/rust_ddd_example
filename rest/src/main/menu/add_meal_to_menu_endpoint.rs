@@ -3,7 +3,9 @@ use crate::main::menu::to_error::ToRestError;
 use crate::main::menu::validation::Validated;
 use actix_web::{http, web, HttpResponse};
 use bigdecimal::BigDecimal;
-use common_rest::main::rest_responses::{created, rest_business_error, BASE_URL};
+use common_rest::main::rest_responses::{
+    created, rest_business_error, to_invalid_param_bad_request,
+};
 use derive_new::new;
 use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_name::MealName;
@@ -30,26 +32,32 @@ where
 {
     println!("Request {request:?} to add meal to menu received");
 
-    let meal_name = MealName::validated(request.name.clone());
-    let meal_description = MealDescription::validated(request.description.clone());
-    let price = Price::validated(request.price.clone());
+    let error_list = Arc::new(Mutex::new(vec![]));
 
-    let result = shared_state.lock().unwrap().execute(
-        meal_name.unwrap(),
-        meal_description.unwrap(),
-        price.unwrap(),
-    );
+    let meal_name = MealName::validated(request.name.as_str(), error_list.clone());
+    let meal_description =
+        MealDescription::validated(request.description.as_str(), error_list.clone());
+    let price = Price::validated(request.price.clone(), error_list.clone());
 
-    match result {
-        Ok(_) => created(
-            API_V1_MENU_GET_BY_ID
-                .clone()
-                .replace("{id}", result.unwrap().value.to_string().as_str())
-                .as_str()
-                .parse::<Uri>()
-                .unwrap(),
-        ),
-        Err(e) => e.to_rest_error(),
+    if error_list.lock().unwrap().is_empty() {
+        let result = shared_state.lock().unwrap().execute(
+            meal_name.unwrap(),
+            meal_description.unwrap(),
+            price.unwrap(),
+        );
+
+        match result {
+            Ok(_) => created(
+                API_V1_MENU_GET_BY_ID
+                    .replace("{id}", result.unwrap().value.to_string().as_str())
+                    .as_str()
+                    .parse::<Uri>()
+                    .unwrap(),
+            ),
+            Err(e) => e.to_rest_error(),
+        }
+    } else {
+        to_invalid_param_bad_request(error_list)
     }
 }
 

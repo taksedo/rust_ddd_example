@@ -13,7 +13,6 @@ async fn get_menu() {
     let mock_shared_state = web::Data::new(Arc::clone(&mock_get_menu));
 
     let resp = get_menu_endpoint::execute(mock_shared_state).await;
-    let resp = resp.unwrap();
 
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();

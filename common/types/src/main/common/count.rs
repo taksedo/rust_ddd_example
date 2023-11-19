@@ -8,14 +8,6 @@ pub struct Count {
 
 #[allow(clippy::absurd_extreme_comparisons)]
 impl Count {
-    pub fn from(value: i32) -> Result<Self, CountError> {
-        match value {
-            _ if value > i32::MAX => Err(CountError::MaxValueReachedError),
-            _ if value < 0 => Err(CountError::NegativeValueError),
-            _ => Ok(Self { value }),
-        }
-    }
-
     pub fn one() -> Self {
         Self { value: 1 }
     }
@@ -52,14 +44,23 @@ impl Count {
     }
 }
 
+impl TryFrom<i32> for Count {
+    type Error = CountError;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            _ if value > i32::MAX => Err(CountError::MaxValueReachedError),
+            _ if value < 0 => Err(CountError::NegativeValueError),
+            _ => Ok(Self { value }),
+        }
+    }
+}
+
 impl ValueObject for Count {}
 
-#[derive(thiserror::Error, Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum CountError {
-    #[error("Количество не может быть отрицательным")]
     NegativeValueError,
-    #[error("Достигнуто максимальное количество")]
     MaxValueReachedError,
-    #[error("Достигнуто минимальное количество")]
     MinValueReachedError,
 }

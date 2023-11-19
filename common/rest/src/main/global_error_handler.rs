@@ -1,15 +1,9 @@
-use actix_web::{
-    error, get,
-    http::{header::ContentType, StatusCode},
-    App, HttpResponse, HttpServer,
-};
-use derive_more::{Display, Error};
-
-type Message = String;
-
-pub struct ValidationError {
-    message: Message,
-}
+// use actix_web::{
+//     error, get,
+//     http::{header::ContentType, StatusCode},
+//     App, HttpResponse, HttpServer,
+// };
+// use derive_more::{Display, Error};
 
 // #[derive(Debug, Display, Error)]
 // pub enum RestHttpError {

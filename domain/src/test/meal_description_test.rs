@@ -8,8 +8,8 @@ use rstest::rstest;
 
 #[test]
 fn create_description__success() {
-    let value = "Some string".to_string();
-    let result = MealDescription::from(value.to_owned()).unwrap();
+    let value = "Some string";
+    let result = MealDescription::try_from(value).unwrap();
 
     let type_name = result.type_name();
     assert_eq!(
@@ -21,8 +21,8 @@ fn create_description__success() {
 }
 
 #[rstest]
-fn create_description__empty_string(#[values("", " ")] input: String) {
-    let result = MealDescription::from(input);
+fn create_description__empty_string(#[values("", " ")] input: &str) {
+    let result = MealDescription::try_from(input);
     assert_eq!(
         result,
         Err(CreateMealDescriptionError::EmptyDescriptionError)

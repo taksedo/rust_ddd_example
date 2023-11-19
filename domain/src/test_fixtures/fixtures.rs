@@ -31,17 +31,17 @@ pub fn rnd_meal_id() -> MealId {
 }
 
 pub fn rnd_meal_name() -> MealName {
-    MealName::from(Name(EN).fake()).unwrap()
+    MealName::try_from(Name(EN).fake::<String>().as_str()).unwrap()
 }
 
-pub fn rnd_meal_description() -> MealDescription {
-    MealDescription::from(Name(EN).fake()).unwrap()
+pub fn rnd_meal_description<'a>() -> MealDescription {
+    MealDescription::try_from(Name(EN).fake::<String>().as_str()).unwrap()
 }
 
 pub fn rnd_price() -> Price {
     let random_price: u64 = thread_rng().gen_range(0..500000);
-    let price = Price::from(BigDecimal::from_u64(random_price).unwrap()).unwrap();
-    Price::from(price.value.with_scale(2)).unwrap()
+    let price = Price::try_from(BigDecimal::from_u64(random_price).unwrap()).unwrap();
+    Price::try_from(price.value.with_scale(2)).unwrap()
 }
 
 pub fn version() -> Version {

@@ -1,28 +1,52 @@
 use bigdecimal::*;
+use common_rest::main::rest_responses::ValidationError;
 use domain::main::menu::value_objects::meal_description::{
     CreateMealDescriptionError, MealDescription,
 };
 use domain::main::menu::value_objects::meal_name::{CreateMealNameError, MealName};
 use domain::main::menu::value_objects::price::{CreatePriceError, Price};
+use std::sync::{Arc, Mutex};
 
-pub trait Validated<V, R, S> {
-    fn validated(val: S) -> Result<V, R>;
+pub trait Validated<Entity, ValueType> {
+    fn validated(
+        val: ValueType,
+        error_list: Arc<Mutex<Vec<ValidationError>>>,
+    ) -> Result<Entity, ()>;
 }
 
-impl Validated<MealName, CreateMealNameError, String> for MealName {
-    fn validated(val: String) -> Result<MealName, CreateMealNameError> {
-        Self::from(val)
+impl Validated<MealName, &str> for MealName {
+    fn validated(val: &str, error_list: Arc<Mutex<Vec<ValidationError>>>) -> Result<Self, ()> {
+        Self::try_from(val).map_err(|e| match e {
+            CreateMealNameError::EmptyMealNameError => error_list
+                .lock()
+                .unwrap()
+                .push(ValidationError::new("Meal name is empty")),
+        })
     }
 }
 
-impl Validated<MealDescription, CreateMealDescriptionError, String> for MealDescription {
-    fn validated(val: String) -> Result<MealDescription, CreateMealDescriptionError> {
-        Self::from(val)
+impl Validated<MealDescription, &str> for MealDescription {
+    fn validated(val: &str, error_list: Arc<Mutex<Vec<ValidationError>>>) -> Result<Self, ()> {
+        Self::try_from(val).map_err(|e| match e {
+            CreateMealDescriptionError::EmptyDescriptionError => error_list
+                .lock()
+                .unwrap()
+                .push(ValidationError::new("Meal description is empty")),
+        })
     }
 }
 
-impl Validated<Price, CreatePriceError, BigDecimal> for Price {
-    fn validated(val: BigDecimal) -> Result<Price, CreatePriceError> {
-        Self::from(val)
+impl Validated<Price, BigDecimal> for Price {
+    fn validated(
+        val: BigDecimal,
+        error_list: Arc<Mutex<Vec<ValidationError>>>,
+    ) -> Result<Self, ()> {
+        Self::try_from(val).map_err(|e| match e {
+            CreatePriceError::InvalidScale => error_list
+                .lock()
+                .unwrap()
+                .push(ValidationError::new("Price scale must not be > 2")),
+            CreatePriceError::NegativeValue => {}
+        })
     }
 }

@@ -25,7 +25,6 @@ async fn returned_successfully() {
         .to_http_request();
 
     let resp = get_meal_by_id_endpoint::execute(mock_shared_state, req).await;
-    let resp = resp.unwrap();
 
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_json = std::str::from_utf8(&body).unwrap();

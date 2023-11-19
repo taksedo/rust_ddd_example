@@ -53,9 +53,9 @@ impl From<MealDbDto> for Meal {
                 version: Version::from(value.version),
                 events: vec![],
             },
-            name: MealName::from(value.name).unwrap(),
-            description: MealDescription::from(value.description.unwrap()).unwrap(),
-            price: Price::from(value.price).unwrap(),
+            name: MealName::try_from(value.name.as_str()).unwrap(),
+            description: MealDescription::try_from(value.description.unwrap().as_str()).unwrap(),
+            price: Price::try_from(value.price).unwrap(),
             removed: value.removed,
         }
     }
