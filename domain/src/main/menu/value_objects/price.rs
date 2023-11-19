@@ -4,6 +4,9 @@ use common_types::main::common::count::Count;
 use common_types::main::errors::error::BusinessError;
 use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul};
+use std::str::FromStr;
+
+pub const SCALE: i64 = 2;
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
@@ -13,12 +16,10 @@ pub struct Price {
 
 impl Price {
     pub fn add(&self, additional: Self) -> Self {
-        let additional_price_value = additional.to_f64();
-        let current_price_value = &self.to_f64();
-        let total_price_value = current_price_value.add(additional_price_value);
-        Self {
-            value: BigDecimal::from_f64(total_price_value).unwrap(),
-        }
+        let summ: BigDecimal = BigDecimal::from_str(additional.to_string_value().as_str())
+            .unwrap()
+            .add(BigDecimal::from_str(&self.to_string_value().as_str()).unwrap());
+        Self { value: summ }
     }
 
     pub fn multiple(&self, multiplicator: Count) -> Self {
@@ -42,8 +43,6 @@ impl Price {
         self.to_owned().value.to_string()
     }
 
-    pub const SCALE: i64 = 2;
-
     fn _zero(&self) -> Self {
         Self {
             value: BigDecimal::zero(),
@@ -57,10 +56,10 @@ impl TryFrom<BigDecimal> for Price {
     fn try_from(value: BigDecimal) -> Result<Self, Self::Error> {
         let price_scale = value.normalized().into_bigint_and_exponent().1;
         match &value {
-            _ if price_scale > Self::SCALE => Err(CreatePriceError::InvalidScale),
+            _ if price_scale > SCALE => Err(CreatePriceError::InvalidScale),
             _ if value < BigDecimal::zero() => Err(CreatePriceError::NegativeValue),
             _ => Ok(Self {
-                value: value.with_scale(Self::SCALE),
+                value: value.with_scale(SCALE),
             }),
         }
     }

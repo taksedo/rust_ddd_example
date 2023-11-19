@@ -37,9 +37,12 @@ fn create_price__negative_value() {
 #[test]
 fn add_price() {
     let price1 = Price::try_from(BigDecimal::from_str("1.44").unwrap()).unwrap();
+    dbg!(&price1);
     let price2 = Price::try_from(BigDecimal::from_str("1.45").unwrap()).unwrap();
+    dbg!(&price2);
 
     let result = price1.add(price2);
+    dbg!(&result);
     assert_eq!(
         result.to_bigdecimal(),
         BigDecimal::from_str("2.89").unwrap()
