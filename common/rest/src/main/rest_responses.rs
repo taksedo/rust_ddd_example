@@ -63,11 +63,16 @@ pub struct GenericErrorResponse {
     pub invalid_params: Vec<ValidationError>,
 }
 
-#[derive(new, Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ValidationError {
     pub message: String,
 }
 
+impl ValidationError {
+    pub fn new(message: String) -> Self {
+        Self { message }
+    }
+}
 pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>) -> HttpResponse {
     let mut error_response = GenericErrorResponse::new(
         (BASE_URL.clone() + "/bad_request")

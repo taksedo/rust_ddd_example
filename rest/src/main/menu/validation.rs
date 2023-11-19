@@ -21,7 +21,7 @@ impl Validated<MealName, &str> for MealName {
             CreateMealNameError::EmptyMealNameError => error_list
                 .lock()
                 .unwrap()
-                .push(ValidationError::new("Meal name is empty".to_string())),
+                .push(ValidationError::new("Meal name is empty.".to_string())),
         })
     }
 }
