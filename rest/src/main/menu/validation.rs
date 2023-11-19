@@ -8,6 +8,7 @@ use domain::main::menu::value_objects::price::{CreatePriceError, Price};
 use std::sync::{Arc, Mutex};
 
 pub trait Validated<Entity, ValueType> {
+    #[allow(clippy::result_unit_err)]
     fn validated(
         val: ValueType,
         error_list: Arc<Mutex<Vec<ValidationError>>>,

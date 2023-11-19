@@ -15,7 +15,7 @@ impl TryFrom<&str> for MealName {
 
     fn try_from(value: &str) -> Result<MealName, Self::Error> {
         match value {
-            x if x == "" || x == " " => Err(CreateMealNameError::EmptyMealNameError),
+            x if x.is_empty() || x == " " => Err(CreateMealNameError::EmptyMealNameError),
             _ => Ok(MealName {
                 value: value.to_string(),
             }),

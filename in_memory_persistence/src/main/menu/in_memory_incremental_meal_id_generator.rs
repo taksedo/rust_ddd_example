@@ -12,6 +12,6 @@ impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
     fn generate(&mut self) -> MealId {
         let mut meal_id = self.counter.lock().unwrap();
         *meal_id += 1;
-        MealId::from(*meal_id).unwrap()
+        MealId::try_from(*meal_id).unwrap()
     }
 }

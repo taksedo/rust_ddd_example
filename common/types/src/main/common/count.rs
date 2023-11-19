@@ -49,6 +49,7 @@ impl TryFrom<i32> for Count {
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         match value {
+            #[allow(clippy::absurd_extreme_comparisons)]
             _ if value > i32::MAX => Err(CountError::MaxValueReachedError),
             _ if value < 0 => Err(CountError::NegativeValueError),
             _ => Ok(Self { value }),

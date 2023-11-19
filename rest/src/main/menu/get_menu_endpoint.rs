@@ -8,7 +8,6 @@ use usecase::main::menu::get_menu::GetMenu;
 pub async fn execute<T: GetMenu + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
 ) -> HttpResponse {
-    #[allow(clippy::redundant_closure)]
     let meal_info_list: Vec<MealModel> = shared_state
         .lock()
         .unwrap()

@@ -69,7 +69,9 @@ pub enum MealError {
 
 impl DomainEntityTrait<DomainEventEnum> for Meal {
     fn add_event(&mut self, event: DomainEventEnum) {
-        if self.entity_params.events.is_empty() {}
+        if self.entity_params.events.is_empty() {
+            //todo: добавить действие
+        }
         self.entity_params.events.push(event)
     }
     fn pop_events(&mut self) -> Vec<DomainEventEnum> {

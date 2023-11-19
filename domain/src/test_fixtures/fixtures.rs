@@ -35,7 +35,7 @@ pub fn rnd_meal_name() -> MealName {
     MealName::try_from(Name(EN).fake::<String>().as_str()).unwrap()
 }
 
-pub fn rnd_meal_description<'a>() -> MealDescription {
+pub fn rnd_meal_description() -> MealDescription {
     MealDescription::try_from(Name(EN).fake::<String>().as_str()).unwrap()
 }
 

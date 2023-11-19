@@ -19,7 +19,7 @@ impl MealIdGenerator for PostgresMealIdGenerator {
             .get_result::<i64>(connection)
             .unwrap();
 
-        MealId::from(id).unwrap()
+        MealId::try_from(id).unwrap()
     }
 }
 

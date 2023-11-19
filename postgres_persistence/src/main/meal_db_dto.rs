@@ -49,7 +49,7 @@ impl From<MealDbDto> for Meal {
     fn from(value: MealDbDto) -> Self {
         Self {
             entity_params: DomainEntity {
-                id: MealId::from(value.id).unwrap(),
+                id: MealId::try_from(value.id).unwrap(),
                 version: Version::from(value.version),
                 events: vec![],
             },
