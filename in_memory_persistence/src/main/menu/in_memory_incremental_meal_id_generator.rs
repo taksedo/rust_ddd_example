@@ -1,5 +1,5 @@
 use derive_new::new;
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use std::sync::Mutex;
 
 #[derive(Debug, new)]
@@ -12,6 +12,6 @@ impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
     fn generate(&mut self) -> MealId {
         let mut meal_id = self.counter.lock().unwrap();
         *meal_id += 1;
-        MealId { value: *meal_id }
+        MealId::try_from(*meal_id).unwrap()
     }
 }

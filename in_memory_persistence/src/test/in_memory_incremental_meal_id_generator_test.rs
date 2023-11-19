@@ -1,5 +1,5 @@
 use crate::main::menu::in_memory_incremental_meal_id_generator::InMemoryIncrementalMealIdGenerator;
-use domain::main::menu::meal_id::MealIdGenerator;
+use domain::main::menu::value_objects::meal_id::MealIdGenerator;
 
 #[test]
 fn id_is_incremented() {

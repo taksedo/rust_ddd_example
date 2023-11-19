@@ -1,6 +1,6 @@
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_id::MealId;
-use domain::main::menu::meal_name::MealName;
+use domain::main::menu::value_objects::meal_id::MealId;
+use domain::main::menu::value_objects::meal_name::MealName;
 use std::fmt::Debug;
 
 pub trait MealExtractor: Debug + Send {

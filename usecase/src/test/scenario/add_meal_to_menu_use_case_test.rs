@@ -2,7 +2,7 @@ use crate::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseErr
 use crate::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use crate::test_fixtures::fixtures::MockMealPersister;
 use derive_new::new;
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::{rnd_meal_description, rnd_meal_name, rnd_price};
 use domain::test_fixtures::fixtures::{rnd_meal_id, TestMealAlreadyExists};
 use std::fmt::Debug;

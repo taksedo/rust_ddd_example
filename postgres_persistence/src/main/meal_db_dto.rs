@@ -2,10 +2,10 @@ use bigdecimal::BigDecimal;
 use common_types::main::base::domain_entity::{DomainEntity, Version};
 use diesel::prelude::*;
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_description::MealDescription;
-use domain::main::menu::meal_id::MealId;
-use domain::main::menu::meal_name::MealName;
-use domain::main::menu::price::Price;
+use domain::main::menu::value_objects::meal_description::MealDescription;
+use domain::main::menu::value_objects::meal_id::MealId;
+use domain::main::menu::value_objects::meal_name::MealName;
+use domain::main::menu::value_objects::price::Price;
 use serde::*;
 
 #[derive(
@@ -49,13 +49,13 @@ impl From<MealDbDto> for Meal {
     fn from(value: MealDbDto) -> Self {
         Self {
             entity_params: DomainEntity {
-                id: MealId::new(value.id),
+                id: MealId::try_from(value.id).unwrap(),
                 version: Version::from(value.version),
                 events: vec![],
             },
-            name: MealName::from(value.name).unwrap(),
-            description: MealDescription::from(value.description.unwrap()).unwrap(),
-            price: Price::from(value.price).unwrap(),
+            name: MealName::try_from(value.name.as_str()).unwrap(),
+            description: MealDescription::try_from(value.description.unwrap().as_str()).unwrap(),
+            price: Price::try_from(value.price).unwrap(),
             removed: value.removed,
         }
     }

@@ -1,11 +1,12 @@
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_description::MealDescription;
-use crate::main::menu::meal_id::MealId;
-use crate::main::menu::meal_name::MealName;
-use crate::main::menu::price::Price;
+use crate::main::menu::meal_restorer::MealRestorer;
+use crate::main::menu::value_objects::meal_description::MealDescription;
+use crate::main::menu::value_objects::meal_id::MealId;
+use crate::main::menu::value_objects::meal_name::MealName;
+use crate::main::menu::value_objects::price::Price;
 use bigdecimal::{BigDecimal, FromPrimitive};
-use common_types::main::base::domain_entity::{DomainEntity, Version};
+use common_types::main::base::domain_entity::Version;
 use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use fake::faker::name::raw::*;
@@ -31,17 +32,17 @@ pub fn rnd_meal_id() -> MealId {
 }
 
 pub fn rnd_meal_name() -> MealName {
-    MealName::from(Name(EN).fake()).unwrap()
+    MealName::try_from(Name(EN).fake::<String>().as_str()).unwrap()
 }
 
 pub fn rnd_meal_description() -> MealDescription {
-    MealDescription::from(Name(EN).fake()).unwrap()
+    MealDescription::try_from(Name(EN).fake::<String>().as_str()).unwrap()
 }
 
 pub fn rnd_price() -> Price {
     let random_price: u64 = thread_rng().gen_range(0..500000);
-    let price = Price::from(BigDecimal::from_u64(random_price).unwrap()).unwrap();
-    Price::from(price.value.with_scale(2)).unwrap()
+    let price = Price::try_from(BigDecimal::from_u64(random_price).unwrap()).unwrap();
+    Price::try_from(price.value.with_scale(2)).unwrap()
 }
 
 pub fn version() -> Version {
@@ -49,12 +50,15 @@ pub fn version() -> Version {
 }
 
 pub fn rnd_meal() -> Meal {
-    Meal::new(
-        DomainEntity::new(rnd_meal_id(), Version::default()),
+    MealRestorer::restore_meal(
+        rnd_meal_id(),
         rnd_meal_name(),
         rnd_meal_description(),
         rnd_price(),
-    ) //TODO Переделать на ресторер
+        false,
+        Version::default(),
+        vec![],
+    )
 }
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq)]

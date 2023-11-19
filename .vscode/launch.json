@@ -12,11 +12,11 @@
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=rust_hex_sandbox",
-                    "--package=rust_hex_sandbox"
+                    "--bin=rust_ddd_example",
+                    "--package=rust_ddd_example"
                 ],
                 "filter": {
-                    "name": "rust_hex_sandbox",
+                    "name": "rust_ddd_example",
                     "kind": "bin"
                 }
             },
@@ -31,8 +31,8 @@
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=rust_hex_sandbox",
-                    "--package=rust_hex_sandbox"
+                    "--bin=rust_ddd_example",
+                    "--package=rust_ddd_example"
                 ],
                 "filter": {
                     "name": "rust_hex_sandbox",

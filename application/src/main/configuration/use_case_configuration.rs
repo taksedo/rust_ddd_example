@@ -1,6 +1,6 @@
 use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_REPOSITORY};
 use actix_web::web::Data;
-use domain::main::menu::meal_id::MealIdGenerator;
+use domain::main::menu::value_objects::meal_id::MealIdGenerator;
 use lazy_static::lazy_static;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};

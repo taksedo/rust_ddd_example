@@ -3,7 +3,7 @@ use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::{
     rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists,
 };
@@ -12,8 +12,8 @@ use std::sync::atomic::AtomicU32;
 use std::sync::{Arc, Mutex, OnceLock};
 use testcontainers::clients::Cli;
 use testcontainers::core::WaitFor;
-use testcontainers::images::generic::GenericImage;
 use testcontainers::Container;
+use testcontainers::GenericImage;
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
@@ -24,6 +24,7 @@ pub struct TestDb {
     url: String,
     curr_test_db_name: String,
     delete_on_drop: bool,
+    #[allow(dead_code)]
     container: Container<'static, GenericImage>,
 }
 impl TestDb {

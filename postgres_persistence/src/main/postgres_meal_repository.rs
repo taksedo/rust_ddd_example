@@ -7,8 +7,8 @@ use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
-use domain::main::menu::meal_id::MealId;
-use domain::main::menu::meal_name::MealName;
+use domain::main::menu::value_objects::meal_id::MealId;
+use domain::main::menu::value_objects::meal_name::MealName;
 use std::sync::{Arc, Mutex};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
@@ -81,22 +81,10 @@ impl MealExtractor for PostgresMealRepository {
         let result = meal
             .find(meal_id.to_i64())
             .select(MealDbDto::as_select())
-            .load(connection);
+            .get_result(connection)
+            .ok()?;
 
-        match result {
-            Ok(meal_res) => {
-                if !meal_res.is_empty() {
-                    let res: Vec<Meal> = meal_res
-                        .iter()
-                        .map(|meal_res_iter| Meal::from(meal_res_iter.clone()))
-                        .collect();
-                    Some(res.get(0).unwrap().clone())
-                } else {
-                    None
-                }
-            }
-            Err(_) => None,
-        }
+        Some(Meal::from(result))
     }
 
     fn get_by_name(&mut self, meal_name: MealName) -> Option<Meal> {

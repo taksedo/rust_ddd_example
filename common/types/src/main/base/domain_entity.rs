@@ -40,18 +40,21 @@ pub struct Version {
 }
 
 impl Version {
+    /// Returns next `Version`
     pub fn next(&self) -> Version {
         Self {
             value: &self.value + 1,
         }
     }
 
+    /// Returns previous `Version`
     pub fn previous(&self) -> Version {
         Self {
             value: &self.value - 1,
         }
     }
 
+    /// Converts `Version` to `i64`
     pub fn to_i64(&self) -> i64 {
         self.value
     }

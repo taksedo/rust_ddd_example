@@ -1,10 +1,10 @@
-use crate::main::endpoint_url::MENU_GET_BY_ID;
+use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::get_meal_by_id_endpoint;
 use crate::main::menu::meal_model::MealModel;
 use crate::test_fixtures::fixtures::{rnd_meal_info, MockGetMealById, StringMethodsForRestTestExt};
 use actix_web::body::MessageBody;
 use actix_web::{test, web};
-use domain::main::menu::meal_id::MealId;
+use domain::main::menu::value_objects::meal_id::MealId;
 use std::sync::{Arc, Mutex};
 
 #[actix_web::test]
@@ -14,7 +14,7 @@ async fn returned_successfully() {
     mock_get_meal_by_id.lock().unwrap().response = Ok(meal_info.clone());
     let mock_shared_state = web::Data::new(Arc::clone(&mock_get_meal_by_id));
 
-    let url = MENU_GET_BY_ID
+    let url = API_V1_MENU_GET_BY_ID
         .to_string()
         .with_id(meal_info.id.to_i64())
         .with_host();
@@ -25,7 +25,6 @@ async fn returned_successfully() {
         .to_http_request();
 
     let resp = get_meal_by_id_endpoint::execute(mock_shared_state, req).await;
-    let resp = resp.unwrap();
 
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_json = std::str::from_utf8(&body).unwrap();
@@ -34,7 +33,8 @@ async fn returned_successfully() {
     let meal_info_json = serde_json::to_string(&meal_info).unwrap();
     assert_eq!(body_json, &meal_info_json);
 
-    mock_get_meal_by_id.lock().unwrap().verify_invoked(MealId {
-        value: meal_info.id,
-    });
+    mock_get_meal_by_id
+        .lock()
+        .unwrap()
+        .verify_invoked(MealId::try_from(meal_info.id).unwrap());
 }

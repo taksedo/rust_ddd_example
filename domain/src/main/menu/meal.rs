@@ -1,11 +1,11 @@
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_description::MealDescription;
 use crate::main::menu::meal_events::{
     DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
 };
-use crate::main::menu::meal_id::{MealId, MealIdGenerator};
-use crate::main::menu::meal_name::MealName;
-use crate::main::menu::price::Price;
+use crate::main::menu::value_objects::meal_description::MealDescription;
+use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
+use crate::main::menu::value_objects::meal_name::MealName;
+use crate::main::menu::value_objects::price::Price;
 use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
 use common_types::main::errors::error::BusinessError;
 use derive_new::new;
@@ -61,17 +61,17 @@ impl Meal {
     }
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum MealError {
-    #[error("Еда с таким именем уже существует")]
     AlreadyExistsWithSameNameError,
-    #[error("Ошибка при генерации id")]
     IdGenerationError,
 }
 
 impl DomainEntityTrait<DomainEventEnum> for Meal {
     fn add_event(&mut self, event: DomainEventEnum) {
-        if self.entity_params.events.is_empty() {}
+        if self.entity_params.events.is_empty() {
+            //todo: добавить действие
+        }
         self.entity_params.events.push(event)
     }
     fn pop_events(&mut self) -> Vec<DomainEventEnum> {

@@ -1,11 +1,13 @@
+#![allow(non_snake_case)]
+
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal::MealError::AlreadyExistsWithSameNameError;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_events::{
     DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
 };
-use crate::main::menu::meal_id::{MealId, MealIdGenerator};
-use crate::main::menu::meal_name::MealName;
+use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
+use crate::main::menu::value_objects::meal_name::MealName;
 use crate::test_fixtures::fixtures::{
     print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
@@ -41,7 +43,6 @@ impl MealAlreadyExists for TestMealAlreadyExists {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn add_meal__success() {
     let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
     let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: false }));
@@ -79,7 +80,6 @@ fn add_meal__success() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn add_meal_to_menu__already_exists_with_the_same_name() {
     let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
     let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: true }));
@@ -92,7 +92,6 @@ fn add_meal_to_menu__already_exists_with_the_same_name() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn remove_meal_from_menu__success() {
     let mut test_meal = rnd_meal();
     test_meal.remove_meal_from_menu();
@@ -112,7 +111,6 @@ fn remove_meal_from_menu__success() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn remove_meal_from_menu__already_removed() {
     let mut test_meal = rnd_meal();
     test_meal.removed = true;

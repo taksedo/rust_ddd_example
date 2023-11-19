@@ -32,6 +32,7 @@ fn save_new_instance() {
         )]);
 
     let result = repository.get_all();
+    dbg!(&result);
     assert!(!result.is_empty())
 }
 

@@ -4,7 +4,7 @@ use crate::test_fixtures::TestDb;
 use diesel::sql_types::{BigInt, VarChar};
 use diesel::{select, sql_function, RunQueryDsl};
 use diesel_migrations::MigrationHarness;
-use domain::main::menu::meal_id::{MealId, MealIdGenerator};
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::fixtures::rnd_meal_id;
 
 #[test]
@@ -24,7 +24,7 @@ fn generate_id_integration_test() {
         .unwrap();
     let meal_id = id_generator.generate();
 
-    assert_eq!(meal_id, MealId::new(rnd_id.to_i64() + 1));
+    assert_eq!(meal_id, MealId::try_from(rnd_id.to_i64() + 1).unwrap());
 }
 
 sql_function!(fn setval(x: VarChar, y: BigInt));
