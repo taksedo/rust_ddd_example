@@ -32,7 +32,12 @@ fn successfully_added() {
     assert_eq!(result.unwrap(), id.to_owned());
 
     let persister_clone = persister_binding.lock().unwrap();
-    Arc::new(persister_clone).verify_invoked(Some(id), Some(name), Some(description), Some(price));
+    Arc::new(persister_clone).verify_invoked(
+        Some(&id),
+        Some(&name),
+        Some(&description),
+        Some(&price),
+    );
 }
 
 #[test]

@@ -73,7 +73,7 @@ pub enum MealError {
 impl DomainEntityTrait<DomainEventEnum> for Meal {
     fn add_event(&mut self, event: DomainEventEnum) {
         if self.entity_params.events.is_empty() {
-            //todo: добавить действие
+            self.entity_params.version = self.entity_params.version.next();
         }
         self.entity_params.events.push(event)
     }
