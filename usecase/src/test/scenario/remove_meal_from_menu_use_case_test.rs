@@ -10,7 +10,7 @@ use crate::test_fixtures::fixtures::{MockMealExtractor, MockMealPersister};
 
 #[test]
 fn successfully_removed() {
-    let mut meal = rnd_meal();
+    let meal = rnd_meal();
 
     let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
@@ -24,7 +24,13 @@ fn successfully_removed() {
 
     assert_eq!(result, ());
 
-    meal.removed = true;
+    let meal = Arc::clone(&meal_persister)
+        .lock()
+        .unwrap()
+        .meal
+        .clone()
+        .unwrap();
+    //todo: придумать более изящное тестирование meal
 
     use_case
         .meal_persister
@@ -32,7 +38,7 @@ fn successfully_removed() {
         .unwrap()
         .downcast_ref::<MockMealPersister>()
         .unwrap()
-        .verify_invoked_meal(Some(meal.clone()));
+        .verify_invoked_meal(Some(&meal));
 
     use_case
         .meal_extractor
@@ -40,7 +46,7 @@ fn successfully_removed() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal.entity_params.id);
+        .verify_invoked_get_by_id(&meal.entity_params.id);
 
     use_case
         .meal_persister
@@ -49,7 +55,7 @@ fn successfully_removed() {
         .downcast_ref::<MockMealPersister>()
         .unwrap()
         .clone()
-        .verify_events_after_deletion(meal.entity_params.id);
+        .verify_events_after_deletion(&meal.entity_params.id);
 }
 
 #[test]
@@ -80,5 +86,5 @@ fn meal_not_found() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal_id);
+        .verify_invoked_get_by_id(&meal_id);
 }

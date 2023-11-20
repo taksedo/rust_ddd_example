@@ -24,7 +24,7 @@ fn meal_already_exists() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_name(meal.to_owned().name);
+        .verify_invoked_get_by_name(&meal.name);
 }
 
 #[test]
@@ -44,7 +44,7 @@ fn meal_already_exists_but_removed() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_name(meal.to_owned().name);
+        .verify_invoked_get_by_name(&meal.name);
 }
 
 #[test]
@@ -61,5 +61,5 @@ fn meal_already_exists_doesnt_exist() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_name(meal_name);
+        .verify_invoked_get_by_name(&meal_name);
 }

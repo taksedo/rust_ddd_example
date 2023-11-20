@@ -29,10 +29,10 @@ impl PostgresMealRepository {
         let connection = &mut self.connection;
         let new_meal = MealDbDto::from(meal_param.clone());
         let meal_id = meal_param.entity_params.id.to_i64();
-        let previous_version = meal_param.entity_params.version.previous();
+        let _previous_version = meal_param.entity_params.version.previous();
 
         diesel::update(meal)
-            .filter(version.eq(previous_version.to_i64()))
+            .filter(id.eq(meal_id))
             .set(&new_meal)
             .execute(connection)
             .unwrap_or_else(|_| {

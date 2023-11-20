@@ -30,36 +30,34 @@ pub struct MockMealPersister {
 impl MockMealPersister {
     pub fn verify_invoked(
         &self,
-        id: Option<MealId>,
-        name: Option<MealName>,
-        description: Option<MealDescription>,
-        price: Option<Price>,
+        id: Option<&MealId>,
+        name: Option<&MealName>,
+        description: Option<&MealDescription>,
+        price: Option<&Price>,
     ) {
+        let meal = &self.meal.clone().unwrap();
         if id.is_some() {
-            assert_eq!(self.to_owned().meal.unwrap().entity_params.id, id.unwrap())
+            assert_eq!(&meal.entity_params.id, id.unwrap())
         }
         if name.is_some() {
-            assert_eq!(self.to_owned().meal.unwrap().name, name.unwrap())
+            assert_eq!(&meal.name, name.unwrap())
         }
         if description.is_some() {
-            assert_eq!(
-                self.to_owned().meal.unwrap().description,
-                description.unwrap()
-            )
+            assert_eq!(&meal.description, description.unwrap())
         }
         if price.is_some() {
-            assert_eq!(self.to_owned().meal.unwrap().price, price.unwrap())
+            assert_eq!(&meal.price, price.unwrap())
         }
     }
 
-    pub fn verify_invoked_meal(&self, meal: Option<Meal>) {
+    pub fn verify_invoked_meal(&self, meal: Option<&Meal>) {
         if meal.is_some() {
-            assert_eq!(self.to_owned().meal, meal)
+            assert_eq!(&self.meal.clone().unwrap(), meal.unwrap())
         }
     }
 
-    pub fn verify_events_after_deletion(&mut self, id: MealId) {
-        let event_enum: DomainEventEnum = MealRemovedFromMenuDomainEvent::new(id).into();
+    pub fn verify_events_after_deletion(&mut self, id: &MealId) {
+        let event_enum: DomainEventEnum = MealRemovedFromMenuDomainEvent::new(*id).into();
         let events = self
             .to_owned()
             .meal
@@ -124,14 +122,14 @@ impl MealExtractor for MockMealExtractor {
 }
 
 impl MockMealExtractor {
-    pub fn verify_invoked_get_by_id(&self, id: MealId) {
-        assert_eq!(&self.id.unwrap(), &id);
+    pub fn verify_invoked_get_by_id(&self, id: &MealId) {
+        assert_eq!(&self.id.unwrap(), id);
         assert!(!&self.all);
         assert!(&self.name.is_none());
     }
 
-    pub fn verify_invoked_get_by_name(&self, name: MealName) {
-        assert_eq!(&self.to_owned().name.unwrap(), &name);
+    pub fn verify_invoked_get_by_name(&self, name: &MealName) {
+        assert_eq!(&self.clone().name.unwrap(), name);
         assert!(!&self.all);
         assert!(&self.id.is_none());
     }

@@ -18,7 +18,6 @@ fn create_count__one() {
 }
 
 #[test]
-#[allow(non_snake_case)]
 fn create_count__negative_value() {
     let result = Count::try_from(-(1));
     assert_eq!(result, Err(CountError::NegativeValueError));

@@ -22,7 +22,7 @@ fn meal_not_found() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal_id);
+        .verify_invoked_get_by_id(&meal_id);
 }
 
 #[test]
@@ -43,7 +43,7 @@ fn meal_removed() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal.entity_params.id);
+        .verify_invoked_get_by_id(&meal.entity_params.id);
 }
 
 #[test]
@@ -74,5 +74,5 @@ fn meal_extracted_successfully() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(meal.entity_params.id);
+        .verify_invoked_get_by_id(&meal.entity_params.id);
 }
