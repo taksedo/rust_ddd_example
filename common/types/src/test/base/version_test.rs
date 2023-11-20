@@ -1,6 +1,8 @@
-use crate::main::base::domain_entity::Version;
-use rand::random;
 use std::convert::From;
+
+use rand::random;
+
+use crate::main::base::domain_entity::Version;
 
 #[test]
 #[allow(non_snake_case)]

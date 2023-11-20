@@ -1,9 +1,10 @@
-use derivative::Derivative;
-use rand::Rng;
 use std::cell::RefCell;
 use std::cmp;
 use std::fmt::Debug;
 use std::rc::Rc;
+
+use derivative::Derivative;
+use rand::Rng;
 
 type OnReceivedDamage = Box<dyn Fn(u32)>;
 

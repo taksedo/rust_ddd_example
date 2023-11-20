@@ -1,7 +1,8 @@
-use derivative::Derivative;
-use rand::Rng;
 use std::cmp;
 use std::fmt::Debug;
+
+use derivative::Derivative;
+use rand::Rng;
 
 #[derive(Derivative)]
 #[derivative(Debug)]

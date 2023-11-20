@@ -1,3 +1,12 @@
+use std::fmt::Debug;
+use std::sync::{Arc, Mutex};
+
+use derive_new::new;
+use serde::{Deserialize, Serialize};
+
+use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
+use common_types::main::errors::error::BusinessError;
+
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_events::{
     DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
@@ -6,12 +15,6 @@ use crate::main::menu::value_objects::meal_description::MealDescription;
 use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::value_objects::meal_name::MealName;
 use crate::main::menu::value_objects::price::Price;
-use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
-use common_types::main::errors::error::BusinessError;
-use derive_new::new;
-use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
 
 #[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Meal {

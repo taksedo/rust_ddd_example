@@ -1,8 +1,10 @@
-use crate::main::menu::access::meal_persister::MealPersister;
-use crate::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
+use std::fmt::Debug;
+use std::sync::{Arc, Mutex};
+
+use derive_new::new;
+
 use common_types::main::base::domain_event::DomainEventTrait;
 use common_types::main::errors::error::ToError;
-use derive_new::new;
 use domain;
 use domain::main::menu::meal::{Meal, MealError};
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
@@ -10,8 +12,9 @@ use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+
+use crate::main::menu::access::meal_persister::MealPersister;
+use crate::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 
 #[derive(new, Debug)]
 pub struct AddMealToMenuUseCase {

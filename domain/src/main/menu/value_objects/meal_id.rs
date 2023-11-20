@@ -1,7 +1,9 @@
-use crate::main::menu::meal::MealError;
+use std::fmt::Debug;
+
 use bigdecimal::ToPrimitive;
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
+
+use crate::main::menu::meal::MealError;
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
 #[non_exhaustive]
@@ -25,6 +27,7 @@ impl TryFrom<i64> for MealId {
         }
     }
 }
+
 pub trait MealIdGenerator: Debug + Send {
     fn generate(&mut self) -> MealId;
 }

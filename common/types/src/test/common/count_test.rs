@@ -1,7 +1,8 @@
 #![allow(non_snake_case)]
 
-use crate::main::common::count::{Count, CountError};
 use rstest::rstest;
+
+use crate::main::common::count::{Count, CountError};
 
 #[rstest]
 fn create_count__success(#[values(0_i32, 1_i32, i32::MAX)] value: i32) {

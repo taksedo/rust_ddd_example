@@ -1,11 +1,12 @@
+use std::env;
+use std::sync::{Arc, Mutex, OnceLock};
+
 use actix_web::http::StatusCode;
 use actix_web::http::Uri;
 use actix_web::HttpResponse;
 use derive_new::new;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
-use std::env;
-use std::sync::{Arc, Mutex, OnceLock};
 
 lazy_static! {
     pub static ref BASE_URL: String = {
@@ -73,6 +74,7 @@ impl ValidationError {
         Self { message }
     }
 }
+
 pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>) -> HttpResponse {
     let mut error_response = GenericErrorResponse::new(
         (BASE_URL.clone() + "/bad_request")

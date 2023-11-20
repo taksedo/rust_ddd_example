@@ -1,9 +1,10 @@
-use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_REPOSITORY};
-use actix_web::web::Data;
-use domain::main::menu::value_objects::meal_id::MealIdGenerator;
-use lazy_static::lazy_static;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
+
+use actix_web::web::Data;
+use lazy_static::lazy_static;
+
+use domain::main::menu::value_objects::meal_id::MealIdGenerator;
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
 use usecase::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
@@ -11,6 +12,8 @@ use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCa
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
 use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
+
+use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_REPOSITORY};
 
 lazy_static! {
     pub static ref ADD_MEAL_TO_MENU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =

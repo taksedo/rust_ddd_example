@@ -1,12 +1,15 @@
-use crate::main::event::event_publisher_impl::EventPublisherImpl;
-use common_events::main::domain_event_listener::DomainEventListener;
-use common_events::main::domain_event_publisher::DomainEventPublisher;
-use derive_new::new;
-use enum_dispatch::enum_dispatch;
-use smart_default::SmartDefault;
 use std::fmt::Debug;
 use std::mem::{discriminant, Discriminant};
 use std::sync::{Arc, Mutex};
+
+use derive_new::new;
+use enum_dispatch::enum_dispatch;
+use smart_default::SmartDefault;
+
+use common_events::main::domain_event_listener::DomainEventListener;
+use common_events::main::domain_event_publisher::DomainEventPublisher;
+
+use crate::main::event::event_publisher_impl::EventPublisherImpl;
 
 #[test]
 fn publish_events() {

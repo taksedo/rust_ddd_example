@@ -1,13 +1,14 @@
-use crate::main::event::{
-    integration_message_publisher::IntegrationMessagePublisher,
-    rabbit_message_publisher::RabbitMessagePublisher,
-};
-use crate::test_fixtures::{TestRabbitMq, RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
 use derive_new::new;
 use futures_lite::stream::StreamExt;
 use lapin::{options::*, types::FieldTable, Connection, ConnectionProperties};
 use serde::{Deserialize, Serialize};
 use tracing::info;
+
+use crate::main::event::{
+    integration_message_publisher::IntegrationMessagePublisher,
+    rabbit_message_publisher::RabbitMessagePublisher,
+};
+use crate::test_fixtures::{TestRabbitMq, RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
 
 #[tokio::test]
 async fn message_sent_successfully() -> Result<(), Box<dyn std::error::Error>> {

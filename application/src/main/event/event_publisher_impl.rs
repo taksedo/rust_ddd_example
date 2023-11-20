@@ -1,17 +1,20 @@
-use common_events::main::domain_event_listener::DomainEventListener;
-use common_events::main::domain_event_publisher::DomainEventPublisher;
-use derive_new::new;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::mem::{discriminant, Discriminant};
 use std::sync::{Arc, Mutex};
 
+use derive_new::new;
+
+use common_events::main::domain_event_listener::DomainEventListener;
+use common_events::main::domain_event_publisher::DomainEventPublisher;
+
 type VecOfDomainEventListenerType<Event> = Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>;
 
 #[derive(new, Debug, Default, Clone)]
 pub struct EventPublisherImpl<Event: Debug> {
-    logger: String, //todo переделать logger
+    logger: String,
+    //todo переделать logger
     pub(crate) listener_map: HashMap<Discriminant<Event>, VecOfDomainEventListenerType<Event>>,
 }
 

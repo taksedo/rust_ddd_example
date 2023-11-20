@@ -1,7 +1,8 @@
+use std::fmt::Debug;
+
 use derive_new::new;
 use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
 use time::OffsetDateTime;
 use uuid::Uuid;
 

@@ -1,13 +1,4 @@
-use crate::main::menu::meal::Meal;
-use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_restorer::MealRestorer;
-use crate::main::menu::value_objects::meal_description::MealDescription;
-use crate::main::menu::value_objects::meal_id::MealId;
-use crate::main::menu::value_objects::meal_name::MealName;
-use crate::main::menu::value_objects::price::Price;
 use bigdecimal::{BigDecimal, FromPrimitive};
-use common_types::main::base::domain_entity::Version;
-use common_types::main::base::domain_event::DomainEventTrait;
 use derive_new::new;
 use fake::faker::name::raw::*;
 use fake::locales::*;
@@ -15,6 +6,17 @@ use fake::Fake;
 use rand::thread_rng;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+
+use common_types::main::base::domain_entity::Version;
+use common_types::main::base::domain_event::DomainEventTrait;
+
+use crate::main::menu::meal::Meal;
+use crate::main::menu::meal_already_exists::MealAlreadyExists;
+use crate::main::menu::meal_restorer::MealRestorer;
+use crate::main::menu::value_objects::meal_description::MealDescription;
+use crate::main::menu::value_objects::meal_id::MealId;
+use crate::main::menu::value_objects::meal_name::MealName;
+use crate::main::menu::value_objects::price::Price;
 
 //
 // fn address() = Address.from(

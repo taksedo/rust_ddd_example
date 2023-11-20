@@ -1,8 +1,10 @@
-use crate::main::base::value_object::ValueObject;
+use std::fmt::Debug;
+
 use derivative::Derivative;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
+
+use crate::main::base::value_object::ValueObject;
 
 #[derive(new, Clone, Default, Derivative, Serialize, Deserialize)]
 #[derivative(PartialEq, Debug)]

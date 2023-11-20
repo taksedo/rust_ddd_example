@@ -1,6 +1,8 @@
-use derive_new::new;
-use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use std::sync::atomic::{AtomicI64, Ordering};
+
+use derive_new::new;
+
+use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 
 #[derive(Debug, new)]
 pub struct InMemoryIncrementalMealIdGenerator {

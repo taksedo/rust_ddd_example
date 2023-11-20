@@ -1,9 +1,12 @@
-use crate::main::menu::meal_model::MealModel;
-use actix_web::http::header::ContentType;
-use actix_web::{web, HttpResponse};
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
+
+use actix_web::http::header::ContentType;
+use actix_web::{web, HttpResponse};
+
 use usecase::main::menu::get_menu::GetMenu;
+
+use crate::main::menu::meal_model::MealModel;
 
 pub async fn execute<T: GetMenu + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,

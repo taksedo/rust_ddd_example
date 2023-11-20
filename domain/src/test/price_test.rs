@@ -1,10 +1,13 @@
 #![allow(non_snake_case)]
 
-use crate::main::menu::value_objects::price::{CreatePriceError, Price};
-use bigdecimal::BigDecimal;
-use common_types::main::common::count::Count;
-use rstest::rstest;
 use std::str::FromStr;
+
+use bigdecimal::BigDecimal;
+use rstest::rstest;
+
+use common_types::main::common::count::Count;
+
+use crate::main::menu::value_objects::price::{CreatePriceError, Price};
 
 #[rstest]
 fn create_price__success(#[values(0_u64, 1_u64)] value: u64) {
