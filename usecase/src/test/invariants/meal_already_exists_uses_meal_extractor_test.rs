@@ -1,8 +1,10 @@
-use crate::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
-use crate::test_fixtures::fixtures::{removed_meal, MockMealExtractor};
+use std::sync::{Arc, Mutex};
+
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
 use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_name};
-use std::sync::{Arc, Mutex};
+
+use crate::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
+use crate::test_fixtures::fixtures::{removed_meal, MockMealExtractor};
 
 #[test]
 fn meal_already_exists() {
@@ -24,6 +26,7 @@ fn meal_already_exists() {
         .unwrap()
         .verify_invoked_get_by_name(meal.to_owned().name);
 }
+
 #[test]
 fn meal_already_exists_but_removed() {
     let meal = removed_meal();

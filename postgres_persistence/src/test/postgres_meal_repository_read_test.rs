@@ -1,13 +1,16 @@
 #![allow(non_snake_case)]
 
+use std::sync::{Arc, Mutex};
+
+use diesel_migrations::MigrationHarness;
+
+use domain::test_fixtures::fixtures::{rnd_meal_id, rnd_meal_name};
+use usecase::main::menu::access::meal_extractor::MealExtractor;
+use usecase::main::menu::access::meal_persister::MealPersister;
+
 use crate::main::database_start::MIGRATIONS;
 use crate::main::postgres_meal_repository::PostgresMealRepository;
 use crate::test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb};
-use diesel_migrations::MigrationHarness;
-use domain::test_fixtures::fixtures::{rnd_meal_id, rnd_meal_name};
-use std::sync::{Arc, Mutex};
-use usecase::main::menu::access::meal_extractor::MealExtractor;
-use usecase::main::menu::access::meal_persister::MealPersister;
 
 #[test]
 fn get_by_id__not_found() {

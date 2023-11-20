@@ -1,7 +1,8 @@
+use std::env;
+
 use diesel::{Connection, PgConnection};
 use diesel_migrations::{embed_migrations, EmbeddedMigrations};
 use dotenvy::dotenv;
-use std::env;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("../migrations");
 

@@ -1,6 +1,7 @@
-use lapin::{Connection, ConnectionProperties};
 use std::sync::atomic::AtomicU32;
 use std::sync::OnceLock;
+
+use lapin::{Connection, ConnectionProperties};
 use testcontainers::clients::Cli;
 use testcontainers::core::WaitFor;
 use testcontainers::Container;
@@ -12,6 +13,7 @@ pub struct TestRabbitMq {
     #[allow(dead_code)]
     container: Container<'static, GenericImage>,
 }
+
 impl TestRabbitMq {
     pub async fn new() -> Self {
         if std::env::var("RUST_LOG").is_err() {

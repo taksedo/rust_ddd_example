@@ -1,10 +1,3 @@
-use crate::main::menu::get_menu_endpoint;
-use crate::main::menu::meal_model::MealModel;
-use crate::test_fixtures::fixtures::{rnd_meal_info, MockGetMenu};
-use actix_web::body::MessageBody;
-use actix_web::web;
-use std::sync::{Arc, Mutex};
-
 #[actix_web::test]
 async fn get_menu() {
     let meal_info = rnd_meal_info();

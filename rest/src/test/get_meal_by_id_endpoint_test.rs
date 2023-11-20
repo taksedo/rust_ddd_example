@@ -1,12 +1,3 @@
-use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
-use crate::main::menu::get_meal_by_id_endpoint;
-use crate::main::menu::meal_model::MealModel;
-use crate::test_fixtures::fixtures::{rnd_meal_info, MockGetMealById, StringMethodsForRestTestExt};
-use actix_web::body::MessageBody;
-use actix_web::{test, web};
-use domain::main::menu::value_objects::meal_id::MealId;
-use std::sync::{Arc, Mutex};
-
 #[actix_web::test]
 async fn returned_successfully() {
     let meal_info = rnd_meal_info();

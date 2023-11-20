@@ -1,8 +1,10 @@
-use crate::main::event::rabbit_message_publisher::RabbitMessagePublisher;
-use dotenvy::dotenv;
-use lazy_static::lazy_static;
 use std::env;
 use std::sync::OnceLock;
+
+use dotenvy::dotenv;
+use lazy_static::lazy_static;
+
+use crate::main::event::rabbit_message_publisher::RabbitMessagePublisher;
 
 lazy_static! {
     pub static ref RABBITMQ_MESSAGE_PUBLISHER: RabbitMessagePublisher =

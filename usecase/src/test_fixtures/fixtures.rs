@@ -1,7 +1,8 @@
-use crate::main::menu::access::meal_extractor::MealExtractor;
-use crate::main::menu::access::meal_persister::MealPersister;
-use common_types::main::base::domain_entity::DomainEntityTrait;
+use std::any::Any;
+
 use derive_new::new;
+
+use common_types::main::base::domain_entity::DomainEntityTrait;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
@@ -10,7 +11,9 @@ use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
 use domain::test_fixtures::fixtures::rnd_meal;
-use std::any::Any;
+
+use crate::main::menu::access::meal_extractor::MealExtractor;
+use crate::main::menu::access::meal_persister::MealPersister;
 
 pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();

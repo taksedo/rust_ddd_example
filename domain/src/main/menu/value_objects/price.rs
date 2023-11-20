@@ -1,10 +1,12 @@
+use std::ops::{Add, Mul};
+use std::str::FromStr;
+
 use bigdecimal::*;
+use serde::{Deserialize, Serialize};
+
 use common_types::main::base::value_object::ValueObject;
 use common_types::main::common::count::Count;
 use common_types::main::errors::error::BusinessError;
-use serde::{Deserialize, Serialize};
-use std::ops::{Add, Mul};
-use std::str::FromStr;
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
@@ -18,7 +20,7 @@ impl Price {
     pub fn add(&self, additional: Self) -> Self {
         let summ: BigDecimal = BigDecimal::from_str(additional.to_string_value().as_str())
             .unwrap()
-            .add(BigDecimal::from_str(&self.to_string_value().as_str()).unwrap());
+            .add(BigDecimal::from_str(self.to_string_value().as_str()).unwrap());
         Self { value: summ }
     }
 

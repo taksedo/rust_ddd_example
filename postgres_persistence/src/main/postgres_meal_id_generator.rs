@@ -1,9 +1,11 @@
+use std::fmt::Debug;
+
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{select, sql_function, RunQueryDsl};
 use diesel::{sql_types, PgConnection};
+
 use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
-use std::fmt::Debug;
 
 #[derive(new, Derivative)]
 #[derivative(Debug)]

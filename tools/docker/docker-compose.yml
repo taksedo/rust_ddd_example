@@ -64,7 +64,7 @@ services:
     ports:
       - "5001:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d restappdb"]
+      test: [ "CMD-SHELL", "pg_isready -U root -d restappdb" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -104,7 +104,7 @@ services:
     env_file:
       - .env
     volumes:
-      -   restapp_exporter_volume:/etc/postgres_exporter/queries.yaml:ro
+      - restapp_exporter_volume:/etc/postgres_exporter/queries.yaml:ro
     ports:
       - "9200:9187"
     restart: unless-stopped

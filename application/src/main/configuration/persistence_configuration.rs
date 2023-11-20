@@ -1,9 +1,12 @@
-use crate::main::configuration::application_configuration::EVENT_PUBLISHER;
+use std::sync::{Arc, Mutex};
+
 use lazy_static::lazy_static;
+
 use postgres_persistence::main::database_start::establish_connection;
 use postgres_persistence::main::postgres_meal_id_generator::PostgresMealIdGenerator as IdGenerator;
 use postgres_persistence::main::postgres_meal_repository::PostgresMealRepository as MealRepository;
-use std::sync::{Arc, Mutex};
+
+use crate::main::configuration::application_configuration::EVENT_PUBLISHER;
 
 lazy_static! {
     pub static ref MEAL_ID_GENERATOR: Arc<Mutex<IdGenerator>> = meal_id_generator();

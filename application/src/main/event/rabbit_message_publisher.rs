@@ -1,8 +1,3 @@
-#[cfg(not(test))]
-use crate::main::configuration::messaging_configuration::{RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
-use crate::main::event::integration_message_publisher::IntegrationMessagePublisher;
-#[cfg(test)]
-use crate::test_fixtures::{RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
 use async_trait::async_trait;
 use derive_new::new;
 use lapin::options::{BasicPublishOptions, QueueDeclareOptions};
@@ -10,6 +5,12 @@ use lapin::types::FieldTable;
 use lapin::{BasicProperties, Connection, ConnectionProperties};
 use serde::Serialize;
 use tracing::info;
+
+#[cfg(not(test))]
+use crate::main::configuration::messaging_configuration::{RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
+use crate::main::event::integration_message_publisher::IntegrationMessagePublisher;
+#[cfg(test)]
+use crate::test_fixtures::{RABBITMQ_ADDRESS, RABBITMQ_QUEUE_NAME};
 
 #[derive(new, Debug)]
 pub struct RabbitMessagePublisher;

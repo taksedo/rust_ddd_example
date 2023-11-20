@@ -1,5 +1,6 @@
-use crate::main::base::domain_event::EventId;
 use time::OffsetDateTime;
+
+use crate::main::base::domain_event::EventId;
 
 #[allow(non_snake_case)]
 #[test]

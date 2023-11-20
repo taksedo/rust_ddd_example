@@ -1,17 +1,20 @@
-use crate::main::meal_db_dto::MealDbDto;
-use crate::main::schema::shop::meal::dsl::*;
-use common_events::main::domain_event_publisher::DomainEventPublisher;
-use common_types::main::base::domain_entity::DomainEntityTrait;
+use std::sync::{Arc, Mutex};
+
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
+
+use common_events::main::domain_event_publisher::DomainEventPublisher;
+use common_types::main::base::domain_entity::DomainEntityTrait;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
-use std::sync::{Arc, Mutex};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
+
+use crate::main::meal_db_dto::MealDbDto;
+use crate::main::schema::shop::meal::dsl::*;
 
 #[derive(Derivative, new)]
 #[derivative(Debug)]

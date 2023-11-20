@@ -27,6 +27,7 @@ pub struct TestDb {
     #[allow(dead_code)]
     container: Container<'static, GenericImage>,
 }
+
 impl TestDb {
     pub fn new() -> Self {
         static DOCKER: OnceLock<Cli> = OnceLock::new();
@@ -82,6 +83,7 @@ impl Default for TestDb {
         Self::new()
     }
 }
+
 impl Drop for TestDb {
     fn drop(&mut self) {
         if !self.delete_on_drop {

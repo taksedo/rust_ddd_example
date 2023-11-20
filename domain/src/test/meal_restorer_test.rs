@@ -1,11 +1,12 @@
 #![allow(non_snake_case)]
 
+use common_types::main::base::domain_entity::DomainEntityTrait;
+
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_restorer::MealRestorer;
 use crate::test_fixtures::fixtures::{
     rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, version,
 };
-use common_types::main::base::domain_entity::DomainEntityTrait;
 
 #[test]
 fn restore_meal__success() {
