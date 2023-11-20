@@ -59,7 +59,7 @@ pub struct GenericErrorResponse {
     pub response_title: String,
     #[serde(rename(serialize = "status", deserialize = "status"))]
     pub response_status: u16,
-    // #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[new(value = "vec![]")]
     pub invalid_params: Vec<ValidationError>,
 }
