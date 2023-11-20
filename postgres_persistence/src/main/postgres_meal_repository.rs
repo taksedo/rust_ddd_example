@@ -2,7 +2,9 @@ use std::sync::{Arc, Mutex};
 
 use derivative::Derivative;
 use derive_new::new;
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
+use diesel::{
+    debug_query, ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper,
+};
 
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use common_types::main::base::domain_entity::DomainEntityTrait;
@@ -29,10 +31,11 @@ impl PostgresMealRepository {
         let connection = &mut self.connection;
         let new_meal = MealDbDto::from(meal_param.clone());
         let meal_id = meal_param.entity_params.id.to_i64();
-        let _previous_version = meal_param.entity_params.version.previous();
+        let previous_version = meal_param.entity_params.version.previous().to_i64();
 
         diesel::update(meal)
             .filter(id.eq(meal_id))
+            .filter(version.eq(previous_version))
             .set(&new_meal)
             .execute(connection)
             .unwrap_or_else(|_| {
