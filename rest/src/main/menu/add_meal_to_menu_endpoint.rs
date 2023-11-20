@@ -42,7 +42,7 @@ where
     let meal_description =
         MealDescription::validated(request.description.as_str(), error_list.clone());
     let price = Price::validated(
-        BigDecimal::from_str(&request.price.to_string().as_str()).unwrap(),
+        BigDecimal::from_str(request.price.to_string().as_str()).unwrap(),
         error_list.clone(),
     );
 
