@@ -6,7 +6,7 @@ use actix_web::body::MessageBody;
 use actix_web::http::{header, StatusCode};
 use actix_web::{web, web::Json};
 use bigdecimal::num_bigint::BigInt;
-use bigdecimal::BigDecimal;
+use bigdecimal::{BigDecimal, ToPrimitive};
 use dotenvy::dotenv;
 
 use common_rest::main::rest_responses::GenericErrorResponse;
@@ -35,7 +35,7 @@ async fn created_successfully() {
     let meal = Json(MealStruct::new(
         meal_name.clone().to_string(),
         meal_description.clone().to_string(),
-        price.clone().to_bigdecimal(),
+        price.to_bigdecimal().to_f64().unwrap(),
     ));
 
     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state, meal).await;
@@ -68,7 +68,7 @@ async fn validation_error() {
     let meal = Json(MealStruct::new(
         "".to_string(),
         "".to_string(),
-        BigDecimal::new(BigInt::from(1), 20),
+        BigDecimal::new(BigInt::from(1), 20).to_f64().unwrap(),
     ));
 
     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state as _, meal).await;

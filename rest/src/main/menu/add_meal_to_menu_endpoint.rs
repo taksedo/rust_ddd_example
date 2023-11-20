@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use actix_web::{http, web, HttpResponse};
 use bigdecimal::BigDecimal;
+use derive_new::new;
 use http::Uri;
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +20,7 @@ use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::to_error::ToRestError;
 use crate::main::menu::validation::Validated;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(new, Serialize, Deserialize, Debug)]
 pub struct MealStruct {
     name: String,
     description: String,
