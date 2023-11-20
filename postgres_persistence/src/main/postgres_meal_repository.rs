@@ -32,7 +32,7 @@ impl PostgresMealRepository {
         let previous_version = meal_param.entity_params.version.previous();
 
         diesel::update(meal)
-            .filter(version.eq(previous_version.to_i64()))
+            .filter(id.eq(meal_id))
             .set(&new_meal)
             .execute(connection)
             .unwrap_or_else(|_| {

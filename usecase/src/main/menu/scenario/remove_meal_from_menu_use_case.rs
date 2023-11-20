@@ -27,6 +27,7 @@ impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
                 Ok(meal)
             })?;
         meal.remove_meal_from_menu();
+        meal.entity_params.version = meal.entity_params.version.next();
         self.meal_persister.lock().unwrap().save(meal);
         Ok(())
     }
