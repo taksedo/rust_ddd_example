@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 
 use actix_web::{http, web, HttpResponse};
@@ -23,7 +24,7 @@ use crate::main::menu::validation::Validated;
 pub struct MealStruct {
     name: String,
     description: String,
-    price: BigDecimal,
+    price: f64,
 }
 
 pub async fn execute<T>(
@@ -40,7 +41,10 @@ where
     let meal_name = MealName::validated(request.name.as_str(), error_list.clone());
     let meal_description =
         MealDescription::validated(request.description.as_str(), error_list.clone());
-    let price = Price::validated(request.price.clone(), error_list.clone());
+    let price = Price::validated(
+        BigDecimal::from_str(request.price.to_string().as_str()).unwrap(),
+        error_list.clone(),
+    );
 
     if error_list.lock().unwrap().is_empty() {
         let result = shared_state.lock().unwrap().execute(
