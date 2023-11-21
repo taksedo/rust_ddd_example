@@ -9,7 +9,7 @@ use actix_web::{test, web};
 use bigdecimal::ToPrimitive;
 use dotenvy::dotenv;
 
-use common_rest::main::rest_responses::error_type_url;
+use common_rest::main::rest_responses::not_found_type_url;
 use common_rest::main::rest_responses::GenericErrorResponse;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::test_fixtures::fixtures::rnd_meal_id;
@@ -75,19 +75,14 @@ async fn meal_not_found() {
 
     let resp = get_meal_by_id_endpoint::execute(mock_shared_state, req).await;
 
+    assert_eq!(resp.status(), StatusCode::NOT_FOUND);
+
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();
 
     let response_dto: GenericErrorResponse = serde_json::from_str(body_text).unwrap();
 
-    assert_eq!(
-        &response_dto.response_status,
-        &StatusCode::NOT_FOUND.as_u16()
-    );
-    assert_eq!(
-        &response_dto.response_type,
-        &error_type_url("resource_not_found")
-    );
+    assert_eq!(&response_dto.response_type, &not_found_type_url());
     assert_eq!(
         &response_dto.response_status,
         &StatusCode::NOT_FOUND.as_u16()

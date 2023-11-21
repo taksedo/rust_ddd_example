@@ -107,6 +107,8 @@ async fn meal_already_exists() {
 
     let resp = add_meal_to_menu_endpoint::execute(mock_shared_state, meal).await;
 
+    assert_eq!(resp.status(), StatusCode::UNPROCESSABLE_ENTITY);
+
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();
 
