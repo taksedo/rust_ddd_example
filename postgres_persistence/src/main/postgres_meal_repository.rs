@@ -2,9 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use derivative::Derivative;
 use derive_new::new;
-use diesel::{
-    debug_query, ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper,
-};
+use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
 
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use common_types::main::base::domain_entity::DomainEntityTrait;
