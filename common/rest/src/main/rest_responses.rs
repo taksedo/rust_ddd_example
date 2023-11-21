@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::env;
 use std::sync::{Arc, Mutex, OnceLock};
 
@@ -16,12 +17,24 @@ lazy_static! {
     };
 }
 
+pub fn error_type_url(suffix: &str) -> String {
+    (BASE_URL.clone() + "/" + suffix)
+        .parse::<Uri>()
+        .unwrap()
+        .to_string()
+}
+
+pub fn not_found_type_url() -> String {
+    error_type_url("resource_not_found")
+}
+
+pub fn bad_request_type_url() -> String {
+    error_type_url("bad_request")
+}
+
 pub fn resource_not_found() -> HttpResponse {
     let error_response = GenericErrorResponse::new(
-        (BASE_URL.clone() + "/resource_not_found")
-            .parse::<Uri>()
-            .unwrap()
-            .to_string(),
+        not_found_type_url(),
         "Resource not found".to_string(),
         (StatusCode::NOT_FOUND).as_u16(),
     );
@@ -29,6 +42,22 @@ pub fn resource_not_found() -> HttpResponse {
     HttpResponse::NotFound().json(error_response)
 }
 
+impl UrlHelper for String {
+    fn with_host(&self) -> String {
+        BASE_URL.clone() + &self
+    }
+
+    fn with_parameter(&self, name: &str, value: &dyn Any) -> String {
+        self.replace(
+            &("{".to_string() + name + "}"),
+            value.downcast_ref::<String>().unwrap(),
+        )
+    }
+
+    fn with_id(&self, id: &u64) -> String {
+        self.with_parameter("id", id)
+    }
+}
 pub fn rest_business_error(title: &str, code: &str) -> HttpResponse {
     let error_response = GenericErrorResponse::new(
         (BASE_URL.clone() + "/" + code)
@@ -60,6 +89,7 @@ pub struct GenericErrorResponse {
     #[serde(rename(serialize = "status", deserialize = "status"))]
     pub response_status: u16,
     #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     #[new(value = "vec![]")]
     pub invalid_params: Vec<ValidationError>,
 }
@@ -91,4 +121,10 @@ pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>
         .iter()
         .for_each(|error| error_response.invalid_params.push(error.to_owned()));
     HttpResponse::BadRequest().json(error_response)
+}
+
+trait UrlHelper {
+    fn with_host(&self) -> String;
+    fn with_parameter(&self, name: &str, value: &dyn Any) -> String;
+    fn with_id(&self, id: &u64) -> String;
 }
