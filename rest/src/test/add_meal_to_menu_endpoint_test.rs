@@ -20,7 +20,7 @@ use usecase::main::menu::add_meal_to_menu::AddMealToMenuUseCaseError;
 use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::add_meal_to_menu_endpoint;
 use crate::main::menu::add_meal_to_menu_endpoint::MealStruct;
-use crate::test_fixtures::fixtures::MockAddMealToMenu;
+use crate::test_fixtures::fixtures::{MockAddMealToMenu, StringMethodsForRestTestExt};
 
 #[actix_web::test]
 async fn created_successfully() {
@@ -58,7 +58,7 @@ async fn created_successfully() {
     assert_eq!(&resp.status(), &StatusCode::CREATED);
     assert_eq!(
         header,
-        API_V1_MENU_GET_BY_ID.replace("{id}", meal_id.value.to_string().as_str())
+        API_V1_MENU_GET_BY_ID.to_string().with_id(&meal_id.to_i64())
     );
 }
 

@@ -56,7 +56,7 @@ where
         match result {
             Ok(_) => created(
                 API_V1_MENU_GET_BY_ID
-                    .replace("{id}", result.unwrap().value.to_string().as_str())
+                    .replace("{id}", result.unwrap().to_i64().to_string().as_str())
                     .as_str()
                     .parse::<Uri>()
                     .unwrap(),

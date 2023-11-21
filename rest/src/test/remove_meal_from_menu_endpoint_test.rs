@@ -25,7 +25,7 @@ async fn meal_not_found() {
 
     let url = API_V1_MENU_DELETE_BY_ID
         .to_string()
-        .with_id(meal_id.to_i64())
+        .with_id(&meal_id.to_i64())
         .with_host();
 
     let req = test::TestRequest::default()
@@ -47,7 +47,7 @@ async fn removed_successfully() {
 
     let url = API_V1_MENU_DELETE_BY_ID
         .to_string()
-        .with_id(meal_id.to_i64())
+        .with_id(&meal_id.to_i64())
         .with_host();
 
     let req = test::TestRequest::default()

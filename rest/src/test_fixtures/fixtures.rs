@@ -1,5 +1,3 @@
-use std::string::ToString;
-
 use smart_default::SmartDefault;
 
 use domain::main::menu::value_objects::meal_description::MealDescription;
@@ -104,24 +102,24 @@ pub fn rnd_meal_info() -> MealInfo {
 }
 
 pub trait StringMethodsForRestTestExt {
-    fn with_parameter(&mut self, name: String, value: String) -> String;
-
     fn with_host(&self) -> String;
 
-    fn with_id(&mut self, id: i64) -> String;
+    fn with_parameter(&self, name: &str, value: &str) -> String;
+
+    fn with_id(&self, id: &i64) -> String;
 }
 
 impl StringMethodsForRestTestExt for String {
-    fn with_parameter(&mut self, name: String, value: String) -> String {
-        self.replace(&*format!("{{{name}}}"), &value)
-    }
-
     fn with_host(&self) -> String {
         format!("{API_V1_TYPE_BASE_URL}{self}")
     }
 
-    fn with_id(&mut self, id: i64) -> String {
-        self.with_parameter("id".to_string(), id.to_string())
+    fn with_parameter(&self, name: &str, value: &str) -> String {
+        self.replace(&*format!("{{{name}}}"), value)
+    }
+
+    fn with_id(&self, id: &i64) -> String {
+        self.with_parameter("id", id.to_string().as_str())
     }
 }
 

@@ -1,4 +1,3 @@
-use std::any::Any;
 use std::env;
 use std::sync::{Arc, Mutex, OnceLock};
 
@@ -42,22 +41,6 @@ pub fn resource_not_found() -> HttpResponse {
     HttpResponse::NotFound().json(error_response)
 }
 
-impl UrlHelper for String {
-    fn with_host(&self) -> String {
-        BASE_URL.clone() + &self
-    }
-
-    fn with_parameter(&self, name: &str, value: &dyn Any) -> String {
-        self.replace(
-            &("{".to_string() + name + "}"),
-            value.downcast_ref::<String>().unwrap(),
-        )
-    }
-
-    fn with_id(&self, id: &u64) -> String {
-        self.with_parameter("id", id)
-    }
-}
 pub fn rest_business_error(title: &str, code: &str) -> HttpResponse {
     let error_response = GenericErrorResponse::new(
         (BASE_URL.clone() + "/" + code)
@@ -121,10 +104,4 @@ pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>
         .iter()
         .for_each(|error| error_response.invalid_params.push(error.to_owned()));
     HttpResponse::BadRequest().json(error_response)
-}
-
-trait UrlHelper {
-    fn with_host(&self) -> String;
-    fn with_parameter(&self, name: &str, value: &dyn Any) -> String;
-    fn with_id(&self, id: &u64) -> String;
 }
