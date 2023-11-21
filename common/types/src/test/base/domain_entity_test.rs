@@ -10,7 +10,7 @@ use crate::main::base::domain_event::DomainEventTrait;
 #[allow(non_snake_case)]
 fn produce_event__event_stuck_is_clean() {
     let id = 1_i64;
-    let version = Version::new();
+    let version = Version::default();
 
     let mut entity = TestEntity::new(DomainEntity::new(id, version));
 
@@ -30,7 +30,7 @@ fn produce_event__event_stuck_is_clean() {
 #[test]
 fn version_is_incremented_only_single_times_after_altering_entity() {
     let id = 1_i64;
-    let version = Version::new();
+    let version = Version::default();
 
     let mut entity = TestEntity::new(DomainEntity::new(id, version));
 
@@ -44,7 +44,7 @@ fn version_is_incremented_only_single_times_after_altering_entity() {
 #[test]
 fn version_is_incremented_after_popping_events() {
     let id = 1_i64;
-    let version = Version::new();
+    let version = Version::default();
 
     let mut entity = TestEntity::new(DomainEntity::new(id, version));
     entity.do_something();

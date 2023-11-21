@@ -11,7 +11,7 @@ use common_types::main::errors::error::BusinessError;
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Price {
-    pub value: BigDecimal,
+    value: BigDecimal,
 }
 
 impl Price {
@@ -25,7 +25,7 @@ impl Price {
     }
 
     pub fn multiple(&self, multiplicator: Count) -> Self {
-        let count = multiplicator.value.to_i64().unwrap();
+        let count = multiplicator.to_i32();
         let current_price_value = self.to_f64();
         let multiplied_price_value = current_price_value.mul(count as f64);
         Self {
