@@ -8,7 +8,7 @@ use crate::main::menu::meal::MealError;
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
 #[non_exhaustive]
 pub struct MealId {
-    pub value: i64,
+    value: i64,
 }
 
 impl MealId {

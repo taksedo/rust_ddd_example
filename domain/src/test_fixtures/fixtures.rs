@@ -30,7 +30,7 @@ pub fn print_type_of<T>(_: &T) -> &str {
 
 pub fn rnd_meal_id() -> MealId {
     let id: i64 = thread_rng().gen_range(0..i64::MAX);
-    MealId { value: id }
+    MealId::try_from(id).unwrap()
 }
 
 pub fn rnd_meal_name() -> MealName {

@@ -16,12 +16,24 @@ lazy_static! {
     };
 }
 
+pub fn error_type_url(suffix: &str) -> String {
+    (BASE_URL.clone() + "/" + suffix)
+        .parse::<Uri>()
+        .unwrap()
+        .to_string()
+}
+
+pub fn not_found_type_url() -> String {
+    error_type_url("resource_not_found")
+}
+
+pub fn bad_request_type_url() -> String {
+    error_type_url("bad_request")
+}
+
 pub fn resource_not_found() -> HttpResponse {
     let error_response = GenericErrorResponse::new(
-        (BASE_URL.clone() + "/resource_not_found")
-            .parse::<Uri>()
-            .unwrap()
-            .to_string(),
+        not_found_type_url(),
         "Resource not found".to_string(),
         (StatusCode::NOT_FOUND).as_u16(),
     );
@@ -60,6 +72,7 @@ pub struct GenericErrorResponse {
     #[serde(rename(serialize = "status", deserialize = "status"))]
     pub response_status: u16,
     #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     #[new(value = "vec![]")]
     pub invalid_params: Vec<ValidationError>,
 }
