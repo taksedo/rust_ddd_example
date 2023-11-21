@@ -9,7 +9,7 @@ use common_types::main::errors::error::BusinessError;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash, Default)]
 #[non_exhaustive]
 pub struct MealName {
-    pub value: String,
+    value: String,
 }
 
 impl TryFrom<&str> for MealName {

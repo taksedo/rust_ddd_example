@@ -44,11 +44,11 @@ pub fn rnd_meal_description() -> MealDescription {
 pub fn rnd_price() -> Price {
     let random_price: u64 = thread_rng().gen_range(0..500000);
     let price = Price::try_from(BigDecimal::from_u64(random_price).unwrap()).unwrap();
-    Price::try_from(price.value.with_scale(2)).unwrap()
+    Price::try_from(price.to_bigdecimal().with_scale(Price::SCALE)).unwrap()
 }
 
 pub fn version() -> Version {
-    Version::new()
+    Version::default()
 }
 
 pub fn rnd_meal() -> Meal {

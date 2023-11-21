@@ -7,8 +7,8 @@ use crate::main::base::domain_entity::Version;
 #[test]
 #[allow(non_snake_case)]
 fn new_id__check_version_is_zero() {
-    let first_version = Version::new();
-    let second_version = Version::new();
+    let first_version = Version::default();
+    let second_version = Version::default();
 
     assert_eq!(first_version.to_i64(), second_version.to_i64());
     assert_eq!(first_version.to_i64(), 0)

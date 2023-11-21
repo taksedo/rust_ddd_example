@@ -41,7 +41,7 @@ impl Meal {
 
             //     .map_err(|_e: Error| MealError::IdGenerationError)?;
             let mut meal = Meal::new(
-                DomainEntity::new(id, Version::new()),
+                DomainEntity::new(id, Version::default()),
                 name,
                 description,
                 price,

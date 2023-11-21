@@ -35,9 +35,8 @@ impl<Event: Clone, T> DomainEntityTrait<Event> for DomainEntity<T, Event> {
     }
 }
 
-#[derive(new, Debug, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Default)]
 pub struct Version {
-    #[new(value = "0_i64")]
     value: i64,
 }
 
@@ -63,6 +62,7 @@ impl Version {
 }
 
 impl From<i64> for Version {
+    /// Gets `Version` from `i64`
     fn from(value: i64) -> Self {
         Self { value }
     }
