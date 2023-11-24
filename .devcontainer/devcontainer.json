@@ -1,0 +1,52 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/rust
+{
+  "name": "Rust",
+  "hostRequirements": {
+    "cpus": 4
+  },
+  "service": "rust-ddd-example",
+  "dockerComposeFile": "docker-compose.yml",
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "latest",
+      "profile": "complete"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2.7.1": {
+      "version": "latest",
+      "moby": true
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vadimcn.vscode-lldb",
+        "mutantdino.resourcemonitor",
+        "matklad.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "serayuzgur.crates",
+        "Zerotaskx.rust-extension-pack",
+        "ZhangYue.rust-mod-generator",
+        "cweijan.vscode-database-client2"
+      ],
+      "settings": {
+        "lldb.executable": "/usr/bin/lldb",
+        // VS Code don't watch files under ./target
+        "files.watcherExclude": {
+          "**/target/**": true
+        }
+        // "rust-analyzer.checkOnSave.command": "check"
+      },
+      "runArgs": [
+        "--cpus=2"
+        // <-- specify the number of CPUs you want
+      ]
+    }
+  },
+  // "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspaces",
+  "shutdownAction": "stopCompose",
+  "postCreateCommand": "rustup default stable && rustup component add rustfmt && rustup component add clippy"
+}
