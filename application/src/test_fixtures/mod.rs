@@ -10,6 +10,8 @@ use testcontainers::GenericImage;
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
 
+use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
+
 #[derive(Debug)]
 pub struct TestRabbitMq {
     #[allow(dead_code)]
@@ -101,7 +103,7 @@ impl TestKafka {
         debug!(?KAFKA_ADDRESS);
 
         let cmd =
-            format!("kafka-topics --bootstrap-server localhost:9092 --create --topic {TOPIC_NAME}");
+            format!("kafka-topics --bootstrap-server localhost:9092 --create --topic {MEAL_TOPIC_NAME}");
         let ready_conditions = vec![WaitFor::message_on_stdout(
             format!("Received response {{error_code=0,_tagged_fields={{}}}} for request UPDATE_METADATA with correlation").as_str(),
         )];
@@ -118,4 +120,3 @@ static TEST_KAFKA_COUNTER: AtomicU32 = AtomicU32::new(0);
 
 pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();
 pub static KAFKA_QUEUE_NAME: OnceLock<String> = OnceLock::new();
-pub const TOPIC_NAME: &str = "meals";

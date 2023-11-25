@@ -26,6 +26,9 @@ services:
       - KAFKA_KRAFT_CLUSTER_ID=L0ZEQh1yTbGhNNUE7-6wSQ
     volumes:
       - restapp_kafka_volume:/bitnami/kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
 
   kafka-ui:
     image: provectuslabs/kafka-ui:v0.4.0

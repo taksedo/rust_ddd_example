@@ -14,9 +14,10 @@ use domain::{
     test_fixtures::fixtures::rnd_meal_id,
 };
 
+use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 use crate::{
-    main::event::kafka_event_publisher_imp::KafkaEventPublisherImpl,
-    test_fixtures::{TestKafka, KAFKA_ADDRESS, TOPIC_NAME},
+    main::event::kafka_event_publisher_impl::KafkaEventPublisherImpl,
+    test_fixtures::{TestKafka, KAFKA_ADDRESS},
 };
 
 #[tokio::test]
@@ -36,7 +37,7 @@ async fn publish_events() {
         .create()
         .unwrap();
 
-    let topic_name = TOPIC_NAME;
+    let topic_name = MEAL_TOPIC_NAME;
 
     let mut publisher = KafkaEventPublisherImpl::new(topic_name.to_owned(), producer);
 
@@ -48,7 +49,7 @@ async fn publish_events() {
         .unwrap();
 
     let receiver = MockReceiver::new(
-        TOPIC_NAME.to_string(),
+        MEAL_TOPIC_NAME.to_string(),
         "My Test Group".to_string(),
         Some(GroupOffsetStorage::Kafka),
     );
