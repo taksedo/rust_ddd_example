@@ -102,8 +102,9 @@ impl TestKafka {
         KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
         debug!(?KAFKA_ADDRESS);
 
-        let cmd =
-            format!("kafka-topics --bootstrap-server localhost:9092 --create --topic {MEAL_TOPIC_NAME}");
+        let cmd = format!(
+            "kafka-topics --bootstrap-server localhost:9092 --create --topic {MEAL_TOPIC_NAME}"
+        );
         let ready_conditions = vec![WaitFor::message_on_stdout(
             format!("Received response {{error_code=0,_tagged_fields={{}}}} for request UPDATE_METADATA with correlation").as_str(),
         )];
