@@ -1,16 +1,17 @@
 use std::{ops::Deref, time::Duration};
 
 use derive_new::new;
+use kafka::{
+    consumer::{Consumer, FetchOffset, GroupOffsetStorage},
+    producer::{Producer, Record, RequiredAcks},
+};
+
 use domain::{
     main::menu::{
         meal_events::{DomainEventEnum, MealAddedToMenuDomainEvent},
         value_objects::meal_id::{MealId, MealIdGenerator},
     },
     test_fixtures::fixtures::rnd_meal_id,
-};
-use kafka::{
-    consumer::{Consumer, FetchOffset, GroupOffsetStorage},
-    producer::{Producer, Record, RequiredAcks},
 };
 
 use crate::{

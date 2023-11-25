@@ -1,8 +1,7 @@
 use std::fmt::Debug;
 
-use kafka::producer::{Producer, Record};
-
 use derive_new::new;
+use kafka::producer::{Producer, Record};
 
 use common_events::main::domain_event_publisher::DomainEventPublisher;
 use domain::main::menu::meal_events::DomainEventEnum;
