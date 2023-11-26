@@ -22,7 +22,6 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-      - run: cd shop
       - name: Cache dependencies
         uses: actions/cache@v2
         env:
@@ -38,6 +37,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Generate test result and coverage report
         run: |
+          cd shop
           cargo install cargo2junit grcov;
           cargo test $CARGO_OPTIONS --all -- -Z unstable-options --format json | cargo2junit > results.xml;
           zip -0 ccov.zip `find . \( -name "*.gc*" \) -print`;
