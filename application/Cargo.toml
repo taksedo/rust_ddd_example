@@ -25,7 +25,8 @@ tracing-subscriber.workspace = true
 tokio.workspace = true
 futures-lite.workspace = true
 testcontainers.workspace = true
-
+kafka.workspace = true
+testcontainers-modules.workspace = true
 
 
 common_types.workspace = true

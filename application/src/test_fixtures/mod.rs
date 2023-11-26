@@ -3,10 +3,14 @@ use std::sync::OnceLock;
 
 use lapin::{Connection, ConnectionProperties};
 use testcontainers::clients::Cli;
+use testcontainers::core::ExecCommand;
 use testcontainers::core::WaitFor;
 use testcontainers::Container;
 use testcontainers::GenericImage;
+use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
+
+use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 
 #[derive(Debug)]
 pub struct TestRabbitMq {
@@ -20,7 +24,7 @@ impl TestRabbitMq {
             std::env::set_var("RUST_LOG", "debug");
         }
 
-        tracing_subscriber::fmt::init();
+        let _ = tracing_subscriber::fmt::try_init();
 
         static DOCKER_CLIENT: OnceLock<Cli> = OnceLock::new();
         DOCKER_CLIENT.get_or_init(Cli::default);
@@ -66,3 +70,54 @@ static TEST_RABBITMQ_COUNTER: AtomicU32 = AtomicU32::new(0);
 
 pub static RABBITMQ_ADDRESS: OnceLock<String> = OnceLock::new();
 pub static RABBITMQ_QUEUE_NAME: OnceLock<String> = OnceLock::new();
+
+pub struct TestKafka {
+    #[allow(dead_code)]
+    pub container: Container<'static, Kafka>,
+}
+
+impl TestKafka {
+    pub async fn new() -> Self {
+        if std::env::var("RUST_LOG").is_err() {
+            std::env::set_var("RUST_LOG", "debug");
+        }
+
+        let _ = tracing_subscriber::fmt::try_init();
+
+        static DOCKER_CLIENT: OnceLock<Cli> = OnceLock::new();
+        DOCKER_CLIENT.get_or_init(Cli::default);
+
+        let node = DOCKER_CLIENT.get().unwrap().run(Kafka::default());
+
+        let port = &node.get_host_port_ipv4(9093);
+        KAFKA_QUEUE_NAME.get_or_init(|| {
+            format!(
+                "test_queue_{}_{}",
+                std::process::id(),
+                TEST_KAFKA_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+            )
+        });
+        let test_container_kafka_url = format!("localhost:{port}");
+
+        KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
+        debug!(?KAFKA_ADDRESS);
+
+        let cmd = format!(
+            "kafka-topics --bootstrap-server localhost:9092 --create --topic {MEAL_TOPIC_NAME}"
+        );
+        let ready_conditions = vec![WaitFor::message_on_stdout(
+            format!("Received response {{error_code=0,_tagged_fields={{}}}} for request UPDATE_METADATA with correlation").as_str(),
+        )];
+        node.exec(ExecCommand {
+            cmd,
+            ready_conditions,
+        });
+
+        Self { container: node }
+    }
+}
+
+static TEST_KAFKA_COUNTER: AtomicU32 = AtomicU32::new(0);
+
+pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();
+pub static KAFKA_QUEUE_NAME: OnceLock<String> = OnceLock::new();
