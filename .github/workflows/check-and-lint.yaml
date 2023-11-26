@@ -34,6 +34,7 @@ jobs:
           override: true
       - run: rustup component add rustfmt
       - run: |
+          cd shop/
           cargo fmt --all -- --check
 
   clippy:
