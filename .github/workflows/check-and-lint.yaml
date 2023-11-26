@@ -48,7 +48,6 @@ jobs:
           components: clippy
           override: true
       - uses: actions-rs/clippy-check@v1
-        working-directory: ./shop
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
