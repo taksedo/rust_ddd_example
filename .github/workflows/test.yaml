@@ -22,6 +22,7 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+      - run: cd shop
       - name: Cache dependencies
         uses: actions/cache@v2
         env:

@@ -32,7 +32,9 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - run: rustup component add rustfmt
+      - run: |
+          rustup component add rustfmt
+          cd shop
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
@@ -48,6 +50,7 @@ jobs:
           toolchain: stable
           components: clippy
           override: true
+      - run: cd shop
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
