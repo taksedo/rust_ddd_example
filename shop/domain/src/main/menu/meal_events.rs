@@ -8,7 +8,7 @@ use common::types::main::base::domain_event::EventId;
 
 use crate::main::menu::value_objects::meal_id::MealId;
 #[cfg(test)]
-use crate::test_fixtures::fixtures::TestEvent;
+use crate::test_fixtures::TestEvent;
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, SmartDefault)]
 pub struct MealAddedToMenuDomainEvent {

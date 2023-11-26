@@ -12,15 +12,13 @@ use dotenvy::dotenv;
 
 use common::common_rest::main::rest_responses::GenericErrorResponse;
 use common::common_rest::main::rest_responses::{bad_request_type_url, error_type_url};
-use domain::test_fixtures::fixtures::{
-    rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
-};
+use domain::test_fixtures::{rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price};
 use usecase::main::menu::add_meal_to_menu::AddMealToMenuUseCaseError;
 
 use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::add_meal_to_menu_endpoint;
 use crate::main::menu::add_meal_to_menu_endpoint::MealStruct;
-use crate::test_fixtures::fixtures::{MockAddMealToMenu, StringMethodsForRestTestExt};
+use crate::test_fixtures::{MockAddMealToMenu, StringMethodsForRestTestExt};
 
 #[actix_web::test]
 async fn created_successfully() {
