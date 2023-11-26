@@ -33,9 +33,9 @@ jobs:
           toolchain: stable
           override: true
       - run: rustup component add rustfmt
-      - run: |
-          cd shop/
-          cargo fmt --all -- --check
+      - name: Rustfmt
+        run: cargo fmt --all -- --check
+        working-directory: ./shop
 
   clippy:
     name: Clippy
@@ -47,7 +47,6 @@ jobs:
           toolchain: stable
           components: clippy
           override: true
-      - run: cd shop
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
