@@ -1,5 +1,5 @@
 [package]
-name = "events"
+name = "in_memory_persistence"
 version.workspace = true
 edition.workspace = true
 
@@ -7,9 +7,15 @@ edition.workspace = true
 
 [dependencies]
 derive-new.workspace = true
-time.workspace = true
 serde.workspace = true
 serde_derive.workspace = true
 erased-serde.workspace = true
+derivative.workspace = true
+enum_dispatch.workspace = true
+smart-default.workspace = true
+time.workspace = true
 
-types.workspace = true
+common.workspace = true
+domain.workspace = true
+usecase.workspace = true
+

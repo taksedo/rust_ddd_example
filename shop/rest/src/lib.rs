@@ -2,6 +2,6 @@
 
 pub mod main;
 #[cfg(test)]
-pub mod test;
+mod test;
 #[cfg(test)]
 pub mod test_fixtures;

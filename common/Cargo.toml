@@ -1,0 +1,35 @@
+[package]
+name = "rust_ddd_example_common"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["events", "common_rest", "common_telnet", "types"]
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace.dependencies]
+derive-new = "0.6.0"
+derive_more = { version = "1.0.0-beta.6", features = ["full"] }
+time = { version = "0.3.21", features = ["default", "serde-well-known"] }
+serde = { version = "1.0.163", features = ["derive", "rc", "alloc"] }
+serde_derive = "1.0.163"
+erased-serde = "0.3.25"
+derivative = "2.2.0"
+enum_dispatch = "0.3.12"
+enum_access = "0.4.0"
+rstest = "0.18.2"
+rand = "0.8.5"
+actix-web = "4.3.1"
+lazy_static = "1.4.0"
+
+types = { path = "types" }
+
+[dependencies]
+events = { path = "events" }
+common_rest = { path = "common_rest" }
+types = { path = "types" }
+common_telnet = { path = "common_telnet" }

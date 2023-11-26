@@ -1,0 +1,28 @@
+[package]
+name = "domain"
+version.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde.workspace = true
+serde_derive.workspace = true
+erased-serde.workspace = true
+serde_json.workspace = true
+derive-new.workspace = true
+bigdecimal.workspace = true
+mockall.workspace = true
+fake.workspace = true
+rand.workspace = true
+rstest.workspace = true
+derivative.workspace = true
+time.workspace = true
+enum_access.workspace = true
+enum_dispatch.workspace = true
+smart-default.workspace = true
+actix-web.workspace = true
+
+common.workspace = true
+
+[dev-dependencies]

@@ -1,5 +1,5 @@
 [package]
-name = "events"
+name = "usecase"
 version.workspace = true
 edition.workspace = true
 
@@ -7,9 +7,9 @@ edition.workspace = true
 
 [dependencies]
 derive-new.workspace = true
-time.workspace = true
-serde.workspace = true
-serde_derive.workspace = true
-erased-serde.workspace = true
+structmap.workspace = true
+structmap-derive.workspace = true
+actix-web.workspace = true
 
-types.workspace = true
+domain.workspace = true
+common.workspace = true

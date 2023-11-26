@@ -1,0 +1,25 @@
+[package]
+name = "postgres_persistence"
+version.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+derive-new.workspace = true
+derivative.workspace = true
+diesel.workspace = true
+diesel_logger.workspace = true
+diesel_migrations.workspace = true
+serde.workspace = true
+dotenvy.workspace = true
+tokio.workspace = true
+bigdecimal.workspace = true
+log.workspace = true
+url.workspace = true
+testcontainers.workspace = true
+rstest.workspace = true
+
+common.workspace = true
+usecase.workspace = true
+domain.workspace = true

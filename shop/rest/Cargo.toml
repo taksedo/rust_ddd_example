@@ -1,0 +1,22 @@
+[package]
+name = "rest"
+version.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = { workspace = true, features = ["rustls"] }
+actix-cors.workspace = true
+derive-new.workspace = true
+const_format.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_derive.workspace = true
+smart-default.workspace = true
+bigdecimal.workspace = true
+dotenvy.workspace = true
+
+domain.workspace = true
+usecase.workspace = true
+common.workspace = true
