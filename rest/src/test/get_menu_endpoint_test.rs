@@ -7,7 +7,7 @@ use actix_web::web;
 
 use crate::main::menu::get_menu_endpoint;
 use crate::main::menu::meal_model::MealModel;
-use crate::test_fixtures::fixtures::{rnd_meal_info, MockGetMenu};
+use crate::test_fixtures::{rnd_meal_info, MockGetMenu};
 
 #[actix_web::test]
 async fn get_menu() {

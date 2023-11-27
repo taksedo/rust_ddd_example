@@ -11,7 +11,7 @@ use domain::{
         meal_events::{DomainEventEnum, MealAddedToMenuDomainEvent},
         value_objects::meal_id::{MealId, MealIdGenerator},
     },
-    test_fixtures::fixtures::rnd_meal_id,
+    test_fixtures::rnd_meal_id,
 };
 
 use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;

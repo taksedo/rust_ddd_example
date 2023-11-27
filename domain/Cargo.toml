@@ -23,7 +23,6 @@ enum_dispatch.workspace = true
 smart-default.workspace = true
 actix-web.workspace = true
 
-common_types.workspace = true
-common_events.workspace = true
+common.workspace = true
 
 [dev-dependencies]

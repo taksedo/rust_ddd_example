@@ -15,8 +15,7 @@ enum_dispatch.workspace = true
 smart-default.workspace = true
 time.workspace = true
 
-common_types.workspace = true
-common_events.workspace = true
+common.workspace = true
 domain.workspace = true
 usecase.workspace = true
 

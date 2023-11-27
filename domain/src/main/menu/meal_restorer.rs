@@ -1,4 +1,4 @@
-use common_types::main::base::domain_entity::{DomainEntity, Version};
+use common::types::main::base::domain_entity::{DomainEntity, Version};
 
 use crate::main::menu::meal_events::DomainEventEnum;
 use crate::main::menu::value_objects::meal_description::MealDescription;

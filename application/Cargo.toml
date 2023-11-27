@@ -29,8 +29,7 @@ kafka.workspace = true
 testcontainers-modules.workspace = true
 
 
-common_types.workspace = true
-common_events.workspace = true
+common.workspace = true
 domain.workspace = true
 in_memory_persistence.workspace = true
 postgres_persistence.workspace = true

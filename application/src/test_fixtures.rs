@@ -1,3 +1,4 @@
+use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 use std::sync::atomic::AtomicU32;
 use std::sync::OnceLock;
 
@@ -9,8 +10,6 @@ use testcontainers::Container;
 use testcontainers::GenericImage;
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
-
-use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 
 #[derive(Debug)]
 pub struct TestRabbitMq {
@@ -67,7 +66,6 @@ impl TestRabbitMq {
 }
 
 static TEST_RABBITMQ_COUNTER: AtomicU32 = AtomicU32::new(0);
-
 pub static RABBITMQ_ADDRESS: OnceLock<String> = OnceLock::new();
 pub static RABBITMQ_QUEUE_NAME: OnceLock<String> = OnceLock::new();
 
@@ -90,13 +88,6 @@ impl TestKafka {
         let node = DOCKER_CLIENT.get().unwrap().run(Kafka::default());
 
         let port = &node.get_host_port_ipv4(9093);
-        KAFKA_QUEUE_NAME.get_or_init(|| {
-            format!(
-                "test_queue_{}_{}",
-                std::process::id(),
-                TEST_KAFKA_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
-            )
-        });
         let test_container_kafka_url = format!("localhost:{port}");
 
         KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
@@ -117,7 +108,4 @@ impl TestKafka {
     }
 }
 
-static TEST_KAFKA_COUNTER: AtomicU32 = AtomicU32::new(0);
-
 pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();
-pub static KAFKA_QUEUE_NAME: OnceLock<String> = OnceLock::new();

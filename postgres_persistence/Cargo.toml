@@ -20,7 +20,6 @@ url.workspace = true
 testcontainers.workspace = true
 rstest.workspace = true
 
-common_events.workspace = true
-common_types.workspace = true
+common.workspace = true
 usecase.workspace = true
 domain.workspace = true

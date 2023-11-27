@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 use actix_web::http::header::ContentType;
 use actix_web::{web, HttpRequest, HttpResponse};
 
-use common_rest::main::rest_responses::resource_not_found;
+use common::common_rest::main::rest_responses::resource_not_found;
 use domain::main::menu::value_objects::meal_id::MealId;
 use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
 

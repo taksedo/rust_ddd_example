@@ -5,8 +5,8 @@ use std::sync::{Arc, Mutex};
 use derivative::Derivative;
 use derive_new::new;
 
-use common_events::main::domain_event_publisher::DomainEventPublisher;
-use common_types::main::base::domain_entity::DomainEntityTrait;
+use common::events::main::domain_event_publisher::DomainEventPublisher;
+use common::types::main::base::domain_entity::DomainEntityTrait;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::value_objects::meal_id::MealId;

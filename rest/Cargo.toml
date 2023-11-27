@@ -19,5 +19,4 @@ dotenvy.workspace = true
 
 domain.workspace = true
 usecase.workspace = true
-common_types.workspace = true
-common_rest.workspace = true
+common.workspace = true

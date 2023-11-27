@@ -3,8 +3,8 @@ use std::sync::{Arc, Mutex};
 
 use derive_new::new;
 
-use common_types::main::base::domain_event::DomainEventTrait;
-use common_types::main::errors::error::ToError;
+use common::types::main::base::domain_event::DomainEventTrait;
+use common::types::main::errors::error::ToError;
 use domain;
 use domain::main::menu::meal::{Meal, MealError};
 use domain::main::menu::meal_already_exists::MealAlreadyExists;

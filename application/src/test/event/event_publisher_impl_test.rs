@@ -6,8 +6,8 @@ use derive_new::new;
 use enum_dispatch::enum_dispatch;
 use smart_default::SmartDefault;
 
-use common_events::main::domain_event_listener::DomainEventListener;
-use common_events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::main::domain_event_listener::DomainEventListener;
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 
 use crate::main::event::event_publisher_impl::EventPublisherImpl;
 

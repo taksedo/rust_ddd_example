@@ -5,7 +5,7 @@ use std::time::Duration;
 use derive_new::new;
 use kafka::producer::{Producer, Record, RequiredAcks};
 
-use common_events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 use domain::main::menu::meal_events::DomainEventEnum;
 
 #[derive(new)]

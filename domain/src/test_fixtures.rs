@@ -7,8 +7,8 @@ use rand::thread_rng;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
-use common_types::main::base::domain_entity::Version;
-use common_types::main::base::domain_event::DomainEventTrait;
+use common::types::main::base::domain_entity::Version;
+use common::types::main::base::domain_event::DomainEventTrait;
 
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;

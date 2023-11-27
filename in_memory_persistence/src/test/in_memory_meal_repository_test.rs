@@ -3,13 +3,14 @@
 use std::convert::TryInto;
 use std::sync::{Arc, Mutex};
 
+use crate::test_fixtures::{meal_with_events, type_of, TestEventPublisher};
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
-use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name};
+#[cfg(test)]
+use domain::test_fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
 
 use crate::main::menu::in_memory_meal_repository::InMemoryMealRepository;
-use crate::test_fixtures::fixtures::{meal_with_events, type_of, TestEventPublisher};
 
 #[test]
 fn saving_meal__meal_doesnt_exist() {

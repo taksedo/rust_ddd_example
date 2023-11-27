@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use diesel_migrations::MigrationHarness;
 
-use domain::test_fixtures::fixtures::{rnd_meal_id, rnd_meal_name};
+use domain::test_fixtures::{rnd_meal_id, rnd_meal_name};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
 

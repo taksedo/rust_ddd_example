@@ -1,11 +1,11 @@
 use std::sync::{Arc, Mutex};
 
-use domain::test_fixtures::fixtures::rnd_meal;
+use domain::test_fixtures::rnd_meal;
 
 use crate::main::menu::dto::meal_info::MealInfo;
 use crate::main::menu::get_menu::GetMenu;
 use crate::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
-use crate::test_fixtures::fixtures::MockMealExtractor;
+use crate::test_fixtures::MockMealExtractor;
 
 #[test]
 #[allow(non_snake_case)]

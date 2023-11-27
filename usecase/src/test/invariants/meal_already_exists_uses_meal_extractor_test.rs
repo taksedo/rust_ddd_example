@@ -1,10 +1,10 @@
 use std::sync::{Arc, Mutex};
 
 use domain::main::menu::meal_already_exists::MealAlreadyExists;
-use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_name};
+use domain::test_fixtures::{rnd_meal, rnd_meal_name};
 
 use crate::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
-use crate::test_fixtures::fixtures::{removed_meal, MockMealExtractor};
+use crate::test_fixtures::{removed_meal, MockMealExtractor};
 
 #[test]
 fn meal_already_exists() {

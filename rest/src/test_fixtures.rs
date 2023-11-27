@@ -1,12 +1,11 @@
-use smart_default::SmartDefault;
-
 use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
-use domain::test_fixtures::fixtures::{
+use domain::test_fixtures::{
     rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
+use smart_default::SmartDefault;
 use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 use usecase::main::menu::dto::meal_info::MealInfo;
 use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};

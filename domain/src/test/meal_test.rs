@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use derive_new::new;
 
-use common_types::main::base::domain_entity::DomainEntityTrait;
+use common::types::main::base::domain_entity::DomainEntityTrait;
 
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal::MealError::AlreadyExistsWithSameNameError;
@@ -15,7 +15,7 @@ use crate::main::menu::meal_events::{
 };
 use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::value_objects::meal_name::MealName;
-use crate::test_fixtures::fixtures::{
+use crate::test_fixtures::{
     print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
 

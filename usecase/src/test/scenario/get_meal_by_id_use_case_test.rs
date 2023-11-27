@@ -1,11 +1,11 @@
 use std::sync::{Arc, Mutex};
 
-use domain::test_fixtures::fixtures::{rnd_meal, rnd_meal_id};
+use domain::test_fixtures::{rnd_meal, rnd_meal_id};
 
 use crate::main::menu::dto::meal_info::MealInfo;
 use crate::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
 use crate::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
-use crate::test_fixtures::fixtures::{removed_meal, MockMealExtractor};
+use crate::test_fixtures::{removed_meal, MockMealExtractor};
 
 #[test]
 fn meal_not_found() {

@@ -4,9 +4,9 @@ use std::str::FromStr;
 use bigdecimal::*;
 use serde::{Deserialize, Serialize};
 
-use common_types::main::base::value_object::ValueObject;
-use common_types::main::common::count::Count;
-use common_types::main::errors::error::BusinessError;
+use common::types::main::base::value_object::ValueObject;
+use common::types::main::common::count::Count;
+use common::types::main::errors::error::BusinessError;
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]

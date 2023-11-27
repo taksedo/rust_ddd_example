@@ -3,8 +3,8 @@ use std::fmt::Formatter;
 
 use serde::{Deserialize, Serialize};
 
-use common_types::main::base::value_object::ValueObject;
-use common_types::main::errors::error::BusinessError;
+use common::types::main::base::value_object::ValueObject;
+use common::types::main::errors::error::BusinessError;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize, Serialize)]
 #[non_exhaustive]

@@ -12,5 +12,4 @@ structmap-derive.workspace = true
 actix-web.workspace = true
 
 domain.workspace = true
-common_types.workspace = true
-common_events.workspace = true
+common.workspace = true

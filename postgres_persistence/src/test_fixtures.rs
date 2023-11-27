@@ -10,11 +10,11 @@ use testcontainers::Container;
 use testcontainers::GenericImage;
 use url::Url;
 
-use common_events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
-use domain::test_fixtures::fixtures::{
+use domain::test_fixtures::{
     rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists,
 };
 

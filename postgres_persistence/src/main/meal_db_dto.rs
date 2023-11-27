@@ -2,7 +2,7 @@ use bigdecimal::BigDecimal;
 use diesel::prelude::*;
 use serde::*;
 
-use common_types::main::base::domain_entity::{DomainEntity, Version};
+use common::types::main::base::domain_entity::{DomainEntity, Version};
 use domain::main::menu::meal::Meal;
 use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;

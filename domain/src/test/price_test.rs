@@ -5,7 +5,7 @@ use std::str::FromStr;
 use bigdecimal::BigDecimal;
 use rstest::rstest;
 
-use common_types::main::common::count::Count;
+use common::types::main::common::count::Count;
 
 use crate::main::menu::value_objects::price::{CreatePriceError, Price};
 

@@ -6,8 +6,8 @@ use std::sync::{Arc, Mutex};
 
 use derive_new::new;
 
-use common_events::main::domain_event_listener::DomainEventListener;
-use common_events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::main::domain_event_listener::DomainEventListener;
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 
 type VecOfDomainEventListenerType<Event> = Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>;
 

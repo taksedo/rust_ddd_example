@@ -7,14 +7,14 @@ use actix_web::http::StatusCode;
 use actix_web::{test, web};
 use dotenvy::dotenv;
 
-use common_rest::main::rest_responses::not_found_type_url;
-use common_rest::main::rest_responses::GenericErrorResponse;
-use domain::test_fixtures::fixtures::rnd_meal_id;
+use common::common_rest::main::rest_responses::not_found_type_url;
+use common::common_rest::main::rest_responses::GenericErrorResponse;
+use domain::test_fixtures::rnd_meal_id;
 use usecase::main::menu::remove_meal_from_menu::RemoveMealFromMenuUseCaseError;
 
 use crate::main::endpoint_url::API_V1_MENU_DELETE_BY_ID;
 use crate::main::menu::remove_meal_from_menu_endpoint;
-use crate::test_fixtures::fixtures::{MockRemoveMealFromMenu, StringMethodsForRestTestExt};
+use crate::test_fixtures::{MockRemoveMealFromMenu, StringMethodsForRestTestExt};
 
 #[actix_web::test]
 async fn meal_not_found() {

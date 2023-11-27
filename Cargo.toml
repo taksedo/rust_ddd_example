@@ -1,14 +1,23 @@
 [workspace]
-members = ["domain", "usecase", "application", "common/*", "in_memory_persistence", "rest", "telnet", "postgres_persistence"]
+members = [
+    "domain",
+    "usecase",
+    "application",
+    "in_memory_persistence",
+    "rest",
+    "telnet",
+    "postgres_persistence"
+]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
 
 [package]
-name = "rust_ddd_example"
+name = "rust_ddd_example_shop"
 authors = ["Ruslan Valiev"]
-description = "Developped in Rust"
+description = "Rust DDD Sample Project"
+
 version.workspace = true
 edition.workspace = true
 #build = "_build"
@@ -61,9 +70,7 @@ tracing-subscriber = "0.3.18"
 url = "2.3.1"
 kafka = "0.10.0"
 
-common_types = { path = "common/types" }
-common_events = { path = "common/events" }
-common_rest = { path = "common/rest" }
+common = { git = "https://github.com/taksedo/rust_ddd_example_common.git", branch = "master", package = "rust_ddd_example_common" }
 domain = { path = "domain" }
 usecase = { path = "usecase" }
 postgres_persistence = { path = "postgres_persistence" }

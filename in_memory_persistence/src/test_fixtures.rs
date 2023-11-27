@@ -2,10 +2,10 @@ use std::any::type_name;
 
 use derive_new::new;
 
-use common_events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
-use domain::test_fixtures::fixtures::rnd_meal;
+use domain::test_fixtures::rnd_meal;
 
 pub fn meal_with_events() -> Meal {
     let mut meal = rnd_meal();

@@ -4,8 +4,8 @@ use std::sync::{Arc, Mutex};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use common_types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
-use common_types::main::errors::error::BusinessError;
+use common::types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
+use common::types::main::errors::error::BusinessError;
 
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_events::{
