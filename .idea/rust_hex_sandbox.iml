@@ -3,30 +3,30 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/application/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/domain/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/in_memory_persistence/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/usecase/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/events/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/types/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/telnet/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/rest/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/postgres_persistence/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/cart/domain/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/cart/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/common_rest/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/common_telnet/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/rust_ddd_example/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/domain/target" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/application/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/domain/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/in_memory_persistence/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/postgres_persistence/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/rest/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/telnet/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/usecase/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/cart/target" />
       <excludeFolder url="file://$MODULE_DIR$/common/common_rest/target" />
       <excludeFolder url="file://$MODULE_DIR$/common/target" />
       <excludeFolder url="file://$MODULE_DIR$/rust_ddd_example/target" />
+      <excludeFolder url="file://$MODULE_DIR$/shop/domain/target" />
       <excludeFolder url="file://$MODULE_DIR$/shop/target" />
     </content>
     <orderEntry type="inheritedJdk" />
