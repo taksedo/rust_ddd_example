@@ -9,7 +9,7 @@ jobs:
   release:
     name: Release Packaging
     env:
-      PROJECT_NAME_UNDERSCORE: shop
+      PROJECT_NAME_UNDERSCORE: rust_ddd_example_shop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
