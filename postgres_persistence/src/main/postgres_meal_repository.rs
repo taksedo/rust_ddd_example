@@ -58,7 +58,7 @@ impl PostgresMealRepository {
 
 impl MealPersister for PostgresMealRepository {
     fn save(&mut self, mut meal_param: Meal) {
-        let events = meal_param.pop_events();
+        let events = meal_param.entity_params.pop_events();
         let mut res_vec = vec![];
         if !events.is_empty() {
             for event in &events {

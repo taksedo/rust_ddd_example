@@ -1,8 +1,8 @@
 use std::any::Any;
 
+use common::types::main::base::domain_entity::DomainEntityTrait;
 use derive_new::new;
 
-use common::types::main::base::domain_entity::DomainEntityTrait;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::DomainEventEnum;
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
@@ -62,6 +62,7 @@ impl MockMealPersister {
             .to_owned()
             .meal
             .unwrap()
+            .entity_params
             .pop_events()
             .get(0)
             .unwrap()
