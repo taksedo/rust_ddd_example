@@ -26,7 +26,7 @@ impl MealPersister for InMemoryMealRepository {
         self.event_publisher
             .lock()
             .unwrap()
-            .publish(&meal.pop_events());
+            .publish(&meal.entity_params.pop_events());
         self.storage.insert(meal.entity_params.id, meal);
     }
 }

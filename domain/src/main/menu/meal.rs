@@ -1,11 +1,10 @@
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 
-use derive_new::new;
-use serde::{Deserialize, Serialize};
-
 use common::types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
 use common::types::main::errors::error::BusinessError;
+use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_events::{
@@ -46,7 +45,8 @@ impl Meal {
                 description,
                 price,
             );
-            meal.add_event(MealAddedToMenuDomainEvent::new(id).into());
+            meal.entity_params
+                .add_event(MealAddedToMenuDomainEvent::new(id).into());
             Ok(meal)
         }
     }
@@ -59,7 +59,7 @@ impl Meal {
         if !self.removed {
             self.removed = true;
             let removing_event = MealRemovedFromMenuDomainEvent::new(self.entity_params.id);
-            self.add_event(removing_event.into())
+            self.entity_params.add_event(removing_event.into())
         }
     }
 }
@@ -68,20 +68,6 @@ impl Meal {
 pub enum MealError {
     AlreadyExistsWithSameNameError,
     IdGenerationError,
-}
-
-impl DomainEntityTrait<DomainEventEnum> for Meal {
-    fn add_event(&mut self, event: DomainEventEnum) {
-        if self.entity_params.events.is_empty() {
-            self.entity_params.version = self.entity_params.version.next();
-        }
-        self.entity_params.events.push(event)
-    }
-    fn pop_events(&mut self) -> Vec<DomainEventEnum> {
-        let res = self.entity_params.events.clone();
-        self.entity_params.events = vec![];
-        res
-    }
 }
 
 impl BusinessError for MealError {}
