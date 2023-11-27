@@ -70,7 +70,7 @@ tracing-subscriber = "0.3.18"
 url = "2.3.1"
 kafka = "0.10.0"
 
-common = { path = "../common", package = "rust_ddd_example_common" }
+common = { git = "https://github.com/taksedo/rust_ddd_example_common.git", branch = "master", package = "rust_ddd_example_common" }
 domain = { path = "domain" }
 usecase = { path = "usecase" }
 postgres_persistence = { path = "postgres_persistence" }
