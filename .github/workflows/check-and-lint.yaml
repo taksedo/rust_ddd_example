@@ -21,7 +21,6 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
-          args: --manifest-path=./shop/Cargo.toml
 
   fmt:
     name: Rustfmt
@@ -34,9 +33,10 @@ jobs:
           toolchain: stable
           override: true
       - run: rustup component add rustfmt
-      - name: Rustfmt
-        run: cargo fmt --all -- --check
-        working-directory: ./shop
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
 
   clippy:
     name: Clippy
@@ -51,5 +51,5 @@ jobs:
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features --manifest-path=./shop/Cargo.toml
+          args: --all-features
           name: Clippy Output
