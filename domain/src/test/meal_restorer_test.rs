@@ -29,5 +29,5 @@ fn restore_meal__success() {
     assert_eq!(meal.name, name);
     assert_eq!(meal.removed, removed);
     assert_eq!(meal.entity_params.version, version);
-    assert_eq!(meal.pop_events().len(), 0)
+    assert_eq!(meal.entity_params.pop_events().len(), 0)
 }

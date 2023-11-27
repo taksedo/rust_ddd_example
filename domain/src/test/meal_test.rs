@@ -3,9 +3,8 @@
 use std::sync::atomic::AtomicI64;
 use std::sync::{Arc, Mutex};
 
-use derive_new::new;
-
 use common::types::main::base::domain_entity::DomainEntityTrait;
+use derive_new::new;
 
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal::MealError::AlreadyExistsWithSameNameError;
@@ -70,7 +69,7 @@ fn add_meal__success() {
     assert_eq!(test_meal.price, price);
     assert!(test_meal.visible());
 
-    let popped_events = test_meal.pop_events();
+    let popped_events = test_meal.entity_params.pop_events();
     let popped_events = popped_events.get(0).unwrap();
 
     let expected_event = &DomainEventEnum::MealAddedToMenuDomainEvent(
@@ -101,7 +100,7 @@ fn remove_meal_from_menu__success() {
     assert!(test_meal.removed);
     assert!(!test_meal.visible());
 
-    let popped_events = test_meal.pop_events();
+    let popped_events = test_meal.entity_params.pop_events();
     let popped_events = popped_events.get(0).unwrap();
 
     let expected_event = &DomainEventEnum::MealRemovedFromMenuDomainEvent(
@@ -122,6 +121,6 @@ fn remove_meal_from_menu__already_removed() {
     assert!(test_meal.removed);
     assert!(!test_meal.visible());
 
-    let popped_events = test_meal.pop_events();
+    let popped_events = test_meal.entity_params.pop_events();
     assert!(popped_events.is_empty());
 }
