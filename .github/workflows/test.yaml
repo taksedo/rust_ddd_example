@@ -10,7 +10,7 @@ jobs:
   test:
     name: Test
     env:
-      PROJECT_NAME_UNDERSCORE: rust_ddd_example
+      PROJECT_NAME_UNDERSCORE: shop
       CARGO_INCREMENTAL: 0
       RUSTFLAGS: -Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort
       RUSTDOCFLAGS: -Cpanic=abort
@@ -37,7 +37,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Generate test result and coverage report
         run: |
-          cd shop
           cargo install cargo2junit grcov;
           cargo test $CARGO_OPTIONS --all -- -Z unstable-options --format json | cargo2junit > results.xml;
           zip -0 ccov.zip `find . \( -name "*.gc*" \) -print`;
