@@ -1,8 +1,8 @@
 use common::types::main::base::value_object::ValueObject;
+use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
-#[non_exhaustive]
+#[derive(new, Debug, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
 pub struct CustomerId {
     value: String,
 }

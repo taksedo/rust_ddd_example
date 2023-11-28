@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use bigdecimal::{BigDecimal, FromPrimitive};
 use common::types::main::base::domain_entity::Version;
 use common::types::main::base::domain_event::DomainEventTrait;
@@ -8,7 +10,13 @@ use fake::Fake;
 use rand::thread_rng;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
+use uuid::Uuid;
 
+use crate::main::cart::cart::Cart;
+use crate::main::cart::cart_restorer::CartRestorer;
+use crate::main::cart::value_objects::cart_id::CartId;
+use crate::main::cart::value_objects::customer_id::CustomerId;
 use crate::main::menu::meal::Meal;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_restorer::MealRestorer;
@@ -67,23 +75,24 @@ pub struct TestEvent {}
 
 impl DomainEventTrait for TestEvent {}
 
-// fn customerId() = CustomerId(UUID.randomUUID().toString())
-//
-// fn cartId() = CartId(faker.number().randomNumber())
-//
-// fn cart(
-// meals: Map<MealId, Count> = emptyMap(),
-// customerId: CustomerId = customerId(),
-// ): Cart {
-// return CartRestorer.restoreCart(
-// id = cartId(),
-// forCustomer = customerId,
-// created = OffsetDateTime.now(),
-// meals = meals,
-// version = version()
-// )
-// }
-//
+pub fn rnd_customer_id() -> CustomerId {
+    CustomerId::new(Uuid::new_v4().to_string())
+}
+
+pub fn rnd_cart_id() -> CartId {
+    CartId::new(thread_rng().gen_range(0..i64::MAX))
+}
+
+pub fn rnd_cart() -> Cart {
+    CartRestorer::restore_cart(
+        rnd_cart_id(),
+        rnd_customer_id(),
+        OffsetDateTime::now_utc(),
+        HashMap::new(),
+        version(),
+    )
+}
+
 // fn orderId() = ShopOrderId(faker.number().randomNumber())
 //
 // fn orderItem(
