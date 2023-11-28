@@ -4,10 +4,9 @@ use std::hash::Hash;
 use std::mem::{discriminant, Discriminant};
 use std::sync::{Arc, Mutex};
 
-use derive_new::new;
-
 use common::events::main::domain_event_listener::DomainEventListener;
 use common::events::main::domain_event_publisher::DomainEventPublisher;
+use derive_new::new;
 
 type VecOfDomainEventListenerType<Event> = Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>;
 

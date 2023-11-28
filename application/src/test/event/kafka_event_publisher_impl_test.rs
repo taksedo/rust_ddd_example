@@ -8,7 +8,7 @@ use kafka::{
 
 use domain::{
     main::menu::{
-        meal_events::{DomainEventEnum, MealAddedToMenuDomainEvent},
+        meal_events::MealAddedToMenuDomainEvent,
         value_objects::meal_id::{MealId, MealIdGenerator},
     },
     test_fixtures::rnd_meal_id,
@@ -25,8 +25,8 @@ async fn publish_events() {
     let _container = TestKafka::new().await;
 
     let mut id_generator = TestMealIdGenerator::new(rnd_meal_id());
-    let events_enum = vec![DomainEventEnum::MealAddedToMenuDomainEvent(
-        MealAddedToMenuDomainEvent::new(id_generator.generate()),
+    let events_enum = vec![MealAddedToMenuDomainEvent::new(
+        id_generator.generate().into(),
     )];
 
     let test_events_str = serde_json::to_string(&events_enum.first()).unwrap();

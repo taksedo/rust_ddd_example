@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use diesel::{sql_query, RunQueryDsl};
 use diesel_migrations::MigrationHarness;
 
-use domain::main::menu::meal_events::{DomainEventEnum, MealAddedToMenuDomainEvent};
+use domain::main::menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum};
 use domain::test_fixtures::{rnd_meal_id, rnd_meal_name};
 use usecase::main::menu::access::meal_extractor::MealExtractor;
 use usecase::main::menu::access::meal_persister::MealPersister;
@@ -30,9 +30,10 @@ fn save_new_instance() {
     publisher
         .lock()
         .unwrap()
-        .verify_contains(vec![DomainEventEnum::MealAddedToMenuDomainEvent(
-            MealAddedToMenuDomainEvent::new(rnd_meal.entity_params.id),
-        )]);
+        .verify_contains(vec![MealAddedToMenuDomainEvent::new(
+            rnd_meal.entity_params.id,
+        )
+        .into()]);
 
     let result = repository.get_all();
     dbg!(&result);
@@ -131,7 +132,7 @@ fn save_again_without_changes() {
     publisher
         .lock()
         .unwrap()
-        .verify_contains(vec![Into::<DomainEventEnum>::into(
+        .verify_contains(vec![Into::<MealEventEnum>::into(
             MealAddedToMenuDomainEvent::new(rnd_meal.entity_params.id),
         )]);
 }

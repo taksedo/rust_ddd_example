@@ -4,7 +4,7 @@ use common::types::main::base::domain_entity::DomainEntityTrait;
 use derive_new::new;
 
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_events::MealEventEnum;
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
 use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
@@ -57,7 +57,7 @@ impl MockMealPersister {
     }
 
     pub fn verify_events_after_deletion(&mut self, id: &MealId) {
-        let event_enum: DomainEventEnum = MealRemovedFromMenuDomainEvent::new(*id).into();
+        let event_enum: MealEventEnum = MealRemovedFromMenuDomainEvent::new(*id).into();
         let events = self
             .to_owned()
             .meal

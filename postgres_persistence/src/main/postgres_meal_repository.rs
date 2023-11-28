@@ -1,13 +1,13 @@
 use std::sync::{Arc, Mutex};
 
+use common::events::main::domain_event_publisher::DomainEventPublisher;
+use common::types::main::base::domain_entity::DomainEntityTrait;
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
-use common::types::main::base::domain_entity::DomainEntityTrait;
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_events::MealEventEnum;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use usecase::main::menu::access::meal_extractor::MealExtractor;
@@ -21,7 +21,7 @@ use crate::main::schema::shop::meal::dsl::*;
 pub struct PostgresMealRepository {
     #[derivative(Debug = "ignore")]
     pub connection: PgConnection,
-    pub event_publisher: Arc<Mutex<dyn DomainEventPublisher<DomainEventEnum>>>,
+    pub event_publisher: Arc<Mutex<dyn DomainEventPublisher<MealEventEnum>>>,
 }
 
 impl PostgresMealRepository {
@@ -62,7 +62,7 @@ impl MealPersister for PostgresMealRepository {
         let mut res_vec = vec![];
         if !events.is_empty() {
             for event in &events {
-                if let DomainEventEnum::MealAddedToMenuDomainEvent(ev) = event {
+                if let MealEventEnum::MealAddedToMenuDomainEvent(ev) = event {
                     if ev.meal_id == meal_param.entity_params.id {
                         res_vec.insert(res_vec.len(), ev);
                     }

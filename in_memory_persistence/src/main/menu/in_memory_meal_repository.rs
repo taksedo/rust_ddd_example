@@ -2,13 +2,13 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
 
+use common::events::main::domain_event_publisher::DomainEventPublisher;
+use common::types::main::base::domain_entity::DomainEntityTrait;
 use derivative::Derivative;
 use derive_new::new;
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
-use common::types::main::base::domain_entity::DomainEntityTrait;
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_events::MealEventEnum;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use usecase::main::menu::access::meal_extractor::MealExtractor;
@@ -16,7 +16,7 @@ use usecase::main::menu::access::meal_persister::MealPersister;
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryMealRepository {
-    pub event_publisher: Arc<Mutex<dyn DomainEventPublisher<DomainEventEnum>>>,
+    pub event_publisher: Arc<Mutex<dyn DomainEventPublisher<MealEventEnum>>>,
     #[new(value = "HashMap::new()")]
     pub storage: HashMap<MealId, Meal>,
 }

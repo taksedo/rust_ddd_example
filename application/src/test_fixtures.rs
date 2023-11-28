@@ -1,4 +1,3 @@
-use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 use std::sync::atomic::AtomicU32;
 use std::sync::OnceLock;
 
@@ -10,6 +9,8 @@ use testcontainers::Container;
 use testcontainers::GenericImage;
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
+
+pub use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 
 #[derive(Debug)]
 pub struct TestRabbitMq {

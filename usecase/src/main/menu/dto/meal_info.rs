@@ -1,4 +1,5 @@
 use common::types::main::base::domain_entity::Version;
+
 use domain::main::menu::meal::Meal;
 use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;

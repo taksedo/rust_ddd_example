@@ -2,11 +2,11 @@ use std::env;
 use std::fmt::Debug;
 use std::time::Duration;
 
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use kafka::producer::{Producer, Record, RequiredAcks};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
-use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_events::MealEventEnum;
 
 #[derive(new)]
 pub struct KafkaEventPublisherImpl {
@@ -32,8 +32,8 @@ impl Default for KafkaEventPublisherImpl {
     }
 }
 
-impl DomainEventPublisher<DomainEventEnum> for KafkaEventPublisherImpl {
-    fn publish(&mut self, events: &Vec<DomainEventEnum>) {
+impl DomainEventPublisher<MealEventEnum> for KafkaEventPublisherImpl {
+    fn publish(&mut self, events: &Vec<MealEventEnum>) {
         for event in events {
             let event_serialized: String = serde_json::to_string(event).unwrap();
             let msg = Record::from_value(MEAL_TOPIC_NAME, event_serialized.as_bytes());
