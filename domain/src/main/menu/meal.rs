@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_events::{
-    DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
+    MealAddedToMenuDomainEvent, MealEventEnum, MealRemovedFromMenuDomainEvent,
 };
 use crate::main::menu::value_objects::meal_description::MealDescription;
 use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
@@ -17,7 +17,7 @@ use crate::main::menu::value_objects::price::Price;
 
 #[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Meal {
-    pub entity_params: DomainEntity<MealId, DomainEventEnum>,
+    pub entity_params: DomainEntity<MealId, MealEventEnum>,
     pub name: MealName,
     pub description: MealDescription,
     pub price: Price,

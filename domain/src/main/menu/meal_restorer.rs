@@ -1,6 +1,6 @@
 use common::types::main::base::domain_entity::{DomainEntity, Version};
 
-use crate::main::menu::meal_events::DomainEventEnum;
+use crate::main::menu::meal_events::MealEventEnum;
 use crate::main::menu::value_objects::meal_description::MealDescription;
 use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::price::Price;
@@ -18,7 +18,7 @@ impl MealRestorer {
         price: Price,
         removed: bool,
         version: Version,
-        events: Vec<DomainEventEnum>,
+        events: Vec<MealEventEnum>,
     ) -> Meal {
         Meal {
             entity_params: DomainEntity {

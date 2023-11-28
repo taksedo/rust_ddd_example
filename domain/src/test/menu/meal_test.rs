@@ -10,12 +10,13 @@ use crate::main::menu::meal::Meal;
 use crate::main::menu::meal::MealError::AlreadyExistsWithSameNameError;
 use crate::main::menu::meal_already_exists::MealAlreadyExists;
 use crate::main::menu::meal_events::{
-    DomainEventEnum, MealAddedToMenuDomainEvent, MealRemovedFromMenuDomainEvent,
+    MealAddedToMenuDomainEvent, MealEventEnum, MealRemovedFromMenuDomainEvent,
 };
 use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use crate::main::menu::value_objects::meal_name::MealName;
+use crate::test_fixtures::rnd_meal_id;
 use crate::test_fixtures::{
-    print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
+    print_type_of, rnd_meal, rnd_meal_description, rnd_meal_name, rnd_price,
 };
 
 #[derive(Debug, new, Default)]
@@ -72,13 +73,9 @@ fn add_meal__success() {
     let popped_events = test_meal.entity_params.pop_events();
     let popped_events = popped_events.get(0).unwrap();
 
-    let expected_event = &DomainEventEnum::MealAddedToMenuDomainEvent(
-        MealAddedToMenuDomainEvent::new(id_generator.lock().unwrap().meal_id),
-    );
-    assert_eq!(
-        print_type_of(&popped_events),
-        print_type_of(&expected_event)
-    );
+    let expected_event: &MealEventEnum =
+        &MealAddedToMenuDomainEvent::new(id_generator.lock().unwrap().meal_id).into();
+    assert_eq!(print_type_of(popped_events), print_type_of(expected_event));
 }
 
 #[test]
@@ -103,7 +100,7 @@ fn remove_meal_from_menu__success() {
     let popped_events = test_meal.entity_params.pop_events();
     let popped_events = popped_events.get(0).unwrap();
 
-    let expected_event = &DomainEventEnum::MealRemovedFromMenuDomainEvent(
+    let expected_event = &MealEventEnum::MealRemovedFromMenuDomainEvent(
         MealRemovedFromMenuDomainEvent::new(test_meal.entity_params.id),
     );
     assert_eq!(

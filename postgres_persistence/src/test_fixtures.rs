@@ -1,6 +1,7 @@
 use std::sync::atomic::AtomicU32;
 use std::sync::{Arc, Mutex, OnceLock};
 
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
 use log::warn;
@@ -10,9 +11,8 @@ use testcontainers::Container;
 use testcontainers::GenericImage;
 use url::Url;
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_events::MealEventEnum;
 use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 use domain::test_fixtures::{
     rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists,
@@ -109,11 +109,11 @@ impl Drop for TestDb {
 
 #[derive(new, Debug, Default)]
 pub struct MockEventPublisher {
-    events: Vec<DomainEventEnum>,
+    events: Vec<MealEventEnum>,
 }
 
 impl MockEventPublisher {
-    pub fn verify_contains(&self, events: Vec<DomainEventEnum>) {
+    pub fn verify_contains(&self, events: Vec<MealEventEnum>) {
         let matching = &self
             .events
             .iter()
@@ -128,8 +128,8 @@ impl MockEventPublisher {
     }
 }
 
-impl DomainEventPublisher<DomainEventEnum> for MockEventPublisher {
-    fn publish(&mut self, events: &Vec<DomainEventEnum>) {
+impl DomainEventPublisher<MealEventEnum> for MockEventPublisher {
+    fn publish(&mut self, events: &Vec<MealEventEnum>) {
         self.events.extend(events.clone())
     }
 }

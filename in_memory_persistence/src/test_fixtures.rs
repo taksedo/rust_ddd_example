@@ -1,10 +1,10 @@
 use std::any::type_name;
 
+use common::events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
 use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::DomainEventEnum;
+use domain::main::menu::meal_events::MealEventEnum;
 use domain::test_fixtures::rnd_meal;
 
 pub fn meal_with_events() -> Meal {
@@ -16,11 +16,11 @@ pub fn meal_with_events() -> Meal {
 #[derive(new, Clone, Debug)]
 pub struct TestEventPublisher {
     #[new(value = "vec![]")]
-    pub storage: Vec<DomainEventEnum>,
+    pub storage: Vec<MealEventEnum>,
 }
 
-impl DomainEventPublisher<DomainEventEnum> for TestEventPublisher {
-    fn publish(&mut self, events: &Vec<DomainEventEnum>) {
+impl DomainEventPublisher<MealEventEnum> for TestEventPublisher {
+    fn publish(&mut self, events: &Vec<MealEventEnum>) {
         self.storage.extend(events.clone());
     }
 }

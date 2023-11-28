@@ -5,10 +5,10 @@ use std::sync::{Arc, Mutex};
 use actix_web::body::MessageBody;
 use actix_web::http::StatusCode;
 use actix_web::{test, web};
-use dotenvy::dotenv;
-
 use common::common_rest::main::rest_responses::not_found_type_url;
 use common::common_rest::main::rest_responses::GenericErrorResponse;
+use dotenvy::dotenv;
+
 use domain::test_fixtures::rnd_meal_id;
 use usecase::main::menu::remove_meal_from_menu::RemoveMealFromMenuUseCaseError;
 
