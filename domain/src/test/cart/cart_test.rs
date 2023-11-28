@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use common::types::main::base::domain_entity::DomainEntityTrait;
 use common::types::main::common::count::Count;
+use common::types::test_fixtures::rnd_count;
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
@@ -89,6 +90,39 @@ fn remove_meal_meal_not_in_cart() {
 
     cart.remove_meals(non_exixstin_meal.entity_params.id);
     assert!(cart.entity_param.pop_events().is_empty());
+    assert!(cart.meals.iter().all(|item| {
+        let (&item_meal_id, &item_count) = item;
+        meals.get_key_value(&item_meal_id).unwrap() == (&item_meal_id, &item_count)
+    }));
+}
+
+#[test]
+fn remove_meal_meal_in_cart_success() {
+    let meal_for_removing = rnd_meal();
+    let removing_count = Count::try_from(12).unwrap();
+
+    let meal = rnd_meal();
+    let count = rnd_count();
+
+    let meals = HashMap::from([
+        (meal_for_removing.entity_params.id, removing_count),
+        (meal.entity_params.id, count),
+    ]);
+    let mut cart = rnd_cart();
+    cart.meals = meals.clone();
+
+    cart.remove_meals(meal_for_removing.entity_params.id);
+    cart.entity_param
+        .pop_events()
+        .iter()
+        .all(|event| match event {
+            CartEventEnum::MealRemovedFromCartDomainEvent(event_str) => {
+                assert_eq!(event_str.meal_id, meal_for_removing.entity_params.id);
+                assert_eq!(event_str.cart_id, cart.entity_param.id);
+                true
+            }
+            _ => false,
+        });
     assert!(cart.meals.iter().all(|item| {
         let (&item_meal_id, &item_count) = item;
         meals.get_key_value(&item_meal_id).unwrap() == (&item_meal_id, &item_count)
