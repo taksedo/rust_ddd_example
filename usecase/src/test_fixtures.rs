@@ -1,8 +1,14 @@
 use std::any::Any;
+use std::collections::HashMap;
 
 use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::types::main::common::count::Count;
 use derive_new::new;
 
+use crate::main::cart::access::cart_extractor::CartExtractor;
+use domain::main::cart::cart::Cart;
+use domain::main::cart::value_objects::cart_id::CartId;
+use domain::main::cart::value_objects::customer_id::CustomerId;
 use domain::main::menu::meal::Meal;
 use domain::main::menu::meal_events::MealEventEnum;
 use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
@@ -12,6 +18,7 @@ use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
 use domain::test_fixtures::rnd_meal;
 
+use crate::main::cart::access::cart_persister::CartPersister;
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
 
@@ -155,5 +162,73 @@ impl dyn MealExtractor + 'static {
 impl dyn MealPersister + 'static {
     pub fn downcast_ref<T: MealPersister + 'static>(&self) -> Option<&T> {
         unsafe { Some(&*(self as *const dyn MealPersister as *const T)) }
+    }
+}
+
+#[derive(new, Debug, Clone, Default)]
+pub struct MockCartPersister {
+    pub cart: Option<Cart>,
+}
+
+impl MockCartPersister {
+    pub fn verify_invoked(
+        &self,
+        cart: Option<&Cart>,
+        cart_id: Option<&CartId>,
+        meal_id: Option<&MealId>,
+        customer_id: Option<&CustomerId>,
+    ) {
+        let self_cart = &self.cart.clone().unwrap();
+        if cart.is_some() {
+            assert_eq!(self_cart, cart.unwrap());
+        }
+        if cart_id.is_some() {
+            assert_eq!(&self_cart.entity_param.id, cart_id.unwrap());
+        }
+        if meal_id.is_some() {
+            assert_eq!(
+                &self_cart.meals,
+                &HashMap::from([(meal_id.unwrap().clone(), Count::one())])
+            );
+        }
+        if customer_id.is_some() {
+            assert_eq!(&self_cart.for_customer, customer_id.unwrap());
+        }
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(&self.cart.is_none())
+    }
+}
+
+impl CartPersister for MockCartPersister {
+    fn save(&mut self, cart: Cart) {
+        self.cart = Some(cart);
+    }
+}
+
+#[derive(new, Clone, PartialEq, Debug, Default)]
+pub struct MockCartExtractor {
+    pub cart: Option<Cart>,
+    pub for_customer: Option<CustomerId>,
+}
+
+impl CartExtractor for MockCartExtractor {
+    fn get_cart(&mut self, for_customer: CustomerId) -> Option<Cart> {
+        self.for_customer = Some(for_customer);
+        match &self.cart {
+            None => None,
+            Some(result) => Some(result.clone()),
+        }
+    }
+}
+
+impl MockCartExtractor {
+    pub fn verify_invoked(&self, for_customer: Option<CustomerId>) {
+        assert_eq!(self.for_customer.clone().unwrap(), for_customer.unwrap())
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(&self.cart.is_none())
     }
 }
