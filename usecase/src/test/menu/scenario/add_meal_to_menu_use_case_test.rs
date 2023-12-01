@@ -17,11 +17,10 @@ fn successfully_added() {
     let description = rnd_meal_description();
     let price = rnd_price();
     let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
-    let persister = Arc::new(Mutex::new(MockMealPersister::new()));
-    let persister_binding = Arc::clone(&persister);
+    let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
 
     let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
-        persister,
+        Arc::clone(&meal_persister) as _,
         Arc::clone(&id_generator) as _,
         Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
     );
@@ -31,8 +30,7 @@ fn successfully_added() {
 
     assert_eq!(result.unwrap(), id.to_owned());
 
-    let persister_clone = persister_binding.lock().unwrap();
-    Arc::new(persister_clone).verify_invoked(
+    meal_persister.lock().unwrap().verify_invoked(
         Some(&id),
         Some(&name),
         Some(&description),

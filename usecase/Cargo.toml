@@ -10,6 +10,7 @@ derive-new.workspace = true
 structmap.workspace = true
 structmap-derive.workspace = true
 actix-web.workspace = true
+thiserror.workspace = true
 
 domain.workspace = true
 common.workspace = true

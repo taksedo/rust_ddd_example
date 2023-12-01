@@ -62,15 +62,15 @@ impl Cart {
     pub fn add_meal(&mut self, meal: Meal) {
         let meal_id = meal.entity_params.id;
         let count_of_currently_meals_in_cart = self.meals.get(&meal_id);
-        if count_of_currently_meals_in_cart.is_none() {
-            self.create_new_meal(meal_id);
+        if let Some(unwrapped_count) = count_of_currently_meals_in_cart {
+            self.update_existing_meal(meal_id, *unwrapped_count)
         } else {
-            self.update_existing_meal(meal_id, *count_of_currently_meals_in_cart.unwrap())
+            self.create_new_meal(meal_id)
         }
     }
 
     pub fn remove_meals(&mut self, meal_id: MealId) {
-        if let Some(_) = self.meals.remove(&meal_id) {
+        if self.meals.remove(&meal_id).is_some() {
             self.entity_param.add_event(
                 MealRemovedFromCartDomainEvent::new(self.entity_param.id, meal_id).into(),
             )

@@ -32,29 +32,19 @@ fn successfully_removed() {
         .unwrap();
     //todo: придумать более изящное тестирование meal
 
-    use_case
-        .meal_persister
+    meal_persister
         .lock()
-        .unwrap()
-        .downcast_ref::<MockMealPersister>()
         .unwrap()
         .verify_invoked_meal(Some(&meal));
 
-    use_case
-        .meal_extractor
+    meal_extractor
         .lock()
-        .unwrap()
-        .downcast_ref::<MockMealExtractor>()
         .unwrap()
         .verify_invoked_get_by_id(&meal.entity_params.id);
 
-    use_case
-        .meal_persister
+    meal_persister
         .lock()
         .unwrap()
-        .downcast_ref::<MockMealPersister>()
-        .unwrap()
-        .clone()
         .verify_events_after_deletion(&meal.entity_params.id);
 }
 
@@ -72,19 +62,10 @@ fn meal_not_found() {
     let result = use_case.execute(meal_id);
 
     assert_eq!(result, Err(RemoveMealFromMenuUseCaseError::MealNotFound));
-    use_case
-        .meal_extractor
-        .lock()
-        .unwrap()
-        .downcast_ref::<MockMealExtractor>()
-        .unwrap()
-        .verify_empty();
+    meal_persister.lock().unwrap().verify_empty();
 
-    use_case
-        .meal_extractor
+    meal_extractor
         .lock()
-        .unwrap()
-        .downcast_ref::<MockMealExtractor>()
         .unwrap()
         .verify_invoked_get_by_id(&meal_id);
 }

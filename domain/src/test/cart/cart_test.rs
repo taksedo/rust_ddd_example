@@ -82,13 +82,14 @@ fn remove_meal_cart_is_empty_success() {
 fn remove_meal_meal_not_in_cart() {
     let existing_meal = rnd_meal();
     let count = Count::try_from(12).unwrap();
-    let non_exixstin_meal = rnd_meal();
+    let non_existing_meal = rnd_meal();
     let meals = HashMap::from([(existing_meal.entity_params.id, count)]);
 
     let mut cart = rnd_cart();
+
     cart.meals = meals.clone();
 
-    cart.remove_meals(non_exixstin_meal.entity_params.id);
+    cart.remove_meals(non_existing_meal.entity_params.id);
     assert!(cart.entity_param.pop_events().is_empty());
     assert!(cart.meals.iter().all(|item| {
         let (&item_meal_id, &item_count) = item;

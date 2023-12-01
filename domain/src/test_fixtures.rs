@@ -11,7 +11,6 @@ use rand::thread_rng;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
-use uuid::Uuid;
 
 use crate::main::cart::cart::Cart;
 use crate::main::cart::cart_restorer::CartRestorer;
@@ -76,7 +75,7 @@ pub struct TestEvent {}
 impl DomainEventTrait for TestEvent {}
 
 pub fn rnd_customer_id() -> CustomerId {
-    CustomerId::new(Uuid::new_v4().to_string())
+    CustomerId::new()
 }
 
 pub fn rnd_cart_id() -> CartId {
