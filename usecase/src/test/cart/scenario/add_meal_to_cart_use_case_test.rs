@@ -52,7 +52,7 @@ fn cart_exists_successfully_added() {
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
     meal_extractor.lock().unwrap().meal = Some(meal.clone());
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
-    cart_extractor.lock().unwrap().cart = Some(existing_cart.clone());
+    cart_extractor.lock().unwrap().cart = Some(existing_cart.to_owned());
 
     let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
 
@@ -71,11 +71,12 @@ fn cart_exists_successfully_added() {
         .unwrap()
         .verify_invoked_get_by_id(&meal.entity_params.id);
 
-    let binding = Arc::clone(&cart_extractor);
-    let existing_cart = &binding.lock().unwrap().cart;
+    let existing_cart = cart_persister.lock().unwrap().cart.clone().unwrap();
+
+    cart_extractor.lock().unwrap().cart = Some(existing_cart.clone());
 
     cart_persister.lock().unwrap().verify_invoked(
-        Some(&existing_cart.clone().unwrap()),
+        Some(&existing_cart),
         None,
         Some(&meal.entity_params.id),
         None,
