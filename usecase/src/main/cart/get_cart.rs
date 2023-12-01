@@ -12,7 +12,7 @@ pub trait GetCart: Debug + Send {
     fn execute(&self, for_customer: CustomerId) -> Result<CartInfo, GetCartUseCaseError>;
 }
 
-#[derive(new)]
+#[derive(new, Debug)]
 pub struct CartInfo {
     pub for_customer: CustomerId,
     pub items: Vec<CartItem>,

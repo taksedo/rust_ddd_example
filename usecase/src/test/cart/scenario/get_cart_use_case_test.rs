@@ -1,10 +1,13 @@
-use crate::main::cart::get_cart::{CartItem, GetCart};
-use crate::main::cart::scenarios::get_cart_use_case::GetCartUseCase;
-use crate::test_fixtures::{MockCartExtractor, MockMealExtractor};
-use common::types::test_fixtures::rnd_count;
-use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_meal};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+
+use common::types::test_fixtures::rnd_count;
+
+use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_meal};
+
+use crate::main::cart::get_cart::{CartItem, GetCart, GetCartUseCaseError};
+use crate::main::cart::scenarios::get_cart_use_case::GetCartUseCase;
+use crate::test_fixtures::{MockCartExtractor, MockMealExtractor};
 
 #[test]
 fn cart_successfully_extracted() {
@@ -44,4 +47,24 @@ fn cart_successfully_extracted() {
         extracted_cart.items,
         vec![CartItem::new(meal.entity_params.id, meal.name, count)]
     )
+}
+
+#[test]
+fn cart_not_found() {
+    let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+    let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
+    let use_case = GetCartUseCase::new(
+        Arc::clone(&meal_extractor) as _,
+        Arc::clone(&cart_extractor) as _,
+    );
+    let customer_id = rnd_customer_id();
+
+    let result = use_case.execute(customer_id.clone());
+
+    cart_extractor
+        .lock()
+        .unwrap()
+        .verify_invoked(Some(customer_id));
+    meal_extractor.lock().unwrap().verify_empty();
+    assert_eq!(result.unwrap_err(), GetCartUseCaseError::CartNotFound);
 }
