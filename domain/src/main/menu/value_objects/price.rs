@@ -7,7 +7,7 @@ use common::types::main::common::count::Count;
 use common::types::main::errors::error::BusinessError;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]
 #[non_exhaustive]
 pub struct Price {
     value: BigDecimal,

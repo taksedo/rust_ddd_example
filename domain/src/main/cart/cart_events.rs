@@ -31,15 +31,15 @@ pub struct MealRemovedFromCartDomainEvent {
 }
 
 #[enum_dispatch]
-trait DomainEventTrait {}
+trait CartEventTrait {}
 
-impl DomainEventTrait for CartCreatedDomainEvent {}
+impl CartEventTrait for CartCreatedDomainEvent {}
 
-impl DomainEventTrait for MealAddedToCartDomainEvent {}
+impl CartEventTrait for MealAddedToCartDomainEvent {}
 
-impl DomainEventTrait for MealRemovedFromCartDomainEvent {}
+impl CartEventTrait for MealRemovedFromCartDomainEvent {}
 
-#[enum_dispatch(DomainEventTrait)]
+#[enum_dispatch(CartEventTrait)]
 #[derive(PartialEq, Debug, Clone, SmartDefault, Serialize, Deserialize, Hash, Eq)]
 pub enum CartEventEnum {
     #[default]

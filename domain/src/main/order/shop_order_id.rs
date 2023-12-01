@@ -1,6 +1,7 @@
 use derive_new::new;
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(new, Eq, PartialEq, Debug)]
+#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]
 pub struct ShopOrderId {
     value: i64,
 }
