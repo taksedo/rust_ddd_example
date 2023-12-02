@@ -41,12 +41,7 @@ impl AddMealToCart for AddMealToCartUseCase {
 
 impl AddMealToCartUseCase {
     fn get_or_create_cart(&self, for_customer: CustomerId) -> Cart {
-        if let Some(result) = self
-            .cart_extractor
-            .lock()
-            .unwrap()
-            .get_cart(for_customer.clone())
-        {
+        if let Some(result) = self.cart_extractor.lock().unwrap().get_cart(for_customer) {
             result
         } else {
             Cart::create(Arc::clone(&self.id_generator), for_customer)

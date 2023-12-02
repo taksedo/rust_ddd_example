@@ -16,11 +16,7 @@ pub struct GetCartUseCase {
 
 impl GetCart for GetCartUseCase {
     fn execute(&self, for_customer: CustomerId) -> Result<CartInfo, GetCartUseCaseError> {
-        let cart = &self
-            .cart_extractor
-            .lock()
-            .unwrap()
-            .get_cart(for_customer.clone());
+        let cart = &self.cart_extractor.lock().unwrap().get_cart(for_customer);
         if let Some(option_value) = cart {
             let cart_item_list = option_value
                 .meals

@@ -6,7 +6,7 @@ use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(new, Debug, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
+#[derive(new, Debug, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash, Copy)]
 pub struct CustomerId {
     #[new(value = "Uuid::new_v4()")]
     value: Uuid,

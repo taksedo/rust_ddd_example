@@ -23,6 +23,7 @@ use crate::main::menu::value_objects::meal_description::MealDescription;
 use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::meal_name::MealName;
 use crate::main::menu::value_objects::price::Price;
+use crate::main::order::shop_order_id::ShopOrderId;
 
 //
 // fn address() = Address.from(
@@ -92,8 +93,10 @@ pub fn rnd_cart() -> Cart {
     )
 }
 
-// fn orderId() = ShopOrderId(faker.number().randomNumber())
-//
+pub fn rnd_order_id() -> ShopOrderId {
+    ShopOrderId::new(thread_rng().gen_range(0..i64::MAX))
+}
+
 // fn orderItem(
 // price: Price = price(),
 // count: Count = count(),

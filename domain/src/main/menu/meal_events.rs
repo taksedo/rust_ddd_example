@@ -1,4 +1,4 @@
-use common::types::main::base::domain_event::{DomainEventTrait, EventId};
+use common::types::main::base::domain_event::EventId;
 use derive_new::new;
 use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
@@ -33,11 +33,11 @@ pub struct MealRemovedFromMenuDomainEvent {
     pub created: OffsetDateTime,
 }
 
-impl DomainEventTrait for MealAddedToMenuDomainEvent {}
+impl MealEventTrait for MealAddedToMenuDomainEvent {}
 
-impl DomainEventTrait for MealRemovedFromMenuDomainEvent {}
+impl MealEventTrait for MealRemovedFromMenuDomainEvent {}
 
-#[enum_dispatch(DomainEventTrait)]
+#[enum_dispatch(MealEventTrait)]
 #[derive(PartialEq, Debug, Clone, SmartDefault, Serialize, Deserialize, Hash, Eq)]
 pub enum MealEventEnum {
     #[default]
@@ -46,3 +46,6 @@ pub enum MealEventEnum {
     #[cfg(test)]
     TestEvent,
 }
+
+#[enum_dispatch]
+trait MealEventTrait {}

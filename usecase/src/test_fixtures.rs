@@ -5,7 +5,6 @@ use common::types::main::base::domain_entity::DomainEntityTrait;
 use common::types::main::common::count::Count;
 use derive_new::new;
 
-use crate::main::cart::access::cart_extractor::CartExtractor;
 use domain::main::cart::cart::Cart;
 use domain::main::cart::value_objects::cart_id::CartId;
 use domain::main::cart::value_objects::customer_id::CustomerId;
@@ -18,7 +17,9 @@ use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
 use domain::test_fixtures::rnd_meal;
 
+use crate::main::cart::access::cart_extractor::CartExtractor;
 use crate::main::cart::access::cart_persister::CartPersister;
+use crate::main::cart::access::cart_remover::CartRemover;
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
 
@@ -204,6 +205,27 @@ impl MockCartPersister {
 impl CartPersister for MockCartPersister {
     fn save(&mut self, cart: Cart) {
         self.cart = Some(cart);
+    }
+}
+
+#[derive(new, Clone, PartialEq, Debug, Default)]
+pub struct MockCartRemover {
+    pub id: Option<CartId>,
+}
+
+impl MockCartRemover {
+    pub fn verify_invoked(&self, cart_id: CartId) {
+        assert_eq!(self.id.unwrap(), cart_id)
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(&self.id.is_none())
+    }
+}
+
+impl CartRemover for MockCartRemover {
+    fn delete_cart(&mut self, cart: Cart) {
+        self.id = Some(cart.entity_param.id);
     }
 }
 
