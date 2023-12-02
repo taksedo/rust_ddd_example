@@ -77,3 +77,20 @@ impl Cart {
         }
     }
 }
+
+// impl Clone for Cart {
+//     fn clone(&self) -> Self {
+//         CartRestorer::restore_cart(
+//             self.entity_param.id,
+//             self.for_customer,
+//             self.created,
+//             self.meals.clone(),
+//             self.entity_param.version,
+//         )
+//     }
+// }
+
+#[derive(Debug, PartialEq)]
+pub enum CartError {
+    IdGenerationError,
+}
