@@ -21,9 +21,9 @@ pub fn cart_with_events() -> Cart {
 }
 
 #[derive(new, Clone, Debug)]
-pub struct TestEventPublisher<T> {
+pub struct TestEventPublisher<Event> {
     #[new(value = "vec![]")]
-    pub storage: Vec<T>,
+    pub storage: Vec<Event>,
 }
 
 impl<Event: Debug + Send + Clone> DomainEventPublisher<Event> for TestEventPublisher<Event> {
