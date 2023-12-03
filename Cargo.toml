@@ -46,7 +46,7 @@ serde = { version = "1.0.163", features = ["derive", "rc", "alloc"] }
 serde_json = "1.0.96"
 bigdecimal = { version = "0.4.2", features = ["serde"] }
 mockall = "0.11.3"
-fake = { version = "2.5.0", features = ["derive", "bigdecimal"] }
+fake = { version = "2.9.1", features = ["derive", "bigdecimal"] }
 rand = "0.8.5"
 rstest = "0.18.2"
 time = { version = "0.3.21", features = ["default", "serde-well-known"] }

@@ -44,7 +44,7 @@ impl Price {
         self.to_owned().value.to_string()
     }
 
-    fn _zero(&self) -> Self {
+    pub fn zero() -> Self {
         Self {
             value: BigDecimal::zero(),
         }

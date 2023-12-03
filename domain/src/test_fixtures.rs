@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use bigdecimal::{BigDecimal, FromPrimitive};
 use common::types::main::base::domain_entity::Version;
 use common::types::main::base::domain_event::DomainEventTrait;
+use common::types::main::common::address::Address;
 use derive_new::new;
+use fake::faker::address::en::{BuildingNumber, StreetName};
 use fake::faker::name::raw::*;
 use fake::locales::*;
 use fake::Fake;
@@ -25,11 +27,13 @@ use crate::main::menu::value_objects::meal_name::MealName;
 use crate::main::menu::value_objects::price::Price;
 use crate::main::order::shop_order_id::ShopOrderId;
 
-//
-// fn address() = Address.from(
-// street = faker.address().streetName(),
-// building = faker.address().streetAddressNumber().toInt() + 1
-// ).getOrElse { error("Address should be right") }
+pub fn rnd_address() -> Address {
+    Address::try_from((
+        &*StreetName().fake::<String>(),
+        BuildingNumber().fake::<String>().parse::<i16>().unwrap(),
+    ))
+    .expect("Address should be right")
+}
 
 pub fn print_type_of<T>(_: &T) -> &str {
     std::any::type_name::<T>()
