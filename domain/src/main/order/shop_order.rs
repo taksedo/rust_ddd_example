@@ -188,7 +188,7 @@ impl OrderState {
                 matches!(state, Confirmed(_) | Cancelled(_))
             }
 
-            OrderState::WaitingForPayment(_) => matches!(state, Paid(_)),
+            WaitingForPayment(_) => matches!(state, Paid(_)),
 
             _ => false,
         }

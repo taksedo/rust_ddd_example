@@ -5,7 +5,7 @@ use common::types::main::base::domain_entity::Version;
 use common::types::main::base::domain_event::DomainEventTrait;
 use common::types::main::common::address::Address;
 use derive_new::new;
-use fake::faker::address::en::{BuildingNumber, StreetName};
+use fake::faker::address::en::StreetName;
 use fake::faker::name::raw::*;
 use fake::locales::*;
 use fake::Fake;
@@ -30,7 +30,7 @@ use crate::main::order::shop_order_id::ShopOrderId;
 pub fn rnd_address() -> Address {
     Address::try_from((
         &*StreetName().fake::<String>(),
-        BuildingNumber().fake::<String>().parse::<i16>().unwrap(),
+        thread_rng().gen_range(0..i16::MAX),
     ))
     .expect("Address should be right")
 }
