@@ -145,6 +145,33 @@ fn complete_order_already() {
     assert!(order.entity_params.pop_events().is_empty());
 }
 
+#[test]
+fn pay_order_success() {
+    let mut order = order_with_state(OrderState::new_waiting_for_payment());
+    assert_eq!(order.pay(), ());
+    assert!(matches!(order.state, OrderState::Paid(_)));
+    let event: Vec<ShopOrderPaidDomainEvent> = order
+        .entity_params
+        .pop_events()
+        .iter()
+        .map(|it| it.clone().try_into().unwrap())
+        .collect();
+    assert_eq!(event.len(), 1);
+    assert_eq!(event.first().unwrap().order_id, order.entity_params.id);
+}
+
+#[test]
+fn pay_order_already() {
+    let mut order = order_with_state(OrderState::new_paid());
+    assert_eq!(order.pay(), ());
+    assert!(matches!(order.state, OrderState::Paid(_)));
+    assert!(order.entity_params.pop_events().is_empty());
+}
+
+// #[test]
+// fn calculate_total() {
+//     let order_item_1 =
+// }
 #[derive(new, Default)]
 struct HashMapStoragePriceProvider {
     storage: HashMap<MealId, Price>,
