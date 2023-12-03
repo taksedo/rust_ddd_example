@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use bigdecimal::{BigDecimal, FromPrimitive};
-use common::types::main::base::domain_entity::Version;
+use common::types::main::base::domain_entity::{DomainEntity, Version};
 use common::types::main::base::domain_event::DomainEventTrait;
 use common::types::main::common::address::Address;
 use derive_new::new;
@@ -25,6 +25,7 @@ use crate::main::menu::value_objects::meal_description::MealDescription;
 use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::meal_name::MealName;
 use crate::main::menu::value_objects::price::Price;
+use crate::main::order::shop_order::{OrderState, ShopOrder};
 use crate::main::order::shop_order_id::ShopOrderId;
 
 pub fn rnd_address() -> Address {
@@ -128,6 +129,17 @@ pub fn rnd_order_id() -> ShopOrderId {
 // version = version()
 // )
 // }
+
+pub fn order_with_state(state: OrderState) -> ShopOrder {
+    ShopOrder::new(
+        DomainEntity::new(rnd_order_id(), Default::default()),
+        OffsetDateTime::now_utc(),
+        rnd_customer_id(),
+        rnd_address(),
+        HashSet::new(),
+        state,
+    )
+}
 
 #[derive(Debug, new, Default, Clone, Copy)]
 pub struct TestMealAlreadyExists {

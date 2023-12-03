@@ -114,12 +114,13 @@ impl ShopOrder {
     pub fn change_state(
         &mut self,
         new_state: OrderState,
-        _event: ShopOrderEventEnum,
+        event: ShopOrderEventEnum,
     ) -> Result<(), InvalidState> {
         if self.state == new_state {
             Ok(())
         } else if self.state.can_change_to(&new_state) {
             self.state = new_state;
+            self.entity_params.add_event(event);
             Ok(())
         } else {
             Err(InvalidState)
@@ -162,14 +163,14 @@ impl OrderItem {
     }
 }
 
-#[derive(PartialEq, Eq, Debug, Clone, Hash, SmartDefault, Serialize, Deserialize)]
+#[derive(new, PartialEq, Eq, Debug, Clone, Hash, SmartDefault, Serialize, Deserialize)]
 pub enum OrderState {
-    Cancelled(bool),
-    Completed(bool),
-    Confirmed(bool),
-    Paid(bool),
+    Cancelled(#[new(value = "true")] bool),
+    Completed(#[new(value = "true")] bool),
+    Confirmed(#[new(value = "true")] bool),
+    Paid(#[new(value = "true")] bool),
     #[default]
-    WaitingForPayment(bool),
+    WaitingForPayment(#[new(value = "true")] bool),
 }
 
 impl OrderState {

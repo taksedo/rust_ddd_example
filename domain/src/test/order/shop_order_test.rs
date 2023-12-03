@@ -10,11 +10,15 @@ use crate::main::cart::value_objects::customer_id::CustomerId;
 use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::price::Price;
 use crate::main::order::customer_has_active_order::CustomerHasActiveOrder;
-use crate::main::order::customer_order_events::ShopOrderCreatedDomainEvent;
+use crate::main::order::customer_order_events::{
+    ShopOrderCreatedDomainEvent, ShopOrderPaidDomainEvent,
+};
 use crate::main::order::get_meal_price::GetMealPrice;
 use crate::main::order::shop_order::{CheckoutError, OrderItem, OrderState, ShopOrder};
 use crate::main::order::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
-use crate::test_fixtures::{rnd_address, rnd_cart, rnd_meal_id, rnd_order_id, rnd_price};
+use crate::test_fixtures::{
+    order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order_id, rnd_price,
+};
 
 #[test]
 fn checkout_success() {
@@ -52,14 +56,14 @@ fn checkout_success() {
     assert_eq!(order.entity_params.id, id);
     assert_eq!(order.address, address);
     assert!(matches!(order.state, OrderState::WaitingForPayment(_)));
-    let event: ShopOrderCreatedDomainEvent = order
+    let events: Vec<ShopOrderCreatedDomainEvent> = order
         .entity_params
         .pop_events()
-        .get(0)
-        .unwrap()
-        .clone()
-        .try_into()
-        .unwrap();
+        .iter()
+        .map(|it| it.clone().try_into().unwrap())
+        .collect();
+    assert_eq!(events.len(), 1);
+    let event = events.first().unwrap().clone();
     assert_eq!(event.order_id, id);
     assert_eq!(event.for_customer, cart.for_customer);
     assert_eq!(event.total_price, order.total_price());
@@ -116,6 +120,29 @@ fn checkout_empty_cart() {
 
     assert!(result.is_err());
     assert_eq!(result.unwrap_err(), CheckoutError::EmptyCart)
+}
+
+#[test]
+fn complete_order_success() {
+    let mut order = order_with_state(OrderState::new_waiting_for_payment());
+    assert_eq!(order.pay(), ());
+    assert!(matches!(order.state, OrderState::Paid(_)));
+    let event: Vec<ShopOrderPaidDomainEvent> = order
+        .entity_params
+        .pop_events()
+        .iter()
+        .map(|it| it.clone().try_into().unwrap())
+        .collect();
+    assert_eq!(event.len(), 1);
+    assert_eq!(event.first().unwrap().order_id, order.entity_params.id);
+}
+
+#[test]
+fn complete_order_already() {
+    let mut order = order_with_state(OrderState::new_completed());
+    assert_eq!(order.complete(), ());
+    assert!(matches!(order.state, OrderState::Completed(_)));
+    assert!(order.entity_params.pop_events().is_empty());
 }
 
 #[derive(new, Default)]
