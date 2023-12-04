@@ -24,7 +24,7 @@ use crate::main::order::get_meal_price::GetMealPrice;
 use crate::main::order::shop_order::OrderState::{
     Cancelled, Completed, Confirmed, Paid, WaitingForPayment,
 };
-use crate::main::order::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
+use crate::main::order::value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, SmartDefault)]
 pub struct ShopOrder {
@@ -203,3 +203,8 @@ pub enum CheckoutError {
 
 #[derive(Debug, PartialEq)]
 pub struct InvalidState;
+
+#[derive(Debug, PartialEq)]
+pub enum ShopOrderError {
+    IdGenerationError,
+}

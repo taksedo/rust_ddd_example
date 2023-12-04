@@ -27,7 +27,7 @@ use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::meal_name::MealName;
 use crate::main::menu::value_objects::price::Price;
 use crate::main::order::shop_order::{OrderItem, OrderState, ShopOrder};
-use crate::main::order::shop_order_id::ShopOrderId;
+use crate::main::order::value_objects::shop_order_id::ShopOrderId;
 
 pub fn rnd_address() -> Address {
     Address::try_from((
@@ -86,7 +86,7 @@ pub fn rnd_customer_id() -> CustomerId {
 }
 
 pub fn rnd_cart_id() -> CartId {
-    CartId::new(thread_rng().gen_range(0..i64::MAX))
+    CartId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
 }
 
 pub fn rnd_cart() -> Cart {
@@ -100,7 +100,7 @@ pub fn rnd_cart() -> Cart {
 }
 
 pub fn rnd_order_id() -> ShopOrderId {
-    ShopOrderId::new(thread_rng().gen_range(0..i64::MAX))
+    ShopOrderId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
 }
 
 pub fn rnd_order_item(price: Price, count: Count) -> OrderItem {

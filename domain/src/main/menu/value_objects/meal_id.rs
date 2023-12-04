@@ -12,7 +12,7 @@ pub struct MealId {
 }
 
 impl MealId {
-    pub fn to_i64(self) -> i64 {
+    pub fn to_i64(&self) -> i64 {
         self.value.to_i64().unwrap()
     }
 }

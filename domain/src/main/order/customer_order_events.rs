@@ -6,7 +6,7 @@ use smart_default::SmartDefault;
 
 use crate::main::cart::value_objects::customer_id::CustomerId;
 use crate::main::menu::value_objects::price::Price;
-use crate::main::order::shop_order_id::ShopOrderId;
+use crate::main::order::value_objects::shop_order_id::ShopOrderId;
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]
 pub struct ShopOrderCreatedDomainEvent {

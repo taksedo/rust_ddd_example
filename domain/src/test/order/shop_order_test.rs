@@ -22,7 +22,7 @@ use crate::main::order::get_meal_price::GetMealPrice;
 use crate::main::order::shop_order::{
     CheckoutError, InvalidState, OrderItem, OrderState, ShopOrder,
 };
-use crate::main::order::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
+use crate::main::order::value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
 use crate::test_fixtures::{
     order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_order_item,
     rnd_price,
