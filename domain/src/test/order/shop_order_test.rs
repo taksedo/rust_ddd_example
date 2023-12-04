@@ -11,10 +11,13 @@ use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::price::Price;
 use crate::main::order::customer_has_active_order::CustomerHasActiveOrder;
 use crate::main::order::customer_order_events::{
-    ShopOrderCreatedDomainEvent, ShopOrderPaidDomainEvent,
+    ShopOrderCancelledDomainEvent, ShopOrderConfirmedDomainEvent, ShopOrderCreatedDomainEvent,
+    ShopOrderPaidDomainEvent,
 };
 use crate::main::order::get_meal_price::GetMealPrice;
-use crate::main::order::shop_order::{CheckoutError, OrderItem, OrderState, ShopOrder};
+use crate::main::order::shop_order::{
+    CheckoutError, InvalidState, OrderItem, OrderState, ShopOrder,
+};
 use crate::main::order::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
 use crate::test_fixtures::{
     order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order_id, rnd_price,
@@ -123,9 +126,29 @@ fn checkout_empty_cart() {
 }
 
 #[test]
+fn active_true() {
+    let states = vec![
+        OrderState::new_waiting_for_payment(),
+        OrderState::new_confirmed(),
+        OrderState::new_paid(),
+    ];
+
+    states.iter().for_each(|it| {
+        dbg!(&it);
+        assert!(it.is_active())
+    });
+}
+
+#[test]
+fn active_false() {
+    let states = vec![OrderState::new_completed(), OrderState::new_cancelled()];
+
+    states.iter().for_each(|it| assert!(!it.is_active()));
+}
+#[test]
 fn complete_order_success() {
     let mut order = order_with_state(OrderState::new_waiting_for_payment());
-    assert_eq!(order.pay(), ());
+    assert_eq!(order.pay().unwrap(), ());
     assert!(matches!(order.state, OrderState::Paid(_)));
     let event: Vec<ShopOrderPaidDomainEvent> = order
         .entity_params
@@ -140,15 +163,31 @@ fn complete_order_success() {
 #[test]
 fn complete_order_already() {
     let mut order = order_with_state(OrderState::new_completed());
-    assert_eq!(order.complete(), ());
+    assert_eq!(order.complete().unwrap(), ());
     assert!(matches!(order.state, OrderState::Completed(_)));
     assert!(order.entity_params.pop_events().is_empty());
 }
 
 #[test]
+fn complete_order_invalid_state() {
+    let states = vec![
+        OrderState::new_waiting_for_payment(),
+        OrderState::new_paid(),
+        OrderState::new_cancelled(),
+    ];
+
+    states.iter().for_each(|state| {
+        let mut order = order_with_state(state.clone());
+        assert_eq!(order.complete().unwrap_err(), InvalidState);
+        assert_eq!(order.state, state.clone());
+        assert!(order.entity_params.pop_events().is_empty())
+    });
+}
+
+#[test]
 fn pay_order_success() {
     let mut order = order_with_state(OrderState::new_waiting_for_payment());
-    assert_eq!(order.pay(), ());
+    assert!(order.pay().is_ok());
     assert!(matches!(order.state, OrderState::Paid(_)));
     let event: Vec<ShopOrderPaidDomainEvent> = order
         .entity_params
@@ -163,11 +202,125 @@ fn pay_order_success() {
 #[test]
 fn pay_order_already() {
     let mut order = order_with_state(OrderState::new_paid());
-    assert_eq!(order.pay(), ());
+    assert!(order.pay().is_ok());
     assert!(matches!(order.state, OrderState::Paid(_)));
     assert!(order.entity_params.pop_events().is_empty());
 }
 
+#[test]
+fn pay_order_invalid_state() {
+    let states = vec![
+        OrderState::new_confirmed(),
+        OrderState::new_completed(),
+        OrderState::new_cancelled(),
+    ];
+
+    states.iter().for_each(|state| {
+        let mut order = order_with_state(state.clone());
+        assert_eq!(order.pay().unwrap_err(), InvalidState);
+        assert_eq!(order.state, state.clone());
+        assert!(order.entity_params.pop_events().is_empty())
+    });
+}
+
+#[test]
+fn order_is_ready_to_confirm_or_cancel() {
+    let order = order_with_state(OrderState::new_paid());
+    assert!(order.ready_for_confirm_or_cancel());
+}
+
+#[test]
+fn order_cannot_be_cancelled() {
+    let states = vec![
+        OrderState::new_confirmed(),
+        OrderState::new_completed(),
+        OrderState::new_waiting_for_payment(),
+        OrderState::new_cancelled(),
+    ];
+
+    states.iter().for_each(|state| {
+        let order = order_with_state(state.clone());
+        assert!(!order.ready_for_confirm_or_cancel());
+    });
+}
+
+#[test]
+fn cancel_order_success() {
+    let mut order = order_with_state(OrderState::new_paid());
+    assert!(order.cancel().is_ok());
+    assert!(matches!(order.state, OrderState::Cancelled(_)));
+    let event: Vec<ShopOrderCancelledDomainEvent> = order
+        .entity_params
+        .pop_events()
+        .iter()
+        .map(|it| it.clone().try_into().unwrap())
+        .collect();
+    assert_eq!(event.len(), 1);
+    assert_eq!(event.first().unwrap().order_id, order.entity_params.id);
+}
+
+#[test]
+fn cancel_order_already() {
+    let mut order = order_with_state(OrderState::new_cancelled());
+    assert!(order.cancel().is_ok());
+    assert!(matches!(order.state, OrderState::Cancelled(_)));
+    assert!(order.entity_params.pop_events().is_empty());
+}
+
+#[test]
+fn cancel_order_invalid_state() {
+    let states = vec![
+        OrderState::new_confirmed(),
+        OrderState::new_completed(),
+        OrderState::new_waiting_for_payment(),
+    ];
+
+    states.iter().for_each(|state| {
+        let mut order = order_with_state(state.clone());
+        assert_eq!(order.cancel().unwrap_err(), InvalidState);
+        assert_eq!(order.state, state.clone());
+        assert!(order.entity_params.pop_events().is_empty())
+    });
+}
+
+#[test]
+fn confirm_order_success() {
+    let mut order = order_with_state(OrderState::new_paid());
+    assert!(order.confirm().is_ok());
+    assert!(matches!(order.state, OrderState::Confirmed(_)));
+    let event: Vec<ShopOrderConfirmedDomainEvent> = order
+        .entity_params
+        .pop_events()
+        .iter()
+        .map(|it| it.clone().try_into().unwrap())
+        .collect();
+    assert_eq!(event.len(), 1);
+    assert_eq!(event.first().unwrap().order_id, order.entity_params.id);
+}
+
+#[test]
+fn confirm_order_already() {
+    let mut order = order_with_state(OrderState::new_confirmed());
+    assert!(order.confirm().is_ok());
+    assert!(matches!(order.state, OrderState::Confirmed(_)));
+    assert!(order.entity_params.pop_events().is_empty());
+}
+
+#[test]
+fn confirm_order_invalid_state() {
+    let states = vec![
+        OrderState::new_cancelled(),
+        OrderState::new_completed(),
+        OrderState::new_waiting_for_payment(),
+    ];
+
+    states.iter().for_each(|state| {
+        let mut order = order_with_state(state.clone());
+        assert_eq!(order.confirm().unwrap_err(), InvalidState);
+        assert_eq!(order.state, state.clone());
+        assert!(order.entity_params.pop_events().is_empty())
+    });
+}
 // #[test]
 // fn calculate_total() {
 //     let order_item_1 =

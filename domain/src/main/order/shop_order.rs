@@ -79,36 +79,32 @@ impl ShopOrder {
         }
     }
 
-    pub fn confirm(&mut self) {
+    pub fn confirm(&mut self) -> Result<(), InvalidState> {
         self.change_state(
-            Confirmed(true),
+            OrderState::new_confirmed(),
             ShopOrderConfirmedDomainEvent::new(self.entity_params.id).into(),
         )
-        .expect("TODO: panic message");
     }
 
-    pub fn pay(&mut self) {
+    pub fn pay(&mut self) -> Result<(), InvalidState> {
         self.change_state(
-            Paid(true),
+            OrderState::new_paid(),
             ShopOrderPaidDomainEvent::new(self.entity_params.id).into(),
         )
-        .expect("TODO: panic message");
     }
 
-    pub fn complete(&mut self) {
+    pub fn complete(&mut self) -> Result<(), InvalidState> {
         self.change_state(
-            Completed(true),
+            OrderState::new_completed(),
             ShopOrderCompletedDomainEvent::new(self.entity_params.id).into(),
         )
-        .expect("TODO: panic message");
     }
 
-    pub fn cancel(&mut self) {
+    pub fn cancel(&mut self) -> Result<(), InvalidState> {
         self.change_state(
-            Cancelled(true),
+            OrderState::new_cancelled(),
             ShopOrderCancelledDomainEvent::new(self.entity_params.id).into(),
         )
-        .expect("TODO: panic message");
     }
 
     pub fn change_state(
@@ -165,8 +161,8 @@ impl OrderItem {
 
 #[derive(new, PartialEq, Eq, Debug, Clone, Hash, SmartDefault, Serialize, Deserialize)]
 pub enum OrderState {
-    Cancelled(#[new(value = "true")] bool),
-    Completed(#[new(value = "true")] bool),
+    Cancelled(#[new(value = "false")] bool),
+    Completed(#[new(value = "false")] bool),
     Confirmed(#[new(value = "true")] bool),
     Paid(#[new(value = "true")] bool),
     #[default]
@@ -174,13 +170,6 @@ pub enum OrderState {
 }
 
 impl OrderState {
-    pub fn new(active: bool) -> Self {
-        match active {
-            false => Cancelled(false),
-            true => Confirmed(true),
-        }
-    }
-
     pub fn can_change_to(&self, state: &OrderState) -> bool {
         match self {
             Confirmed(_) => matches!(state, Completed(_)),
@@ -194,6 +183,16 @@ impl OrderState {
             _ => false,
         }
     }
+
+    pub fn is_active(&self) -> bool {
+        match &self {
+            Cancelled(value) => *value,
+            Completed(value) => *value,
+            Confirmed(value) => *value,
+            Paid(value) => *value,
+            WaitingForPayment(value) => *value,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -202,5 +201,5 @@ pub enum CheckoutError {
     AlreadyHasActiveOrder,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct InvalidState;
