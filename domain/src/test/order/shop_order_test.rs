@@ -1,7 +1,11 @@
 use std::collections::{HashMap, HashSet};
+use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 
+use bigdecimal::num_bigint::BigInt;
+use bigdecimal::BigDecimal;
 use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::types::main::common::count::Count;
 use common::types::test_fixtures::rnd_count;
 use derive_new::new;
 use smart_default::SmartDefault;
@@ -20,7 +24,8 @@ use crate::main::order::shop_order::{
 };
 use crate::main::order::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
 use crate::test_fixtures::{
-    order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order_id, rnd_price,
+    order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_order_item,
+    rnd_price,
 };
 
 #[test]
@@ -321,10 +326,24 @@ fn confirm_order_invalid_state() {
         assert!(order.entity_params.pop_events().is_empty())
     });
 }
-// #[test]
-// fn calculate_total() {
-//     let order_item_1 =
-// }
+
+#[test]
+fn calculate_total() {
+    let order_item_1 = rnd_order_item(
+        Price::try_from(BigDecimal::from_str("1.03").unwrap()).unwrap(),
+        Count::try_from(2).unwrap(),
+    );
+    let order_item_2 = rnd_order_item(
+        Price::try_from(BigDecimal::from_str("91.33").unwrap()).unwrap(),
+        Count::try_from(4).unwrap(),
+    );
+
+    let order = rnd_order(HashSet::from([order_item_1, order_item_2]));
+    assert_eq!(
+        order.total_price(),
+        Price::try_from(BigDecimal::new(BigInt::from(36738), 2)).unwrap()
+    )
+}
 #[derive(new, Default)]
 struct HashMapStoragePriceProvider {
     storage: HashMap<MealId, Price>,
