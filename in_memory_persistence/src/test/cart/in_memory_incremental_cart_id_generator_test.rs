@@ -6,5 +6,5 @@ fn id_is_incremented() {
     let mut id_generator = InMemoryIncrementalCartIdGenerator::new();
     let cart_id1 = id_generator.generate();
     let cart_id2 = id_generator.generate();
-    assert_eq!(cart_id1.to_long_value(), cart_id2.to_long_value() - 1);
+    assert_eq!(cart_id1.to_i64(), cart_id2.to_i64() - 1);
 }

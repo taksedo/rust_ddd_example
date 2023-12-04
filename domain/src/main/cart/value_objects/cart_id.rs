@@ -1,17 +1,17 @@
 use std::fmt::Debug;
 
-use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
 
 use crate::main::cart::cart::CartError;
 
-#[derive(new, Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
+#[non_exhaustive]
 pub struct CartId {
     value: i64,
 }
 
 impl CartId {
-    pub fn to_long_value(&self) -> i64 {
+    pub fn to_i64(&self) -> i64 {
         self.value
     }
 }
