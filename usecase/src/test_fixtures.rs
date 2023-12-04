@@ -15,18 +15,61 @@ use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
-use domain::test_fixtures::rnd_meal;
+use domain::main::order::shop_order::{OrderState, ShopOrder};
+use domain::main::order::value_objects::shop_order_id::ShopOrderId;
+use domain::test_fixtures::{order_with_state, rnd_meal};
 
 use crate::main::cart::access::cart_extractor::CartExtractor;
 use crate::main::cart::access::cart_persister::CartPersister;
 use crate::main::cart::access::cart_remover::CartRemover;
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
+use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
 
 pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();
     meal.remove_meal_from_menu();
     meal
+}
+
+pub fn order_ready_for_pay() -> ShopOrder {
+    order_with_state(OrderState::new_waiting_for_payment())
+}
+
+pub fn order_not_ready_for_pay() -> ShopOrder {
+    order_with_state(OrderState::new_completed())
+}
+
+pub fn order_ready_for_cancel() -> ShopOrder {
+    order_with_state(OrderState::new_paid())
+}
+
+pub fn order_not_ready_for_cancel() -> ShopOrder {
+    order_with_state(OrderState::new_completed())
+}
+
+pub fn order_ready_for_confirm() -> ShopOrder {
+    order_with_state(OrderState::new_paid())
+}
+
+pub fn order_not_ready_for_confirm() -> ShopOrder {
+    order_with_state(OrderState::new_waiting_for_payment())
+}
+
+pub fn order_ready_for_complete() -> ShopOrder {
+    order_with_state(OrderState::new_confirmed())
+}
+
+pub fn order_not_ready_for_complete() -> ShopOrder {
+    order_with_state(OrderState::new_cancelled())
+}
+
+pub fn active_order() -> ShopOrder {
+    order_with_state(OrderState::new_confirmed())
+}
+
+pub fn non_active_order() -> ShopOrder {
+    order_with_state(OrderState::new_cancelled())
 }
 
 #[derive(new, Debug, Clone)]
@@ -249,5 +292,68 @@ impl MockCartExtractor {
 
     pub fn verify_empty(&self) {
         assert!(&self.cart.is_none())
+    }
+}
+
+#[derive(new, Clone, PartialEq, Debug, Default)]
+pub struct MockShopOrderExtractor {
+    pub order: Option<ShopOrder>,
+    pub id: Option<ShopOrderId>,
+    pub for_customer: Option<CustomerId>,
+    pub all: bool,
+}
+
+impl ShopOrderExtractor for MockShopOrderExtractor {
+    fn get_by_id(&mut self, order_id: ShopOrderId) -> Option<ShopOrder> {
+        self.id = Some(order_id);
+        if self.order.clone().unwrap().entity_params.id == self.id.unwrap() {
+            self.order.as_ref().cloned()
+        } else {
+            None
+        }
+    }
+
+    fn get_last_order(&mut self, for_customer: CustomerId) -> Option<ShopOrder> {
+        self.for_customer = Some(for_customer);
+        if self.order.is_some() && self.order.clone().unwrap().for_customer == for_customer {
+            self.order.as_ref().cloned()
+        } else {
+            None
+        }
+    }
+
+    fn get_all(&mut self, _start_id: ShopOrderId, _limit: i32) -> Vec<ShopOrder> {
+        self.all = true;
+        if self.order.is_some() {
+            vec![self.order.clone().unwrap()]
+        } else {
+            vec![]
+        }
+    }
+}
+
+impl MockShopOrderExtractor {
+    pub fn verify_invoked_get_by_id(&self, id: ShopOrderId) {
+        assert_eq!(self.id, Some(id));
+        assert!(!self.all);
+        assert!(self.for_customer.is_none());
+    }
+
+    pub fn verify_invoked_get_last_order(&self, for_customer: CustomerId) {
+        assert_eq!(self.for_customer, Some(for_customer));
+        assert!(!self.all);
+        assert!(self.id.is_none());
+    }
+
+    pub fn verify_invoked_get_all(&self) {
+        assert!(self.all);
+        assert!(self.id.is_none());
+        assert!(self.for_customer.is_none());
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(!self.all);
+        assert!(self.id.is_none());
+        assert!(self.for_customer.is_none());
     }
 }
