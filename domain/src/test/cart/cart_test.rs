@@ -19,7 +19,7 @@ use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
 fn create_cart_success() {
     let customer_id = rnd_customer_id();
     let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
-    let mut cart = Cart::create(Arc::clone(&id_generator) as _, customer_id.clone());
+    let mut cart = Cart::create(Arc::clone(&id_generator) as _, customer_id);
 
     let id = id_generator.lock().unwrap().id;
     assert_eq!(cart.entity_param.id, id);
@@ -40,12 +40,11 @@ fn add_meal_no_meal_in_cart_success() {
     let meal = rnd_meal();
 
     cart.add_meal(meal.clone());
-    assert!(cart.entity_param.pop_events().iter().all(|event| {
-        match event {
-            CartEventEnum::MealAddedToCartDomainEvent(_) => true,
-            _ => false,
-        }
-    }));
+    assert!(cart
+        .entity_param
+        .pop_events()
+        .iter()
+        .all(|event| { matches!(event, CartEventEnum::MealAddedToCartDomainEvent(_)) }));
     assert!(cart.meals.iter().all(|item| {
         let (&item_meal_id, &item_count) = item;
         (item_meal_id == meal.entity_params.id) && (item_count == Count::one())

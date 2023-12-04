@@ -26,7 +26,7 @@ fn cart_doesnt_exist_successfully_added() {
     );
 
     let customer_id = rnd_customer_id();
-    let result = use_case.execute(customer_id.clone(), meal.entity_params.id);
+    let result = use_case.execute(customer_id, meal.entity_params.id);
 
     meal_extractor
         .lock()
@@ -46,7 +46,7 @@ fn cart_exists_successfully_added() {
     let meal = rnd_meal();
     let customer_id = rnd_customer_id();
     let mut existing_cart = rnd_cart();
-    existing_cart.for_customer = customer_id.clone();
+    existing_cart.for_customer = customer_id;
 
     let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
@@ -63,7 +63,7 @@ fn cart_exists_successfully_added() {
         Arc::clone(&cart_persister) as _,
     );
 
-    let result = use_case.execute(customer_id.clone(), meal.clone().entity_params.id);
+    let result = use_case.execute(customer_id, meal.clone().entity_params.id);
     assert!(result.is_ok());
 
     meal_extractor

@@ -97,5 +97,5 @@ fn mock_get_meal_by_id() -> Arc<Mutex<MockGetMealById>> {
 fn mock_shared_state(
     mock_get_meal_by_id: &Arc<Mutex<MockGetMealById>>,
 ) -> Data<Arc<Mutex<MockGetMealById>>> {
-    Data::new(Arc::clone(&mock_get_meal_by_id))
+    Data::new(Arc::clone(mock_get_meal_by_id))
 }

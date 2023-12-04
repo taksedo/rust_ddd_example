@@ -189,7 +189,7 @@ impl MockCartPersister {
         if meal_id.is_some() {
             assert_eq!(
                 &self_cart.meals,
-                &HashMap::from([(meal_id.unwrap().clone(), Count::one())])
+                &HashMap::from([(*meal_id.unwrap(), Count::one())])
             );
         }
         if customer_id.is_some() {
@@ -238,16 +238,13 @@ pub struct MockCartExtractor {
 impl CartExtractor for MockCartExtractor {
     fn get_cart(&mut self, for_customer: CustomerId) -> Option<Cart> {
         self.for_customer = Some(for_customer);
-        match &self.cart {
-            None => None,
-            Some(result) => Some(result.clone()),
-        }
+        self.cart.as_ref().cloned()
     }
 }
 
 impl MockCartExtractor {
     pub fn verify_invoked(&self, for_customer: Option<CustomerId>) {
-        assert_eq!(self.for_customer.clone().unwrap(), for_customer.unwrap())
+        assert_eq!(self.for_customer.unwrap(), for_customer.unwrap())
     }
 
     pub fn verify_empty(&self) {

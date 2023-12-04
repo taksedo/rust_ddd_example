@@ -37,14 +37,10 @@ impl MealExtractor for InMemoryMealRepository {
     }
 
     fn get_by_name(&mut self, name: MealName) -> Option<Meal> {
-        let storage: &HashMap<MealId, Meal> = &self.storage;
-        storage.iter().find_map(|(_k, v)| {
-            if v.name == name {
-                Some(v.to_owned())
-            } else {
-                None
-            }
-        })
+        self.storage
+            .values()
+            .map(|value| value.to_owned())
+            .find(|value| value.name == name)
     }
 
     fn get_all(&mut self) -> Vec<Meal> {
