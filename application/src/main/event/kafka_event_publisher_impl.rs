@@ -34,13 +34,13 @@ impl Default for KafkaEventPublisherImpl {
 
 impl DomainEventPublisher<MealEventEnum> for KafkaEventPublisherImpl {
     fn publish(&mut self, events: &Vec<MealEventEnum>) {
-        for event in events {
+        events.iter().for_each(|event| {
             let event_serialized: String = serde_json::to_string(event).unwrap();
             let msg = Record::from_value(MEAL_TOPIC_NAME, event_serialized.as_bytes());
             self.producer
                 .send(&msg)
                 .expect("Something is wrong with sending to Kafka");
-        }
+        })
     }
 }
 

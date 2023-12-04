@@ -88,7 +88,7 @@ async fn validation_error() {
         &StatusCode::BAD_REQUEST.as_u16()
     );
     assert_eq!(&response_dto.response_title, &"Bad request");
-    assert_eq!(response_dto.invalid_params.iter().count(), 3);
+    assert_eq!(response_dto.invalid_params.len(), 3);
 }
 
 #[actix_web::test]
@@ -130,7 +130,7 @@ async fn meal_already_exists() {
 fn mock_shared_state(
     mock_add_meal_to_menu: &Arc<Mutex<MockAddMealToMenu>>,
 ) -> Data<Arc<Mutex<MockAddMealToMenu>>> {
-    Data::new(Arc::clone(&mock_add_meal_to_menu))
+    Data::new(Arc::clone(mock_add_meal_to_menu))
 }
 
 fn mock_add_meal_to_menu() -> Arc<Mutex<MockAddMealToMenu>> {

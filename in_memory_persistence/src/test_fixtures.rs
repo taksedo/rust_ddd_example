@@ -28,9 +28,7 @@ pub struct TestEventPublisher<Event> {
 
 impl<Event: Debug + Send + Clone> DomainEventPublisher<Event> for TestEventPublisher<Event> {
     fn publish(&mut self, events: &Vec<Event>) {
-        for it in events {
-            self.storage.push(it.clone());
-        }
+        events.iter().for_each(|it| self.storage.push(it.clone()))
     }
 }
 

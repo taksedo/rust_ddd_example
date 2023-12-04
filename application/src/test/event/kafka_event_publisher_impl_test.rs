@@ -6,6 +6,7 @@ use kafka::{
     producer::{Producer, Record, RequiredAcks},
 };
 
+use domain::main::menu::meal_events::MealEventEnum;
 use domain::{
     main::menu::{
         meal_events::MealAddedToMenuDomainEvent,
@@ -25,9 +26,8 @@ async fn publish_events() {
     let _container = TestKafka::new().await;
 
     let mut id_generator = TestMealIdGenerator::new(rnd_meal_id());
-    let events_enum = vec![MealAddedToMenuDomainEvent::new(
-        id_generator.generate().into(),
-    )];
+    let events_enum: Vec<MealEventEnum> =
+        vec![MealAddedToMenuDomainEvent::new(id_generator.generate()).into()];
 
     let test_events_str = serde_json::to_string(&events_enum.first()).unwrap();
     let kafka_address = KAFKA_ADDRESS.get().unwrap();
@@ -83,7 +83,7 @@ impl MockReceiver {
             .with_topic(topic_name.to_owned())
             .with_fallback_offset(FetchOffset::Earliest)
             .with_group(self.test_group.clone())
-            .with_offset_storage(self.storage.clone())
+            .with_offset_storage(self.storage)
             .create()
             .unwrap();
         let mut result = vec![];

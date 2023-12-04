@@ -18,7 +18,7 @@ fn cart_successfully_extracted() {
     let customer_id = rnd_customer_id();
 
     let mut cart = rnd_cart();
-    cart.for_customer = customer_id.clone();
+    cart.for_customer = customer_id;
     cart.meals = HashMap::from([(meal.entity_params.id, count)]);
 
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
@@ -31,12 +31,12 @@ fn cart_successfully_extracted() {
         Arc::clone(&meal_extractor) as _,
         Arc::clone(&cart_extractor) as _,
     );
-    let result = use_case.execute(customer_id.clone());
+    let result = use_case.execute(customer_id);
 
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(Some(cart.for_customer.clone()));
+        .verify_invoked(Some(cart.for_customer));
     meal_extractor
         .lock()
         .unwrap()
@@ -59,7 +59,7 @@ fn cart_not_found() {
     );
     let customer_id = rnd_customer_id();
 
-    let result = use_case.execute(customer_id.clone());
+    let result = use_case.execute(customer_id);
 
     cart_extractor
         .lock()

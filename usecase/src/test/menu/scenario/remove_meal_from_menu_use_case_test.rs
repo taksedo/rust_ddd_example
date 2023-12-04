@@ -20,9 +20,9 @@ fn successfully_removed() {
         Arc::clone(&meal_extractor) as _,
         Arc::clone(&meal_persister) as _,
     );
-    let result = use_case.execute(meal.entity_params.id).unwrap();
+    let result = use_case.execute(meal.entity_params.id);
 
-    assert_eq!(result, ());
+    assert!(result.is_ok());
 
     let meal = Arc::clone(&meal_persister)
         .lock()

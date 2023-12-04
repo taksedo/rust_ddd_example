@@ -153,7 +153,7 @@ fn active_false() {
 #[test]
 fn complete_order_success() {
     let mut order = order_with_state(OrderState::new_waiting_for_payment());
-    assert_eq!(order.pay().unwrap(), ());
+    assert!(order.pay().is_ok());
     assert!(matches!(order.state, OrderState::Paid(_)));
     let event: Vec<ShopOrderPaidDomainEvent> = order
         .entity_params
@@ -168,7 +168,7 @@ fn complete_order_success() {
 #[test]
 fn complete_order_already() {
     let mut order = order_with_state(OrderState::new_completed());
-    assert_eq!(order.complete().unwrap(), ());
+    assert!(order.complete().is_ok());
     assert!(matches!(order.state, OrderState::Completed(_)));
     assert!(order.entity_params.pop_events().is_empty());
 }

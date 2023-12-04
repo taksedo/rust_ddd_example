@@ -13,8 +13,7 @@ fn restore_cart_success() {
     let version = version();
     let meals = HashMap::from([(rnd_meal_id(), rnd_count())]);
     let created = OffsetDateTime::now_utc();
-    let cart =
-        CartRestorer::restore_cart(cart_id, guest_id.clone(), created, meals.clone(), version);
+    let cart = CartRestorer::restore_cart(cart_id, guest_id, created, meals.clone(), version);
 
     assert_eq!(cart.entity_param.id, cart_id);
     assert_eq!(cart.for_customer, guest_id);
