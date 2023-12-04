@@ -1,7 +1,7 @@
 use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
 
-#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]
+#[derive(new, Debug, Copy, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]
 pub struct ShopOrderId {
     value: i64,
 }
@@ -13,5 +13,5 @@ impl ShopOrderId {
 }
 
 pub trait ShopOrderIdGenerator {
-    fn generate() -> ShopOrderId;
+    fn generate(&self) -> ShopOrderId;
 }

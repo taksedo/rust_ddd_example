@@ -46,7 +46,7 @@ serde = { version = "1.0.163", features = ["derive", "rc", "alloc"] }
 serde_json = "1.0.96"
 bigdecimal = { version = "0.4.2", features = ["serde"] }
 mockall = "0.11.3"
-fake = { version = "2.5.0", features = ["derive", "bigdecimal"] }
+fake = { version = "2.9.1", features = ["derive", "bigdecimal"] }
 rand = "0.8.5"
 rstest = "0.18.2"
 time = { version = "0.3.21", features = ["default", "serde-well-known"] }
@@ -63,7 +63,7 @@ lapin = "2.2.1"
 async-trait = "0.1.68"
 futures-lite = "2.0.1"
 testcontainers = "0.15.0"
-testcontainers-modules = { version = "0.1.4", features = ["kafka", "postgres", "rabbitmq"] }
+testcontainers-modules = { version = "0.2.0", features = ["kafka", "postgres", "rabbitmq"] }
 tokio = { version = "1.28.2", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.18"

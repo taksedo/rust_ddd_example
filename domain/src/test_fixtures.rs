@@ -1,9 +1,12 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use bigdecimal::{BigDecimal, FromPrimitive};
-use common::types::main::base::domain_entity::Version;
+use common::types::main::base::domain_entity::{DomainEntity, Version};
 use common::types::main::base::domain_event::DomainEventTrait;
+use common::types::main::common::address::Address;
+use common::types::main::common::count::Count;
 use derive_new::new;
+use fake::faker::address::en::StreetName;
 use fake::faker::name::raw::*;
 use fake::locales::*;
 use fake::Fake;
@@ -23,13 +26,16 @@ use crate::main::menu::value_objects::meal_description::MealDescription;
 use crate::main::menu::value_objects::meal_id::MealId;
 use crate::main::menu::value_objects::meal_name::MealName;
 use crate::main::menu::value_objects::price::Price;
+use crate::main::order::shop_order::{OrderItem, OrderState, ShopOrder};
 use crate::main::order::shop_order_id::ShopOrderId;
 
-//
-// fn address() = Address.from(
-// street = faker.address().streetName(),
-// building = faker.address().streetAddressNumber().toInt() + 1
-// ).getOrElse { error("Address should be right") }
+pub fn rnd_address() -> Address {
+    Address::try_from((
+        &*StreetName().fake::<String>(),
+        thread_rng().gen_range(0..i16::MAX),
+    ))
+    .expect("Address should be right")
+}
 
 pub fn print_type_of<T>(_: &T) -> &str {
     std::any::type_name::<T>()
@@ -97,33 +103,31 @@ pub fn rnd_order_id() -> ShopOrderId {
     ShopOrderId::new(thread_rng().gen_range(0..i64::MAX))
 }
 
-// fn orderItem(
-// price: Price = price(),
-// count: Count = count(),
-// ): OrderItem {
-// return OrderItem(
-// meal_id = meal_id(),
-// price = price,
-// count = count
-// )
-// }
-//
-// fn order(
-// id: ShopOrderId = orderId(),
-// customerId: CustomerId = customerId(),
-// state: OrderState = OrderState.COMPLETED,
-// orderItems: Set<OrderItem> = setOf(orderItem()),
-// ): ShopOrder {
-// return ShopOrderRestorer.restoreOrder(
-// id = id,
-// created = OffsetDateTime.now(),
-// forCustomer = customerId,
-// orderItems = orderItems,
-// address = address(),
-// state = state,
-// version = version()
-// )
-// }
+pub fn rnd_order_item(price: Price, count: Count) -> OrderItem {
+    OrderItem::new(rnd_meal_id(), price, count)
+}
+
+pub fn rnd_order(order_items: HashSet<OrderItem>) -> ShopOrder {
+    ShopOrder::new(
+        DomainEntity::new(rnd_order_id(), Default::default()),
+        OffsetDateTime::now_utc(),
+        rnd_customer_id(),
+        rnd_address(),
+        order_items,
+        OrderState::new_completed(),
+    )
+}
+
+pub fn order_with_state(state: OrderState) -> ShopOrder {
+    ShopOrder::new(
+        DomainEntity::new(rnd_order_id(), Default::default()),
+        OffsetDateTime::now_utc(),
+        rnd_customer_id(),
+        rnd_address(),
+        HashSet::new(),
+        state,
+    )
+}
 
 #[derive(Debug, new, Default, Clone, Copy)]
 pub struct TestMealAlreadyExists {
