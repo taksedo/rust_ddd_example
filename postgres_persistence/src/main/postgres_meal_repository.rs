@@ -61,13 +61,13 @@ impl MealPersister for PostgresMealRepository {
         let events = meal_param.entity_params.pop_events();
         let mut res_vec = vec![];
         if !events.is_empty() {
-            for event in &events {
+            events.iter().for_each(|event| {
                 if let MealEventEnum::MealAddedToMenuDomainEvent(ev) = event {
                     if ev.meal_id == meal_param.entity_params.id {
                         res_vec.insert(res_vec.len(), ev);
                     }
                 }
-            }
+            });
             if !res_vec.is_empty() {
                 self.insert(meal_param)
             } else {

@@ -32,9 +32,9 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
         listeners: Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>,
         event: Event,
     ) {
-        for l in listeners {
-            l.lock().unwrap().handle(&event);
-        }
+        listeners
+            .iter()
+            .for_each(|l| l.lock().unwrap().handle(&event))
     }
 }
 
@@ -43,9 +43,8 @@ where
     Event: Debug + Clone + 'static + Hash + Eq + Default,
 {
     fn publish(&mut self, events: &Vec<Event>) {
-        for e in events {
-            let _ = &self
-                .logger
+        events.iter().for_each(|e| {
+            self.logger
                 .push_str(format!("Processing event: {:?} \r\n", &e).as_mut_str());
             let listener_map = &self.listener_map;
             let e_type = discriminant(e);
@@ -53,6 +52,6 @@ where
                 let listeners_from_listener_map = listener_map.get(&e_type).unwrap();
                 self.send_events(listeners_from_listener_map.to_vec(), e.clone())
             }
-        }
+        })
     }
 }

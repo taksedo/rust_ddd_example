@@ -49,12 +49,10 @@ impl MealExtractor for InMemoryMealRepository {
 
     fn get_all(&mut self) -> Vec<Meal> {
         let storage: &HashMap<MealId, Meal> = &self.storage;
-        let mut all = vec![];
-        for (&_k, v) in storage {
-            if !v.to_owned().removed {
-                all.push(v.to_owned())
-            }
-        }
-        all
+        storage
+            .iter()
+            .filter(|(&_k, v)| !v.to_owned().removed)
+            .map(|(&_k, v)| v.to_owned())
+            .collect()
     }
 }
