@@ -25,6 +25,7 @@ use crate::main::cart::access::cart_remover::CartRemover;
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
 use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
+use crate::main::order::providers::order_exporter::OrderExporter;
 
 pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();
@@ -355,5 +356,28 @@ impl MockShopOrderExtractor {
         assert!(!self.all);
         assert!(self.id.is_none());
         assert!(self.for_customer.is_none());
+    }
+}
+
+#[derive(new, Clone, Eq, PartialEq, Debug, Default)]
+pub struct MockOrderExporter {
+    pub id: ShopOrderId,
+    pub customer_id: CustomerId,
+    pub total_price: Price,
+}
+
+impl OrderExporter for MockOrderExporter {
+    fn export_order(&mut self, id: ShopOrderId, customer_id: CustomerId, total_price: Price) {
+        self.id = id;
+        self.customer_id = customer_id;
+        self.total_price = total_price;
+    }
+}
+
+impl MockOrderExporter {
+    pub fn verify_invoked(&self, id: ShopOrderId, customer_id: CustomerId, total_price: Price) {
+        assert_eq!(self.id, id);
+        assert_eq!(self.customer_id, customer_id);
+        assert_eq!(self.total_price, total_price);
     }
 }

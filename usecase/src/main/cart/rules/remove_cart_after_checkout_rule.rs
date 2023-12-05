@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 
 use common::events::main::domain_event_listener::DomainEventListener;
 use derive_new::new;
+use tracing::info;
 
 use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 
@@ -32,7 +33,8 @@ impl DomainEventListener<ShopOrderEventEnum> for RemoveCartAfterCheckoutRule {
             .get_cart(event_struct.clone().for_customer);
 
         if result.is_none() {
-            println!(
+            let _ = tracing_subscriber::fmt::try_init();
+            info!(
                 "Cart for customer #{} is already removed",
                 event_struct.for_customer
             )
