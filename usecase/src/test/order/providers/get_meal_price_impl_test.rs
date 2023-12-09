@@ -29,7 +29,7 @@ fn meal_not_found() {
 
     let meal_id = rnd_meal_id();
 
-    assert_panic!( {get_meal_price.invoke(meal_id);}, String, starts with "Meal #MealId { value:");
+    assert_panic!( {get_meal_price.invoke(meal_id);}, String, starts with &format!("Meal #{:?} not found", meal_id));
 
     extractor.lock().unwrap().verify_invoked_get_by_id(&meal_id);
 }

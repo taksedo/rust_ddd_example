@@ -21,7 +21,7 @@ fn active_order_exists() {
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_last_order(active_order.for_customer);
+        .verify_invoked_get_last_order(&active_order.for_customer);
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn order_exists_but_not_active() {
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_last_order(active_order.for_customer);
+        .verify_invoked_get_last_order(&active_order.for_customer);
 }
 
 #[test]
@@ -54,5 +54,5 @@ fn order_doesnt_exist() {
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_last_order(customer_id);
+        .verify_invoked_get_last_order(&customer_id);
 }

@@ -2,6 +2,7 @@ use std::any::Any;
 use std::collections::HashMap;
 
 use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::types::main::common::address::Address;
 use common::types::main::common::count::Count;
 use derive_new::new;
 
@@ -15,6 +16,10 @@ use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
+use domain::main::order::customer_order_events::{
+    ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent, ShopOrderConfirmedDomainEvent,
+    ShopOrderPaidDomainEvent,
+};
 use domain::main::order::shop_order::{OrderState, ShopOrder};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use domain::test_fixtures::{order_with_state, rnd_meal};
@@ -25,6 +30,7 @@ use crate::main::cart::access::cart_remover::CartRemover;
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
 use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
+use crate::main::order::access::shop_order_persister::ShopOrderPersister;
 use crate::main::order::providers::order_exporter::OrderExporter;
 
 pub fn removed_meal() -> Meal {
@@ -334,14 +340,14 @@ impl ShopOrderExtractor for MockShopOrderExtractor {
 }
 
 impl MockShopOrderExtractor {
-    pub fn verify_invoked_get_by_id(&self, id: ShopOrderId) {
-        assert_eq!(self.id, Some(id));
+    pub fn verify_invoked_get_by_id(&self, id: &ShopOrderId) {
+        assert_eq!(self.id, Some(*id));
         assert!(!self.all);
         assert!(self.for_customer.is_none());
     }
 
-    pub fn verify_invoked_get_last_order(&self, for_customer: CustomerId) {
-        assert_eq!(self.for_customer, Some(for_customer));
+    pub fn verify_invoked_get_last_order(&self, for_customer: &CustomerId) {
+        assert_eq!(self.for_customer, Some(*for_customer));
         assert!(!self.all);
         assert!(self.id.is_none());
     }
@@ -356,6 +362,78 @@ impl MockShopOrderExtractor {
         assert!(!self.all);
         assert!(self.id.is_none());
         assert!(self.for_customer.is_none());
+    }
+}
+
+#[derive(new, Clone, PartialEq, Debug, Default)]
+pub struct MockShopOrderPersister {
+    pub order: Option<ShopOrder>,
+}
+
+impl ShopOrderPersister for MockShopOrderPersister {
+    fn save(&mut self, order: ShopOrder) {
+        self.order = Some(order);
+    }
+}
+
+impl MockShopOrderPersister {
+    pub fn verify_invoked_order(&self, order: &ShopOrder) {
+        assert_eq!(self.order.clone().unwrap(), order.clone());
+    }
+
+    pub fn verify_invoked(
+        &self,
+        order_id: &ShopOrderId,
+        address: &Address,
+        customer_id: &CustomerId,
+        meal_id: &MealId,
+        count_items: &Count,
+        price_items: &Price,
+    ) {
+        assert_eq!(&self.order.clone().unwrap().entity_params.id, order_id);
+        assert_eq!(&self.order.clone().unwrap().address, address);
+        assert_eq!(&self.order.clone().unwrap().for_customer, customer_id);
+        assert_eq!(self.order.clone().unwrap().order_items.len(), 1);
+
+        let binding = self.order.clone().unwrap();
+        let order_item = binding.order_items.iter().take(0).next().unwrap();
+        assert_eq!(order_item.meal_id, *meal_id);
+        assert_eq!(order_item.count, *count_items);
+        assert_eq!(order_item.price, *price_items);
+    }
+    pub fn verify_events_after_cancellation(&self, id: &ShopOrderId) {
+        assert_eq!(
+            self.order.clone().unwrap().entity_params.pop_events(),
+            vec![ShopOrderCancelledDomainEvent::new(*id).into()]
+        );
+    }
+    pub fn verify_events_after_completion(&mut self, id: &ShopOrderId) {
+        assert_eq!(
+            self.order.clone().unwrap().entity_params.pop_events(),
+            vec![ShopOrderCompletedDomainEvent::new(*id).into()]
+        );
+    }
+
+    pub fn verify_events_after_confirmation(&mut self, id: &ShopOrderId) {
+        assert_eq!(
+            self.order.clone().unwrap().entity_params.pop_events(),
+            vec![ShopOrderConfirmedDomainEvent::new(*id).into()]
+        );
+    }
+
+    pub fn verify_events_after_payment(&mut self, id: &ShopOrderId) {
+        assert_eq!(
+            self.order.clone().unwrap().entity_params.pop_events(),
+            vec![ShopOrderPaidDomainEvent::new(*id).into()]
+        );
+    }
+
+    pub fn verify_price(&self, price: &Price) {
+        assert_eq!(self.order.clone().unwrap().total_price(), *price);
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(self.order.is_none());
     }
 }
 
