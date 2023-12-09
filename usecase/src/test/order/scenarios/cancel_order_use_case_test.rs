@@ -1,17 +1,17 @@
 use std::sync::{Arc, Mutex};
 
-use crate::main::order::cancel_order::CancelOrder;
+use domain::test_fixtures::rnd_order_id;
+
+use crate::main::order::cancel_order::{CancelOrder, CancelOrderUseCaseError};
 use crate::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
 use crate::test_fixtures::{
-    order_ready_for_cancel, MockShopOrderExtractor, MockShopOrderPersister,
+    order_not_ready_for_cancel, order_ready_for_cancel, MockShopOrderExtractor,
+    MockShopOrderPersister,
 };
 
 #[test]
 fn successfully_confirmed() {
     let order = order_ready_for_cancel();
-    // let mut pinned_order = Cell::new(order);
-
-    // let order_1 = pinned_order.get_mut();
 
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
@@ -20,12 +20,10 @@ fn successfully_confirmed() {
     let use_case =
         CancelOrderUseCase::new(Arc::clone(&extractor) as _, Arc::clone(&persister) as _);
     let result = use_case.execute(order.entity_params.id);
-    dbg!(&use_case);
 
     assert!(result.is_ok());
 
     let order = &persister.lock().unwrap().order.clone().unwrap();
-    assert_eq!(order, &persister.lock().unwrap().order.clone().unwrap());
     persister.lock().unwrap().verify_invoked_order(order);
     persister
         .lock()
@@ -35,6 +33,46 @@ fn successfully_confirmed() {
         .lock()
         .unwrap()
         .verify_invoked_get_by_id(&order.entity_params.id);
+}
 
-    println!("FIRST: {:?}, \n\nSECOND: {:?}", order, extractor);
+#[test]
+fn invalid_state() {
+    let order = order_not_ready_for_cancel();
+
+    let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+    let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+    extractor.lock().unwrap().order = Some(order.clone());
+
+    let use_case =
+        CancelOrderUseCase::new(Arc::clone(&extractor) as _, Arc::clone(&persister) as _);
+    let result = use_case.execute(order.entity_params.id);
+
+    persister.lock().unwrap().verify_empty();
+    extractor
+        .lock()
+        .unwrap()
+        .verify_invoked_get_by_id(&order.entity_params.id);
+    assert!(result.is_err());
+    assert_eq!(result, Err(CancelOrderUseCaseError::InvalidOrderState));
+}
+
+#[test]
+fn order_not_found() {
+    let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+    let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+
+    let use_case =
+        CancelOrderUseCase::new(Arc::clone(&extractor) as _, Arc::clone(&persister) as _);
+    dbg!(&use_case);
+    let order_id = rnd_order_id();
+
+    let result = use_case.execute(order_id);
+
+    persister.lock().unwrap().verify_empty();
+    extractor
+        .lock()
+        .unwrap()
+        .verify_invoked_get_by_id(&order_id);
+    assert!(result.is_err());
+    assert_eq!(result, Err(CancelOrderUseCaseError::OrderNotFound));
 }

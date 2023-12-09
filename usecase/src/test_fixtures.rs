@@ -1,5 +1,6 @@
 use std::any::Any;
 use std::collections::HashMap;
+use std::mem::discriminant;
 
 use common::types::main::base::domain_entity::DomainEntityTrait;
 use common::types::main::common::address::Address;
@@ -18,7 +19,7 @@ use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
 use domain::main::order::customer_order_events::{
     ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent, ShopOrderConfirmedDomainEvent,
-    ShopOrderPaidDomainEvent,
+    ShopOrderEventEnum, ShopOrderPaidDomainEvent,
 };
 use domain::main::order::shop_order::{OrderState, ShopOrder};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
@@ -313,7 +314,8 @@ pub struct MockShopOrderExtractor {
 impl ShopOrderExtractor for MockShopOrderExtractor {
     fn get_by_id(&mut self, order_id: ShopOrderId) -> Option<ShopOrder> {
         self.id = Some(order_id);
-        if self.order.clone().unwrap().entity_params.id == self.id.unwrap() {
+        if self.order.is_some() && self.order.clone().unwrap().entity_params.id == self.id.unwrap()
+        {
             self.order.as_ref().cloned()
         } else {
             None
@@ -402,10 +404,16 @@ impl MockShopOrderPersister {
         assert_eq!(order_item.price, *price_items);
     }
     pub fn verify_events_after_cancellation(&self, id: &ShopOrderId) {
+        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let first_event = events.first().unwrap().clone();
+        let etalon_event = ShopOrderCancelledDomainEvent::new(*id);
+        assert_eq!(events.len(), 1);
         assert_eq!(
-            self.order.clone().unwrap().entity_params.pop_events(),
-            vec![ShopOrderCancelledDomainEvent::new(*id).into()]
+            discriminant(&Into::<ShopOrderEventEnum>::into(first_event.clone())),
+            discriminant(&Into::<ShopOrderEventEnum>::into(etalon_event))
         );
+        let first_event_struct: ShopOrderCancelledDomainEvent = first_event.try_into().unwrap();
+        assert_eq!(first_event_struct.order_id, *id);
     }
     pub fn verify_events_after_completion(&mut self, id: &ShopOrderId) {
         assert_eq!(
