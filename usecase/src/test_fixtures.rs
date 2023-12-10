@@ -300,7 +300,7 @@ impl MockCartExtractor {
     }
 
     pub fn verify_empty(&self) {
-        assert!(&self.cart.is_none())
+        assert!(&self.for_customer.is_none())
     }
 }
 

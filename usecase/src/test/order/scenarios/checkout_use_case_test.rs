@@ -16,7 +16,7 @@ use domain::test_fixtures::{
     rnd_address, rnd_cart, rnd_customer_id, rnd_meal, rnd_order_id, rnd_price,
 };
 
-use crate::main::order::checkout::{Checkout, CheckoutRequest};
+use crate::main::order::checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError};
 use crate::main::order::providers::payment_url_provider::PaymentUrlProvider;
 use crate::main::order::scenarios::checkout_use_case::CheckoutUseCase;
 use crate::test_fixtures::{MockCartExtractor, MockCustomerHasActiveOrder, MockShopOrderPersister};
@@ -83,6 +83,117 @@ fn order_created_successfully() {
     order_persister.lock().unwrap().verify_price(&result.price);
 }
 
+#[test]
+fn cart_not_found() {
+    let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
+    let active_order_rule = Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false)));
+
+    let order_persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+    let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+
+    let get_meal_price = Arc::new(Mutex::new(MockGetMealPrice::default()));
+    let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
+
+    let use_case = CheckoutUseCase::new(
+        Arc::clone(&id_generator) as _,
+        Arc::clone(&cart_extractor) as _,
+        Arc::clone(&active_order_rule) as _,
+        Arc::clone(&get_meal_price) as _,
+        Arc::clone(&payment_url_provider) as _,
+        Arc::clone(&order_persister) as _,
+    );
+
+    let checkout_request = checkout_request(rnd_address(), rnd_customer_id());
+    let result = use_case.execute(checkout_request.clone());
+
+    order_persister.lock().unwrap().verify_empty();
+    active_order_rule.lock().unwrap().verify_empty();
+    cart_extractor
+        .lock()
+        .unwrap()
+        .verify_invoked(&checkout_request.for_customer);
+
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), CheckoutUseCaseError::CartNotFound);
+}
+
+#[test]
+fn cart_is_empty() {
+    let cart = rnd_cart();
+    let customer_id = cart.for_customer;
+
+    let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
+
+    let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+    cart_extractor.lock().unwrap().cart = Some(cart.clone());
+
+    let active_order_rule = Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false)));
+    let order_persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+
+    let price = rnd_price();
+    let get_meal_price = Arc::new(Mutex::new(MockGetMealPrice::new(price.clone())));
+    let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
+
+    let use_case = CheckoutUseCase::new(
+        Arc::clone(&id_generator) as _,
+        Arc::clone(&cart_extractor) as _,
+        Arc::clone(&active_order_rule) as _,
+        Arc::clone(&get_meal_price) as _,
+        Arc::clone(&payment_url_provider) as _,
+        Arc::clone(&order_persister) as _,
+    );
+
+    let checkout_request = checkout_request(rnd_address(), customer_id);
+    let result = use_case.execute(checkout_request.clone());
+
+    order_persister.lock().unwrap().verify_empty();
+    active_order_rule
+        .lock()
+        .unwrap()
+        .verify_invoked(&checkout_request.for_customer);
+    cart_extractor
+        .lock()
+        .unwrap()
+        .verify_invoked(&checkout_request.for_customer);
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), CheckoutUseCaseError::EmptyCart);
+}
+
+#[test]
+fn already_has_active_order() {
+    let cart = rnd_cart();
+
+    let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
+
+    let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+    cart_extractor.lock().unwrap().cart = Some(cart.clone());
+
+    let active_order_rule = Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(true)));
+    let order_persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+
+    let get_meal_price = Arc::new(Mutex::new(MockGetMealPrice::default()));
+    let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
+
+    let use_case = CheckoutUseCase::new(
+        Arc::clone(&id_generator) as _,
+        Arc::clone(&cart_extractor) as _,
+        Arc::clone(&active_order_rule) as _,
+        Arc::clone(&get_meal_price) as _,
+        Arc::clone(&payment_url_provider) as _,
+        Arc::clone(&order_persister) as _,
+    );
+
+    order_persister.lock().unwrap().verify_empty();
+    cart_extractor.lock().unwrap().verify_empty();
+    active_order_rule.lock().unwrap().verify_empty();
+    let result = use_case.execute(checkout_request(rnd_address(), cart.for_customer));
+    assert!(result.is_err());
+    assert_eq!(
+        result.unwrap_err(),
+        CheckoutUseCaseError::AlreadyHasActiveOrder
+    );
+}
+
 #[derive(new, SmartDefault, Debug)]
 struct TestShopOrderIdGenerator {
     #[default(rnd_order_id())]
@@ -95,7 +206,7 @@ impl ShopOrderIdGenerator for TestShopOrderIdGenerator {
     }
 }
 
-#[derive(new, Debug)]
+#[derive(new, Debug, Default)]
 struct MockGetMealPrice {
     price: Price,
 }
@@ -124,8 +235,8 @@ fn checkout_request(address: Address, customer_id: CustomerId) -> CheckoutReques
         address.building_to_i16(),
     ))
     .map(|addr| CheckoutRequest::new(customer_id, addr));
-    if result.is_ok() {
-        result.unwrap()
+    if let Ok(request) = result {
+        request
     } else {
         panic!("Illegal State Exception")
     }

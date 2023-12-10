@@ -11,6 +11,7 @@ pub trait Checkout {
     fn execute(&self, request: CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError>;
 }
 
+#[derive(Debug)]
 pub struct PaymentInfo {
     pub order_id: ShopOrderId,
     pub price: Price,
