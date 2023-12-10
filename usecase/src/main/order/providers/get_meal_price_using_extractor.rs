@@ -16,7 +16,7 @@ impl GetMealPrice for GetMealPriceUsingExtractor {
     }
 }
 
-#[derive(new)]
+#[derive(new, Debug)]
 pub struct GetMealPriceUsingExtractor {
     pub extractor: Arc<Mutex<dyn MealExtractor>>,
 }

@@ -1,5 +1,6 @@
-use actix_web::dev::Url;
+use actix_web::http::Uri;
 use common::types::main::common::address::Address;
+use derive_new::new;
 use thiserror::Error;
 
 use domain::main::cart::value_objects::customer_id::CustomerId;
@@ -13,9 +14,10 @@ pub trait Checkout {
 pub struct PaymentInfo {
     pub order_id: ShopOrderId,
     pub price: Price,
-    pub payment_url: Url,
+    pub payment_url: Uri,
 }
 
+#[derive(new, Debug, Clone)]
 pub struct CheckoutRequest {
     pub for_customer: CustomerId,
     pub delivery_to: Address,

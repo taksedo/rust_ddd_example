@@ -13,7 +13,7 @@ fn active_order_exists() {
         order: Some(active_order.clone()),
         ..Default::default()
     }));
-    let rule = CustomerHasActiveOrderImpl::new(Arc::clone(&extractor) as _);
+    let mut rule = CustomerHasActiveOrderImpl::new(Arc::clone(&extractor) as _);
 
     let has_active_order = rule.invoke(active_order.for_customer);
 
@@ -31,7 +31,7 @@ fn order_exists_but_not_active() {
         order: Some(active_order.clone()),
         ..Default::default()
     }));
-    let rule = CustomerHasActiveOrderImpl::new(Arc::clone(&extractor) as _);
+    let mut rule = CustomerHasActiveOrderImpl::new(Arc::clone(&extractor) as _);
 
     let has_active_order = rule.invoke(active_order.for_customer);
 
@@ -45,7 +45,7 @@ fn order_exists_but_not_active() {
 #[test]
 fn order_doesnt_exist() {
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
-    let rule = CustomerHasActiveOrderImpl::new(Arc::clone(&extractor) as _);
+    let mut rule = CustomerHasActiveOrderImpl::new(Arc::clone(&extractor) as _);
 
     let customer_id = rnd_customer_id();
     let has_active_order = rule.invoke(customer_id);

@@ -17,6 +17,7 @@ use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
+use domain::main::order::customer_has_active_order::CustomerHasActiveOrder;
 use domain::main::order::customer_order_events::{
     ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent, ShopOrderConfirmedDomainEvent,
     ShopOrderEventEnum, ShopOrderPaidDomainEvent,
@@ -294,8 +295,8 @@ impl CartExtractor for MockCartExtractor {
 }
 
 impl MockCartExtractor {
-    pub fn verify_invoked(&self, for_customer: Option<CustomerId>) {
-        assert_eq!(self.for_customer.unwrap(), for_customer.unwrap())
+    pub fn verify_invoked(&self, for_customer: &CustomerId) {
+        assert_eq!(&self.for_customer.unwrap(), for_customer)
     }
 
     pub fn verify_empty(&self) {
@@ -398,7 +399,7 @@ impl MockShopOrderPersister {
         assert_eq!(self.order.clone().unwrap().order_items.len(), 1);
 
         let binding = self.order.clone().unwrap();
-        let order_item = binding.order_items.iter().take(0).next().unwrap();
+        let order_item = binding.order_items.iter().next().unwrap();
         assert_eq!(order_item.meal_id, *meal_id);
         assert_eq!(order_item.count, *count_items);
         assert_eq!(order_item.price, *price_items);
@@ -465,5 +466,29 @@ impl MockOrderExporter {
         assert_eq!(self.id, id);
         assert_eq!(self.customer_id, customer_id);
         assert_eq!(self.total_price, total_price);
+    }
+}
+
+#[derive(new, Debug, Default)]
+pub struct MockCustomerHasActiveOrder {
+    pub has_active: bool,
+    #[new(value = "Default::default()")]
+    pub for_customer: Option<CustomerId>,
+}
+
+impl MockCustomerHasActiveOrder {
+    pub fn verify_invoked(&self, for_customer: &CustomerId) {
+        assert_eq!(&self.for_customer.unwrap(), for_customer);
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(&self.for_customer.is_none())
+    }
+}
+
+impl CustomerHasActiveOrder for MockCustomerHasActiveOrder {
+    fn invoke(&mut self, for_customer: CustomerId) -> bool {
+        self.for_customer = Some(for_customer);
+        self.has_active
     }
 }

@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use common::types::main::errors::error::ToError;
+use derive_new::new;
 
 use domain::main::order::customer_has_active_order::CustomerHasActiveOrder;
 use domain::main::order::get_meal_price::GetMealPrice;
@@ -12,6 +13,7 @@ use crate::main::order::access::shop_order_persister::ShopOrderPersister;
 use crate::main::order::checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError, PaymentInfo};
 use crate::main::order::providers::payment_url_provider::PaymentUrlProvider;
 
+#[derive(new, Debug)]
 pub struct CheckoutUseCase {
     id_generator: Arc<Mutex<dyn ShopOrderIdGenerator>>,
     cart_extractor: Arc<Mutex<dyn CartExtractor>>,

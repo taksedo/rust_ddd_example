@@ -36,7 +36,7 @@ fn cart_successfully_extracted() {
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(Some(cart.for_customer));
+        .verify_invoked(&cart.for_customer);
     meal_extractor
         .lock()
         .unwrap()
@@ -61,10 +61,7 @@ fn cart_not_found() {
 
     let result = use_case.execute(customer_id);
 
-    cart_extractor
-        .lock()
-        .unwrap()
-        .verify_invoked(Some(customer_id));
+    cart_extractor.lock().unwrap().verify_invoked(&customer_id);
     meal_extractor.lock().unwrap().verify_empty();
     assert_eq!(result.unwrap_err(), GetCartUseCaseError::CartNotFound);
 }

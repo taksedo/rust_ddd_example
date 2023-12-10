@@ -63,7 +63,7 @@ fn order_not_found() {
 
     let use_case =
         CancelOrderUseCase::new(Arc::clone(&extractor) as _, Arc::clone(&persister) as _);
-    dbg!(&use_case);
+
     let order_id = rnd_order_id();
 
     let result = use_case.execute(order_id);

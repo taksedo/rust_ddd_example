@@ -13,7 +13,7 @@ pub struct CustomerHasActiveOrderImpl {
 }
 
 impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
-    fn invoke(&self, for_customer: CustomerId) -> bool {
+    fn invoke(&mut self, for_customer: CustomerId) -> bool {
         let last_order = self
             .shop_order_extractor
             .lock()
