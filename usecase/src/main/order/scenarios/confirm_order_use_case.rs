@@ -1,11 +1,14 @@
 use std::sync::{Arc, Mutex};
 
+use derive_new::new;
+
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 
 use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
 use crate::main::order::access::shop_order_persister::ShopOrderPersister;
 use crate::main::order::confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError};
 
+#[derive(new, Debug)]
 pub struct ConfirmOrderUseCase {
     shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
     shop_order_persister: Arc<Mutex<dyn ShopOrderPersister>>,

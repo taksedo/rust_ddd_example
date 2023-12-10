@@ -2,7 +2,7 @@ pub mod access;
 pub mod cancel_order;
 pub mod checkout;
 pub mod complete_order;
-mod confirm_order;
+pub mod confirm_order;
 pub mod dto;
 pub mod get_last_order_state;
 pub mod get_order_by_id;

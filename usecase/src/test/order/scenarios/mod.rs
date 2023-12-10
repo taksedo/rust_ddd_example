@@ -1,3 +1,4 @@
 mod cancel_order_use_case_test;
 mod checkout_use_case_test;
 mod complete_order_use_case_test;
+mod confirm_order_use_case_test;
