@@ -1,11 +1,14 @@
 use std::sync::{Arc, Mutex};
 
+use derive_new::new;
+
 use domain::main::cart::value_objects::customer_id::CustomerId;
 use domain::main::order::shop_order::OrderState;
 
 use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
 use crate::main::order::get_last_order_state::{GetLastOrderState, GetLastOrderStateUseCaseError};
 
+#[derive(new, Debug)]
 pub struct GetLastOrderStateUseCase {
     shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
 }
