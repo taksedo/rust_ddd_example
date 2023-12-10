@@ -417,10 +417,16 @@ impl MockShopOrderPersister {
         assert_eq!(first_event_struct.order_id, *id);
     }
     pub fn verify_events_after_completion(&mut self, id: &ShopOrderId) {
+        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let first_event = events.first().unwrap().clone();
+        let etalon_event = ShopOrderCompletedDomainEvent::new(*id);
+        assert_eq!(events.len(), 1);
         assert_eq!(
-            self.order.clone().unwrap().entity_params.pop_events(),
-            vec![ShopOrderCompletedDomainEvent::new(*id).into()]
+            discriminant(&Into::<ShopOrderEventEnum>::into(first_event.clone())),
+            discriminant(&Into::<ShopOrderEventEnum>::into(etalon_event))
         );
+        let first_event_struct: ShopOrderCompletedDomainEvent = first_event.try_into().unwrap();
+        assert_eq!(first_event_struct.order_id, *id);
     }
 
     pub fn verify_events_after_confirmation(&mut self, id: &ShopOrderId) {
