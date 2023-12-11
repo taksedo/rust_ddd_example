@@ -8,6 +8,7 @@ use domain::main::menu::value_objects::price::Price;
 use domain::main::order::shop_order::{OrderState, ShopOrder};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 
+#[derive(Debug)]
 pub struct OrderDetails {
     pub id: ShopOrderId,
     pub state: OrderState,
