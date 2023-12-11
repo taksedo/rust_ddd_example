@@ -443,10 +443,16 @@ impl MockShopOrderPersister {
     }
 
     pub fn verify_events_after_payment(&mut self, id: &ShopOrderId) {
+        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let first_event = events.first().unwrap().clone();
+        let etalon_event = ShopOrderPaidDomainEvent::new(*id);
+        assert_eq!(events.len(), 1);
         assert_eq!(
-            self.order.clone().unwrap().entity_params.pop_events(),
-            vec![ShopOrderPaidDomainEvent::new(*id).into()]
+            discriminant(&Into::<ShopOrderEventEnum>::into(first_event.clone())),
+            discriminant(&Into::<ShopOrderEventEnum>::into(etalon_event))
         );
+        let first_event_struct: ShopOrderPaidDomainEvent = first_event.try_into().unwrap();
+        assert_eq!(first_event_struct.order_id, *id);
     }
 
     pub fn verify_price(&self, price: &Price) {

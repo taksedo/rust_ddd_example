@@ -4,3 +4,4 @@ mod complete_order_use_case_test;
 mod confirm_order_use_case_test;
 mod get_last_order_state_use_case_test;
 mod get_orders_use_case_test;
+mod pay_order_handler_test;
