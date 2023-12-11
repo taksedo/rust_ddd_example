@@ -81,10 +81,7 @@ fn cart_exists_successfully_added() {
         Some(&meal.entity_params.id),
         None,
     );
-    cart_extractor
-        .lock()
-        .unwrap()
-        .verify_invoked(Some(customer_id));
+    cart_extractor.lock().unwrap().verify_invoked(&customer_id);
 }
 
 #[test]

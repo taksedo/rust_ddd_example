@@ -23,7 +23,7 @@ fn successfully_removed() {
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(Some(cart.clone().for_customer));
+        .verify_invoked(&cart.for_customer);
     cart_persister
         .lock()
         .unwrap()
@@ -46,7 +46,7 @@ fn cart_not_found() {
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(Some(cart.clone().for_customer));
+        .verify_invoked(&cart.clone().for_customer);
     cart_persister.lock().unwrap().verify_empty();
     assert_eq!(
         result.unwrap_err(),

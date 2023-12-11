@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use common::events::main::domain_event_listener::DomainEventListener;
+use tracing_test::traced_test;
 
 use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_order_id, rnd_price};
@@ -29,14 +30,15 @@ fn successfully_removed() {
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(Some(cart.clone().for_customer));
+        .verify_invoked(&cart.for_customer);
     cart_remover
         .lock()
         .unwrap()
-        .verify_invoked(cart.clone().entity_param.id);
+        .verify_invoked(cart.entity_param.id);
 }
 
 #[test]
+#[traced_test]
 fn cart_not_found() {
     let cart_remover = Arc::new(Mutex::new(MockCartRemover::default()));
 
@@ -52,9 +54,10 @@ fn cart_not_found() {
 
     rule.handle(&event);
 
-    cart_extractor
-        .lock()
-        .unwrap()
-        .verify_invoked(Some(customer_id));
+    cart_extractor.lock().unwrap().verify_invoked(&customer_id);
     cart_remover.lock().unwrap().verify_empty();
+
+    assert!(logs_contain(
+        format!("Cart for customer #{customer_id} is already removed").as_str()
+    ));
 }

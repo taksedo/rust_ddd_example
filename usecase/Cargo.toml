@@ -11,6 +11,11 @@ structmap.workspace = true
 structmap-derive.workspace = true
 actix-web.workspace = true
 thiserror.workspace = true
+assert-panic.workspace = true
+tracing-subscriber.workspace = true
+tracing.workspace = true
+tracing-test.workspace = true
+smart-default.workspace = true
 
 domain.workspace = true
 common.workspace = true

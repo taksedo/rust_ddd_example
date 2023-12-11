@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use bigdecimal::ToPrimitive;
 use serde_derive::{Deserialize, Serialize};
 
@@ -26,6 +28,6 @@ impl TryFrom<i64> for ShopOrderId {
     }
 }
 
-pub trait ShopOrderIdGenerator {
+pub trait ShopOrderIdGenerator: Debug + Send {
     fn generate(&self) -> ShopOrderId;
 }

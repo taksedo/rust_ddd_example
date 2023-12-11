@@ -67,10 +67,12 @@ testcontainers-modules = { version = "0.2.0", features = ["kafka", "postgres", "
 tokio = { version = "1.28.2", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.18"
+tracing-test = "0.2.4"
 url = "2.3.1"
 kafka = "0.10.0"
 uuid = { version = "1.6.1", features = ["v4"] }
 thiserror = "1.0.50"
+assert-panic = "1.0.1"
 
 common = { git = "https://github.com/taksedo/rust_ddd_example_common.git", branch = "master", package = "rust_ddd_example_common" }
 domain = { path = "domain" }

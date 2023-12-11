@@ -1,7 +1,9 @@
 use std::any::Any;
 use std::collections::HashMap;
+use std::mem::discriminant;
 
 use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::types::main::common::address::Address;
 use common::types::main::common::count::Count;
 use derive_new::new;
 
@@ -15,18 +17,68 @@ use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
-use domain::test_fixtures::rnd_meal;
+use domain::main::order::customer_has_active_order::CustomerHasActiveOrder;
+use domain::main::order::customer_order_events::{
+    ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent, ShopOrderConfirmedDomainEvent,
+    ShopOrderEventEnum, ShopOrderPaidDomainEvent,
+};
+use domain::main::order::shop_order::{OrderState, ShopOrder};
+use domain::main::order::value_objects::shop_order_id::ShopOrderId;
+use domain::test_fixtures::{order_with_state, rnd_meal};
 
 use crate::main::cart::access::cart_extractor::CartExtractor;
 use crate::main::cart::access::cart_persister::CartPersister;
 use crate::main::cart::access::cart_remover::CartRemover;
 use crate::main::menu::access::meal_extractor::MealExtractor;
 use crate::main::menu::access::meal_persister::MealPersister;
+use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
+use crate::main::order::access::shop_order_persister::ShopOrderPersister;
+use crate::main::order::providers::order_exporter::OrderExporter;
 
 pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();
     meal.remove_meal_from_menu();
     meal
+}
+
+pub fn order_ready_for_pay() -> ShopOrder {
+    order_with_state(OrderState::new_waiting_for_payment())
+}
+
+pub fn order_not_ready_for_pay() -> ShopOrder {
+    order_with_state(OrderState::new_completed())
+}
+
+pub fn order_ready_for_cancel() -> ShopOrder {
+    order_with_state(OrderState::new_paid())
+}
+
+pub fn order_not_ready_for_cancel() -> ShopOrder {
+    order_with_state(OrderState::new_completed())
+}
+
+pub fn order_ready_for_confirm() -> ShopOrder {
+    order_with_state(OrderState::new_paid())
+}
+
+pub fn order_not_ready_for_confirm() -> ShopOrder {
+    order_with_state(OrderState::new_waiting_for_payment())
+}
+
+pub fn order_ready_for_complete() -> ShopOrder {
+    order_with_state(OrderState::new_confirmed())
+}
+
+pub fn order_not_ready_for_complete() -> ShopOrder {
+    order_with_state(OrderState::new_cancelled())
+}
+
+pub fn active_order() -> ShopOrder {
+    order_with_state(OrderState::new_confirmed())
+}
+
+pub fn non_active_order() -> ShopOrder {
+    order_with_state(OrderState::new_cancelled())
 }
 
 #[derive(new, Debug, Clone)]
@@ -243,11 +295,218 @@ impl CartExtractor for MockCartExtractor {
 }
 
 impl MockCartExtractor {
-    pub fn verify_invoked(&self, for_customer: Option<CustomerId>) {
-        assert_eq!(self.for_customer.unwrap(), for_customer.unwrap())
+    pub fn verify_invoked(&self, for_customer: &CustomerId) {
+        assert_eq!(&self.for_customer.unwrap(), for_customer)
     }
 
     pub fn verify_empty(&self) {
-        assert!(&self.cart.is_none())
+        assert!(&self.for_customer.is_none())
+    }
+}
+
+#[derive(new, Clone, PartialEq, Debug, Default)]
+pub struct MockShopOrderExtractor {
+    pub order: Option<ShopOrder>,
+    pub id: Option<ShopOrderId>,
+    pub for_customer: Option<CustomerId>,
+    pub all: bool,
+}
+
+impl ShopOrderExtractor for MockShopOrderExtractor {
+    fn get_by_id(&mut self, order_id: ShopOrderId) -> Option<ShopOrder> {
+        self.id = Some(order_id);
+        if self.order.is_some() && self.order.clone().unwrap().entity_params.id == self.id.unwrap()
+        {
+            self.order.as_ref().cloned()
+        } else {
+            None
+        }
+    }
+
+    fn get_last_order(&mut self, for_customer: CustomerId) -> Option<ShopOrder> {
+        self.for_customer = Some(for_customer);
+        if self.order.is_some() && self.order.clone().unwrap().for_customer == for_customer {
+            self.order.as_ref().cloned()
+        } else {
+            None
+        }
+    }
+
+    fn get_all(&mut self, _start_id: ShopOrderId, _limit: i32) -> Vec<ShopOrder> {
+        self.all = true;
+        if self.order.is_some() {
+            vec![self.order.clone().unwrap()]
+        } else {
+            vec![]
+        }
+    }
+}
+
+impl MockShopOrderExtractor {
+    pub fn verify_invoked_get_by_id(&self, id: &ShopOrderId) {
+        assert_eq!(self.id, Some(*id));
+        assert!(!self.all);
+        assert!(self.for_customer.is_none());
+    }
+
+    pub fn verify_invoked_get_last_order(&self, for_customer: &CustomerId) {
+        assert_eq!(self.for_customer, Some(*for_customer));
+        assert!(!self.all);
+        assert!(self.id.is_none());
+    }
+
+    pub fn verify_invoked_get_all(&self) {
+        assert!(self.all);
+        assert!(self.id.is_none());
+        assert!(self.for_customer.is_none());
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(!self.all);
+        assert!(self.id.is_none());
+        assert!(self.for_customer.is_none());
+    }
+}
+
+#[derive(new, Clone, PartialEq, Debug, Default)]
+pub struct MockShopOrderPersister {
+    pub order: Option<ShopOrder>,
+}
+
+impl ShopOrderPersister for MockShopOrderPersister {
+    fn save(&mut self, order: ShopOrder) {
+        self.order = Some(order);
+    }
+}
+
+impl MockShopOrderPersister {
+    pub fn verify_invoked_order(&self, order: &ShopOrder) {
+        assert_eq!(self.order.clone().unwrap(), order.clone());
+    }
+
+    pub fn verify_invoked(
+        &self,
+        order_id: &ShopOrderId,
+        address: &Address,
+        customer_id: &CustomerId,
+        meal_id: &MealId,
+        count_items: &Count,
+        price_items: &Price,
+    ) {
+        assert_eq!(&self.order.clone().unwrap().entity_params.id, order_id);
+        assert_eq!(&self.order.clone().unwrap().address, address);
+        assert_eq!(&self.order.clone().unwrap().for_customer, customer_id);
+        assert_eq!(self.order.clone().unwrap().order_items.len(), 1);
+
+        let binding = self.order.clone().unwrap();
+        let order_item = binding.order_items.iter().next().unwrap();
+        assert_eq!(order_item.meal_id, *meal_id);
+        assert_eq!(order_item.count, *count_items);
+        assert_eq!(order_item.price, *price_items);
+    }
+    pub fn verify_events_after_cancellation(&self, id: &ShopOrderId) {
+        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let first_event = events.first().unwrap().clone();
+        let etalon_event = ShopOrderCancelledDomainEvent::new(*id);
+        assert_eq!(events.len(), 1);
+        assert_eq!(
+            discriminant(&Into::<ShopOrderEventEnum>::into(first_event.clone())),
+            discriminant(&Into::<ShopOrderEventEnum>::into(etalon_event))
+        );
+        let first_event_struct: ShopOrderCancelledDomainEvent = first_event.try_into().unwrap();
+        assert_eq!(first_event_struct.order_id, *id);
+    }
+    pub fn verify_events_after_completion(&mut self, id: &ShopOrderId) {
+        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let first_event = events.first().unwrap().clone();
+        let etalon_event = ShopOrderCompletedDomainEvent::new(*id);
+        assert_eq!(events.len(), 1);
+        assert_eq!(
+            discriminant(&Into::<ShopOrderEventEnum>::into(first_event.clone())),
+            discriminant(&Into::<ShopOrderEventEnum>::into(etalon_event))
+        );
+        let first_event_struct: ShopOrderCompletedDomainEvent = first_event.try_into().unwrap();
+        assert_eq!(first_event_struct.order_id, *id);
+    }
+
+    pub fn verify_events_after_confirmation(&mut self, id: &ShopOrderId) {
+        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let first_event = events.first().unwrap().clone();
+        let etalon_event = ShopOrderConfirmedDomainEvent::new(*id);
+        assert_eq!(events.len(), 1);
+        assert_eq!(
+            discriminant(&Into::<ShopOrderEventEnum>::into(first_event.clone())),
+            discriminant(&Into::<ShopOrderEventEnum>::into(etalon_event))
+        );
+        let first_event_struct: ShopOrderConfirmedDomainEvent = first_event.try_into().unwrap();
+        assert_eq!(first_event_struct.order_id, *id);
+    }
+
+    pub fn verify_events_after_payment(&mut self, id: &ShopOrderId) {
+        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let first_event = events.first().unwrap().clone();
+        let etalon_event = ShopOrderPaidDomainEvent::new(*id);
+        assert_eq!(events.len(), 1);
+        assert_eq!(
+            discriminant(&Into::<ShopOrderEventEnum>::into(first_event.clone())),
+            discriminant(&Into::<ShopOrderEventEnum>::into(etalon_event))
+        );
+        let first_event_struct: ShopOrderPaidDomainEvent = first_event.try_into().unwrap();
+        assert_eq!(first_event_struct.order_id, *id);
+    }
+
+    pub fn verify_price(&self, price: &Price) {
+        assert_eq!(self.order.clone().unwrap().total_price(), *price);
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(self.order.is_none());
+    }
+}
+
+#[derive(new, Clone, Eq, PartialEq, Debug, Default)]
+pub struct MockOrderExporter {
+    pub id: ShopOrderId,
+    pub customer_id: CustomerId,
+    pub total_price: Price,
+}
+
+impl OrderExporter for MockOrderExporter {
+    fn export_order(&mut self, id: ShopOrderId, customer_id: CustomerId, total_price: Price) {
+        self.id = id;
+        self.customer_id = customer_id;
+        self.total_price = total_price;
+    }
+}
+
+impl MockOrderExporter {
+    pub fn verify_invoked(&self, id: ShopOrderId, customer_id: CustomerId, total_price: Price) {
+        assert_eq!(self.id, id);
+        assert_eq!(self.customer_id, customer_id);
+        assert_eq!(self.total_price, total_price);
+    }
+}
+
+#[derive(new, Debug, Default)]
+pub struct MockCustomerHasActiveOrder {
+    pub has_active: bool,
+    #[new(value = "Default::default()")]
+    pub for_customer: Option<CustomerId>,
+}
+
+impl MockCustomerHasActiveOrder {
+    pub fn verify_invoked(&self, for_customer: &CustomerId) {
+        assert_eq!(&self.for_customer.unwrap(), for_customer);
+    }
+
+    pub fn verify_empty(&self) {
+        assert!(&self.for_customer.is_none())
+    }
+}
+
+impl CustomerHasActiveOrder for MockCustomerHasActiveOrder {
+    fn invoke(&mut self, for_customer: CustomerId) -> bool {
+        self.for_customer = Some(for_customer);
+        self.has_active
     }
 }

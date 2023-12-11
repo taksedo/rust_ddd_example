@@ -344,7 +344,8 @@ fn calculate_total() {
         Price::try_from(BigDecimal::new(BigInt::from(36738), 2)).unwrap()
     )
 }
-#[derive(new, Default)]
+
+#[derive(new, Default, Debug)]
 struct HashMapStoragePriceProvider {
     storage: HashMap<MealId, Price>,
 }
@@ -356,7 +357,7 @@ impl GetMealPrice for HashMapStoragePriceProvider {
     }
 }
 
-#[derive(SmartDefault)]
+#[derive(SmartDefault, Debug)]
 struct MockOrderIdGenerator {
     #[default(rnd_order_id())]
     id: ShopOrderId,
@@ -368,13 +369,13 @@ impl ShopOrderIdGenerator for MockOrderIdGenerator {
     }
 }
 
-#[derive(new)]
+#[derive(new, Debug)]
 struct MockCustomerHasActiveOrder {
     status: bool,
 }
 
 impl CustomerHasActiveOrder for MockCustomerHasActiveOrder {
-    fn invoke(&self, _for_customer: CustomerId) -> bool {
+    fn invoke(&mut self, _for_customer: CustomerId) -> bool {
         self.status
     }
 }
