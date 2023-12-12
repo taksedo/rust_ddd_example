@@ -12,14 +12,14 @@ use crate::main::order::get_orders::{GetOrders, GetOrdersUseCaseError};
 #[derive(new, Debug)]
 pub struct GetOrdersUseCase {
     shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
-    limit: fn() -> i32,
+    limit: fn() -> usize,
 }
 
 impl GetOrders for GetOrdersUseCase {
     fn execute(
         &self,
         start_id: ShopOrderId,
-        limit: i32,
+        limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError> {
         let curr_limit = (self.limit)();
         if curr_limit < limit {

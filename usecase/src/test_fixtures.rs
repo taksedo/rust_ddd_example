@@ -332,7 +332,7 @@ impl ShopOrderExtractor for MockShopOrderExtractor {
         }
     }
 
-    fn get_all(&mut self, _start_id: ShopOrderId, _limit: i32) -> Vec<ShopOrder> {
+    fn get_all(&mut self, _start_id: ShopOrderId, _limit: usize) -> Vec<ShopOrder> {
         self.all = true;
         if self.order.is_some() {
             vec![self.order.clone().unwrap()]

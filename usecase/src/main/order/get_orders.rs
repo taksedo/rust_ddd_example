@@ -11,12 +11,12 @@ pub trait GetOrders: Debug + Send {
     fn execute(
         &self,
         start_id: ShopOrderId,
-        limit: i32,
+        limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError>;
 }
 
 #[derive(new, Error, Debug, Clone, PartialEq)]
 pub enum GetOrdersUseCaseError {
     #[error("Limit is exceeded")]
-    LimitExceed(i32),
+    LimitExceed(usize),
 }
