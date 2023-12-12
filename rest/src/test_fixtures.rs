@@ -4,6 +4,7 @@ use domain::main::menu::value_objects::meal_description::MealDescription;
 use domain::main::menu::value_objects::meal_id::MealId;
 use domain::main::menu::value_objects::meal_name::MealName;
 use domain::main::menu::value_objects::price::Price;
+use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use domain::test_fixtures::{
     rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
@@ -14,6 +15,7 @@ use usecase::main::menu::get_menu::GetMenu;
 use usecase::main::menu::remove_meal_from_menu::{
     RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
 };
+use usecase::main::order::cancel_order::{CancelOrder, CancelOrderUseCaseError};
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";
 
@@ -133,6 +135,20 @@ pub struct MockRemoveMealFromMenu {
 impl RemoveMealFromMenu for MockRemoveMealFromMenu {
     fn execute(&mut self, id: MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
         self.id = id;
+        self.response
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, SmartDefault)]
+pub struct MockCancelOrder {
+    #[default(Ok(()))]
+    pub response: Result<(), CancelOrderUseCaseError>,
+    pub id: ShopOrderId,
+}
+
+impl CancelOrder for MockCancelOrder {
+    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
+        self.id = order_id;
         self.response
     }
 }

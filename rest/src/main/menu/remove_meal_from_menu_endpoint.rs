@@ -10,7 +10,7 @@ use usecase::main::menu::remove_meal_from_menu::{
     RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
 };
 
-use crate::main::menu::to_error::ToRestError;
+use crate::main::to_error::ToRestError;
 
 pub async fn execute<T: RemoveMealFromMenu + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,

@@ -17,7 +17,7 @@ use usecase::main::menu::add_meal_to_menu::AddMealToMenuUseCaseError;
 
 use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
 use crate::main::menu::add_meal_to_menu_endpoint;
-use crate::main::menu::add_meal_to_menu_endpoint::MealStruct;
+use crate::main::menu::add_meal_to_menu_endpoint::AddMealToMenuRestRequest;
 use crate::test_fixtures::{MockAddMealToMenu, StringMethodsForRestTestExt};
 
 #[actix_web::test]
@@ -33,7 +33,7 @@ async fn created_successfully() {
 
     let mock_shared_state = mock_shared_state(&mock_add_meal_to_menu);
 
-    let meal = Json(MealStruct::new(
+    let meal = Json(AddMealToMenuRestRequest::new(
         meal_name.clone().to_string(),
         meal_description.clone().to_string(),
         price.to_bigdecimal().to_f64().unwrap(),
@@ -66,7 +66,7 @@ async fn validation_error() {
     let mock_add_meal_to_menu = mock_add_meal_to_menu();
     let mock_shared_state = mock_shared_state(&mock_add_meal_to_menu);
 
-    let meal = Json(MealStruct::new(
+    let meal = Json(AddMealToMenuRestRequest::new(
         "".to_string(),
         "".to_string(),
         BigDecimal::new(BigInt::from(1), 20).to_f64().unwrap(),
@@ -97,7 +97,7 @@ async fn meal_already_exists() {
     let mock_add_meal_to_menu = mock_add_meal_to_menu();
     let mock_shared_state = mock_shared_state(&mock_add_meal_to_menu);
     mock_add_meal_to_menu.lock().unwrap().response = Err(AddMealToMenuUseCaseError::AlreadyExists);
-    let meal = Json(MealStruct::new(
+    let meal = Json(AddMealToMenuRestRequest::new(
         rnd_meal_name().to_string(),
         rnd_meal_description().to_string(),
         rnd_price().to_f64(),
