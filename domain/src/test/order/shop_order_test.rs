@@ -364,7 +364,7 @@ struct MockOrderIdGenerator {
 }
 
 impl ShopOrderIdGenerator for MockOrderIdGenerator {
-    fn generate(&self) -> ShopOrderId {
+    fn generate(&mut self) -> ShopOrderId {
         self.id
     }
 }

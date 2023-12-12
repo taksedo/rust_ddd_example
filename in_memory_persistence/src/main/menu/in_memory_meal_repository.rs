@@ -33,7 +33,7 @@ impl MealPersister for InMemoryMealRepository {
 
 impl MealExtractor for InMemoryMealRepository {
     fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
-        self.storage.get(&id).map(|x| x.to_owned()).take()
+        self.storage.get(&id).map(|meal| meal.to_owned()).take()
     }
 
     fn get_by_name(&mut self, name: MealName) -> Option<Meal> {

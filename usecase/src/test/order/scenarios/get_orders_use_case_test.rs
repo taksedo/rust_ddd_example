@@ -10,7 +10,7 @@ use crate::test_fixtures::MockShopOrderExtractor;
 #[test]
 fn storage_is_empty() {
     let order_id = rnd_order_id();
-    let limit: fn() -> i32 = || 10;
+    let limit: fn() -> usize = || 10;
 
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     let use_case = GetOrdersUseCase::new(Arc::clone(&extractor) as _, limit);
@@ -24,7 +24,7 @@ fn storage_is_empty() {
 
 #[test]
 fn storage_is_not_empty() {
-    let limit: fn() -> i32 = || 10;
+    let limit: fn() -> usize = || 10;
 
     let order = rnd_order(Default::default());
     let order_id = order.entity_params.id;
@@ -42,7 +42,7 @@ fn storage_is_not_empty() {
 
 #[test]
 fn limit_exceed() {
-    let limit: fn() -> i32 = || 10;
+    let limit: fn() -> usize = || 10;
     let order_id = rnd_order_id();
 
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
