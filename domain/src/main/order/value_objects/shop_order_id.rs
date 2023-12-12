@@ -24,7 +24,7 @@ impl TryFrom<i64> for ShopOrderId {
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         match value {
-            x if x >= 0 && x < i64::MAX => Ok(ShopOrderId { value }),
+            x if (0..i64::MAX).contains(&x) => Ok(ShopOrderId { value }),
             _ => Err(ShopOrderError::IdGenerationError),
         }
     }

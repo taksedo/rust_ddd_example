@@ -39,17 +39,13 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
     }
 
     fn get_last_order(&mut self, for_customer: CustomerId) -> Option<ShopOrder> {
-        match self
-            .storage
+        self.storage
             .values()
             .filter(|order| order.for_customer == for_customer)
             .collect::<Vec<_>>()
             .into_iter()
             .max_by(|o1, o2| o1.created.cmp(&o2.created))
-        {
-            None => None,
-            Some(result) => Some(result.clone()),
-        }
+            .cloned()
     }
 
     fn get_all(&mut self, start_id: ShopOrderId, limit: usize) -> Vec<ShopOrder> {
