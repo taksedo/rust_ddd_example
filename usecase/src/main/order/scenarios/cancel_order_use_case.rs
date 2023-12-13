@@ -15,7 +15,7 @@ pub struct CancelOrderUseCase {
 }
 
 impl CancelOrder for CancelOrderUseCase {
-    fn execute(&self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
+    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
         self.shop_order_extractor
             .lock()
             .unwrap()

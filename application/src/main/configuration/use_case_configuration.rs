@@ -12,8 +12,13 @@ use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCa
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
 use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
+use usecase::main::order::access::shop_order_extractor::ShopOrderExtractor;
+use usecase::main::order::access::shop_order_persister::ShopOrderPersister;
+use usecase::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
 
-use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_REPOSITORY};
+use crate::main::configuration::persistence_configuration::{
+    MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY,
+};
 
 lazy_static! {
     pub static ref ADD_MEAL_TO_MENU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =
@@ -31,6 +36,9 @@ lazy_static! {
         Data::new(Arc::clone(&remove_meal_from_menu_usecase(Arc::clone(
             &MEAL_REPOSITORY,
         ))));
+    pub static ref CANCEL_ORDER_USECASE: Data<Arc<Mutex<CancelOrderUseCase>>> = Data::new(
+        Arc::clone(&cancel_order_usecase(Arc::clone(&ORDER_REPOSITORY)))
+    );
 }
 
 pub fn add_meal_to_menu_use_case<U, V>(
@@ -76,6 +84,17 @@ where
     let usecase = RemoveMealFromMenuUseCase::new(
         Arc::clone(&meal_repository) as _,
         Arc::clone(&meal_repository) as _,
+    );
+    Arc::new(Mutex::new(usecase))
+}
+
+pub fn cancel_order_usecase<U>(order_repository: Arc<Mutex<U>>) -> Arc<Mutex<CancelOrderUseCase>>
+where
+    U: Debug + Send + ShopOrderExtractor + ShopOrderPersister + 'static,
+{
+    let usecase = CancelOrderUseCase::new(
+        Arc::clone(&order_repository) as _,
+        Arc::clone(&order_repository) as _,
     );
     Arc::new(Mutex::new(usecase))
 }

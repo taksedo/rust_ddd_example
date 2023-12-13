@@ -9,7 +9,7 @@ use domain::main::menu::value_objects::meal_id::MealId;
 use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
 
 use crate::main::menu::meal_model::MealModel;
-use crate::main::menu::to_error::ToRestError;
+use crate::main::to_error::ToRestError;
 
 pub async fn execute<T: GetMealById + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,

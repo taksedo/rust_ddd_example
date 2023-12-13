@@ -17,11 +17,11 @@ use domain::main::menu::value_objects::price::Price;
 use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 
 use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
-use crate::main::menu::to_error::ToRestError;
 use crate::main::menu::validation::Validated;
+use crate::main::to_error::ToRestError;
 
 #[derive(new, Serialize, Deserialize, Debug)]
-pub struct MealStruct {
+pub struct AddMealToMenuRestRequest {
     name: String,
     description: String,
     price: f64,
@@ -29,7 +29,7 @@ pub struct MealStruct {
 
 pub async fn execute<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
-    request: web::Json<MealStruct>,
+    request: web::Json<AddMealToMenuRestRequest>,
 ) -> HttpResponse
 where
     T: AddMealToMenu + Send + Debug,
