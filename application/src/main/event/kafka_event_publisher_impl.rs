@@ -7,6 +7,7 @@ use derive_new::new;
 use kafka::producer::{Producer, Record, RequiredAcks};
 
 use domain::main::menu::meal_events::MealEventEnum;
+use domain::main::order::customer_order_events::ShopOrderEventEnum;
 
 #[derive(new)]
 pub struct KafkaEventPublisherImpl {
@@ -44,6 +45,18 @@ impl DomainEventPublisher<MealEventEnum> for KafkaEventPublisherImpl {
     }
 }
 
+impl DomainEventPublisher<ShopOrderEventEnum> for KafkaEventPublisherImpl {
+    fn publish(&mut self, events: &Vec<ShopOrderEventEnum>) {
+        events.iter().for_each(|event| {
+            let event_serialized: String = serde_json::to_string(event).unwrap();
+            let msg = Record::from_value(ORDER_TOPIC_NAME, event_serialized.as_bytes());
+            self.producer
+                .send(&msg)
+                .expect("Something is wrong with sending to Kafka");
+        })
+    }
+}
+
 impl Debug for KafkaEventPublisherImpl {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("KafkaEventPublisherImpl")
@@ -54,3 +67,4 @@ impl Debug for KafkaEventPublisherImpl {
 }
 
 pub const MEAL_TOPIC_NAME: &str = "meal_topic";
+pub const ORDER_TOPIC_NAME: &str = "order_topic";

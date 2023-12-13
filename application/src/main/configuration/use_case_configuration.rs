@@ -16,7 +16,9 @@ use usecase::main::order::access::shop_order_extractor::ShopOrderExtractor;
 use usecase::main::order::access::shop_order_persister::ShopOrderPersister;
 use usecase::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
 
-use crate::main::configuration::persistence_configuration::{MEAL_ID_GENERATOR, MEAL_REPOSITORY};
+use crate::main::configuration::persistence_configuration::{
+    MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY,
+};
 
 lazy_static! {
     pub static ref ADD_MEAL_TO_MENU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =
@@ -34,6 +36,9 @@ lazy_static! {
         Data::new(Arc::clone(&remove_meal_from_menu_usecase(Arc::clone(
             &MEAL_REPOSITORY,
         ))));
+    pub static ref CANCEL_ORDER_USECASE: Data<Arc<Mutex<CancelOrderUseCase>>> = Data::new(
+        Arc::clone(&cancel_order_usecase(Arc::clone(&ORDER_REPOSITORY)))
+    );
 }
 
 pub fn add_meal_to_menu_use_case<U, V>(

@@ -23,7 +23,7 @@ use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFro
 use usecase::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
 
 use crate::main::configuration::use_case_configuration::{
-    ADD_MEAL_TO_MENU_USE_CASE, GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE,
+    ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE,
     REMOVE_MEAL_FROM_MENU_USECASE,
 };
 
@@ -48,6 +48,7 @@ pub async fn start_web_backend() -> std::io::Result<()> {
             .app_data(GET_MEAL_BY_ID_USE_CASE.clone())
             .app_data(GET_MENU_USE_CASE.clone())
             .app_data(REMOVE_MEAL_FROM_MENU_USECASE.clone())
+            .app_data(CANCEL_ORDER_USECASE.clone())
             .wrap(
                 Cors::default()
                     .allowed_origin(&env::var("HOST_URL").unwrap())
