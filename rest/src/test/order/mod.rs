@@ -1,1 +1,2 @@
 mod cancel_order_endpoint_test;
+mod confirm_order_endpoint_test;

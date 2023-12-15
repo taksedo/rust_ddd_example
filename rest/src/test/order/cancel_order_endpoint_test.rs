@@ -1,24 +1,5 @@
 #![allow(unused_imports)]
 
-use std::sync::{Arc, Mutex};
-
-use actix_web::body::MessageBody;
-use actix_web::http::StatusCode;
-use actix_web::{test, web};
-use common::common_rest::main::rest_responses::{
-    error_type_url, not_found_type_url, GenericErrorResponse,
-};
-use dotenvy::dotenv;
-
-use domain::test_fixtures::rnd_order_id;
-use usecase::main::order::cancel_order::CancelOrderUseCaseError;
-
-use crate::main::endpoint_url::API_V1_ORDER_CANCEL_BY_ID;
-use crate::main::menu::remove_meal_from_menu_endpoint;
-use crate::main::order::cancel_order_endpoint;
-use crate::test_fixtures::MockCancelOrder;
-use crate::test_fixtures::StringMethodsForRestTestExt;
-
 #[actix_web::test]
 async fn order_not_found() {
     dotenv().ok();
@@ -28,14 +9,8 @@ async fn order_not_found() {
 
     let mock_shared_state = web::Data::new(Arc::clone(&mock_cancel_order));
 
-    let url = API_V1_ORDER_CANCEL_BY_ID
-        .to_string()
-        .with_id(&order_id.to_i64())
-        .with_host();
-
     let req = test::TestRequest::default()
-        .uri(&url)
-        .param("id", order_id.to_i64().clone().to_string())
+        .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
     let resp = cancel_order_endpoint::execute(mock_shared_state, req).await;
@@ -64,14 +39,8 @@ async fn invalid_order_state() {
 
     let mock_shared_state = web::Data::new(Arc::clone(&mock_cancel_order));
 
-    let url = API_V1_ORDER_CANCEL_BY_ID
-        .to_string()
-        .with_id(&order_id.to_i64())
-        .with_host();
-
     let req = test::TestRequest::default()
-        .uri(&url)
-        .param("id", order_id.to_i64().clone().to_string())
+        .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
     let resp = cancel_order_endpoint::execute(mock_shared_state, req).await;
@@ -103,14 +72,8 @@ async fn successfully_cancelled() {
 
     let mock_shared_state = web::Data::new(Arc::clone(&mock_cancel_order));
 
-    let url = API_V1_ORDER_CANCEL_BY_ID
-        .to_string()
-        .with_id(&order_id.to_i64())
-        .with_host();
-
     let req = test::TestRequest::default()
-        .uri(&url)
-        .param("id", order_id.to_i64().clone().to_string())
+        .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
     let resp = cancel_order_endpoint::execute(mock_shared_state, req).await;

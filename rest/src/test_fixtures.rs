@@ -16,6 +16,7 @@ use usecase::main::menu::remove_meal_from_menu::{
     RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
 };
 use usecase::main::order::cancel_order::{CancelOrder, CancelOrderUseCaseError};
+use usecase::main::order::confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError};
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";
 
@@ -148,6 +149,20 @@ pub struct MockCancelOrder {
 
 impl CancelOrder for MockCancelOrder {
     fn execute(&mut self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
+        self.id = order_id;
+        self.response
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, SmartDefault)]
+pub struct MockConfirmOrder {
+    #[default(Ok(()))]
+    pub response: Result<(), ConfirmOrderUseCaseError>,
+    pub id: ShopOrderId,
+}
+
+impl ConfirmOrder for MockConfirmOrder {
+    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
         self.id = order_id;
         self.response
     }
