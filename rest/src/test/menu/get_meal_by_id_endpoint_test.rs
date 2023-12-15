@@ -2,23 +2,9 @@
 
 use std::sync::{Arc, Mutex};
 
-use actix_web::body::MessageBody;
-use actix_web::http::StatusCode;
 use actix_web::web::Data;
-use actix_web::{test, web};
-use bigdecimal::ToPrimitive;
-use common::common_rest::main::rest_responses::not_found_type_url;
-use common::common_rest::main::rest_responses::GenericErrorResponse;
-use dotenvy::dotenv;
 
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::test_fixtures::rnd_meal_id;
-use usecase::main::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
-
-use crate::main::endpoint_url::API_V1_MENU_GET_BY_ID;
-use crate::main::menu::get_meal_by_id_endpoint;
-use crate::main::menu::meal_model::MealModel;
-use crate::test_fixtures::{rnd_meal_info, MockGetMealById, StringMethodsForRestTestExt};
+use crate::test_fixtures::MockGetMealById;
 
 #[actix_web::test]
 async fn returned_successfully() {
@@ -29,13 +15,7 @@ async fn returned_successfully() {
 
     mock_get_meal_by_id.lock().unwrap().response = Ok(meal_info.clone());
 
-    let url = API_V1_MENU_GET_BY_ID
-        .to_string()
-        .with_id(&meal_info.id.to_i64())
-        .with_host();
-
     let req = test::TestRequest::default()
-        .uri(&url)
         .param("id", meal_info.id.to_i64().to_string())
         .to_http_request();
 
@@ -64,12 +44,7 @@ async fn meal_not_found() {
 
     let meal_id = rnd_meal_id().to_i64();
 
-    let url = API_V1_MENU_GET_BY_ID
-        .to_string()
-        .with_id(&meal_id)
-        .with_host();
     let req = test::TestRequest::default()
-        .uri(&url)
         .param("id", meal_id.to_string())
         .to_http_request();
 

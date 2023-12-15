@@ -9,22 +9,23 @@ use dotenvy::dotenv;
 
 use rest::main::endpoint_url::{
     API_V1_MENU_ADD_TO_MENU, API_V1_MENU_DELETE_BY_ID, API_V1_MENU_GET_ALL, API_V1_MENU_GET_BY_ID,
-    API_V1_ORDER_CANCEL_BY_ID,
+    API_V1_ORDER_CANCEL_BY_ID, API_V1_ORDER_CONFIRM_BY_ID,
 };
 use rest::main::menu::{
     add_meal_to_menu_endpoint, get_health_status, get_meal_by_id_endpoint, get_menu_endpoint,
     remove_meal_from_menu_endpoint,
 };
-use rest::main::order::cancel_order_endpoint;
+use rest::main::order::{cancel_order_endpoint, confirm_order_endpoint};
 use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
 use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
 use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
 use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
 use usecase::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
+use usecase::main::order::scenarios::confirm_order_use_case::ConfirmOrderUseCase;
 
 use crate::main::configuration::use_case_configuration::{
-    ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE,
-    REMOVE_MEAL_FROM_MENU_USECASE,
+    ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
+    GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, REMOVE_MEAL_FROM_MENU_USECASE,
 };
 
 #[actix_web::main]
@@ -49,6 +50,7 @@ pub async fn start_web_backend() -> std::io::Result<()> {
             .app_data(GET_MENU_USE_CASE.clone())
             .app_data(REMOVE_MEAL_FROM_MENU_USECASE.clone())
             .app_data(CANCEL_ORDER_USECASE.clone())
+            .app_data(CONFIRM_ORDER_USECASE.clone())
             .wrap(
                 Cors::default()
                     .allowed_origin(&env::var("HOST_URL").unwrap())
@@ -83,6 +85,10 @@ pub async fn start_web_backend() -> std::io::Result<()> {
             .route(
                 API_V1_ORDER_CANCEL_BY_ID,
                 web::put().to(cancel_order_endpoint::execute::<CancelOrderUseCase>),
+            )
+            .route(
+                API_V1_ORDER_CONFIRM_BY_ID,
+                web::put().to(confirm_order_endpoint::execute::<ConfirmOrderUseCase>),
             )
             .route("/health", web::get().to(get_health_status::execute))
     })

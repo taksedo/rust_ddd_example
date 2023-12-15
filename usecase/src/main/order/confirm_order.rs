@@ -5,10 +5,10 @@ use thiserror::Error;
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 
 pub trait ConfirmOrder: Debug + Send {
-    fn execute(&self, order_id: ShopOrderId) -> Result<(), ConfirmOrderUseCaseError>;
+    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), ConfirmOrderUseCaseError>;
 }
 
-#[derive(Error, Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq, Copy, Clone)]
 pub enum ConfirmOrderUseCaseError {
     #[error("Order not found")]
     OrderNotFound,
