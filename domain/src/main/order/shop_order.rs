@@ -1,30 +1,33 @@
-use std::collections::hash_map::DefaultHasher;
-use std::collections::HashSet;
-use std::hash::{Hash, Hasher};
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::{hash_map::DefaultHasher, HashSet},
+    hash::{Hash, Hasher},
+    sync::{Arc, Mutex},
+};
 
-use common::types::main::base::domain_entity::{DomainEntity, DomainEntityTrait};
-use common::types::main::common::address::Address;
-use common::types::main::common::count::Count;
+use common::types::main::{
+    base::domain_entity::{DomainEntity, DomainEntityTrait},
+    common::{address::Address, count::Count},
+};
 use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-use crate::main::cart::cart::Cart;
-use crate::main::cart::value_objects::customer_id::CustomerId;
-use crate::main::menu::value_objects::meal_id::MealId;
-use crate::main::menu::value_objects::price::Price;
-use crate::main::order::customer_has_active_order::CustomerHasActiveOrder;
-use crate::main::order::customer_order_events::{
-    ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent, ShopOrderConfirmedDomainEvent,
-    ShopOrderCreatedDomainEvent, ShopOrderEventEnum, ShopOrderPaidDomainEvent,
+use crate::main::{
+    cart::{cart::Cart, value_objects::customer_id::CustomerId},
+    menu::value_objects::{meal_id::MealId, price::Price},
+    order::{
+        customer_has_active_order::CustomerHasActiveOrder,
+        customer_order_events::{
+            ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent,
+            ShopOrderConfirmedDomainEvent, ShopOrderCreatedDomainEvent, ShopOrderEventEnum,
+            ShopOrderPaidDomainEvent,
+        },
+        get_meal_price::GetMealPrice,
+        shop_order::OrderState::{Cancelled, Completed, Confirmed, Paid, WaitingForPayment},
+        value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator},
+    },
 };
-use crate::main::order::get_meal_price::GetMealPrice;
-use crate::main::order::shop_order::OrderState::{
-    Cancelled, Completed, Confirmed, Paid, WaitingForPayment,
-};
-use crate::main::order::value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, SmartDefault)]
 pub struct ShopOrder {

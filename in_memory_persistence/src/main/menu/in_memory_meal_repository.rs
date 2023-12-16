@@ -1,18 +1,21 @@
-use std::collections::HashMap;
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
-use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::{
+    events::main::domain_event_publisher::DomainEventPublisher,
+    types::main::base::domain_entity::DomainEntityTrait,
+};
 use derivative::Derivative;
 use derive_new::new;
-
-use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::MealEventEnum;
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::meal_name::MealName;
-use usecase::main::menu::access::meal_extractor::MealExtractor;
-use usecase::main::menu::access::meal_persister::MealPersister;
+use domain::main::menu::{
+    meal::Meal,
+    meal_events::MealEventEnum,
+    value_objects::{meal_id::MealId, meal_name::MealName},
+};
+use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryMealRepository {

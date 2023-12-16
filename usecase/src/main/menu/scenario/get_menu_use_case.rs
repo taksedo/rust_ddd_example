@@ -2,9 +2,9 @@ use std::sync::{Arc, Mutex};
 
 use derive_new::new;
 
-use crate::main::menu::access::meal_extractor::MealExtractor;
-use crate::main::menu::dto::meal_info::MealInfo;
-use crate::main::menu::get_menu::GetMenu;
+use crate::main::menu::{
+    access::meal_extractor::MealExtractor, dto::meal_info::MealInfo, get_menu::GetMenu,
+};
 
 #[derive(Debug, new)]
 pub struct GetMenuUseCase {

@@ -1,10 +1,12 @@
-use std::ops::{Add, Mul};
-use std::str::FromStr;
+use std::{
+    ops::{Add, Mul},
+    str::FromStr,
+};
 
 use bigdecimal::*;
-use common::types::main::base::value_object::ValueObject;
-use common::types::main::common::count::Count;
-use common::types::main::errors::error::BusinessError;
+use common::types::main::{
+    base::value_object::ValueObject, common::count::Count, errors::error::BusinessError,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]

@@ -1,12 +1,15 @@
 use std::sync::{Arc, Mutex};
 
 use common::events::main::domain_event_listener::DomainEventListener;
+use domain::{
+    main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum},
+    test_fixtures::{rnd_customer_id, rnd_order_id, rnd_price},
+};
 
-use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
-use domain::test_fixtures::{rnd_customer_id, rnd_order_id, rnd_price};
-
-use crate::main::order::rules::export_order_after_checkout_rule::ExportOrderAfterCheckoutRule;
-use crate::test_fixtures::MockOrderExporter;
+use crate::{
+    main::order::rules::export_order_after_checkout_rule::ExportOrderAfterCheckoutRule,
+    test_fixtures::MockOrderExporter,
+};
 
 #[test]
 fn order_has_been_exported() {

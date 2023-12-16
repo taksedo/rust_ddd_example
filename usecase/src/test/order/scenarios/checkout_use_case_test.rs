@@ -1,25 +1,32 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
-
-use actix_web::http::Uri;
-use common::types::main::common::address::Address;
-use common::types::test_fixtures::rnd_count;
-use derive_new::new;
-use smart_default::SmartDefault;
-
-use domain::main::cart::value_objects::customer_id::CustomerId;
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::price::Price;
-use domain::main::order::get_meal_price::GetMealPrice;
-use domain::main::order::value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
-use domain::test_fixtures::{
-    rnd_address, rnd_cart, rnd_customer_id, rnd_meal, rnd_order_id, rnd_price,
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
 };
 
-use crate::main::order::checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError};
-use crate::main::order::providers::payment_url_provider::PaymentUrlProvider;
-use crate::main::order::scenarios::checkout_use_case::CheckoutUseCase;
-use crate::test_fixtures::{MockCartExtractor, MockCustomerHasActiveOrder, MockShopOrderPersister};
+use actix_web::http::Uri;
+use common::types::{main::common::address::Address, test_fixtures::rnd_count};
+use derive_new::new;
+use domain::{
+    main::{
+        cart::value_objects::customer_id::CustomerId,
+        menu::value_objects::{meal_id::MealId, price::Price},
+        order::{
+            get_meal_price::GetMealPrice,
+            value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator},
+        },
+    },
+    test_fixtures::{rnd_address, rnd_cart, rnd_customer_id, rnd_meal, rnd_order_id, rnd_price},
+};
+use smart_default::SmartDefault;
+
+use crate::{
+    main::order::{
+        checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError},
+        providers::payment_url_provider::PaymentUrlProvider,
+        scenarios::checkout_use_case::CheckoutUseCase,
+    },
+    test_fixtures::{MockCartExtractor, MockCustomerHasActiveOrder, MockShopOrderPersister},
+};
 
 #[test]
 fn order_created_successfully() {

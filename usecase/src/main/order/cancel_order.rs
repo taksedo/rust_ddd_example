@@ -1,8 +1,7 @@
 use std::fmt::Debug;
 
-use thiserror::Error;
-
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
+use thiserror::Error;
 
 pub trait CancelOrder: Debug + Send {
     fn execute(&mut self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError>;

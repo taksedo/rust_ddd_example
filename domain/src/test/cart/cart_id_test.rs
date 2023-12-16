@@ -1,7 +1,6 @@
 use rand::{thread_rng, Rng};
 
-use crate::main::cart::cart::CartError;
-use crate::main::cart::value_objects::cart_id::CartId;
+use crate::main::cart::{cart::CartError, value_objects::cart_id::CartId};
 
 #[test]
 fn check_equality() {

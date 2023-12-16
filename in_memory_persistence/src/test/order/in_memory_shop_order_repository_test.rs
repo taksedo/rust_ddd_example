@@ -1,15 +1,20 @@
 use std::sync::{Arc, Mutex};
 
-use domain::main::order::customer_order_events::{
-    ShopOrderCompletedDomainEvent, ShopOrderEventEnum,
+use domain::{
+    main::order::{
+        customer_order_events::{ShopOrderCompletedDomainEvent, ShopOrderEventEnum},
+        value_objects::shop_order_id::ShopOrderId,
+    },
+    test_fixtures::{rnd_customer_id, rnd_order, rnd_order_id},
 };
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use domain::test_fixtures::{rnd_customer_id, rnd_order, rnd_order_id};
-use usecase::main::order::access::shop_order_extractor::ShopOrderExtractor;
-use usecase::main::order::access::shop_order_persister::ShopOrderPersister;
+use usecase::main::order::access::{
+    shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister,
+};
 
-use crate::main::order::in_memory_shop_order_repository::InMemoryShopOrderRepository;
-use crate::test_fixtures::{order_with_events, TestEventPublisher};
+use crate::{
+    main::order::in_memory_shop_order_repository::InMemoryShopOrderRepository,
+    test_fixtures::{order_with_events, TestEventPublisher},
+};
 
 #[test]
 fn saving_order_order_doesnt_exist() {

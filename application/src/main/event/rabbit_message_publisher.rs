@@ -1,8 +1,10 @@
 use async_trait::async_trait;
 use derive_new::new;
-use lapin::options::{BasicPublishOptions, QueueDeclareOptions};
-use lapin::types::FieldTable;
-use lapin::{BasicProperties, Connection, ConnectionProperties};
+use lapin::{
+    options::{BasicPublishOptions, QueueDeclareOptions},
+    types::FieldTable,
+    BasicProperties, Connection, ConnectionProperties,
+};
 use serde::Serialize;
 use tracing::info;
 

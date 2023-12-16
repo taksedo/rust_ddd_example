@@ -1,27 +1,33 @@
-use std::env;
-use std::net::IpAddr;
+use std::{env, net::IpAddr};
 
 use actix_cors::Cors;
-use actix_web::http::{header, Uri};
-use actix_web::middleware::Logger;
-use actix_web::{web, App, HttpServer};
+use actix_web::{
+    http::{header, Uri},
+    middleware::Logger,
+    web, App, HttpServer,
+};
 use dotenvy::dotenv;
-
-use rest::main::endpoint_url::{
-    API_V1_MENU_ADD_TO_MENU, API_V1_MENU_DELETE_BY_ID, API_V1_MENU_GET_ALL, API_V1_MENU_GET_BY_ID,
-    API_V1_ORDER_CANCEL_BY_ID, API_V1_ORDER_CONFIRM_BY_ID,
+use rest::main::{
+    endpoint_url::{
+        API_V1_MENU_ADD_TO_MENU, API_V1_MENU_DELETE_BY_ID, API_V1_MENU_GET_ALL,
+        API_V1_MENU_GET_BY_ID, API_V1_ORDER_CANCEL_BY_ID, API_V1_ORDER_CONFIRM_BY_ID,
+    },
+    menu::{
+        add_meal_to_menu_endpoint, get_health_status, get_meal_by_id_endpoint, get_menu_endpoint,
+        remove_meal_from_menu_endpoint,
+    },
+    order::{cancel_order_endpoint, confirm_order_endpoint},
 };
-use rest::main::menu::{
-    add_meal_to_menu_endpoint, get_health_status, get_meal_by_id_endpoint, get_menu_endpoint,
-    remove_meal_from_menu_endpoint,
+use usecase::main::{
+    menu::scenario::{
+        add_meal_to_menu_use_case::AddMealToMenuUseCase,
+        get_meal_by_id_use_case::GetMealByIdUseCase, get_menu_use_case::GetMenuUseCase,
+        remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
+    },
+    order::scenarios::{
+        cancel_order_use_case::CancelOrderUseCase, confirm_order_use_case::ConfirmOrderUseCase,
+    },
 };
-use rest::main::order::{cancel_order_endpoint, confirm_order_endpoint};
-use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
-use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
-use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
-use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
-use usecase::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
-use usecase::main::order::scenarios::confirm_order_use_case::ConfirmOrderUseCase;
 
 use crate::main::configuration::use_case_configuration::{
     ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,

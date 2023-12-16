@@ -2,11 +2,15 @@ use std::sync::{Arc, Mutex};
 
 use domain::test_fixtures::rnd_order_id;
 
-use crate::main::order::confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError};
-use crate::main::order::scenarios::confirm_order_use_case::ConfirmOrderUseCase;
-use crate::test_fixtures::{
-    order_not_ready_for_confirm, order_ready_for_confirm, MockShopOrderExtractor,
-    MockShopOrderPersister,
+use crate::{
+    main::order::{
+        confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError},
+        scenarios::confirm_order_use_case::ConfirmOrderUseCase,
+    },
+    test_fixtures::{
+        order_not_ready_for_confirm, order_ready_for_confirm, MockShopOrderExtractor,
+        MockShopOrderPersister,
+    },
 };
 
 #[test]
@@ -16,7 +20,7 @@ fn successfully_confirmed() {
     extractor.lock().unwrap().order = Some(order.clone());
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let use_case =
+    let mut use_case =
         ConfirmOrderUseCase::new(Arc::clone(&extractor) as _, Arc::clone(&persister) as _);
     let result = use_case.execute(order.entity_params.id);
 
@@ -42,7 +46,7 @@ fn invalid_state() {
     extractor.lock().unwrap().order = Some(order.clone());
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let use_case =
+    let mut use_case =
         ConfirmOrderUseCase::new(Arc::clone(&extractor) as _, Arc::clone(&persister) as _);
     let result = use_case.execute(order.entity_params.id);
 
@@ -64,7 +68,7 @@ fn order_not_found() {
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let use_case =
+    let mut use_case =
         ConfirmOrderUseCase::new(Arc::clone(&extractor) as _, Arc::clone(&persister) as _);
 
     let order_id = rnd_order_id();

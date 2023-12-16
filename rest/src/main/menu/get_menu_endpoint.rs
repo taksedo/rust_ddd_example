@@ -1,9 +1,9 @@
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
-use actix_web::http::header::ContentType;
-use actix_web::{web, HttpResponse};
-
+use actix_web::{http::header::ContentType, web, HttpResponse};
 use usecase::main::menu::get_menu::GetMenu;
 
 use crate::main::menu::meal_model::MealModel;

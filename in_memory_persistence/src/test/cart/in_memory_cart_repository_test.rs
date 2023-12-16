@@ -1,13 +1,17 @@
 use std::sync::{Arc, Mutex};
 
-use domain::main::cart::cart_events::{CartEventEnum, MealAddedToCartDomainEvent};
-use domain::test_fixtures::{rnd_cart, rnd_customer_id};
-use usecase::main::cart::access::cart_extractor::CartExtractor;
-use usecase::main::cart::access::cart_persister::CartPersister;
-use usecase::main::cart::access::cart_remover::CartRemover;
+use domain::{
+    main::cart::cart_events::{CartEventEnum, MealAddedToCartDomainEvent},
+    test_fixtures::{rnd_cart, rnd_customer_id},
+};
+use usecase::main::cart::access::{
+    cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
+};
 
-use crate::main::cart::in_memory_cart_repository::InMemoryCartRepository;
-use crate::test_fixtures::{cart_with_events, TestEventPublisher};
+use crate::{
+    main::cart::in_memory_cart_repository::InMemoryCartRepository,
+    test_fixtures::{cart_with_events, TestEventPublisher},
+};
 
 #[test]
 fn saving_cart_cart_doesnt_exist() {

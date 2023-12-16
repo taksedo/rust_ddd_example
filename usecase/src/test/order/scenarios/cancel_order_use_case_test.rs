@@ -2,11 +2,15 @@ use std::sync::{Arc, Mutex};
 
 use domain::test_fixtures::rnd_order_id;
 
-use crate::main::order::cancel_order::{CancelOrder, CancelOrderUseCaseError};
-use crate::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
-use crate::test_fixtures::{
-    order_not_ready_for_cancel, order_ready_for_cancel, MockShopOrderExtractor,
-    MockShopOrderPersister,
+use crate::{
+    main::order::{
+        cancel_order::{CancelOrder, CancelOrderUseCaseError},
+        scenarios::cancel_order_use_case::CancelOrderUseCase,
+    },
+    test_fixtures::{
+        order_not_ready_for_cancel, order_ready_for_cancel, MockShopOrderExtractor,
+        MockShopOrderPersister,
+    },
 };
 
 #[test]

@@ -1,14 +1,14 @@
-use std::mem::{discriminant, Discriminant};
-use std::sync::{Arc, Mutex};
+use std::{
+    mem::{discriminant, Discriminant},
+    sync::{Arc, Mutex},
+};
 
 use common::events::main::domain_event_listener::DomainEventListener;
 use derive_new::new;
+use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 use tracing::info;
 
-use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
-
-use crate::main::cart::access::cart_extractor::CartExtractor;
-use crate::main::cart::access::cart_remover::CartRemover;
+use crate::main::cart::access::{cart_extractor::CartExtractor, cart_remover::CartRemover};
 
 #[derive(new, Debug)]
 pub struct RemoveCartAfterCheckoutRule {

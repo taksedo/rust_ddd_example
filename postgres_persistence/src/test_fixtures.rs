@@ -1,22 +1,19 @@
-use std::sync::atomic::AtomicU32;
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{atomic::AtomicU32, Arc, Mutex, OnceLock};
 
 use common::events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
-use log::warn;
-use testcontainers::clients::Cli;
-use testcontainers::core::WaitFor;
-use testcontainers::Container;
-use testcontainers::GenericImage;
-use url::Url;
-
-use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::MealEventEnum;
-use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
-use domain::test_fixtures::{
-    rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists,
+use domain::{
+    main::menu::{
+        meal::Meal,
+        meal_events::MealEventEnum,
+        value_objects::meal_id::{MealId, MealIdGenerator},
+    },
+    test_fixtures::{rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists},
 };
+use log::warn;
+use testcontainers::{clients::Cli, core::WaitFor, Container, GenericImage};
+use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
 

@@ -1,13 +1,18 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use common::types::test_fixtures::rnd_count;
-
 use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_meal};
 
-use crate::main::cart::get_cart::{CartItem, GetCart, GetCartUseCaseError};
-use crate::main::cart::scenarios::get_cart_use_case::GetCartUseCase;
-use crate::test_fixtures::{MockCartExtractor, MockMealExtractor};
+use crate::{
+    main::cart::{
+        get_cart::{CartItem, GetCart, GetCartUseCaseError},
+        scenarios::get_cart_use_case::GetCartUseCase,
+    },
+    test_fixtures::{MockCartExtractor, MockMealExtractor},
+};
 
 #[test]
 fn cart_successfully_extracted() {

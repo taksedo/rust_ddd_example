@@ -1,12 +1,13 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-
 use domain::main::menu::value_objects::meal_id::MealId;
 
-use crate::main::menu::access::meal_extractor::MealExtractor;
-use crate::main::menu::dto::meal_info::MealInfo;
-use crate::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
+use crate::main::menu::{
+    access::meal_extractor::MealExtractor,
+    dto::meal_info::MealInfo,
+    get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
+};
 
 #[derive(new, Debug)]
 pub struct GetMealByIdUseCase {

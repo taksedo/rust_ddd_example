@@ -1,5 +1,3 @@
-#![allow(unused_imports)]
-
 #[actix_web::test]
 async fn order_not_found() {
     dotenv().ok();
@@ -7,9 +5,9 @@ async fn order_not_found() {
     let mock_cancel_order = Arc::new(Mutex::new(MockCancelOrder::default()));
     mock_cancel_order.lock().unwrap().response = Err(CancelOrderUseCaseError::OrderNotFound);
 
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_cancel_order));
+    let mock_shared_state = Data::new(Arc::clone(&mock_cancel_order));
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
@@ -37,9 +35,9 @@ async fn invalid_order_state() {
     let mock_cancel_order = Arc::new(Mutex::new(MockCancelOrder::default()));
     mock_cancel_order.lock().unwrap().response = Err(CancelOrderUseCaseError::InvalidOrderState);
 
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_cancel_order));
+    let mock_shared_state = Data::new(Arc::clone(&mock_cancel_order));
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
@@ -70,9 +68,9 @@ async fn successfully_cancelled() {
     let mock_cancel_order = Arc::new(Mutex::new(MockCancelOrder::default()));
     mock_cancel_order.lock().unwrap().response = Ok(());
 
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_cancel_order));
+    let mock_shared_state = Data::new(Arc::clone(&mock_cancel_order));
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 

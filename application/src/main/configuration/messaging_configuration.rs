@@ -1,5 +1,4 @@
-use std::env;
-use std::sync::OnceLock;
+use std::{env, sync::OnceLock};
 
 use dotenvy::dotenv;
 use lazy_static::lazy_static;

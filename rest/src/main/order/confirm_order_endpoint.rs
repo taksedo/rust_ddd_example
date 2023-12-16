@@ -1,10 +1,10 @@
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
-use actix_web::http::StatusCode;
-use actix_web::{web, HttpRequest, HttpResponse};
+use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
 use common::common_rest::main::rest_responses::{resource_not_found, rest_business_error};
-
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError};
 

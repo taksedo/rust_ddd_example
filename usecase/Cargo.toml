@@ -16,6 +16,7 @@ tracing-subscriber.workspace = true
 tracing.workspace = true
 tracing-test.workspace = true
 smart-default.workspace = true
+serde.workspace = true
 
 domain.workspace = true
 common.workspace = true

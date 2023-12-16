@@ -1,19 +1,25 @@
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
-use common::types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
-use common::types::main::errors::error::BusinessError;
+use common::types::main::{
+    base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
+    errors::error::BusinessError,
+};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_events::{
-    MealAddedToMenuDomainEvent, MealEventEnum, MealRemovedFromMenuDomainEvent,
+use crate::main::menu::{
+    meal_already_exists::MealAlreadyExists,
+    meal_events::{MealAddedToMenuDomainEvent, MealEventEnum, MealRemovedFromMenuDomainEvent},
+    value_objects::{
+        meal_description::MealDescription,
+        meal_id::{MealId, MealIdGenerator},
+        meal_name::MealName,
+        price::Price,
+    },
 };
-use crate::main::menu::value_objects::meal_description::MealDescription;
-use crate::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
-use crate::main::menu::value_objects::meal_name::MealName;
-use crate::main::menu::value_objects::price::Price;
 
 #[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Meal {

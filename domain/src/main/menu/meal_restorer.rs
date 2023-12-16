@@ -1,12 +1,10 @@
 use common::types::main::base::domain_entity::{DomainEntity, Version};
 
-use crate::main::menu::meal_events::MealEventEnum;
-use crate::main::menu::value_objects::meal_description::MealDescription;
-use crate::main::menu::value_objects::meal_id::MealId;
-use crate::main::menu::value_objects::price::Price;
-
-use super::meal::Meal;
-use super::value_objects::meal_name::MealName;
+use super::{meal::Meal, value_objects::meal_name::MealName};
+use crate::main::menu::{
+    meal_events::MealEventEnum,
+    value_objects::{meal_description::MealDescription, meal_id::MealId, price::Price},
+};
 
 pub struct MealRestorer {}
 

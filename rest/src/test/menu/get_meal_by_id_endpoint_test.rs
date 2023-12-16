@@ -1,10 +1,15 @@
-#![allow(unused_imports)]
-
 use std::sync::{Arc, Mutex};
 
-use actix_web::web::Data;
+use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
+use common::common_rest::main::rest_responses::{not_found_type_url, GenericErrorResponse};
+use domain::{main::menu::value_objects::meal_id::MealId, test_fixtures::rnd_meal_id};
+use dotenvy::dotenv;
+use usecase::main::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
 
-use crate::test_fixtures::MockGetMealById;
+use crate::{
+    main::menu::{get_meal_by_id_endpoint, meal_model::MealModel},
+    test_fixtures::{rnd_meal_info, MockGetMealById},
+};
 
 #[actix_web::test]
 async fn returned_successfully() {
@@ -15,7 +20,7 @@ async fn returned_successfully() {
 
     mock_get_meal_by_id.lock().unwrap().response = Ok(meal_info.clone());
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", meal_info.id.to_i64().to_string())
         .to_http_request();
 
@@ -44,7 +49,7 @@ async fn meal_not_found() {
 
     let meal_id = rnd_meal_id().to_i64();
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", meal_id.to_string())
         .to_http_request();
 

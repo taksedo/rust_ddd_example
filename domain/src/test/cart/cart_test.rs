@@ -1,19 +1,24 @@
-use std::collections::HashMap;
-use std::mem::discriminant;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    mem::discriminant,
+    sync::{Arc, Mutex},
+};
 
-use common::types::main::base::domain_entity::DomainEntityTrait;
-use common::types::main::common::count::Count;
-use common::types::test_fixtures::rnd_count;
+use common::types::{
+    main::{base::domain_entity::DomainEntityTrait, common::count::Count},
+    test_fixtures::rnd_count,
+};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-use crate::main::cart::cart::Cart;
-use crate::main::cart::cart_events::{
-    CartCreatedDomainEvent, CartEventEnum, MealAddedToCartDomainEvent,
+use crate::{
+    main::cart::{
+        cart::Cart,
+        cart_events::{CartCreatedDomainEvent, CartEventEnum, MealAddedToCartDomainEvent},
+        value_objects::cart_id::{CartId, CartIdGenerator},
+    },
+    test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal},
 };
-use crate::main::cart::value_objects::cart_id::{CartId, CartIdGenerator};
-use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
 
 #[test]
 fn create_cart_success() {

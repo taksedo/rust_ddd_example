@@ -1,17 +1,19 @@
-use crate::main::order::shop_order::OrderState;
-use crate::main::order::shop_order_restorer::ShopOrderRestorer;
-use crate::test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item, rnd_price};
-use common::types::main::base::domain_entity::{DomainEntityTrait, Version};
-use common::types::test_fixtures::rnd_count;
 use std::collections::HashSet;
+
+use common::types::main::base::domain_entity::{DomainEntityTrait, Version};
 use time::OffsetDateTime;
+
+use crate::{
+    main::order::{shop_order::OrderState, shop_order_restorer::ShopOrderRestorer},
+    test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item},
+};
 
 #[test]
 fn restore_user_success() {
     let id = rnd_order_id();
     let created = OffsetDateTime::now_utc();
     let customer_id = rnd_customer_id();
-    let item = rnd_order_item(rnd_price(), rnd_count());
+    let item = rnd_order_item();
     let items = HashSet::from([item.clone()]);
     let state = OrderState::new_completed();
     let version = Version::default();

@@ -1,8 +1,6 @@
-use std::fmt;
-use std::fmt::Formatter;
+use std::{fmt, fmt::Formatter};
 
-use common::types::main::base::value_object::ValueObject;
-use common::types::main::errors::error::BusinessError;
+use common::types::main::{base::value_object::ValueObject, errors::error::BusinessError};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize, Serialize)]

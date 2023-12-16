@@ -1,9 +1,8 @@
 use std::fmt::Debug;
 
-use domain::main::menu::value_objects::meal_description::MealDescription;
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::meal_name::MealName;
-use domain::main::menu::value_objects::price::Price;
+use domain::main::menu::value_objects::{
+    meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
+};
 
 pub trait AddMealToMenu: Debug + Send {
     fn execute(

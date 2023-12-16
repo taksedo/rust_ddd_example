@@ -1,24 +1,36 @@
+use domain::{
+    main::{
+        menu::value_objects::{
+            meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
+        },
+        order::{shop_order::OrderState, value_objects::shop_order_id::ShopOrderId},
+    },
+    test_fixtures::{
+        order_with_state, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
+    },
+};
 use smart_default::SmartDefault;
-
-use domain::main::menu::value_objects::meal_description::MealDescription;
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::meal_name::MealName;
-use domain::main::menu::value_objects::price::Price;
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use domain::test_fixtures::{
-    rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
+use usecase::main::{
+    menu::{
+        add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
+        dto::meal_info::MealInfo,
+        get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
+        get_menu::GetMenu,
+        remove_meal_from_menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError},
+    },
+    order::{
+        cancel_order::{CancelOrder, CancelOrderUseCaseError},
+        confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError},
+        dto::order_details::{OrderDetails, ToDetails},
+        get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
+    },
 };
-use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
-use usecase::main::menu::dto::meal_info::MealInfo;
-use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
-use usecase::main::menu::get_menu::GetMenu;
-use usecase::main::menu::remove_meal_from_menu::{
-    RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
-};
-use usecase::main::order::cancel_order::{CancelOrder, CancelOrderUseCaseError};
-use usecase::main::order::confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError};
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";
+
+pub fn rnd_order_details(order_state: OrderState) -> OrderDetails {
+    order_with_state(order_state).to_details()
+}
 
 #[derive(SmartDefault, Debug)]
 pub struct MockGetMenu {
@@ -161,9 +173,34 @@ pub struct MockConfirmOrder {
     pub id: ShopOrderId,
 }
 
+impl MockConfirmOrder {
+    pub fn verify_invoked(&self, id: ShopOrderId) {
+        assert_eq!(self.id, id);
+    }
+}
+
 impl ConfirmOrder for MockConfirmOrder {
     fn execute(&mut self, order_id: ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
         self.id = order_id;
         self.response
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MockGetOrderById {
+    pub response: Result<OrderDetails, GetOrderByIdUseCaseError>,
+    pub id: ShopOrderId,
+}
+
+impl MockGetOrderById {
+    pub fn verify_invoked(&self, id: ShopOrderId) {
+        assert_eq!(self.id, id);
+    }
+}
+
+impl GetOrderById for MockGetOrderById {
+    fn execute(&mut self, id: ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
+        self.id = id;
+        self.clone().response
     }
 }

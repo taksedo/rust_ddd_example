@@ -1,10 +1,13 @@
 use std::sync::{Arc, Mutex};
 
-use domain::main::order::customer_has_active_order::CustomerHasActiveOrder;
-use domain::test_fixtures::rnd_customer_id;
+use domain::{
+    main::order::customer_has_active_order::CustomerHasActiveOrder, test_fixtures::rnd_customer_id,
+};
 
-use crate::main::order::invariants::customer_has_active_order_impl::CustomerHasActiveOrderImpl;
-use crate::test_fixtures::{active_order, non_active_order, MockShopOrderExtractor};
+use crate::{
+    main::order::invariants::customer_has_active_order_impl::CustomerHasActiveOrderImpl,
+    test_fixtures::{active_order, non_active_order, MockShopOrderExtractor},
+};
 
 #[test]
 fn active_order_exists() {

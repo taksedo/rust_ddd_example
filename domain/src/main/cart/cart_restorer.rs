@@ -1,13 +1,18 @@
 use std::collections::HashMap;
 
-use common::types::main::base::domain_entity::{DomainEntity, Version};
-use common::types::main::common::count::Count;
+use common::types::main::{
+    base::domain_entity::{DomainEntity, Version},
+    common::count::Count,
+};
 use time::OffsetDateTime;
 
-use crate::main::cart::cart::Cart;
-use crate::main::cart::value_objects::cart_id::CartId;
-use crate::main::cart::value_objects::customer_id::CustomerId;
-use crate::main::menu::value_objects::meal_id::MealId;
+use crate::main::{
+    cart::{
+        cart::Cart,
+        value_objects::{cart_id::CartId, customer_id::CustomerId},
+    },
+    menu::value_objects::meal_id::MealId,
+};
 
 pub struct CartRestorer {}
 

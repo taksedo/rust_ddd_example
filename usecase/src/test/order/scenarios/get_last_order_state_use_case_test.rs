@@ -2,11 +2,17 @@ use std::sync::{Arc, Mutex};
 
 use domain::test_fixtures::{rnd_order, rnd_order_id};
 
-use crate::main::order::get_last_order_state::GetLastOrderState;
-use crate::main::order::get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError};
-use crate::main::order::scenarios::get_last_order_state_use_case::GetLastOrderStateUseCase;
-use crate::main::order::scenarios::get_order_by_id_use_case::GetOrderByIdUseCase;
-use crate::test_fixtures::MockShopOrderExtractor;
+use crate::{
+    main::order::{
+        get_last_order_state::GetLastOrderState,
+        get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
+        scenarios::{
+            get_last_order_state_use_case::GetLastOrderStateUseCase,
+            get_order_by_id_use_case::GetOrderByIdUseCase,
+        },
+    },
+    test_fixtures::MockShopOrderExtractor,
+};
 
 #[test]
 fn status_successfully_received() {
@@ -28,7 +34,7 @@ fn status_successfully_received() {
 #[test]
 fn order_not_found() {
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
-    let use_case = GetOrderByIdUseCase::new(Arc::clone(&extractor) as _);
+    let mut use_case = GetOrderByIdUseCase::new(Arc::clone(&extractor) as _);
 
     let order_id = rnd_order_id();
     let result = use_case.execute(order_id);
@@ -46,7 +52,7 @@ fn order_expected_successfully() {
     let order = rnd_order(Default::default());
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     extractor.lock().unwrap().order = Some(order.clone());
-    let use_case = GetOrderByIdUseCase::new(Arc::clone(&extractor) as _);
+    let mut use_case = GetOrderByIdUseCase::new(Arc::clone(&extractor) as _);
 
     let result = use_case.execute(order.entity_params.id);
     assert!(result.is_ok());

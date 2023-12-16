@@ -1,20 +1,29 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
-use common::types::main::base::domain_entity::{DomainEntity, DomainEntityTrait, Version};
-use common::types::main::common::count::Count;
+use common::types::main::{
+    base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
+    common::count::Count,
+};
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-use crate::main::cart::cart_events::{
-    CartCreatedDomainEvent, CartEventEnum, MealAddedToCartDomainEvent,
-    MealRemovedFromCartDomainEvent,
+use crate::main::{
+    cart::{
+        cart_events::{
+            CartCreatedDomainEvent, CartEventEnum, MealAddedToCartDomainEvent,
+            MealRemovedFromCartDomainEvent,
+        },
+        value_objects::{
+            cart_id::{CartId, CartIdGenerator},
+            customer_id::CustomerId,
+        },
+    },
+    menu::{meal::Meal, value_objects::meal_id::MealId},
 };
-use crate::main::cart::value_objects::cart_id::{CartId, CartIdGenerator};
-use crate::main::cart::value_objects::customer_id::CustomerId;
-use crate::main::menu::meal::Meal;
-use crate::main::menu::value_objects::meal_id::MealId;
 
 #[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize)]
 pub struct Cart {

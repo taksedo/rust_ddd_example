@@ -1,7 +1,6 @@
 use std::sync::Mutex;
 
 use derive_new::new;
-
 use domain::main::order::value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
 
 #[derive(Debug, new)]

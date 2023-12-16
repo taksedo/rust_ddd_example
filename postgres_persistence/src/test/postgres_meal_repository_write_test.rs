@@ -2,16 +2,19 @@ use std::sync::{Arc, Mutex};
 
 use diesel::{sql_query, RunQueryDsl};
 use diesel_migrations::MigrationHarness;
+use domain::{
+    main::menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum},
+    test_fixtures::{rnd_meal_id, rnd_meal_name},
+};
+use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
-use domain::main::menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum};
-use domain::test_fixtures::{rnd_meal_id, rnd_meal_name};
-use usecase::main::menu::access::meal_extractor::MealExtractor;
-use usecase::main::menu::access::meal_persister::MealPersister;
-
-use crate::main::database_start::MIGRATIONS;
-use crate::main::meal_db_dto::MealDbDto;
-use crate::main::postgres_meal_repository::PostgresMealRepository;
-use crate::test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb};
+use crate::{
+    main::{
+        database_start::MIGRATIONS, meal_db_dto::MealDbDto,
+        postgres_meal_repository::PostgresMealRepository,
+    },
+    test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb},
+};
 
 #[test]
 fn save_new_instance() {

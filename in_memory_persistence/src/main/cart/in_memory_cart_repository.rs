@@ -1,17 +1,20 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
-use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::{
+    events::main::domain_event_publisher::DomainEventPublisher,
+    types::main::base::domain_entity::DomainEntityTrait,
+};
 use derivative::Derivative;
 use derive_new::new;
-
-use domain::main::cart::cart::Cart;
-use domain::main::cart::cart_events::CartEventEnum;
-use domain::main::cart::value_objects::customer_id::CustomerId;
-use usecase::main::cart::access::cart_extractor::CartExtractor;
-use usecase::main::cart::access::cart_persister::CartPersister;
-use usecase::main::cart::access::cart_remover::CartRemover;
+use domain::main::cart::{
+    cart::Cart, cart_events::CartEventEnum, value_objects::customer_id::CustomerId,
+};
+use usecase::main::cart::access::{
+    cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
+};
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryCartRepository {

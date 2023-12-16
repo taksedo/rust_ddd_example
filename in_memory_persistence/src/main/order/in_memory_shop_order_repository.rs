@@ -1,17 +1,24 @@
-use std::collections::BTreeMap;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::BTreeMap,
+    sync::{Arc, Mutex},
+};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
-use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::{
+    events::main::domain_event_publisher::DomainEventPublisher,
+    types::main::base::domain_entity::DomainEntityTrait,
+};
 use derivative::Derivative;
 use derive_new::new;
-
-use domain::main::cart::value_objects::customer_id::CustomerId;
-use domain::main::order::customer_order_events::ShopOrderEventEnum;
-use domain::main::order::shop_order::ShopOrder;
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::main::order::access::shop_order_extractor::ShopOrderExtractor;
-use usecase::main::order::access::shop_order_persister::ShopOrderPersister;
+use domain::main::{
+    cart::value_objects::customer_id::CustomerId,
+    order::{
+        customer_order_events::ShopOrderEventEnum, shop_order::ShopOrder,
+        value_objects::shop_order_id::ShopOrderId,
+    },
+};
+use usecase::main::order::access::{
+    shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister,
+};
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryShopOrderRepository {

@@ -1,31 +1,35 @@
-use std::collections::{HashMap, HashSet};
-use std::str::FromStr;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::{HashMap, HashSet},
+    str::FromStr,
+    sync::{Arc, Mutex},
+};
 
-use bigdecimal::num_bigint::BigInt;
-use bigdecimal::BigDecimal;
-use common::types::main::base::domain_entity::DomainEntityTrait;
-use common::types::main::common::count::Count;
-use common::types::test_fixtures::rnd_count;
+use bigdecimal::{num_bigint::BigInt, BigDecimal};
+use common::types::{
+    main::{base::domain_entity::DomainEntityTrait, common::count::Count},
+    test_fixtures::rnd_count,
+};
 use derive_new::new;
 use smart_default::SmartDefault;
 
-use crate::main::cart::value_objects::customer_id::CustomerId;
-use crate::main::menu::value_objects::meal_id::MealId;
-use crate::main::menu::value_objects::price::Price;
-use crate::main::order::customer_has_active_order::CustomerHasActiveOrder;
-use crate::main::order::customer_order_events::{
-    ShopOrderCancelledDomainEvent, ShopOrderConfirmedDomainEvent, ShopOrderCreatedDomainEvent,
-    ShopOrderPaidDomainEvent,
-};
-use crate::main::order::get_meal_price::GetMealPrice;
-use crate::main::order::shop_order::{
-    CheckoutError, InvalidState, OrderItem, OrderState, ShopOrder,
-};
-use crate::main::order::value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator};
-use crate::test_fixtures::{
-    order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_order_item,
-    rnd_price,
+use crate::{
+    main::{
+        cart::value_objects::customer_id::CustomerId,
+        menu::value_objects::{meal_id::MealId, price::Price},
+        order::{
+            customer_has_active_order::CustomerHasActiveOrder,
+            customer_order_events::{
+                ShopOrderCancelledDomainEvent, ShopOrderConfirmedDomainEvent,
+                ShopOrderCreatedDomainEvent, ShopOrderPaidDomainEvent,
+            },
+            get_meal_price::GetMealPrice,
+            shop_order::{CheckoutError, InvalidState, OrderItem, OrderState, ShopOrder},
+            value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator},
+        },
+    },
+    test_fixtures::{
+        order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_price,
+    },
 };
 
 #[test]
@@ -150,6 +154,7 @@ fn active_false() {
 
     states.iter().for_each(|it| assert!(!it.is_active()));
 }
+
 #[test]
 fn complete_order_success() {
     let mut order = order_with_state(OrderState::new_waiting_for_payment());
@@ -329,11 +334,13 @@ fn confirm_order_invalid_state() {
 
 #[test]
 fn calculate_total() {
-    let order_item_1 = rnd_order_item(
+    let order_item_1 = OrderItem::new(
+        rnd_meal_id(),
         Price::try_from(BigDecimal::from_str("1.03").unwrap()).unwrap(),
         Count::try_from(2).unwrap(),
     );
-    let order_item_2 = rnd_order_item(
+    let order_item_2 = OrderItem::new(
+        rnd_meal_id(),
         Price::try_from(BigDecimal::from_str("91.33").unwrap()).unwrap(),
         Count::try_from(4).unwrap(),
     );

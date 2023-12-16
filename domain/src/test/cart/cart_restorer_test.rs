@@ -3,8 +3,10 @@ use std::collections::HashMap;
 use common::types::test_fixtures::rnd_count;
 use time::OffsetDateTime;
 
-use crate::main::cart::cart_restorer::CartRestorer;
-use crate::test_fixtures::{rnd_cart_id, rnd_customer_id, rnd_meal_id, version};
+use crate::{
+    main::cart::cart_restorer::CartRestorer,
+    test_fixtures::{rnd_cart_id, rnd_customer_id, rnd_meal_id, version},
+};
 
 #[test]
 fn restore_cart_success() {
