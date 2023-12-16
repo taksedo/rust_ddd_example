@@ -1,3 +1,15 @@
+use std::sync::{Arc, Mutex};
+
+use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
+use common::common_rest::main::rest_responses::{
+    error_type_url, not_found_type_url, GenericErrorResponse,
+};
+use domain::test_fixtures::rnd_order_id;
+use dotenvy::dotenv;
+use usecase::main::order::cancel_order::CancelOrderUseCaseError;
+
+use crate::{main::order::cancel_order_endpoint, test_fixtures::MockCancelOrder};
+
 #[actix_web::test]
 async fn order_not_found() {
     dotenv().ok();
