@@ -11,12 +11,13 @@ use rest::main::{
     endpoint_url::{
         API_V1_MENU_ADD_TO_MENU, API_V1_MENU_DELETE_BY_ID, API_V1_MENU_GET_ALL,
         API_V1_MENU_GET_BY_ID, API_V1_ORDER_CANCEL_BY_ID, API_V1_ORDER_CONFIRM_BY_ID,
+        API_V1_ORDER_GET_ALL,
     },
     menu::{
         add_meal_to_menu_endpoint, get_health_status, get_meal_by_id_endpoint, get_menu_endpoint,
         remove_meal_from_menu_endpoint,
     },
-    order::{cancel_order_endpoint, confirm_order_endpoint},
+    order::{cancel_order_endpoint, confirm_order_endpoint, get_orders_endpoint},
 };
 use usecase::main::{
     menu::scenario::{
@@ -26,6 +27,7 @@ use usecase::main::{
     },
     order::scenarios::{
         cancel_order_use_case::CancelOrderUseCase, confirm_order_use_case::ConfirmOrderUseCase,
+        get_orders_use_case::GetOrdersUseCase,
     },
 };
 
@@ -95,6 +97,10 @@ pub async fn start_web_backend() -> std::io::Result<()> {
             .route(
                 API_V1_ORDER_CONFIRM_BY_ID,
                 web::put().to(confirm_order_endpoint::execute::<ConfirmOrderUseCase>),
+            )
+            .route(
+                API_V1_ORDER_GET_ALL,
+                web::get().to(get_orders_endpoint::execute::<GetOrdersUseCase>),
             )
             .route("/health", web::get().to(get_health_status::execute))
     })

@@ -22,7 +22,7 @@ use usecase::main::{
         },
         scenarios::{
             cancel_order_use_case::CancelOrderUseCase, confirm_order_use_case::ConfirmOrderUseCase,
-            get_order_by_id_use_case::GetOrderByIdUseCase,
+            get_order_by_id_use_case::GetOrderByIdUseCase, get_orders_use_case::GetOrdersUseCase,
         },
     },
 };
@@ -53,6 +53,9 @@ lazy_static! {
     pub static ref CONFIRM_ORDER_USECASE: Data<Arc<Mutex<ConfirmOrderUseCase>>> = Data::new(
         Arc::clone(&confirm_order_usecase(Arc::clone(&ORDER_REPOSITORY)))
     );
+    pub static ref GET_ORDERS_USECASE: Data<Arc<Mutex<GetOrdersUseCase>>> = Data::new(Arc::clone(
+        &get_orders_usecase(Arc::clone(&ORDER_REPOSITORY))
+    ));
 }
 
 pub fn add_meal_to_menu_use_case<U, V>(
@@ -131,4 +134,22 @@ where
 {
     let usecase = GetOrderByIdUseCase::new(Arc::clone(&order_repository) as _);
     Arc::new(Mutex::new(usecase))
+}
+
+pub fn get_orders_usecase<U>(order_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetOrdersUseCase>>
+where
+    U: Debug + Send + ShopOrderExtractor + 'static,
+{
+    let usecase = GetOrdersUseCase::new(Arc::clone(&order_repository) as _, || {
+        get_limit("") + 1_usize
+    });
+    Arc::new(Mutex::new(usecase))
+}
+
+pub fn get_limit(str: &str) -> usize {
+    if str.is_empty() {
+        10
+    } else {
+        11
+    }
 }
