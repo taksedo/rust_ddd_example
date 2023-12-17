@@ -6,7 +6,10 @@ use domain::test_fixtures::rnd_order_id;
 use dotenvy::dotenv;
 use usecase::main::order::get_orders::GetOrdersUseCaseError;
 
-use crate::{main::order::get_orders_endpoint, test_fixtures::MockGetOrders};
+use crate::{
+    main::order::{get_orders_endpoint, order_model::OrderModel},
+    test_fixtures::{rnd_order_details, MockGetOrders},
+};
 
 #[actix_web::test]
 async fn limit_reached() {
@@ -49,4 +52,78 @@ async fn limit_reached() {
         .lock()
         .unwrap()
         .verify_invoked(start_id, limit);
+}
+
+#[actix_web::test]
+async fn returned_successfully_with_next_page() {
+    dotenv().ok();
+    let limit = 1;
+
+    let first = rnd_order_details(Default::default());
+    let first_item = first.clone().items[0];
+    let second = rnd_order_details(Default::default());
+
+    let mock_get_orders = Arc::new(Mutex::new(MockGetOrders {
+        response: Ok(vec![first.clone(), second]),
+        start_id: first.id,
+        limit,
+    }));
+
+    let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
+    let req = TestRequest::default()
+        .param("start_id", first.id.to_i64().to_string())
+        .param("limit", limit.to_string())
+        .to_http_request();
+
+    let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
+
+    assert_eq!(resp.status(), StatusCode::OK);
+
+    let body = resp.into_body().try_into_bytes().unwrap();
+    let body_text = std::str::from_utf8(&body).unwrap();
+
+    let response_dto: Vec<OrderModel> = serde_json::from_str(body_text).unwrap();
+
+    assert_eq!(response_dto.len(), limit);
+    assert_eq!(response_dto[0].id, first.id.to_i64());
+    assert_eq!(response_dto[0].total_price, first.total.to_string_value());
+    assert_eq!(response_dto[0].version, first.version.to_i64());
+    assert_eq!(
+        response_dto[0].address.street,
+        first.address.street_to_string()
+    );
+    assert_eq!(
+        response_dto[0].address.building,
+        first.address.building_to_i16()
+    );
+    assert_eq!(response_dto[0].items.len(), 1);
+    assert_eq!(
+        response_dto[0].items[0].meal_id,
+        first_item.meal_id.to_i64()
+    );
+    assert_eq!(response_dto[0].items[0].count, first_item.count.to_i32());
+
+    // assert_eq!(
+    //     response_dto.address.street,
+    //     details.address.street_to_string()
+    // );
+    // assert_eq!(
+    //     response_dto.address.building,
+    //     details.address.building_to_i16()
+    // );
+    // assert_eq!(response_dto.total_price, details.total.to_string_value());
+    // assert_eq!(response_dto.items.len(), 1);
+    // assert_eq!(
+    //     response_dto.items.get(0).unwrap().meal_id,
+    //     item_details.meal_id.to_i64()
+    // );
+    // assert_eq!(
+    //     response_dto.items.get(0).unwrap().count,
+    //     item_details.count.to_i32()
+    // );
+    // assert_eq!(response_dto.version, details.version.to_i64());
+    // mock_get_order_by_id
+    //     .lock()
+    //     .unwrap()
+    //     .verify_invoked(details.id);
 }

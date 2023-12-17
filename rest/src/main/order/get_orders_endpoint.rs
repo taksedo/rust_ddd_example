@@ -32,9 +32,15 @@ pub async fn execute<T: GetOrders + Send + Debug>(
             .map(|it| it.to_model())
             .collect();
 
+        let model = if order_model_list.len() > limit {
+            let next_id = order_model_list[limit].id;
+            CursorPagedModel::new(order_model_list[..limit].to_vec(), Some(next_id))
+        } else {
+            CursorPagedModel::new(order_model_list, Option::<i64>::None)
+        };
         HttpResponse::Ok()
             .content_type(ContentType::json())
-            .body(serde_json::to_string(&order_model_list).unwrap())
+            .body(serde_json::to_string(&model.list).unwrap())
     }
 }
 
@@ -53,5 +59,18 @@ impl ToRestError for GetOrdersUseCaseError {
                 to_invalid_param_bad_request(error_list)
             }
         }
+    }
+}
+
+pub struct CursorPagedModel<T, ID> {
+    pub list: Vec<T>,
+    pub next: Option<ID>,
+    pub count: usize,
+}
+
+impl<T, ID> CursorPagedModel<T, ID> {
+    pub fn new(list: Vec<T>, next: Option<ID>) -> Self {
+        let count = list.len();
+        Self { list, next, count }
     }
 }
