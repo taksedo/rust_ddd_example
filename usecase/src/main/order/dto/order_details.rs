@@ -1,14 +1,18 @@
-use common::types::main::base::domain_entity::Version;
-use common::types::main::common::address::Address;
-use common::types::main::common::count::Count;
+use common::types::main::{
+    base::domain_entity::Version,
+    common::{address::Address, count::Count},
+};
 use derive_new::new;
+use domain::main::{
+    menu::value_objects::{meal_id::MealId, price::Price},
+    order::{
+        shop_order::{OrderState, ShopOrder},
+        value_objects::shop_order_id::ShopOrderId,
+    },
+};
+use serde::{Deserialize, Serialize};
 
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::price::Price;
-use domain::main::order::shop_order::{OrderState, ShopOrder};
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Default)]
 pub struct OrderDetails {
     pub id: ShopOrderId,
     pub state: OrderState,
@@ -42,7 +46,7 @@ impl ToDetails for ShopOrder {
     }
 }
 
-#[derive(new, Copy, Clone, Debug, PartialEq)]
+#[derive(new, Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OrderItemDetails {
     pub meal_id: MealId,
     pub count: Count,

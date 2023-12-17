@@ -1,13 +1,16 @@
 use std::sync::{Arc, Mutex};
 
 use common::events::main::domain_event_listener::DomainEventListener;
+use domain::{
+    main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum},
+    test_fixtures::{rnd_cart, rnd_customer_id, rnd_order_id, rnd_price},
+};
 use tracing_test::traced_test;
 
-use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
-use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_order_id, rnd_price};
-
-use crate::main::cart::rules::remove_cart_after_checkout_rule::RemoveCartAfterCheckoutRule;
-use crate::test_fixtures::{MockCartExtractor, MockCartRemover};
+use crate::{
+    main::cart::rules::remove_cart_after_checkout_rule::RemoveCartAfterCheckoutRule,
+    test_fixtures::{MockCartExtractor, MockCartRemover},
+};
 
 #[test]
 fn successfully_removed() {

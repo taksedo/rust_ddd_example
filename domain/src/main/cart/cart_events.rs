@@ -4,8 +4,7 @@ use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
-use crate::main::cart::value_objects::cart_id::CartId;
-use crate::main::menu::value_objects::meal_id::MealId;
+use crate::main::{cart::value_objects::cart_id::CartId, menu::value_objects::meal_id::MealId};
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]
 pub struct CartCreatedDomainEvent {

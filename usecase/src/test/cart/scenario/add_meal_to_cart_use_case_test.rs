@@ -1,13 +1,18 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
+use domain::{
+    main::cart::value_objects::cart_id::{CartId, CartIdGenerator},
+    test_fixtures::{rnd_cart, rnd_customer_id, rnd_meal},
+};
 
-use domain::main::cart::value_objects::cart_id::{CartId, CartIdGenerator};
-use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_meal};
-
-use crate::main::cart::add_meal_to_cart::{AddMealToCart, AddMealToCartUseCaseError};
-use crate::main::cart::scenarios::add_meal_to_cart_use_case::AddMealToCartUseCase;
-use crate::test_fixtures::{MockCartExtractor, MockCartPersister, MockMealExtractor};
+use crate::{
+    main::cart::{
+        add_meal_to_cart::{AddMealToCart, AddMealToCartUseCaseError},
+        scenarios::add_meal_to_cart_use_case::AddMealToCartUseCase,
+    },
+    test_fixtures::{MockCartExtractor, MockCartPersister, MockMealExtractor},
+};
 
 #[test]
 fn cart_doesnt_exist_successfully_added() {

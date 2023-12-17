@@ -1,16 +1,21 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
+use domain::main::{
+    cart::{
+        cart::Cart,
+        value_objects::{cart_id::CartIdGenerator, customer_id::CustomerId},
+    },
+    menu::value_objects::meal_id::MealId,
+};
 
-use domain::main::cart::cart::Cart;
-use domain::main::cart::value_objects::cart_id::CartIdGenerator;
-use domain::main::cart::value_objects::customer_id::CustomerId;
-use domain::main::menu::value_objects::meal_id::MealId;
-
-use crate::main::cart::access::cart_extractor::CartExtractor;
-use crate::main::cart::access::cart_persister::CartPersister;
-use crate::main::cart::add_meal_to_cart::{AddMealToCart, AddMealToCartUseCaseError};
-use crate::main::menu::access::meal_extractor::MealExtractor;
+use crate::main::{
+    cart::{
+        access::{cart_extractor::CartExtractor, cart_persister::CartPersister},
+        add_meal_to_cart::{AddMealToCart, AddMealToCartUseCaseError},
+    },
+    menu::access::meal_extractor::MealExtractor,
+};
 
 #[derive(new, Debug)]
 pub struct AddMealToCartUseCase {

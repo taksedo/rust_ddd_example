@@ -1,5 +1,4 @@
-use std::fmt;
-use std::fmt::Formatter;
+use std::{fmt, fmt::Formatter};
 
 use common::types::main::base::value_object::ValueObject;
 use derive_new::new;

@@ -1,10 +1,10 @@
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
-use actix_web::http::StatusCode;
-use actix_web::{web, HttpRequest, HttpResponse};
+use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
 use common::common_rest::main::rest_responses::resource_not_found;
-
 use domain::main::menu::value_objects::meal_id::MealId;
 use usecase::main::menu::remove_meal_from_menu::{
     RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,

@@ -1,13 +1,11 @@
-#![allow(unused_imports)]
-
 use std::sync::{Arc, Mutex};
 
-use actix_web::body::MessageBody;
-use actix_web::web;
+use actix_web::{body::MessageBody, web};
 
-use crate::main::menu::get_menu_endpoint;
-use crate::main::menu::meal_model::MealModel;
-use crate::test_fixtures::{rnd_meal_info, MockGetMenu};
+use crate::{
+    main::menu::{get_menu_endpoint, meal_model::MealModel},
+    test_fixtures::{rnd_meal_info, MockGetMenu},
+};
 
 #[actix_web::test]
 async fn get_menu() {

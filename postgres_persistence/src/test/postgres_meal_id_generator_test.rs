@@ -1,13 +1,18 @@
-use diesel::sql_types::{BigInt, VarChar};
-use diesel::{select, sql_function, RunQueryDsl};
+use diesel::{
+    select, sql_function,
+    sql_types::{BigInt, VarChar},
+    RunQueryDsl,
+};
 use diesel_migrations::MigrationHarness;
+use domain::{
+    main::menu::value_objects::meal_id::{MealId, MealIdGenerator},
+    test_fixtures::rnd_meal_id,
+};
 
-use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
-use domain::test_fixtures::rnd_meal_id;
-
-use crate::main::database_start::MIGRATIONS;
-use crate::main::postgres_meal_id_generator::PostgresMealIdGenerator;
-use crate::test_fixtures::TestDb;
+use crate::{
+    main::{database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator},
+    test_fixtures::TestDb,
+};
 
 #[test]
 fn generate_id_integration_test() {

@@ -2,11 +2,15 @@ use std::sync::{Arc, Mutex};
 
 use domain::test_fixtures::rnd_order_id;
 
-use crate::main::order::complete_order::{CompleteOrder, CompleteOrderUseCaseError};
-use crate::main::order::scenarios::complete_order_use_case::CompleteOrderUseCase;
-use crate::test_fixtures::{
-    order_not_ready_for_complete, order_ready_for_complete, MockShopOrderExtractor,
-    MockShopOrderPersister,
+use crate::{
+    main::order::{
+        complete_order::{CompleteOrder, CompleteOrderUseCaseError},
+        scenarios::complete_order_use_case::CompleteOrderUseCase,
+    },
+    test_fixtures::{
+        order_not_ready_for_complete, order_ready_for_complete, MockShopOrderExtractor,
+        MockShopOrderPersister,
+    },
 };
 
 #[test]

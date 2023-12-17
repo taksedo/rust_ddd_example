@@ -1,7 +1,6 @@
 use rand::{thread_rng, Rng};
 
-use crate::main::menu::meal::MealError;
-use crate::main::menu::value_objects::meal_id::MealId;
+use crate::main::menu::{meal::MealError, value_objects::meal_id::MealId};
 
 #[test]
 fn check_equality() {

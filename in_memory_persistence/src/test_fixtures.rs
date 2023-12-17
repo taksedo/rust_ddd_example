@@ -1,13 +1,11 @@
-use std::any::type_name;
-use std::fmt::Debug;
+use std::{any::type_name, fmt::Debug};
 
 use common::events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
-
-use domain::main::cart::cart::Cart;
-use domain::main::menu::meal::Meal;
-use domain::main::order::shop_order::ShopOrder;
-use domain::test_fixtures::{rnd_cart, rnd_meal};
+use domain::{
+    main::{cart::cart::Cart, menu::meal::Meal, order::shop_order::ShopOrder},
+    test_fixtures::{rnd_cart, rnd_meal},
+};
 use usecase::test_fixtures::order_ready_for_complete;
 
 pub fn meal_with_events() -> Meal {

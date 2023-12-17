@@ -2,16 +2,21 @@ use std::sync::{Arc, Mutex};
 
 use common::types::main::errors::error::ToError;
 use derive_new::new;
+use domain::main::order::{
+    customer_has_active_order::CustomerHasActiveOrder,
+    get_meal_price::GetMealPrice,
+    shop_order::{CheckoutError, ShopOrder},
+    value_objects::shop_order_id::ShopOrderIdGenerator,
+};
 
-use domain::main::order::customer_has_active_order::CustomerHasActiveOrder;
-use domain::main::order::get_meal_price::GetMealPrice;
-use domain::main::order::shop_order::{CheckoutError, ShopOrder};
-use domain::main::order::value_objects::shop_order_id::ShopOrderIdGenerator;
-
-use crate::main::cart::access::cart_extractor::CartExtractor;
-use crate::main::order::access::shop_order_persister::ShopOrderPersister;
-use crate::main::order::checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError, PaymentInfo};
-use crate::main::order::providers::payment_url_provider::PaymentUrlProvider;
+use crate::main::{
+    cart::access::cart_extractor::CartExtractor,
+    order::{
+        access::shop_order_persister::ShopOrderPersister,
+        checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError, PaymentInfo},
+        providers::payment_url_provider::PaymentUrlProvider,
+    },
+};
 
 #[derive(new, Debug)]
 pub struct CheckoutUseCase {

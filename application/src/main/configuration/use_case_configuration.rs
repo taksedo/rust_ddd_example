@@ -1,21 +1,31 @@
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
 use actix_web::web::Data;
-use lazy_static::lazy_static;
-
 use domain::main::menu::value_objects::meal_id::MealIdGenerator;
-use usecase::main::menu::access::meal_extractor::MealExtractor;
-use usecase::main::menu::access::meal_persister::MealPersister;
-use usecase::main::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
-use usecase::main::menu::scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase;
-use usecase::main::menu::scenario::get_meal_by_id_use_case::GetMealByIdUseCase;
-use usecase::main::menu::scenario::get_menu_use_case::GetMenuUseCase;
-use usecase::main::menu::scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase;
-use usecase::main::order::access::shop_order_extractor::ShopOrderExtractor;
-use usecase::main::order::access::shop_order_persister::ShopOrderPersister;
-use usecase::main::order::scenarios::cancel_order_use_case::CancelOrderUseCase;
-use usecase::main::order::scenarios::confirm_order_use_case::ConfirmOrderUseCase;
+use lazy_static::lazy_static;
+use usecase::main::{
+    menu::{
+        access::{meal_extractor::MealExtractor, meal_persister::MealPersister},
+        invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor,
+        scenario::{
+            add_meal_to_menu_use_case::AddMealToMenuUseCase,
+            get_meal_by_id_use_case::GetMealByIdUseCase, get_menu_use_case::GetMenuUseCase,
+            remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
+        },
+    },
+    order::{
+        access::{
+            shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister,
+        },
+        scenarios::{
+            cancel_order_use_case::CancelOrderUseCase, confirm_order_use_case::ConfirmOrderUseCase,
+            get_order_by_id_use_case::GetOrderByIdUseCase, get_orders_use_case::GetOrdersUseCase,
+        },
+    },
+};
 
 use crate::main::configuration::persistence_configuration::{
     MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY,
@@ -43,6 +53,9 @@ lazy_static! {
     pub static ref CONFIRM_ORDER_USECASE: Data<Arc<Mutex<ConfirmOrderUseCase>>> = Data::new(
         Arc::clone(&confirm_order_usecase(Arc::clone(&ORDER_REPOSITORY)))
     );
+    pub static ref GET_ORDERS_USECASE: Data<Arc<Mutex<GetOrdersUseCase>>> = Data::new(Arc::clone(
+        &get_orders_usecase(Arc::clone(&ORDER_REPOSITORY))
+    ));
 }
 
 pub fn add_meal_to_menu_use_case<U, V>(
@@ -111,4 +124,32 @@ where
         Arc::clone(&order_repository) as _,
     );
     Arc::new(Mutex::new(usecase))
+}
+
+pub fn get_order_by_id_usecase<U>(
+    order_repository: Arc<Mutex<U>>,
+) -> Arc<Mutex<GetOrderByIdUseCase>>
+where
+    U: Debug + Send + ShopOrderExtractor + 'static,
+{
+    let usecase = GetOrderByIdUseCase::new(Arc::clone(&order_repository) as _);
+    Arc::new(Mutex::new(usecase))
+}
+
+pub fn get_orders_usecase<U>(order_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetOrdersUseCase>>
+where
+    U: Debug + Send + ShopOrderExtractor + 'static,
+{
+    let usecase = GetOrdersUseCase::new(Arc::clone(&order_repository) as _, || {
+        get_limit("") + 1_usize
+    });
+    Arc::new(Mutex::new(usecase))
+}
+
+pub fn get_limit(str: &str) -> usize {
+    if str.is_empty() {
+        10
+    } else {
+        11
+    }
 }

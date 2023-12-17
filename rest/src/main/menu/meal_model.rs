@@ -1,7 +1,6 @@
 use bigdecimal::BigDecimal;
 use serde::Deserialize;
 use serde_derive::Serialize;
-
 use usecase::main::menu::dto::meal_info::MealInfo;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

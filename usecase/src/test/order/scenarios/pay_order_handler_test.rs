@@ -2,10 +2,15 @@ use std::sync::{Arc, Mutex};
 
 use domain::test_fixtures::rnd_order_id;
 
-use crate::main::order::pay_order::{PayOrder, PayOrderHandlerError};
-use crate::main::order::scenarios::pay_order_handler::PayOrderHandler;
-use crate::test_fixtures::{
-    order_not_ready_for_pay, order_ready_for_pay, MockShopOrderExtractor, MockShopOrderPersister,
+use crate::{
+    main::order::{
+        pay_order::{PayOrder, PayOrderHandlerError},
+        scenarios::pay_order_handler::PayOrderHandler,
+    },
+    test_fixtures::{
+        order_not_ready_for_pay, order_ready_for_pay, MockShopOrderExtractor,
+        MockShopOrderPersister,
+    },
 };
 
 #[test]

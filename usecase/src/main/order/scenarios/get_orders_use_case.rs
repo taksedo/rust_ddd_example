@@ -1,13 +1,16 @@
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
 use derive_new::new;
-
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 
-use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
-use crate::main::order::dto::order_details::{OrderDetails, ToDetails};
-use crate::main::order::get_orders::{GetOrders, GetOrdersUseCaseError};
+use crate::main::order::{
+    access::shop_order_extractor::ShopOrderExtractor,
+    dto::order_details::{OrderDetails, ToDetails},
+    get_orders::{GetOrders, GetOrdersUseCaseError},
+};
 
 #[derive(new, Debug)]
 pub struct GetOrdersUseCase {

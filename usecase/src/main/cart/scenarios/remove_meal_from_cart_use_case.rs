@@ -1,14 +1,13 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
+use domain::main::{
+    cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId,
+};
 
-use domain::main::cart::value_objects::customer_id::CustomerId;
-use domain::main::menu::value_objects::meal_id::MealId;
-
-use crate::main::cart::access::cart_extractor::CartExtractor;
-use crate::main::cart::access::cart_persister::CartPersister;
-use crate::main::cart::remove_meal_from_cart::{
-    RemoveMealFromCart, RemoveMealFromCartUseCaseError,
+use crate::main::cart::{
+    access::{cart_extractor::CartExtractor, cart_persister::CartPersister},
+    remove_meal_from_cart::{RemoveMealFromCart, RemoveMealFromCartUseCaseError},
 };
 
 #[derive(new, Debug)]

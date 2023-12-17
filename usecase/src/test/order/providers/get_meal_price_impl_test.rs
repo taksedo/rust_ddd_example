@@ -1,9 +1,15 @@
-use crate::main::order::providers::get_meal_price_using_extractor::GetMealPriceUsingExtractor;
-use crate::test_fixtures::MockMealExtractor;
-use assert_panic::assert_panic;
-use domain::main::order::get_meal_price::GetMealPrice;
-use domain::test_fixtures::{rnd_meal, rnd_meal_id};
 use std::sync::{Arc, Mutex};
+
+use assert_panic::assert_panic;
+use domain::{
+    main::order::get_meal_price::GetMealPrice,
+    test_fixtures::{rnd_meal, rnd_meal_id},
+};
+
+use crate::{
+    main::order::providers::get_meal_price_using_extractor::GetMealPriceUsingExtractor,
+    test_fixtures::MockMealExtractor,
+};
 
 #[test]
 fn price_has_been_provided() {

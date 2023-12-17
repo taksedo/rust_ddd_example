@@ -1,13 +1,11 @@
-use std::env;
-use std::fmt::Debug;
-use std::time::Duration;
+use std::{env, fmt::Debug, time::Duration};
 
 use common::events::main::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
+use domain::main::{
+    menu::meal_events::MealEventEnum, order::customer_order_events::ShopOrderEventEnum,
+};
 use kafka::producer::{Producer, Record, RequiredAcks};
-
-use domain::main::menu::meal_events::MealEventEnum;
-use domain::main::order::customer_order_events::ShopOrderEventEnum;
 
 #[derive(new)]
 pub struct KafkaEventPublisherImpl {

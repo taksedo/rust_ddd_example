@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
+use domain::main::{
+    cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId,
+};
 use thiserror::Error;
-
-use domain::main::cart::value_objects::customer_id::CustomerId;
-use domain::main::menu::value_objects::meal_id::MealId;
 
 pub trait RemoveMealFromCart: Debug + Send {
     fn execute(

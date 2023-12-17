@@ -2,10 +2,14 @@ use std::sync::{Arc, Mutex};
 
 use domain::test_fixtures::{rnd_order, rnd_order_id};
 
-use crate::main::order::dto::order_details::ToDetails;
-use crate::main::order::get_orders::{GetOrders, GetOrdersUseCaseError};
-use crate::main::order::scenarios::get_orders_use_case::GetOrdersUseCase;
-use crate::test_fixtures::MockShopOrderExtractor;
+use crate::{
+    main::order::{
+        dto::order_details::ToDetails,
+        get_orders::{GetOrders, GetOrdersUseCaseError},
+        scenarios::get_orders_use_case::GetOrdersUseCase,
+    },
+    test_fixtures::MockShopOrderExtractor,
+};
 
 #[test]
 fn storage_is_empty() {

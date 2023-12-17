@@ -1,4 +1,12 @@
-#![allow(unused_imports)]
+use std::sync::{Arc, Mutex};
+
+use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
+use common::common_rest::main::rest_responses::{not_found_type_url, GenericErrorResponse};
+use domain::test_fixtures::rnd_meal_id;
+use dotenvy::dotenv;
+use usecase::main::menu::remove_meal_from_menu::RemoveMealFromMenuUseCaseError;
+
+use crate::{main::menu::remove_meal_from_menu_endpoint, test_fixtures::MockRemoveMealFromMenu};
 
 #[actix_web::test]
 async fn meal_not_found() {
@@ -7,9 +15,9 @@ async fn meal_not_found() {
     let mock_remove_meal_from_menu = Arc::new(Mutex::new(MockRemoveMealFromMenu::default()));
     mock_remove_meal_from_menu.lock().unwrap().response =
         Err(RemoveMealFromMenuUseCaseError::MealNotFound);
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_remove_meal_from_menu));
+    let mock_shared_state = Data::new(Arc::clone(&mock_remove_meal_from_menu));
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", meal_id.to_i64().to_string())
         .to_http_request();
 
@@ -35,9 +43,9 @@ async fn removed_successfully() {
     let meal_id = rnd_meal_id();
 
     let mock_remove_meal_from_menu = Arc::new(Mutex::new(MockRemoveMealFromMenu::default()));
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_remove_meal_from_menu));
+    let mock_shared_state = Data::new(Arc::clone(&mock_remove_meal_from_menu));
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", meal_id.to_i64().to_string())
         .to_http_request();
 

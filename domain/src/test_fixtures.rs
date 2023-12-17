@@ -1,33 +1,45 @@
 use std::collections::{HashMap, HashSet};
 
 use bigdecimal::{BigDecimal, FromPrimitive};
-use common::types::main::base::domain_entity::{DomainEntity, Version};
-use common::types::main::base::domain_event::DomainEventTrait;
-use common::types::main::common::address::Address;
-use common::types::main::common::count::Count;
+use common::types::{
+    main::{
+        base::{
+            domain_entity::{DomainEntity, Version},
+            domain_event::DomainEventTrait,
+        },
+        common::address::Address,
+    },
+    test_fixtures::rnd_count,
+};
 use derive_new::new;
-use fake::faker::address::en::StreetName;
-use fake::faker::name::raw::*;
-use fake::locales::*;
-use fake::Fake;
-use rand::thread_rng;
-use rand::Rng;
+use fake::{
+    faker::{address::en::StreetName, name::raw::*},
+    locales::*,
+    Fake,
+};
+use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-use crate::main::cart::cart::Cart;
-use crate::main::cart::cart_restorer::CartRestorer;
-use crate::main::cart::value_objects::cart_id::CartId;
-use crate::main::cart::value_objects::customer_id::CustomerId;
-use crate::main::menu::meal::Meal;
-use crate::main::menu::meal_already_exists::MealAlreadyExists;
-use crate::main::menu::meal_restorer::MealRestorer;
-use crate::main::menu::value_objects::meal_description::MealDescription;
-use crate::main::menu::value_objects::meal_id::MealId;
-use crate::main::menu::value_objects::meal_name::MealName;
-use crate::main::menu::value_objects::price::Price;
-use crate::main::order::shop_order::{OrderItem, OrderState, ShopOrder};
-use crate::main::order::value_objects::shop_order_id::ShopOrderId;
+use crate::main::{
+    cart::{
+        cart::Cart,
+        cart_restorer::CartRestorer,
+        value_objects::{cart_id::CartId, customer_id::CustomerId},
+    },
+    menu::{
+        meal::Meal,
+        meal_already_exists::MealAlreadyExists,
+        meal_restorer::MealRestorer,
+        value_objects::{
+            meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
+        },
+    },
+    order::{
+        shop_order::{OrderItem, OrderState, ShopOrder},
+        value_objects::shop_order_id::ShopOrderId,
+    },
+};
 
 pub fn rnd_address() -> Address {
     Address::try_from((
@@ -103,8 +115,8 @@ pub fn rnd_order_id() -> ShopOrderId {
     ShopOrderId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
 }
 
-pub fn rnd_order_item(price: Price, count: Count) -> OrderItem {
-    OrderItem::new(rnd_meal_id(), price, count)
+pub fn rnd_order_item() -> OrderItem {
+    OrderItem::new(rnd_meal_id(), rnd_price(), rnd_count())
 }
 
 pub fn rnd_order(order_items: HashSet<OrderItem>) -> ShopOrder {
@@ -124,7 +136,7 @@ pub fn order_with_state(state: OrderState) -> ShopOrder {
         OffsetDateTime::now_utc(),
         rnd_customer_id(),
         rnd_address(),
-        HashSet::new(),
+        HashSet::from([rnd_order_item()]),
         state,
     )
 }

@@ -1,12 +1,11 @@
-use std::sync::atomic::AtomicU32;
-use std::sync::OnceLock;
+use std::sync::{atomic::AtomicU32, OnceLock};
 
 use lapin::{Connection, ConnectionProperties};
-use testcontainers::clients::Cli;
-use testcontainers::core::ExecCommand;
-use testcontainers::core::WaitFor;
-use testcontainers::Container;
-use testcontainers::GenericImage;
+use testcontainers::{
+    clients::Cli,
+    core::{ExecCommand, WaitFor},
+    Container, GenericImage,
+};
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
 

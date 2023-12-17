@@ -2,12 +2,11 @@ use std::sync::{Arc, Mutex};
 
 use bigdecimal::*;
 use common::common_rest::main::rest_responses::ValidationError;
-
-use domain::main::menu::value_objects::meal_description::{
-    CreateMealDescriptionError, MealDescription,
+use domain::main::menu::value_objects::{
+    meal_description::{CreateMealDescriptionError, MealDescription},
+    meal_name::{CreateMealNameError, MealName},
+    price::{CreatePriceError, Price},
 };
-use domain::main::menu::value_objects::meal_name::{CreateMealNameError, MealName};
-use domain::main::menu::value_objects::price::{CreatePriceError, Price};
 
 pub trait Validated<Entity, ValueType> {
     #[allow(clippy::result_unit_err)]

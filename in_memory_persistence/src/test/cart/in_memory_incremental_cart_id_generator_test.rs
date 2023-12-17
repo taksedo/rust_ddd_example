@@ -1,5 +1,6 @@
-use crate::main::cart::in_memory_incremental_cart_id_generator::InMemoryIncrementalCartIdGenerator;
 use domain::main::cart::value_objects::cart_id::CartIdGenerator;
+
+use crate::main::cart::in_memory_incremental_cart_id_generator::InMemoryIncrementalCartIdGenerator;
 
 #[test]
 fn id_is_incremented() {

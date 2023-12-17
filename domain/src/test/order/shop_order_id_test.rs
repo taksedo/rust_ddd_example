@@ -1,7 +1,6 @@
 use rand::{thread_rng, Rng};
 
-use crate::main::order::shop_order::ShopOrderError;
-use crate::main::order::value_objects::shop_order_id::ShopOrderId;
+use crate::main::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
 
 #[test]
 fn check_equality() {

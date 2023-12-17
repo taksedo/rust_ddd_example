@@ -1,20 +1,20 @@
 use std::sync::{Arc, Mutex};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
-use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::{
+    events::main::domain_event_publisher::DomainEventPublisher,
+    types::main::base::domain_entity::DomainEntityTrait,
+};
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
+use domain::main::menu::{
+    meal::Meal,
+    meal_events::MealEventEnum,
+    value_objects::{meal_id::MealId, meal_name::MealName},
+};
+use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
-use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::MealEventEnum;
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::meal_name::MealName;
-use usecase::main::menu::access::meal_extractor::MealExtractor;
-use usecase::main::menu::access::meal_persister::MealPersister;
-
-use crate::main::meal_db_dto::MealDbDto;
-use crate::main::schema::shop::meal::dsl::*;
+use crate::main::{meal_db_dto::MealDbDto, schema::shop::meal::dsl::*};
 
 #[derive(Derivative, new)]
 #[derivative(Debug)]

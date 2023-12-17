@@ -1,20 +1,28 @@
-use std::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 
-use common::types::main::base::domain_event::DomainEventTrait;
-use common::types::main::errors::error::ToError;
+use common::types::main::{base::domain_event::DomainEventTrait, errors::error::ToError};
 use derive_new::new;
+use domain::{
+    self,
+    main::menu::{
+        meal::{Meal, MealError},
+        meal_already_exists::MealAlreadyExists,
+        value_objects::{
+            meal_description::MealDescription,
+            meal_id::{MealId, MealIdGenerator},
+            meal_name::MealName,
+            price::Price,
+        },
+    },
+};
 
-use domain;
-use domain::main::menu::meal::{Meal, MealError};
-use domain::main::menu::meal_already_exists::MealAlreadyExists;
-use domain::main::menu::value_objects::meal_description::MealDescription;
-use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
-use domain::main::menu::value_objects::meal_name::MealName;
-use domain::main::menu::value_objects::price::Price;
-
-use crate::main::menu::access::meal_persister::MealPersister;
-use crate::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
+use crate::main::menu::{
+    access::meal_persister::MealPersister,
+    add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
+};
 
 #[derive(new, Debug)]
 pub struct AddMealToMenuUseCase {

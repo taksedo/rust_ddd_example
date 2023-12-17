@@ -1,39 +1,49 @@
-use std::any::Any;
-use std::collections::HashMap;
-use std::mem::discriminant;
+use std::{any::Any, collections::HashMap, mem::discriminant};
 
-use common::types::main::base::domain_entity::DomainEntityTrait;
-use common::types::main::common::address::Address;
-use common::types::main::common::count::Count;
-use derive_new::new;
-
-use domain::main::cart::cart::Cart;
-use domain::main::cart::value_objects::cart_id::CartId;
-use domain::main::cart::value_objects::customer_id::CustomerId;
-use domain::main::menu::meal::Meal;
-use domain::main::menu::meal_events::MealEventEnum;
-use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
-use domain::main::menu::value_objects::meal_description::MealDescription;
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::meal_name::MealName;
-use domain::main::menu::value_objects::price::Price;
-use domain::main::order::customer_has_active_order::CustomerHasActiveOrder;
-use domain::main::order::customer_order_events::{
-    ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent, ShopOrderConfirmedDomainEvent,
-    ShopOrderEventEnum, ShopOrderPaidDomainEvent,
+use common::types::main::{
+    base::domain_entity::DomainEntityTrait,
+    common::{address::Address, count::Count},
 };
-use domain::main::order::shop_order::{OrderState, ShopOrder};
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use domain::test_fixtures::{order_with_state, rnd_meal};
+use derive_new::new;
+use domain::{
+    main::{
+        cart::{
+            cart::Cart,
+            value_objects::{cart_id::CartId, customer_id::CustomerId},
+        },
+        menu::{
+            meal::Meal,
+            meal_events::{MealEventEnum, MealRemovedFromMenuDomainEvent},
+            value_objects::{
+                meal_description::MealDescription, meal_id::MealId, meal_name::MealName,
+                price::Price,
+            },
+        },
+        order::{
+            customer_has_active_order::CustomerHasActiveOrder,
+            customer_order_events::{
+                ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent,
+                ShopOrderConfirmedDomainEvent, ShopOrderEventEnum, ShopOrderPaidDomainEvent,
+            },
+            shop_order::{OrderState, ShopOrder},
+            value_objects::shop_order_id::ShopOrderId,
+        },
+    },
+    test_fixtures::{order_with_state, rnd_meal},
+};
 
-use crate::main::cart::access::cart_extractor::CartExtractor;
-use crate::main::cart::access::cart_persister::CartPersister;
-use crate::main::cart::access::cart_remover::CartRemover;
-use crate::main::menu::access::meal_extractor::MealExtractor;
-use crate::main::menu::access::meal_persister::MealPersister;
-use crate::main::order::access::shop_order_extractor::ShopOrderExtractor;
-use crate::main::order::access::shop_order_persister::ShopOrderPersister;
-use crate::main::order::providers::order_exporter::OrderExporter;
+use crate::main::{
+    cart::access::{
+        cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
+    },
+    menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister},
+    order::{
+        access::{
+            shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister,
+        },
+        providers::order_exporter::OrderExporter,
+    },
+};
 
 pub fn removed_meal() -> Meal {
     let mut meal = rnd_meal();

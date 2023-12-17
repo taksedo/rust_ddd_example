@@ -1,12 +1,15 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-
 use domain::main::cart::value_objects::customer_id::CustomerId;
 
-use crate::main::cart::access::cart_extractor::CartExtractor;
-use crate::main::cart::get_cart::{CartInfo, CartItem, GetCart, GetCartUseCaseError};
-use crate::main::menu::access::meal_extractor::MealExtractor;
+use crate::main::{
+    cart::{
+        access::cart_extractor::CartExtractor,
+        get_cart::{CartInfo, CartItem, GetCart, GetCartUseCaseError},
+    },
+    menu::access::meal_extractor::MealExtractor,
+};
 
 #[derive(new, Debug)]
 pub struct GetCartUseCase {

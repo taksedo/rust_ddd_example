@@ -1,4 +1,12 @@
-#![allow(unused_imports)]
+use std::sync::{Arc, Mutex};
+
+use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
+use common::common_rest::main::rest_responses::{error_type_url, GenericErrorResponse};
+use domain::test_fixtures::rnd_order_id;
+use dotenvy::dotenv;
+use usecase::main::order::confirm_order::ConfirmOrderUseCaseError;
+
+use crate::{main::order::confirm_order_endpoint, test_fixtures::MockConfirmOrder};
 
 #[actix_web::test]
 async fn invalid_order_state() {
@@ -7,9 +15,9 @@ async fn invalid_order_state() {
     let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
     mock_confirm_order.lock().unwrap().response = Err(ConfirmOrderUseCaseError::InvalidOrderState);
 
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_confirm_order));
+    let mock_shared_state = Data::new(Arc::clone(&mock_confirm_order));
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
@@ -40,9 +48,9 @@ async fn successfully_cancelled() {
     let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
     mock_confirm_order.lock().unwrap().response = Ok(());
 
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_confirm_order));
+    let mock_shared_state = Data::new(Arc::clone(&mock_confirm_order));
 
-    let req = test::TestRequest::default()
+    let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 

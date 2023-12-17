@@ -2,9 +2,10 @@
 
 use common::types::main::base::domain_entity::DomainEntityTrait;
 
-use crate::main::menu::meal::Meal;
-use crate::main::menu::meal_restorer::MealRestorer;
-use crate::test_fixtures::{rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, version};
+use crate::{
+    main::menu::{meal::Meal, meal_restorer::MealRestorer},
+    test_fixtures::{rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, version},
+};
 
 #[test]
 fn restore_meal__success() {

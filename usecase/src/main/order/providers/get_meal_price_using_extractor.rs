@@ -1,10 +1,10 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-
-use domain::main::menu::value_objects::meal_id::MealId;
-use domain::main::menu::value_objects::price::Price;
-use domain::main::order::get_meal_price::GetMealPrice;
+use domain::main::{
+    menu::value_objects::{meal_id::MealId, price::Price},
+    order::get_meal_price::GetMealPrice,
+};
 
 use crate::main::menu::access::meal_extractor::MealExtractor;
 

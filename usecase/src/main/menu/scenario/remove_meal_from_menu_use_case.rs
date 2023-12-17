@@ -1,13 +1,11 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-
 use domain::main::menu::value_objects::meal_id::MealId;
 
-use crate::main::menu::access::meal_extractor::MealExtractor;
-use crate::main::menu::access::meal_persister::MealPersister;
-use crate::main::menu::remove_meal_from_menu::{
-    RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
+use crate::main::menu::{
+    access::{meal_extractor::MealExtractor, meal_persister::MealPersister},
+    remove_meal_from_menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError},
 };
 
 #[derive(Debug, new)]

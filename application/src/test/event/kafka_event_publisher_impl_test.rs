@@ -1,23 +1,20 @@
 use std::{ops::Deref, time::Duration};
 
 use derive_new::new;
+use domain::{
+    main::menu::{
+        meal_events::{MealAddedToMenuDomainEvent, MealEventEnum},
+        value_objects::meal_id::{MealId, MealIdGenerator},
+    },
+    test_fixtures::rnd_meal_id,
+};
 use kafka::{
     consumer::{Consumer, FetchOffset, GroupOffsetStorage},
     producer::{Producer, Record, RequiredAcks},
 };
 
-use domain::main::menu::meal_events::MealEventEnum;
-use domain::{
-    main::menu::{
-        meal_events::MealAddedToMenuDomainEvent,
-        value_objects::meal_id::{MealId, MealIdGenerator},
-    },
-    test_fixtures::rnd_meal_id,
-};
-
-use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 use crate::{
-    main::event::kafka_event_publisher_impl::KafkaEventPublisherImpl,
+    main::event::kafka_event_publisher_impl::{KafkaEventPublisherImpl, MEAL_TOPIC_NAME},
     test_fixtures::{TestKafka, KAFKA_ADDRESS},
 };
 

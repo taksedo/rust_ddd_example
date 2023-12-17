@@ -1,9 +1,9 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-
-use domain::main::menu::meal_already_exists::MealAlreadyExists;
-use domain::main::menu::value_objects::meal_name::MealName;
+use domain::main::menu::{
+    meal_already_exists::MealAlreadyExists, value_objects::meal_name::MealName,
+};
 
 use crate::main::menu::access::meal_extractor::MealExtractor;
 
