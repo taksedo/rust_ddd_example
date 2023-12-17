@@ -23,6 +23,7 @@ use usecase::main::{
         confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError},
         dto::order_details::{OrderDetails, ToDetails},
         get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
+        get_orders::{GetOrders, GetOrdersUseCaseError},
     },
 };
 
@@ -202,5 +203,31 @@ impl GetOrderById for MockGetOrderById {
     fn execute(&mut self, id: ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
         self.id = id;
         self.clone().response
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MockGetOrders {
+    pub response: Result<Vec<OrderDetails>, GetOrdersUseCaseError>,
+    pub start_id: ShopOrderId,
+    pub limit: usize,
+}
+
+impl GetOrders for MockGetOrders {
+    fn execute(
+        &mut self,
+        start_id: ShopOrderId,
+        limit: usize,
+    ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError> {
+        self.start_id = start_id;
+        self.limit = limit;
+        self.response.clone()
+    }
+}
+
+impl MockGetOrders {
+    pub fn verify_invoked(&self, start_id: ShopOrderId, limit: usize) {
+        assert_eq!(self.start_id, start_id);
+        assert_eq!(self.limit, limit);
     }
 }

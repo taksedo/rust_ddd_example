@@ -20,7 +20,7 @@ pub struct GetOrdersUseCase {
 
 impl GetOrders for GetOrdersUseCase {
     fn execute(
-        &self,
+        &mut self,
         start_id: ShopOrderId,
         limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError> {

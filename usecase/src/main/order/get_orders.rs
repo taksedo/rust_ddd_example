@@ -8,13 +8,13 @@ use crate::main::order::dto::order_details::OrderDetails;
 
 pub trait GetOrders: Debug + Send {
     fn execute(
-        &self,
+        &mut self,
         start_id: ShopOrderId,
         limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError>;
 }
 
-#[derive(new, Error, Debug, Clone, PartialEq)]
+#[derive(new, Error, Debug, Clone, Copy, PartialEq)]
 pub enum GetOrdersUseCaseError {
     #[error("Limit is exceeded")]
     LimitExceed(usize),
