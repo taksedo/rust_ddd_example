@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS shop.meal (
     id BIGINT PRIMARY KEY NOT NULL,
-    name VarChar NOT NULL UNIQUE,
+    name VarChar NOT NULL,
     description VarChar,
     removed BOOLEAN NOT NULL,
     price NUMERIC NOT NULL,

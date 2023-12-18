@@ -5,7 +5,7 @@ use serde::Serialize;
 use serde_derive::Deserialize;
 use usecase::main::order::dto::order_details::{OrderDetails, OrderItemDetails};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct OrderModel {
     pub id: i64,
     pub address: AddressModel,
@@ -15,13 +15,13 @@ pub struct OrderModel {
     pub ready_for_confirm_or_cancel: bool,
 }
 
-#[derive(new, Serialize, Deserialize, Debug)]
+#[derive(new, Serialize, Deserialize, Debug, Clone)]
 pub struct OrderItemModel {
     pub meal_id: i64,
     pub count: i32,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AddressModel {
     pub street: String,
     pub building: i16,
