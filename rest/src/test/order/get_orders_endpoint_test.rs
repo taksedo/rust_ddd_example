@@ -55,6 +55,55 @@ async fn limit_reached() {
 }
 
 #[actix_web::test]
+async fn returned_successfully_without_next_page() {
+    dotenv().ok();
+    let limit = 1;
+
+    let single = rnd_order_details(Default::default());
+    let first_item = single.clone().items[0];
+
+    let mock_get_orders = Arc::new(Mutex::new(MockGetOrders {
+        response: Ok(vec![single.clone()]),
+        start_id: single.id,
+        limit,
+    }));
+
+    let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
+    let req = TestRequest::default()
+        .param("start_id", single.id.to_i64().to_string())
+        .param("limit", limit.to_string())
+        .to_http_request();
+
+    let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
+
+    assert_eq!(resp.status(), StatusCode::OK);
+
+    let body = resp.into_body().try_into_bytes().unwrap();
+    let body_text = std::str::from_utf8(&body).unwrap();
+
+    let response_dto: Vec<OrderModel> = serde_json::from_str(body_text).unwrap();
+
+    assert_eq!(response_dto.len(), limit);
+    assert_eq!(response_dto[0].id, single.id.to_i64());
+    assert_eq!(response_dto[0].total_price, single.total.to_string_value());
+    assert_eq!(response_dto[0].version, single.version.to_i64());
+    assert_eq!(
+        response_dto[0].address.street,
+        single.address.street_to_string()
+    );
+    assert_eq!(
+        response_dto[0].address.building,
+        single.address.building_to_i16()
+    );
+    assert_eq!(response_dto[0].items.len(), 1);
+    assert_eq!(
+        response_dto[0].items[0].meal_id,
+        first_item.meal_id.to_i64()
+    );
+    assert_eq!(response_dto[0].items[0].count, first_item.count.to_i32());
+}
+
+#[actix_web::test]
 async fn returned_successfully_with_next_page() {
     dotenv().ok();
     let limit = 1;
@@ -102,28 +151,4 @@ async fn returned_successfully_with_next_page() {
         first_item.meal_id.to_i64()
     );
     assert_eq!(response_dto[0].items[0].count, first_item.count.to_i32());
-
-    // assert_eq!(
-    //     response_dto.address.street,
-    //     details.address.street_to_string()
-    // );
-    // assert_eq!(
-    //     response_dto.address.building,
-    //     details.address.building_to_i16()
-    // );
-    // assert_eq!(response_dto.total_price, details.total.to_string_value());
-    // assert_eq!(response_dto.items.len(), 1);
-    // assert_eq!(
-    //     response_dto.items.get(0).unwrap().meal_id,
-    //     item_details.meal_id.to_i64()
-    // );
-    // assert_eq!(
-    //     response_dto.items.get(0).unwrap().count,
-    //     item_details.count.to_i32()
-    // );
-    // assert_eq!(response_dto.version, details.version.to_i64());
-    // mock_get_order_by_id
-    //     .lock()
-    //     .unwrap()
-    //     .verify_invoked(details.id);
 }
