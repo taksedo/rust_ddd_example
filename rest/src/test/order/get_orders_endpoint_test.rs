@@ -7,7 +7,10 @@ use dotenvy::dotenv;
 use usecase::main::order::get_orders::GetOrdersUseCaseError;
 
 use crate::{
-    main::order::{get_orders_endpoint, order_model::OrderModel},
+    main::order::{
+        get_orders_endpoint::{self, CursorPagedModel},
+        order_model::OrderModel,
+    },
     test_fixtures::{rnd_order_details, MockGetOrders},
 };
 
@@ -51,7 +54,7 @@ async fn limit_reached() {
     mock_get_orders
         .lock()
         .unwrap()
-        .verify_invoked(start_id, limit);
+        .verify_invoked(start_id, limit + 1);
 }
 
 #[actix_web::test]
@@ -81,26 +84,36 @@ async fn returned_successfully_without_next_page() {
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();
 
-    let response_dto: Vec<OrderModel> = serde_json::from_str(body_text).unwrap();
+    let response_dto: CursorPagedModel<OrderModel, i32> = serde_json::from_str(body_text).unwrap();
 
-    assert_eq!(response_dto.len(), limit);
-    assert_eq!(response_dto[0].id, single.id.to_i64());
-    assert_eq!(response_dto[0].total_price, single.total.to_string_value());
-    assert_eq!(response_dto[0].version, single.version.to_i64());
+    assert_eq!(response_dto.list.len(), limit);
+    assert_eq!(response_dto.list[0].id, single.id.to_i64());
     assert_eq!(
-        response_dto[0].address.street,
+        response_dto.list[0].total_price,
+        single.total.to_string_value()
+    );
+    assert_eq!(response_dto.list[0].version, single.version.to_i64());
+    assert_eq!(
+        response_dto.list[0].address.street,
         single.address.street_to_string()
     );
     assert_eq!(
-        response_dto[0].address.building,
+        response_dto.list[0].address.building,
         single.address.building_to_i16()
     );
-    assert_eq!(response_dto[0].items.len(), 1);
+    assert_eq!(response_dto.list[0].items.len(), 1);
     assert_eq!(
-        response_dto[0].items[0].meal_id,
+        response_dto.list[0].items[0].meal_id,
         first_item.meal_id.to_i64()
     );
-    assert_eq!(response_dto[0].items[0].count, first_item.count.to_i32());
+    assert_eq!(
+        response_dto.list[0].items[0].count,
+        first_item.count.to_i32()
+    );
+    mock_get_orders
+        .lock()
+        .unwrap()
+        .verify_invoked(single.id, limit + 1);
 }
 
 #[actix_web::test]
@@ -131,24 +144,36 @@ async fn returned_successfully_with_next_page() {
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();
 
-    let response_dto: Vec<OrderModel> = serde_json::from_str(body_text).unwrap();
+    let response_dto: CursorPagedModel<OrderModel, i64> = serde_json::from_str(body_text).unwrap();
 
-    assert_eq!(response_dto.len(), limit);
-    assert_eq!(response_dto[0].id, first.id.to_i64());
-    assert_eq!(response_dto[0].total_price, first.total.to_string_value());
-    assert_eq!(response_dto[0].version, first.version.to_i64());
+    dbg!(&response_dto);
+
+    assert_eq!(response_dto.list.len(), limit);
+    assert_eq!(response_dto.list[0].id, first.id.to_i64());
     assert_eq!(
-        response_dto[0].address.street,
+        response_dto.list[0].total_price,
+        first.total.to_string_value()
+    );
+    assert_eq!(response_dto.list[0].version, first.version.to_i64());
+    assert_eq!(
+        response_dto.list[0].address.street,
         first.address.street_to_string()
     );
     assert_eq!(
-        response_dto[0].address.building,
+        response_dto.list[0].address.building,
         first.address.building_to_i16()
     );
-    assert_eq!(response_dto[0].items.len(), 1);
+    assert_eq!(response_dto.list[0].items.len(), 1);
     assert_eq!(
-        response_dto[0].items[0].meal_id,
+        response_dto.list[0].items[0].meal_id,
         first_item.meal_id.to_i64()
     );
-    assert_eq!(response_dto[0].items[0].count, first_item.count.to_i32());
+    assert_eq!(
+        response_dto.list[0].items[0].count,
+        first_item.count.to_i32()
+    );
+    mock_get_orders
+        .lock()
+        .unwrap()
+        .verify_invoked(first.id, limit + 1);
 }

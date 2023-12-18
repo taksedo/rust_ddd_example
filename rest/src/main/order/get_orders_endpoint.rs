@@ -6,6 +6,7 @@ use std::{
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use common::common_rest::main::rest_responses::{to_invalid_param_bad_request, ValidationError};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
+use serde_derive::{Deserialize, Serialize};
 use usecase::main::order::get_orders::{GetOrders, GetOrdersUseCaseError};
 
 use super::order_model::{OrderModel, ToModel};
@@ -16,12 +17,12 @@ pub async fn execute<T: GetOrders + Send + Debug>(
     req: HttpRequest,
 ) -> HttpResponse {
     let start_id: i64 = req.match_info().get("start_id").unwrap().parse().unwrap();
-    let limit = req.match_info().get("limit").unwrap().parse().unwrap();
+    let limit: usize = req.match_info().get("limit").unwrap().parse().unwrap();
 
     let result = shared_state
         .lock()
         .unwrap()
-        .execute(ShopOrderId::try_from(start_id).unwrap(), limit)
+        .execute(ShopOrderId::try_from(start_id).unwrap(), limit + 1_usize)
         .map_err(|e| e.to_rest_error());
     if let Err(error) = result {
         error
@@ -40,7 +41,7 @@ pub async fn execute<T: GetOrders + Send + Debug>(
         };
         HttpResponse::Ok()
             .content_type(ContentType::json())
-            .body(serde_json::to_string(&model.list).unwrap())
+            .body(serde_json::to_string(&model).unwrap())
     }
 }
 
@@ -62,6 +63,7 @@ impl ToRestError for GetOrdersUseCaseError {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CursorPagedModel<T, ID> {
     pub list: Vec<T>,
     pub next: Option<ID>,
