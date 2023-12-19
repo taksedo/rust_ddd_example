@@ -79,10 +79,10 @@ impl AddMealToMenu for MockAddMealToMenu {
 }
 
 impl MockAddMealToMenu {
-    pub fn verify_invoked(&self, name: MealName, description: MealDescription, price: Price) {
-        assert_eq!(name, self.name.clone());
-        assert_eq!(description, self.description.clone());
-        assert_eq!(price, self.price.clone());
+    pub fn verify_invoked(&self, name: &MealName, description: &MealDescription, price: &Price) {
+        assert_eq!(name, &self.name);
+        assert_eq!(description, &self.description);
+        assert_eq!(price, &self.price);
     }
 }
 
@@ -175,8 +175,8 @@ pub struct MockConfirmOrder {
 }
 
 impl MockConfirmOrder {
-    pub fn verify_invoked(&self, id: ShopOrderId) {
-        assert_eq!(self.id, id);
+    pub fn verify_invoked(&self, id: &ShopOrderId) {
+        assert_eq!(&self.id, id);
     }
 }
 
@@ -194,8 +194,8 @@ pub struct MockGetOrderById {
 }
 
 impl MockGetOrderById {
-    pub fn verify_invoked(&self, id: ShopOrderId) {
-        assert_eq!(self.id, id);
+    pub fn verify_invoked(&self, id: &ShopOrderId) {
+        assert_eq!(&self.id, id);
     }
 }
 
@@ -226,8 +226,8 @@ impl GetOrders for MockGetOrders {
 }
 
 impl MockGetOrders {
-    pub fn verify_invoked(&self, start_id: ShopOrderId, limit: usize) {
-        assert_eq!(self.start_id, start_id);
-        assert_eq!(self.limit, limit);
+    pub fn verify_invoked(&self, start_id: &ShopOrderId, limit: &usize) {
+        assert_eq!(&self.start_id, start_id);
+        assert_eq!(&self.limit, limit);
     }
 }

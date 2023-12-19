@@ -1,5 +1,7 @@
 use std::{
+    collections::HashMap,
     fmt::Debug,
+    num::ParseIntError,
     sync::{Arc, Mutex},
 };
 
@@ -18,19 +20,50 @@ pub async fn execute<T: GetOrders + Send + Debug>(
 ) -> HttpResponse {
     let error_list = Arc::new(Mutex::new(vec![]));
 
-    let params = web::Query::<GetOrderParams>::from_query(req.query_string());
+    let mut start_id: Result<i64, ParseIntError> = Ok(0);
+    let mut limit: Result<usize, ParseIntError> = Ok(0);
 
-    if let Err(err) = &params {
+    let params = web::Query::<HashMap<String, String>>::from_query(req.query_string()).unwrap();
+
+    if let Some(val) = params.get("startId") {
+        start_id = match val.parse::<i64>() {
+            Err(err) => {
+                error_list
+                    .lock()
+                    .unwrap()
+                    .push(ValidationError::new(&err.to_string()));
+                Err(err)
+            }
+            Ok(start_id) => Ok(start_id),
+        };
+    } else {
         error_list
             .lock()
             .unwrap()
-            .push(ValidationError::new(&err.to_string()));
+            .push(ValidationError::new("startId is absent"));
+    }
+
+    if let Some(val) = params.get("limit") {
+        limit = match val.parse::<usize>() {
+            Err(err) => {
+                error_list
+                    .lock()
+                    .unwrap()
+                    .push(ValidationError::new(&err.to_string()));
+                Err(err)
+            }
+            Ok(limit) => Ok(limit),
+        };
+    } else {
+        error_list
+            .lock()
+            .unwrap()
+            .push(ValidationError::new("limit is absent"));
     }
 
     if error_list.lock().unwrap().is_empty() {
-        let params = params.unwrap();
-        let start_id = params.start_id;
-        let limit = params.limit;
+        let start_id = start_id.unwrap();
+        let limit = limit.unwrap();
 
         match shared_state
             .lock()
@@ -87,11 +120,4 @@ impl<T, ID> CursorPagedModel<T, ID> {
         let count = list.len();
         Self { list, next, count }
     }
-}
-
-#[derive(Debug, Deserialize, Copy, Clone)]
-#[serde(rename_all = "camelCase")]
-struct GetOrderParams {
-    pub start_id: i64,
-    pub limit: usize,
 }

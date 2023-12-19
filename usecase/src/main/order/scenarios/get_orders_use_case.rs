@@ -24,15 +24,15 @@ impl GetOrders for GetOrdersUseCase {
         start_id: ShopOrderId,
         limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError> {
-        let curr_limit = (self.limit)();
-        if curr_limit < limit {
-            Err(GetOrdersUseCaseError::LimitExceed(curr_limit))
+        let max_size = (self.limit)();
+        if max_size < limit {
+            Err(GetOrdersUseCaseError::LimitExceed(max_size))
         } else {
             Ok(self
                 .shop_order_extractor
                 .lock()
                 .unwrap()
-                .get_all(start_id, curr_limit)
+                .get_all(start_id, max_size)
                 .iter()
                 .map(|order| order.to_details())
                 .collect())

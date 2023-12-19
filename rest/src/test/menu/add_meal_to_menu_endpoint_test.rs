@@ -45,7 +45,7 @@ async fn created_successfully() {
     mock_add_meal_to_menu
         .lock()
         .unwrap()
-        .verify_invoked(meal_name, meal_description, price);
+        .verify_invoked(&meal_name, &meal_description, &price);
 
     let header = resp
         .headers()

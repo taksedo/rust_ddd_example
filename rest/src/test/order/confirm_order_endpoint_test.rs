@@ -40,7 +40,7 @@ async fn order_not_found() {
     );
     assert_eq!(&response_dto.response_title, "Resource not found");
 
-    mock_confirm_order.lock().unwrap().verify_invoked(order_id);
+    mock_confirm_order.lock().unwrap().verify_invoked(&order_id);
 }
 
 #[actix_web::test]
@@ -75,7 +75,7 @@ async fn invalid_order_state() {
     );
     assert_eq!(&response_dto.response_title, "Invalid state");
 
-    mock_confirm_order.lock().unwrap().verify_invoked(order_id);
+    mock_confirm_order.lock().unwrap().verify_invoked(&order_id);
 }
 
 #[actix_web::test]
@@ -98,5 +98,5 @@ async fn successfully_cancelled() {
     let body = resp.into_body().try_into_bytes().unwrap();
 
     assert!(body.is_empty());
-    mock_confirm_order.lock().unwrap().verify_invoked(order_id);
+    mock_confirm_order.lock().unwrap().verify_invoked(&order_id);
 }
