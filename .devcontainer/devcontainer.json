@@ -29,7 +29,8 @@
         "serayuzgur.crates",
         "Zerotaskx.rust-extension-pack",
         "ZhangYue.rust-mod-generator",
-        "cweijan.vscode-database-client2"
+        "cweijan.vscode-database-client2",
+        "mhutchie.git-graph"
       ],
       "settings": {
         "lldb.executable": "/usr/bin/lldb",
