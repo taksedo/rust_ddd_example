@@ -33,7 +33,7 @@ use usecase::main::{
 
 use crate::main::configuration::use_case_configuration::{
     ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
-    GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, REMOVE_MEAL_FROM_MENU_USECASE,
+    GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDERS_USECASE, REMOVE_MEAL_FROM_MENU_USECASE,
 };
 
 #[actix_web::main]
@@ -51,6 +51,8 @@ pub async fn start_web_backend() -> std::io::Result<()> {
 
     log::info!("starting HTTP server at {}", env::var("HOST_URL").unwrap());
 
+    log::info!("API_V1_ORDER_GET_ALL = {API_V1_ORDER_GET_ALL}");
+
     HttpServer::new(move || {
         App::new()
             .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())
@@ -59,10 +61,11 @@ pub async fn start_web_backend() -> std::io::Result<()> {
             .app_data(REMOVE_MEAL_FROM_MENU_USECASE.clone())
             .app_data(CANCEL_ORDER_USECASE.clone())
             .app_data(CONFIRM_ORDER_USECASE.clone())
+            .app_data(GET_ORDERS_USECASE.clone())
             .wrap(
                 Cors::default()
                     .allowed_origin(&env::var("HOST_URL").unwrap())
-                    .allowed_methods(vec!["GET", "POST", "DELETE"])
+                    .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
                     .allowed_headers(vec![
                         header::AUTHORIZATION,
                         header::ACCEPT,

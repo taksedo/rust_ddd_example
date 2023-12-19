@@ -31,6 +31,8 @@ use crate::main::configuration::persistence_configuration::{
     MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY,
 };
 
+const GET_ORDERS_MAX_SIZE: usize = 10;
+
 lazy_static! {
     pub static ref ADD_MEAL_TO_MENU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> =
         Data::new(Arc::clone(&add_meal_to_menu_use_case(
@@ -141,15 +143,7 @@ where
     U: Debug + Send + ShopOrderExtractor + 'static,
 {
     let usecase = GetOrdersUseCase::new(Arc::clone(&order_repository) as _, || {
-        get_limit("") + 1_usize
+        GET_ORDERS_MAX_SIZE + 1
     });
     Arc::new(Mutex::new(usecase))
-}
-
-pub fn get_limit(str: &str) -> usize {
-    if str.is_empty() {
-        10
-    } else {
-        11
-    }
 }
