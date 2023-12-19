@@ -51,8 +51,6 @@ pub async fn start_web_backend() -> std::io::Result<()> {
 
     log::info!("starting HTTP server at {}", env::var("HOST_URL").unwrap());
 
-    log::info!("API_V1_ORDER_GET_ALL = {API_V1_ORDER_GET_ALL}");
-
     HttpServer::new(move || {
         App::new()
             .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())

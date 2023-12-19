@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 
 use crate::main::{
-    endpoint_url::API_V1_MENU_GET_BY_ID, menu::validation::Validated, to_error::ToRestError,
+    endpoint_url::API_V1_MENU_GET_BY_ID, to_error::ToRestError, validated::Validated,
 };
 
 #[derive(new, Serialize, Deserialize, Debug)]
