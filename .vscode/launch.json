@@ -41,6 +41,24 @@
             },
             "args": [],
             "cwd": "${workspaceFolder}"
-        }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "run rust_ddd_example_shop",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "sourceMap": {},
+            "sourceLanguages": [
+              "rust"
+            ],
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust_ddd_example_shop",
+                    "--package=rust_ddd_example_shop"
+                ]
+            }
+          }
     ]
 }
