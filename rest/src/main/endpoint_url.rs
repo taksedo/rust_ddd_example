@@ -9,9 +9,9 @@ pub const API_V1_MENU_GET_ALL: &str = formatcp!("{API_V1_MENU}");
 pub const API_V1_MENU_DELETE_BY_ID: &str = formatcp!("{API_V1_MENU}/{{id}}");
 
 pub const API_V1_ORDER: &str = formatcp!("{API_V1}/orders");
-pub const API_V1_ORDER_CANCEL_BY_ID: &str = formatcp!("{API_V1}/{{id}}/cancel");
-pub const API_V1_ORDER_CONFIRM_BY_ID: &str = formatcp!("{API_V1}/{{id}}/confirm");
-pub const API_V1_ORDER_GET_BY_ID: &str = formatcp!("{API_V1}/{{id}}");
-pub const API_V1_ORDER_GET_ALL: &str = formatcp!("{API_V1}/");
+pub const API_V1_ORDER_CANCEL_BY_ID: &str = formatcp!("{API_V1_ORDER}/{{id}}/cancel");
+pub const API_V1_ORDER_CONFIRM_BY_ID: &str = formatcp!("{API_V1_ORDER}/{{id}}/confirm");
+pub const API_V1_ORDER_GET_BY_ID: &str = formatcp!("{API_V1_ORDER}/{{id}}");
+pub const API_V1_ORDER_GET_ALL: &str = formatcp!("{API_V1_ORDER}");
 pub const API_V1_ORDER_GET_WITH_PAGINATION: &str =
-    formatcp!("{API_V1}/?startId={{startId}}&limit={{limit}}");
+    formatcp!("{API_V1_ORDER}/?startId={{startId}}&limit={{limit}}");

@@ -16,32 +16,44 @@ pub async fn execute<T: GetOrders + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
-    let start_id: i64 = req.match_info().get("start_id").unwrap().parse().unwrap();
-    let limit: usize = req.match_info().get("limit").unwrap().parse().unwrap();
+    let error_list = Arc::new(Mutex::new(vec![]));
 
-    let result = shared_state
-        .lock()
-        .unwrap()
-        .execute(ShopOrderId::try_from(start_id).unwrap(), limit + 1_usize)
-        .map_err(|e| e.to_rest_error());
-    if let Err(error) = result {
-        error
-    } else {
-        let order_model_list: Vec<OrderModel> = result
+    let params = web::Query::<GetOrderParams>::from_query(req.query_string());
+
+    if let Err(err) = &params {
+        error_list
+            .lock()
             .unwrap()
-            .into_iter()
-            .map(|it| it.to_model())
-            .collect();
+            .push(ValidationError::new(&err.to_string()));
+    }
 
-        let model = if order_model_list.len() > limit {
-            let next_id = order_model_list[limit].id;
-            CursorPagedModel::new(order_model_list[..limit].to_vec(), Some(next_id))
-        } else {
-            CursorPagedModel::new(order_model_list, Option::<i64>::None)
-        };
-        HttpResponse::Ok()
-            .content_type(ContentType::json())
-            .body(serde_json::to_string(&model).unwrap())
+    if error_list.lock().unwrap().is_empty() {
+        let params = params.unwrap();
+        let start_id = params.start_id;
+        let limit = params.limit;
+
+        match shared_state
+            .lock()
+            .unwrap()
+            .execute(ShopOrderId::try_from(start_id).unwrap(), limit + 1_usize)
+        {
+            Ok(order_details) => {
+                let list: Vec<OrderModel> =
+                    order_details.into_iter().map(|it| it.to_model()).collect();
+                let model = if list.len() > limit {
+                    let next_id = list[limit].id;
+                    CursorPagedModel::new(list[..limit].to_vec(), Some(next_id))
+                } else {
+                    CursorPagedModel::new(list, Option::<i64>::None)
+                };
+                HttpResponse::Ok()
+                    .content_type(ContentType::json())
+                    .body(serde_json::to_string(&model).unwrap())
+            }
+            Err(err) => err.to_rest_error(),
+        }
+    } else {
+        to_invalid_param_bad_request(error_list)
     }
 }
 
@@ -75,4 +87,11 @@ impl<T, ID> CursorPagedModel<T, ID> {
         let count = list.len();
         Self { list, next, count }
     }
+}
+
+#[derive(Debug, Deserialize, Copy, Clone)]
+#[serde(rename_all = "camelCase")]
+struct GetOrderParams {
+    pub start_id: i64,
+    pub limit: usize,
 }
