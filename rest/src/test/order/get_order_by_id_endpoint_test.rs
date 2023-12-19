@@ -92,7 +92,7 @@ async fn returned_successfully_order_is_ready_for_confirm_or_cancel() {
     mock_get_order_by_id
         .lock()
         .unwrap()
-        .verify_invoked(details.id);
+        .verify_invoked(&details.id);
 }
 
 #[actix_web::test]
@@ -145,5 +145,5 @@ async fn returned_successfully_order_isnt_ready_for_confirm_or_cancel() {
     mock_get_order_by_id
         .lock()
         .unwrap()
-        .verify_invoked(details.id);
+        .verify_invoked(&details.id);
 }

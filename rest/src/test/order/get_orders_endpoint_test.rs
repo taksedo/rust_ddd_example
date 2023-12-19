@@ -28,9 +28,14 @@ async fn limit_reached() {
 
     let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
     let req = TestRequest::default()
-        .param("start_id", start_id.to_i64().to_string())
-        .param("limit", limit.to_string())
+        .uri(&format!(
+            "/?startId={}&limit={}",
+            start_id.to_i64().to_string(),
+            limit.to_string()
+        ))
         .to_http_request();
+
+    dbg!(&req);
 
     let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
 
@@ -54,7 +59,7 @@ async fn limit_reached() {
     mock_get_orders
         .lock()
         .unwrap()
-        .verify_invoked(start_id, limit + 1);
+        .verify_invoked(&start_id, &(limit + 1));
 }
 
 #[actix_web::test]
@@ -73,8 +78,11 @@ async fn returned_successfully_without_next_page() {
 
     let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
     let req = TestRequest::default()
-        .param("start_id", single.id.to_i64().to_string())
-        .param("limit", limit.to_string())
+        .uri(&format!(
+            "/?startId={}&limit={}",
+            single.id.to_i64().to_string(),
+            limit.to_string()
+        ))
         .to_http_request();
 
     let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
@@ -113,7 +121,7 @@ async fn returned_successfully_without_next_page() {
     mock_get_orders
         .lock()
         .unwrap()
-        .verify_invoked(single.id, limit + 1);
+        .verify_invoked(&single.id, &(limit + 1));
 }
 
 #[actix_web::test]
@@ -133,8 +141,11 @@ async fn returned_successfully_with_next_page() {
 
     let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
     let req = TestRequest::default()
-        .param("start_id", first.id.to_i64().to_string())
-        .param("limit", limit.to_string())
+        .uri(&format!(
+            "/?startId={}&limit={}",
+            first.id.to_i64().to_string(),
+            limit.to_string()
+        ))
         .to_http_request();
 
     let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
@@ -175,5 +186,5 @@ async fn returned_successfully_with_next_page() {
     mock_get_orders
         .lock()
         .unwrap()
-        .verify_invoked(first.id, limit + 1);
+        .verify_invoked(&first.id, &(limit + 1));
 }
