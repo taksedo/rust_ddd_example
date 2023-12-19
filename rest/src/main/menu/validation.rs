@@ -8,13 +8,7 @@ use domain::main::menu::value_objects::{
     price::{CreatePriceError, Price},
 };
 
-pub trait Validated<Entity, ValueType> {
-    #[allow(clippy::result_unit_err)]
-    fn validated(
-        val: ValueType,
-        error_list: Arc<Mutex<Vec<ValidationError>>>,
-    ) -> Result<Entity, ()>;
-}
+use crate::main::validated::Validated;
 
 impl Validated<MealName, &str> for MealName {
     fn validated(val: &str, error_list: Arc<Mutex<Vec<ValidationError>>>) -> Result<Self, ()> {

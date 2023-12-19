@@ -1,7 +1,5 @@
 use std::{
-    collections::HashMap,
     fmt::Debug,
-    num::ParseIntError,
     sync::{Arc, Mutex},
 };
 
@@ -11,8 +9,11 @@ use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use serde_derive::{Deserialize, Serialize};
 use usecase::main::order::get_orders::{GetOrders, GetOrdersUseCaseError};
 
-use super::order_model::{OrderModel, ToModel};
-use crate::main::to_error::ToRestError;
+use super::{
+    order_model::{OrderModel, ToModel},
+    validated::validate_query_string,
+};
+use crate::main::{to_error::ToRestError, validated::Validated};
 
 pub async fn execute<T: GetOrders + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
@@ -20,46 +21,15 @@ pub async fn execute<T: GetOrders + Send + Debug>(
 ) -> HttpResponse {
     let error_list = Arc::new(Mutex::new(vec![]));
 
-    let mut start_id: Result<i64, ParseIntError> = Ok(0);
-    let mut limit: Result<usize, ParseIntError> = Ok(0);
+    let mut start_id = Err(());
 
-    let params = web::Query::<HashMap<String, String>>::from_query(req.query_string()).unwrap();
-
-    if let Some(val) = params.get("startId") {
-        start_id = match val.parse::<i64>() {
-            Err(err) => {
-                error_list
-                    .lock()
-                    .unwrap()
-                    .push(ValidationError::new(&err.to_string()));
-                Err(err)
-            }
-            Ok(start_id) => Ok(start_id),
-        };
-    } else {
-        error_list
-            .lock()
-            .unwrap()
-            .push(ValidationError::new("startId is absent"));
+    if let Ok(start_id_val) =
+        validate_query_string::<i64>(req.clone(), "startId", Arc::clone(&error_list))
+    {
+        start_id = ShopOrderId::validated(start_id_val, Arc::clone(&error_list))
     }
 
-    if let Some(val) = params.get("limit") {
-        limit = match val.parse::<usize>() {
-            Err(err) => {
-                error_list
-                    .lock()
-                    .unwrap()
-                    .push(ValidationError::new(&err.to_string()));
-                Err(err)
-            }
-            Ok(limit) => Ok(limit),
-        };
-    } else {
-        error_list
-            .lock()
-            .unwrap()
-            .push(ValidationError::new("limit is absent"));
-    }
+    let limit = validate_query_string::<usize>(req, "limit", Arc::clone(&error_list));
 
     if error_list.lock().unwrap().is_empty() {
         let start_id = start_id.unwrap();
@@ -68,7 +38,7 @@ pub async fn execute<T: GetOrders + Send + Debug>(
         match shared_state
             .lock()
             .unwrap()
-            .execute(ShopOrderId::try_from(start_id).unwrap(), limit + 1_usize)
+            .execute(start_id, limit + 1_usize)
         {
             Ok(order_details) => {
                 let list: Vec<OrderModel> =
