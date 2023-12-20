@@ -28,8 +28,8 @@ fn successfully_added() {
     let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
 
     let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
-        Arc::clone(&meal_persister) as _,
-        Arc::clone(&id_generator) as _,
+        meal_persister.clone() as _,
+        id_generator.clone() as _,
         Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
     );
     let result = add_to_menu_use_case.execute(name.clone(), description.clone(), price.clone());

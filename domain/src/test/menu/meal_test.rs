@@ -54,7 +54,7 @@ fn add_meal__success() {
     let description = rnd_meal_description();
     let price = rnd_price();
     let result = Meal::add_meal_to_menu(
-        Arc::clone(&id_generator) as _,
+        id_generator.clone() as _,
         meal_exists,
         name.to_owned(),
         description.to_owned(),

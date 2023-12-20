@@ -20,7 +20,7 @@ async fn order_not_found() {
         response: Err(GetOrderByIdUseCaseError::OrderNotFound),
     }));
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_get_order_by_id));
+    let mock_shared_state = Data::new(mock_get_order_by_id.clone());
 
     let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
@@ -54,7 +54,7 @@ async fn returned_successfully_order_is_ready_for_confirm_or_cancel() {
         response: Ok(details.clone()),
     }));
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_get_order_by_id));
+    let mock_shared_state = Data::new(mock_get_order_by_id.clone());
 
     let req = TestRequest::default()
         .param("id", details.id.to_i64().to_string())
@@ -106,7 +106,7 @@ async fn returned_successfully_order_isnt_ready_for_confirm_or_cancel() {
         response: Ok(details.clone()),
     }));
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_get_order_by_id));
+    let mock_shared_state = Data::new(mock_get_order_by_id.clone());
 
     let req = TestRequest::default()
         .param("id", details.id.to_i64().to_string())

@@ -73,7 +73,6 @@ impl Meal {
 #[derive(Debug, PartialEq)]
 pub enum MealError {
     AlreadyExistsWithSameNameError,
-    IdGenerationError,
 }
 
 impl BusinessError for MealError {}

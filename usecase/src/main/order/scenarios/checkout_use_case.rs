@@ -37,10 +37,10 @@ impl Checkout for CheckoutUseCase {
             .map_or(Err(CheckoutUseCaseError::CartNotFound), |cart| {
                 ShopOrder::checkout(
                     cart,
-                    Arc::clone(&self.id_generator) as _,
-                    Arc::clone(&self.active_order) as _,
+                    self.id_generator.clone() as _,
+                    self.active_order.clone() as _,
                     request.delivery_to,
-                    Arc::clone(&self.get_meal_price) as _,
+                    self.get_meal_price.clone() as _,
                 )
                 .map_err(|err| err.to_error())
             })

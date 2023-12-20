@@ -4,11 +4,11 @@ use std::{
 };
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::main::rest_responses::resource_not_found;
+use common::common_rest::main::rest_responses::{resource_not_found, to_invalid_param_bad_request};
 use domain::main::menu::value_objects::meal_id::MealId;
 use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
 
-use crate::main::{menu::meal_model::MealModel, to_error::ToRestError};
+use crate::main::{menu::meal_model::MealModel, to_error::ToRestError, validated::Validated};
 
 pub async fn execute<T: GetMealById + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
@@ -16,16 +16,16 @@ pub async fn execute<T: GetMealById + Send + Debug>(
 ) -> HttpResponse {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let result = shared_state
-        .lock()
-        .unwrap()
-        .execute(MealId::try_from(id).unwrap());
+    let error_list = Arc::new(Mutex::new(vec![]));
 
-    match result {
-        Ok(meal_info) => HttpResponse::Ok()
-            .content_type(ContentType::json())
-            .body(serde_json::to_string(&MealModel::from(meal_info)).unwrap()),
-        Err(e) => e.to_rest_error(),
+    match MealId::validated(id, error_list.clone()) {
+        Ok(meal_id) => match shared_state.lock().unwrap().execute(meal_id) {
+            Ok(meal_info) => HttpResponse::Ok()
+                .content_type(ContentType::json())
+                .body(serde_json::to_string(&MealModel::from(meal_info)).unwrap()),
+            Err(e) => e.to_rest_error(),
+        },
+        Err(_) => to_invalid_param_bad_request(error_list),
     }
 }
 

@@ -135,7 +135,7 @@ impl StringMethodsForRestTestExt for String {
     }
 
     fn with_id(&self, id: &i64) -> String {
-        self.with_parameter("id", id.to_string().as_str())
+        self.with_parameter("id", &id.to_string())
     }
 }
 

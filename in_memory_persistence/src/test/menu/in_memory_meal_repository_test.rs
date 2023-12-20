@@ -18,7 +18,7 @@ use crate::{
 #[test]
 fn saving_meal__meal_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let storage_binding = Arc::clone(&event_publisher);
+    let storage_binding = event_publisher.clone();
     let mut meal_repository = InMemoryMealRepository::new(event_publisher);
     let meal = meal_with_events();
 
@@ -40,7 +40,7 @@ fn saving_meal__meal_exists() {
     let existing_meal = rnd_meal();
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let storage_binding = Arc::clone(&event_publisher);
+    let storage_binding = event_publisher.clone();
     let mut meal_repository = InMemoryMealRepository::new(event_publisher);
     meal_repository
         .storage

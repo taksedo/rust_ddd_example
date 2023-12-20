@@ -49,7 +49,7 @@ impl AddMealToCartUseCase {
         if let Some(result) = self.cart_extractor.lock().unwrap().get_cart(for_customer) {
             result
         } else {
-            Cart::create(Arc::clone(&self.id_generator), for_customer)
+            Cart::create(self.id_generator.clone(), for_customer)
         }
     }
 }

@@ -12,7 +12,7 @@ async fn get_menu() {
     let meal_info = rnd_meal_info();
     let mock_get_menu = Arc::new(Mutex::new(MockGetMenu::default()));
     mock_get_menu.lock().unwrap().meal_info = meal_info.clone();
-    let mock_shared_state = web::Data::new(Arc::clone(&mock_get_menu));
+    let mock_shared_state = web::Data::new(mock_get_menu.clone());
 
     let resp = get_menu_endpoint::execute(mock_shared_state).await;
 

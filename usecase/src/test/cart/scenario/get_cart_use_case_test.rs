@@ -32,10 +32,7 @@ fn cart_successfully_extracted() {
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
     meal_extractor.lock().unwrap().meal = Some(meal.clone());
 
-    let use_case = GetCartUseCase::new(
-        Arc::clone(&meal_extractor) as _,
-        Arc::clone(&cart_extractor) as _,
-    );
+    let use_case = GetCartUseCase::new(meal_extractor.clone() as _, cart_extractor.clone() as _);
     let result = use_case.execute(customer_id);
 
     cart_extractor
@@ -58,10 +55,7 @@ fn cart_successfully_extracted() {
 fn cart_not_found() {
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
-    let use_case = GetCartUseCase::new(
-        Arc::clone(&meal_extractor) as _,
-        Arc::clone(&cart_extractor) as _,
-    );
+    let use_case = GetCartUseCase::new(meal_extractor.clone() as _, cart_extractor.clone() as _);
     let customer_id = rnd_customer_id();
 
     let result = use_case.execute(customer_id);

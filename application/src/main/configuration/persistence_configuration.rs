@@ -27,7 +27,7 @@ pub fn meal_id_generator() -> Arc<Mutex<MealIdGenerator>> {
 pub fn meal_repository() -> Arc<Mutex<MealRepository>> {
     Arc::new(Mutex::new(MealRepository::new(
         establish_connection(),
-        Arc::clone(&EVENT_PUBLISHER) as _,
+        EVENT_PUBLISHER.clone() as _,
     )))
 }
 
@@ -37,6 +37,6 @@ pub fn order_id_generator() -> Arc<Mutex<OrderIdGenerator>> {
 
 pub fn order_repository() -> Arc<Mutex<OrderRepository>> {
     Arc::new(Mutex::new(OrderRepository::new(
-        Arc::clone(&EVENT_PUBLISHER) as _,
+        EVENT_PUBLISHER.clone() as _
     )))
 }

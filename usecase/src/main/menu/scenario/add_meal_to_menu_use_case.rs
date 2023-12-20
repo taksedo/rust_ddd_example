@@ -39,8 +39,8 @@ impl AddMealToMenu for AddMealToMenuUseCase {
         price: Price,
     ) -> Result<MealId, AddMealToMenuUseCaseError> {
         Meal::add_meal_to_menu(
-            Arc::clone(&self.id_generator),
-            Arc::clone(&self.meal_exists),
+            self.id_generator.clone(),
+            self.meal_exists.clone(),
             name,
             description,
             price,
@@ -56,6 +56,7 @@ impl AddMealToMenu for AddMealToMenuUseCase {
     }
 }
 
+#[allow(unreachable_patterns)]
 impl ToError<AddMealToMenuUseCaseError> for MealError {
     fn to_error(self) -> AddMealToMenuUseCaseError {
         match self {

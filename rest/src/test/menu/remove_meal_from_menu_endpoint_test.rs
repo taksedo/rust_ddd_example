@@ -15,7 +15,7 @@ async fn meal_not_found() {
     let mock_remove_meal_from_menu = Arc::new(Mutex::new(MockRemoveMealFromMenu::default()));
     mock_remove_meal_from_menu.lock().unwrap().response =
         Err(RemoveMealFromMenuUseCaseError::MealNotFound);
-    let mock_shared_state = Data::new(Arc::clone(&mock_remove_meal_from_menu));
+    let mock_shared_state = Data::new(mock_remove_meal_from_menu.clone());
 
     let req = TestRequest::default()
         .param("id", meal_id.to_i64().to_string())
@@ -43,7 +43,7 @@ async fn removed_successfully() {
     let meal_id = rnd_meal_id();
 
     let mock_remove_meal_from_menu = Arc::new(Mutex::new(MockRemoveMealFromMenu::default()));
-    let mock_shared_state = Data::new(Arc::clone(&mock_remove_meal_from_menu));
+    let mock_shared_state = Data::new(mock_remove_meal_from_menu.clone());
 
     let req = TestRequest::default()
         .param("id", meal_id.to_i64().to_string())

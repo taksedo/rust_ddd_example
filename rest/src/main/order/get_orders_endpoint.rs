@@ -21,42 +21,34 @@ pub async fn execute<T: GetOrders + Send + Debug>(
 ) -> HttpResponse {
     let error_list = Arc::new(Mutex::new(vec![]));
 
-    let mut start_id = Err(());
-
-    if let Ok(start_id_val) =
-        validate_query_string::<i64>(req.clone(), "startId", Arc::clone(&error_list))
-    {
-        start_id = ShopOrderId::validated(start_id_val, Arc::clone(&error_list))
-    }
-
-    let limit = validate_query_string::<usize>(req, "limit", Arc::clone(&error_list));
-
-    if error_list.lock().unwrap().is_empty() {
-        let start_id = start_id.unwrap();
-        let limit = limit.unwrap();
-
-        match shared_state
-            .lock()
-            .unwrap()
-            .execute(start_id, limit + 1_usize)
-        {
-            Ok(order_details) => {
-                let list: Vec<OrderModel> =
-                    order_details.into_iter().map(|it| it.to_model()).collect();
-                let model = if list.len() > limit {
-                    let next_id = list[limit].id;
-                    CursorPagedModel::new(list[..limit].to_vec(), Some(next_id))
-                } else {
-                    CursorPagedModel::new(list, Option::<i64>::None)
-                };
-                HttpResponse::Ok()
-                    .content_type(ContentType::json())
-                    .body(serde_json::to_string(&model).unwrap())
+    match (
+        match validate_query_string::<i64>(req.clone(), "startId", error_list.clone()) {
+            Ok(id) => ShopOrderId::validated(id, error_list.clone()),
+            Err(_) => Err(()),
+        },
+        validate_query_string::<usize>(req, "limit", error_list.clone()),
+    ) {
+        (Ok(start_id), Ok(limit)) => {
+            match shared_state.lock().unwrap().execute(start_id, limit + 1) {
+                Ok(order_details_list) => {
+                    let list: Vec<OrderModel> = order_details_list
+                        .into_iter()
+                        .map(|it| it.to_model())
+                        .collect();
+                    let model = if list.len() > limit {
+                        let next_id = list[limit].id;
+                        CursorPagedModel::new(list[..limit].to_vec(), Some(next_id))
+                    } else {
+                        CursorPagedModel::new(list, Option::<i64>::None)
+                    };
+                    HttpResponse::Ok()
+                        .content_type(ContentType::json())
+                        .body(serde_json::to_string(&model).unwrap())
+                }
+                Err(e) => e.to_rest_error(),
             }
-            Err(err) => err.to_rest_error(),
         }
-    } else {
-        to_invalid_param_bad_request(error_list)
+        (_, _) => to_invalid_param_bad_request(error_list),
     }
 }
 

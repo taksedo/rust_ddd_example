@@ -51,12 +51,12 @@ fn order_created_successfully() {
     let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
 
     let use_case = CheckoutUseCase::new(
-        Arc::clone(&id_generator) as _,
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&active_order_rule) as _,
-        Arc::clone(&get_meal_price) as _,
-        Arc::clone(&payment_url_provider) as _,
-        Arc::clone(&order_persister) as _,
+        id_generator.clone() as _,
+        cart_extractor.clone() as _,
+        active_order_rule.clone() as _,
+        get_meal_price.clone() as _,
+        payment_url_provider.clone() as _,
+        order_persister.clone() as _,
     );
 
     let checkout_request = checkout_request(address.clone(), customer_id);
@@ -102,12 +102,12 @@ fn cart_not_found() {
     let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
 
     let use_case = CheckoutUseCase::new(
-        Arc::clone(&id_generator) as _,
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&active_order_rule) as _,
-        Arc::clone(&get_meal_price) as _,
-        Arc::clone(&payment_url_provider) as _,
-        Arc::clone(&order_persister) as _,
+        id_generator.clone() as _,
+        cart_extractor.clone() as _,
+        active_order_rule.clone() as _,
+        get_meal_price.clone() as _,
+        payment_url_provider.clone() as _,
+        order_persister.clone() as _,
     );
 
     let checkout_request = checkout_request(rnd_address(), rnd_customer_id());
@@ -142,12 +142,12 @@ fn cart_is_empty() {
     let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
 
     let use_case = CheckoutUseCase::new(
-        Arc::clone(&id_generator) as _,
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&active_order_rule) as _,
-        Arc::clone(&get_meal_price) as _,
-        Arc::clone(&payment_url_provider) as _,
-        Arc::clone(&order_persister) as _,
+        id_generator.clone() as _,
+        cart_extractor.clone() as _,
+        active_order_rule.clone() as _,
+        get_meal_price.clone() as _,
+        payment_url_provider.clone() as _,
+        order_persister.clone() as _,
     );
 
     let checkout_request = checkout_request(rnd_address(), customer_id);
@@ -182,12 +182,12 @@ fn already_has_active_order() {
     let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
 
     let use_case = CheckoutUseCase::new(
-        Arc::clone(&id_generator) as _,
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&active_order_rule) as _,
-        Arc::clone(&get_meal_price) as _,
-        Arc::clone(&payment_url_provider) as _,
-        Arc::clone(&order_persister) as _,
+        id_generator.clone() as _,
+        cart_extractor.clone() as _,
+        active_order_rule.clone() as _,
+        get_meal_price.clone() as _,
+        payment_url_provider.clone() as _,
+        order_persister.clone() as _,
     );
 
     order_persister.lock().unwrap().verify_empty();
@@ -237,14 +237,13 @@ impl PaymentUrlProvider for TestPaymentUrlProvider {
 }
 
 fn checkout_request(address: Address, customer_id: CustomerId) -> CheckoutRequest {
-    let result = Address::try_from((
+    match Address::try_from((
         address.street_to_string().as_str(),
         address.building_to_i16(),
     ))
-    .map(|addr| CheckoutRequest::new(customer_id, addr));
-    if let Ok(request) = result {
-        request
-    } else {
-        panic!("Illegal State Exception")
+    .map(|addr| CheckoutRequest::new(customer_id, addr))
+    {
+        Ok(request) => request,
+        Err(_) => panic!("Illegal State Exception"),
     }
 }

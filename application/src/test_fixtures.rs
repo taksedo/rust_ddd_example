@@ -97,7 +97,7 @@ impl TestKafka {
             "kafka-topics --bootstrap-server localhost:9092 --create --topic {MEAL_TOPIC_NAME}"
         );
         let ready_conditions = vec![WaitFor::message_on_stdout(
-            "Received response {error_code=0,_tagged_fields={}} for request UPDATE_METADATA with correlation".to_string().as_str(),
+            "Received response {error_code=0,_tagged_fields={}} for request UPDATE_METADATA with correlation",
         )];
         node.exec(ExecCommand {
             cmd,

@@ -16,10 +16,8 @@ fn successfully_removed() {
     let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::new(Some(cart.clone()), None)));
 
-    let use_case = RemoveMealFromCartUseCase::new(
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&cart_persister) as _,
-    );
+    let use_case =
+        RemoveMealFromCartUseCase::new(cart_extractor.clone() as _, cart_persister.clone() as _);
     let result = use_case.execute(cart.clone().for_customer, rnd_meal_id());
 
     cart_extractor
@@ -39,10 +37,8 @@ fn cart_not_found() {
     let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
 
-    let use_case = RemoveMealFromCartUseCase::new(
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&cart_persister) as _,
-    );
+    let use_case =
+        RemoveMealFromCartUseCase::new(cart_extractor.clone() as _, cart_persister.clone() as _);
     let result = use_case.execute(cart.clone().for_customer, rnd_meal_id());
 
     cart_extractor

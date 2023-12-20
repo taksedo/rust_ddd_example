@@ -39,33 +39,31 @@ where
 
     let error_list = Arc::new(Mutex::new(vec![]));
 
-    let meal_name = MealName::validated(request.name.as_str(), error_list.clone());
-    let meal_description =
-        MealDescription::validated(request.description.as_str(), error_list.clone());
-    let price = Price::validated(
-        BigDecimal::from_str(request.price.to_string().as_str()).unwrap(),
-        error_list.clone(),
-    );
-
-    if error_list.lock().unwrap().is_empty() {
-        let result = shared_state.lock().unwrap().execute(
-            meal_name.unwrap(),
-            meal_description.unwrap(),
-            price.unwrap(),
-        );
-
-        match result {
-            Ok(_) => created(
-                API_V1_MENU_GET_BY_ID
-                    .replace("{id}", result.unwrap().to_i64().to_string().as_str())
-                    .as_str()
-                    .parse::<Uri>()
-                    .unwrap(),
-            ),
-            Err(e) => e.to_rest_error(),
+    match (
+        MealName::validated(&request.name, error_list.clone()),
+        MealDescription::validated(&request.description, error_list.clone()),
+        Price::validated(
+            BigDecimal::from_str(&request.price.to_string()).unwrap(),
+            error_list.clone(),
+        ),
+    ) {
+        (Ok(meal_name), Ok(meal_description), Ok(price)) => {
+            match shared_state
+                .lock()
+                .unwrap()
+                .execute(meal_name, meal_description, price)
+            {
+                Ok(meal_id) => created(
+                    API_V1_MENU_GET_BY_ID
+                        .replace("{id}", &meal_id.to_i64().to_string())
+                        .as_str()
+                        .parse::<Uri>()
+                        .unwrap(),
+                ),
+                Err(e) => e.to_rest_error(),
+            }
         }
-    } else {
-        to_invalid_param_bad_request(error_list)
+        (_, _, _) => to_invalid_param_bad_request(error_list),
     }
 }
 

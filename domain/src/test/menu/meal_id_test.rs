@@ -1,6 +1,6 @@
 use rand::{thread_rng, Rng};
 
-use crate::main::menu::{meal::MealError, value_objects::meal_id::MealId};
+use crate::main::menu::value_objects::meal_id::{MealId, MealIdError};
 
 #[test]
 fn check_equality() {
@@ -20,5 +20,5 @@ fn wrong_id_value() {
 
     let meal_id = MealId::try_from(id);
 
-    assert_eq!(meal_id.unwrap_err(), MealError::IdGenerationError);
+    assert_eq!(meal_id.unwrap_err(), MealIdError::IdGenerationError);
 }

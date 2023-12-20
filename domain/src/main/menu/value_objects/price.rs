@@ -19,9 +19,9 @@ impl Price {
     pub const SCALE: i64 = 2;
 
     pub fn add(&self, additional: Self) -> Self {
-        let summ: BigDecimal = BigDecimal::from_str(additional.to_string_value().as_str())
+        let summ: BigDecimal = BigDecimal::from_str(&additional.to_string_value())
             .unwrap()
-            .add(BigDecimal::from_str(self.to_string_value().as_str()).unwrap());
+            .add(BigDecimal::from_str(&self.to_string_value()).unwrap());
         Self { value: summ }
     }
 
