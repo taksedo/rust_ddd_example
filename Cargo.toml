@@ -85,6 +85,7 @@ application = { path = "application" }
 [dependencies]
 application = { path = "application" }
 postgres_persistence = { path = "postgres_persistence" }
+rustfmt = "0.10.0"
 
 [build-dependencies]
 winresource = "0.1.15"
