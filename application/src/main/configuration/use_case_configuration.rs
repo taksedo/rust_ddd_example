@@ -48,6 +48,8 @@ lazy_static! {
         Data::new(cancel_order_usecase(ORDER_REPOSITORY.clone()).clone());
     pub static ref CONFIRM_ORDER_USECASE: Data<Arc<Mutex<ConfirmOrderUseCase>>> =
         Data::new(confirm_order_usecase(ORDER_REPOSITORY.clone()).clone());
+    pub static ref GET_ORDER_BY_ID: Data<Arc<Mutex<GetOrderByIdUseCase>>> =
+        Data::new(get_order_by_id_usecase(ORDER_REPOSITORY.clone()).clone());
     pub static ref GET_ORDERS_USECASE: Data<Arc<Mutex<GetOrdersUseCase>>> =
         Data::new(get_orders_usecase(ORDER_REPOSITORY.clone()).clone());
 }

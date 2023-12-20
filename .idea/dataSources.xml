@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="restappdb@localhost" uuid="8ff9589f-8b90-4be7-8cc6-2f814693e22d">
+    <data-source source="LOCAL" name="restappdb@application-db" uuid="8ff9589f-8b90-4be7-8cc6-2f814693e22d">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5001/restappdb</jdbc-url>
+      <jdbc-url>jdbc:postgresql://application-db:5432/restappdb</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
