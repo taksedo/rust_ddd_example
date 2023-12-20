@@ -56,7 +56,7 @@ fn cart_not_found() {
     cart_extractor.lock().unwrap().verify_invoked(&customer_id);
     cart_remover.lock().unwrap().verify_empty();
 
-    assert!(logs_contain(
-        format!("Cart for customer #{customer_id} is already removed").as_str()
-    ));
+    assert!(logs_contain(&format!(
+        "Cart for customer #{customer_id} is already removed"
+    )));
 }

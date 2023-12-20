@@ -69,7 +69,7 @@ impl TestDb {
     }
 
     pub fn conn(&self) -> PgConnection {
-        PgConnection::establish(self.url.as_str()).unwrap()
+        PgConnection::establish(&self.url).unwrap()
     }
 
     pub fn leak(&mut self) {

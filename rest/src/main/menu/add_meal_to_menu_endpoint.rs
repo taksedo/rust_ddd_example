@@ -55,7 +55,7 @@ where
             {
                 Ok(meal_id) => created(
                     API_V1_MENU_GET_BY_ID
-                        .replace("{id}", meal_id.to_i64().to_string().as_str())
+                        .replace("{id}", &meal_id.to_i64().to_string())
                         .as_str()
                         .parse::<Uri>()
                         .unwrap(),
