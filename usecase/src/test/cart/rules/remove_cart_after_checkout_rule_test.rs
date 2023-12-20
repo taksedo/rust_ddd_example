@@ -20,10 +20,8 @@ fn successfully_removed() {
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
     cart_extractor.lock().unwrap().cart = Some(cart.clone());
 
-    let mut rule = RemoveCartAfterCheckoutRule::new(
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&cart_remover) as _,
-    );
+    let mut rule =
+        RemoveCartAfterCheckoutRule::new(cart_extractor.clone() as _, cart_remover.clone() as _);
     let event: ShopOrderEventEnum =
         ShopOrderCreatedDomainEvent::new(rnd_order_id(), cart.clone().for_customer, rnd_price())
             .into();
@@ -47,10 +45,8 @@ fn cart_not_found() {
 
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
 
-    let mut rule = RemoveCartAfterCheckoutRule::new(
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&cart_remover) as _,
-    );
+    let mut rule =
+        RemoveCartAfterCheckoutRule::new(cart_extractor.clone() as _, cart_remover.clone() as _);
     let customer_id = rnd_customer_id();
     let event: ShopOrderEventEnum =
         ShopOrderCreatedDomainEvent::new(rnd_order_id(), customer_id, rnd_price()).into();

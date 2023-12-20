@@ -26,7 +26,7 @@ async fn limit_reached() {
         limit,
     }));
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
+    let mock_shared_state = Data::new(mock_get_orders.clone());
     let req = TestRequest::default()
         .uri(&format!(
             "/?startId={}&limit={}",
@@ -76,7 +76,7 @@ async fn returned_successfully_without_next_page() {
         limit,
     }));
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
+    let mock_shared_state = Data::new(mock_get_orders.clone());
     let req = TestRequest::default()
         .uri(&format!(
             "/?startId={}&limit={}",
@@ -139,7 +139,7 @@ async fn returned_successfully_with_next_page() {
         limit,
     }));
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_get_orders));
+    let mock_shared_state = Data::new(mock_get_orders.clone());
     let req = TestRequest::default()
         .uri(&format!(
             "/?startId={}&limit={}",

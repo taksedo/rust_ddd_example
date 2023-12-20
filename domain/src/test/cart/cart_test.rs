@@ -24,7 +24,7 @@ use crate::{
 fn create_cart_success() {
     let customer_id = rnd_customer_id();
     let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
-    let mut cart = Cart::create(Arc::clone(&id_generator) as _, customer_id);
+    let mut cart = Cart::create(id_generator.clone() as _, customer_id);
 
     let id = id_generator.lock().unwrap().id;
     assert_eq!(cart.entity_param.id, id);

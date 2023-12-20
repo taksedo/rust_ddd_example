@@ -24,10 +24,10 @@ fn cart_doesnt_exist_successfully_added() {
     let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
 
     let mut use_case = AddMealToCartUseCase::new(
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&id_generator) as _,
-        Arc::clone(&meal_extractor) as _,
-        Arc::clone(&cart_persister) as _,
+        cart_extractor.clone() as _,
+        id_generator.clone() as _,
+        meal_extractor.clone() as _,
+        cart_persister.clone() as _,
     );
 
     let customer_id = rnd_customer_id();
@@ -62,10 +62,10 @@ fn cart_exists_successfully_added() {
     let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
 
     let mut use_case = AddMealToCartUseCase::new(
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&id_generator) as _,
-        Arc::clone(&meal_extractor) as _,
-        Arc::clone(&cart_persister) as _,
+        cart_extractor.clone() as _,
+        id_generator.clone() as _,
+        meal_extractor.clone() as _,
+        cart_persister.clone() as _,
     );
 
     let result = use_case.execute(customer_id, meal.clone().entity_params.id);
@@ -98,10 +98,10 @@ fn mel_not_found() {
     let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
 
     let mut use_case = AddMealToCartUseCase::new(
-        Arc::clone(&cart_extractor) as _,
-        Arc::clone(&id_generator) as _,
-        Arc::clone(&meal_extractor) as _,
-        Arc::clone(&cart_persister) as _,
+        cart_extractor.clone() as _,
+        id_generator.clone() as _,
+        meal_extractor.clone() as _,
+        cart_persister.clone() as _,
     );
 
     let result = use_case.execute(rnd_customer_id(), meal.entity_params.id);

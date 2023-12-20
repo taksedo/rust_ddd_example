@@ -17,7 +17,7 @@ async fn order_not_found() {
     let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
     mock_confirm_order.lock().unwrap().response = Err(ConfirmOrderUseCaseError::OrderNotFound);
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_confirm_order));
+    let mock_shared_state = Data::new(mock_confirm_order.clone());
 
     let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
@@ -50,7 +50,7 @@ async fn invalid_order_state() {
     let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
     mock_confirm_order.lock().unwrap().response = Err(ConfirmOrderUseCaseError::InvalidOrderState);
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_confirm_order));
+    let mock_shared_state = Data::new(mock_confirm_order.clone());
 
     let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())
@@ -85,7 +85,7 @@ async fn successfully_cancelled() {
     let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
     mock_confirm_order.lock().unwrap().response = Ok(());
 
-    let mock_shared_state = Data::new(Arc::clone(&mock_confirm_order));
+    let mock_shared_state = Data::new(mock_confirm_order.clone());
 
     let req = TestRequest::default()
         .param("id", order_id.to_i64().to_string())

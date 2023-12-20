@@ -149,7 +149,7 @@ pub fn rnd_meal_with_event(meal_id: MealId) -> Meal {
     let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new(meal_id)));
 
     Meal::add_meal_to_menu(
-        Arc::clone(&id_generator) as _,
+        id_generator.clone() as _,
         Arc::new(Mutex::new(TestMealAlreadyExists { value: false })) as _,
         meal_name,
         meal_description,
