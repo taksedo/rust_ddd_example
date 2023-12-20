@@ -56,6 +56,7 @@ impl AddMealToMenu for AddMealToMenuUseCase {
     }
 }
 
+#[allow(unreachable_patterns)]
 impl ToError<AddMealToMenuUseCaseError> for MealError {
     fn to_error(self) -> AddMealToMenuUseCaseError {
         match self {

@@ -11,7 +11,7 @@ use crate::main::menu::meal_model::MealModel;
 pub async fn execute<T: GetMenu + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
 ) -> HttpResponse {
-    let meal_info_list: Vec<MealModel> = shared_state
+    let meal_model_list: Vec<MealModel> = shared_state
         .lock()
         .unwrap()
         .execute()
@@ -21,5 +21,5 @@ pub async fn execute<T: GetMenu + Send + Debug>(
 
     HttpResponse::Ok()
         .content_type(ContentType::json())
-        .body(serde_json::to_string(&meal_info_list).unwrap())
+        .body(serde_json::to_string(&meal_model_list).unwrap())
 }

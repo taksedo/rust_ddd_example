@@ -237,14 +237,13 @@ impl PaymentUrlProvider for TestPaymentUrlProvider {
 }
 
 fn checkout_request(address: Address, customer_id: CustomerId) -> CheckoutRequest {
-    let result = Address::try_from((
+    match Address::try_from((
         address.street_to_string().as_str(),
         address.building_to_i16(),
     ))
-    .map(|addr| CheckoutRequest::new(customer_id, addr));
-    if let Ok(request) = result {
-        request
-    } else {
-        panic!("Illegal State Exception")
+    .map(|addr| CheckoutRequest::new(customer_id, addr))
+    {
+        Ok(request) => request,
+        Err(_) => panic!("Illegal State Exception"),
     }
 }
