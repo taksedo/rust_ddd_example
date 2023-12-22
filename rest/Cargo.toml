@@ -7,7 +7,6 @@ edition.workspace = true
 
 [dependencies]
 actix-web = { workspace = true, features = ["rustls"] }
-actix-cors.workspace = true
 derive-new.workspace = true
 const_format.workspace = true
 serde.workspace = true

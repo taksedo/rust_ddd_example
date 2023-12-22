@@ -8,20 +8,15 @@ edition.workspace = true
 [dependencies]
 serde.workspace = true
 serde_derive.workspace = true
-erased-serde.workspace = true
-serde_json.workspace = true
 derive-new.workspace = true
 bigdecimal.workspace = true
 mockall.workspace = true
 fake.workspace = true
 rand.workspace = true
 rstest.workspace = true
-derivative.workspace = true
 time.workspace = true
-enum_access.workspace = true
 enum_dispatch.workspace = true
 smart-default.workspace = true
-actix-web.workspace = true
 uuid.workspace = true
 
 common.workspace = true
