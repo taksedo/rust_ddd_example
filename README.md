@@ -10,12 +10,18 @@ Reference project with Rust and DDD
 build_and_run_local_image.sh
 ```
 
-You can start PgAdmin by link http://localhost:5050
+# Start dev environment
 
-Register DB Server:
+In current project dev containers are implemented, so you can start project with **VSCode Dev Containers** or **RustRover Dev containers**.
 
-+ Host name/address: restapp_postgres_container
-+ Port: 5432
-+ Maintenance database: restappdb
-+ Username: root
-+ Password: 123
+Dev container includes following containers:
++ dev environment
++ kafka
++ kafka-ui
++ db
+
+Before starting the App db migration is needed. To manage this please start the following script
+
+```shell
+tools/scripts/migration_run.sh
+```
