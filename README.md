@@ -9,6 +9,9 @@ Reference project with Rust and DDD
 ```
 build_and_run_local_image.sh
 ```
+# Introduction
+
+This project is inspired by https://github.com/stringconcat/ddd_practice and the book [Clean Architecture](https://www.amazon.com/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164)
 
 # Start dev environment
 
