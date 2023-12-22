@@ -7,7 +7,7 @@ use dotenvy::dotenv;
 use usecase::main::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
 
 use crate::{
-    main::menu::{get_meal_by_id_endpoint, meal_model::MealModel},
+    main::menu::{get_meal_by_id_endpoint::get_meal_by_id_endpoint, meal_model::MealModel},
     test_fixtures::{rnd_meal_info, MockGetMealById},
 };
 
@@ -24,7 +24,7 @@ async fn returned_successfully() {
         .param("id", meal_info.id.to_i64().to_string())
         .to_http_request();
 
-    let resp = get_meal_by_id_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_meal_by_id_endpoint(mock_shared_state, req).await;
 
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_json = std::str::from_utf8(&body).unwrap();
@@ -53,7 +53,7 @@ async fn meal_not_found() {
         .param("id", meal_id.to_string())
         .to_http_request();
 
-    let resp = get_meal_by_id_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_meal_by_id_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 

@@ -6,7 +6,10 @@ use domain::test_fixtures::rnd_meal_id;
 use dotenvy::dotenv;
 use usecase::main::menu::remove_meal_from_menu::RemoveMealFromMenuUseCaseError;
 
-use crate::{main::menu::remove_meal_from_menu_endpoint, test_fixtures::MockRemoveMealFromMenu};
+use crate::{
+    main::menu::remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint,
+    test_fixtures::MockRemoveMealFromMenu,
+};
 
 #[actix_web::test]
 async fn meal_not_found() {
@@ -21,7 +24,7 @@ async fn meal_not_found() {
         .param("id", meal_id.to_i64().to_string())
         .to_http_request();
 
-    let resp = remove_meal_from_menu_endpoint::execute(mock_shared_state, req).await;
+    let resp = remove_meal_from_menu_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 
@@ -49,7 +52,7 @@ async fn removed_successfully() {
         .param("id", meal_id.to_i64().to_string())
         .to_http_request();
 
-    let resp = remove_meal_from_menu_endpoint::execute(mock_shared_state, req).await;
+    let resp = remove_meal_from_menu_endpoint(mock_shared_state, req).await;
 
     let body = resp.into_body().try_into_bytes().unwrap();
 

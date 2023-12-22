@@ -8,7 +8,9 @@ use domain::test_fixtures::rnd_order_id;
 use dotenvy::dotenv;
 use usecase::main::order::confirm_order::ConfirmOrderUseCaseError;
 
-use crate::{main::order::confirm_order_endpoint, test_fixtures::MockConfirmOrder};
+use crate::{
+    main::order::confirm_order_endpoint::confirm_order_endpoint, test_fixtures::MockConfirmOrder,
+};
 
 #[actix_web::test]
 async fn order_not_found() {
@@ -23,8 +25,7 @@ async fn order_not_found() {
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
-    let resp: actix_web::HttpResponse =
-        confirm_order_endpoint::execute(mock_shared_state, req).await;
+    let resp: actix_web::HttpResponse = confirm_order_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 
@@ -56,7 +57,7 @@ async fn invalid_order_state() {
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
-    let resp = confirm_order_endpoint::execute(mock_shared_state, req).await;
+    let resp = confirm_order_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::UNPROCESSABLE_ENTITY);
 
@@ -91,7 +92,7 @@ async fn successfully_cancelled() {
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
-    let resp = confirm_order_endpoint::execute(mock_shared_state, req).await;
+    let resp = confirm_order_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::NO_CONTENT);
 
