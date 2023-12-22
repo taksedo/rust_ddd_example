@@ -7,13 +7,7 @@ edition.workspace = true
 
 [dependencies]
 derive-new.workspace = true
-serde.workspace = true
-serde_derive.workspace = true
-erased-serde.workspace = true
 derivative.workspace = true
-enum_dispatch.workspace = true
-smart-default.workspace = true
-time.workspace = true
 
 common.workspace = true
 domain.workspace = true

@@ -7,8 +7,6 @@ edition.workspace = true
 
 [dependencies]
 derive-new.workspace = true
-structmap.workspace = true
-structmap-derive.workspace = true
 actix-web.workspace = true
 thiserror.workspace = true
 assert-panic.workspace = true

@@ -13,12 +13,10 @@ diesel_logger.workspace = true
 diesel_migrations.workspace = true
 serde.workspace = true
 dotenvy.workspace = true
-tokio.workspace = true
 bigdecimal.workspace = true
 log.workspace = true
 url.workspace = true
 testcontainers.workspace = true
-rstest.workspace = true
 
 common.workspace = true
 usecase.workspace = true

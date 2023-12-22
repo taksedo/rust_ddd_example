@@ -64,7 +64,7 @@ async-trait = "0.1.68"
 futures-lite = "2.0.1"
 testcontainers = "0.15.0"
 testcontainers-modules = { version = "0.2.0", features = ["kafka", "postgres", "rabbitmq"] }
-tokio = { version = "1.28.2", features = ["full"] }
+tokio = { version = "1.35.1", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.18"
 tracing-test = "0.2.4"
@@ -73,6 +73,7 @@ kafka = "0.10.0"
 uuid = { version = "1.6.1", features = ["v4"] }
 thiserror = "1.0.50"
 assert-panic = "1.0.1"
+termion = "2.0.3"
 
 common = { git = "https://github.com/taksedo/rust_ddd_example_common.git", branch = "master", package = "rust_ddd_example_common" }
 domain = { path = "domain" }
@@ -84,8 +85,7 @@ application = { path = "application" }
 
 [dependencies]
 application = { path = "application" }
-postgres_persistence = { path = "postgres_persistence" }
-rustfmt = "0.10.0"
+telnet = { path = "telnet" }
 
 [build-dependencies]
 winresource = "0.1.15"
