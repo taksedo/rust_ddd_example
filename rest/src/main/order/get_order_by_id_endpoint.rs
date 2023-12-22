@@ -6,15 +6,19 @@ use std::{
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use common::common_rest::main::rest_responses::{resource_not_found, to_invalid_param_bad_request};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::main::order::get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError};
+use usecase::main::order::{
+    get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
+    scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,
+};
 
 use crate::main::{
+    endpoint_url::API_V1_ORDER_GET_BY_ID,
     order::order_model::{OrderModel, ToModel},
     to_error::ToRestError,
     validated::Validated,
 };
 
-pub async fn execute<T: GetOrderById + Send + Debug>(
+pub async fn get_order_by_id_endpoint<T: GetOrderById + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
@@ -39,4 +43,11 @@ impl ToRestError for GetOrderByIdUseCaseError {
             GetOrderByIdUseCaseError::OrderNotFound => resource_not_found(),
         }
     }
+}
+
+pub fn get_order_by_id_endpoint_config(cfg: &mut web::ServiceConfig) {
+    cfg.route(
+        API_V1_ORDER_GET_BY_ID,
+        web::get().to(get_order_by_id_endpoint::<GetOrderByIdUseCase>),
+    );
 }

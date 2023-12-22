@@ -8,11 +8,16 @@ use common::common_rest::main::rest_responses::{
     resource_not_found, rest_business_error, to_invalid_param_bad_request,
 };
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::main::order::confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError};
+use usecase::main::order::{
+    confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError},
+    scenarios::confirm_order_use_case::ConfirmOrderUseCase,
+};
 
-use crate::main::{to_error::ToRestError, validated::Validated};
+use crate::main::{
+    endpoint_url::API_V1_ORDER_CONFIRM_BY_ID, to_error::ToRestError, validated::Validated,
+};
 
-pub async fn execute<T: ConfirmOrder + Send + Debug>(
+pub async fn confirm_order_endpoint<T: ConfirmOrder + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
@@ -38,4 +43,11 @@ impl ToRestError for ConfirmOrderUseCaseError {
             }
         }
     }
+}
+
+pub fn confirm_order_endpoint_config(cfg: &mut web::ServiceConfig) {
+    cfg.route(
+        API_V1_ORDER_CONFIRM_BY_ID,
+        web::put().to(confirm_order_endpoint::<ConfirmOrderUseCase>),
+    );
 }

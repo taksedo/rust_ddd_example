@@ -6,11 +6,17 @@ use std::{
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use common::common_rest::main::rest_responses::{resource_not_found, to_invalid_param_bad_request};
 use domain::main::menu::value_objects::meal_id::MealId;
-use usecase::main::menu::get_meal_by_id::{GetMealById, GetMealByIdUseCaseError};
+use usecase::main::menu::{
+    get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
+    scenario::get_meal_by_id_use_case::GetMealByIdUseCase,
+};
 
-use crate::main::{menu::meal_model::MealModel, to_error::ToRestError, validated::Validated};
+use crate::main::{
+    endpoint_url::API_V1_MENU_GET_BY_ID, menu::meal_model::MealModel, to_error::ToRestError,
+    validated::Validated,
+};
 
-pub async fn execute<T: GetMealById + Send + Debug>(
+pub async fn get_meal_by_id_endpoint<T: GetMealById + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
@@ -33,4 +39,11 @@ impl ToRestError for GetMealByIdUseCaseError {
     fn to_rest_error(self) -> HttpResponse {
         resource_not_found()
     }
+}
+
+pub fn get_meal_by_id_endpoint_config(cfg: &mut web::ServiceConfig) {
+    cfg.route(
+        API_V1_MENU_GET_BY_ID,
+        web::get().to(get_meal_by_id_endpoint::<GetMealByIdUseCase>),
+    );
 }
