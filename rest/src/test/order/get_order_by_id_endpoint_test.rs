@@ -7,7 +7,7 @@ use dotenvy::dotenv;
 use usecase::main::order::get_order_by_id::GetOrderByIdUseCaseError;
 
 use crate::{
-    main::order::{get_order_by_id_endpoint, order_model::OrderModel},
+    main::order::{get_order_by_id_endpoint::get_order_by_id_endpoint, order_model::OrderModel},
     test_fixtures::{rnd_order_details, MockGetOrderById},
 };
 
@@ -26,7 +26,7 @@ async fn order_not_found() {
         .param("id", order_id.to_i64().to_string())
         .to_http_request();
 
-    let resp = get_order_by_id_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_order_by_id_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 
@@ -60,7 +60,7 @@ async fn returned_successfully_order_is_ready_for_confirm_or_cancel() {
         .param("id", details.id.to_i64().to_string())
         .to_http_request();
 
-    let resp = get_order_by_id_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_order_by_id_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::OK);
 
@@ -112,7 +112,7 @@ async fn returned_successfully_order_isnt_ready_for_confirm_or_cancel() {
         .param("id", details.id.to_i64().to_string())
         .to_http_request();
 
-    let resp = get_order_by_id_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_order_by_id_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::OK);
 

@@ -1,16 +1,16 @@
 use std::sync::{Arc, Mutex};
 
 use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-use common::common_rest::main::rest_responses::{bad_request_type_url, GenericErrorResponse};
+use common::common_rest::main::{
+    cursor_paged_model::CursorPagedModel,
+    rest_responses::{bad_request_type_url, GenericErrorResponse},
+};
 use domain::test_fixtures::rnd_order_id;
 use dotenvy::dotenv;
 use usecase::main::order::get_orders::GetOrdersUseCaseError;
 
 use crate::{
-    main::order::{
-        get_orders_endpoint::{self, CursorPagedModel},
-        order_model::OrderModel,
-    },
+    main::order::{get_orders_endpoint::get_orders_endpoint, order_model::OrderModel},
     test_fixtures::{rnd_order_details, MockGetOrders},
 };
 
@@ -37,7 +37,7 @@ async fn limit_reached() {
 
     dbg!(&req);
 
-    let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_orders_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
 
@@ -85,7 +85,7 @@ async fn returned_successfully_without_next_page() {
         ))
         .to_http_request();
 
-    let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_orders_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::OK);
 
@@ -148,7 +148,7 @@ async fn returned_successfully_with_next_page() {
         ))
         .to_http_request();
 
-    let resp = get_orders_endpoint::execute(mock_shared_state, req).await;
+    let resp = get_orders_endpoint(mock_shared_state, req).await;
 
     assert_eq!(resp.status(), StatusCode::OK);
 

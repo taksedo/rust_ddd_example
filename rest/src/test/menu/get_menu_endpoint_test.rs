@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use actix_web::{body::MessageBody, web};
 
 use crate::{
-    main::menu::{get_menu_endpoint, meal_model::MealModel},
+    main::menu::{get_menu_endpoint::get_menu_endpoint, meal_model::MealModel},
     test_fixtures::{rnd_meal_info, MockGetMenu},
 };
 
@@ -14,7 +14,7 @@ async fn get_menu() {
     mock_get_menu.lock().unwrap().meal_info = meal_info.clone();
     let mock_shared_state = web::Data::new(mock_get_menu.clone());
 
-    let resp = get_menu_endpoint::execute(mock_shared_state).await;
+    let resp = get_menu_endpoint(mock_shared_state).await;
 
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();

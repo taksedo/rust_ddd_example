@@ -4,18 +4,25 @@ use std::{
 };
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::main::rest_responses::{to_invalid_param_bad_request, ValidationError};
+use common::common_rest::main::{
+    cursor_paged_model::CursorPagedModel,
+    rest_responses::{to_invalid_param_bad_request, ValidationError},
+};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use serde_derive::{Deserialize, Serialize};
-use usecase::main::order::get_orders::{GetOrders, GetOrdersUseCaseError};
+use usecase::main::order::{
+    get_orders::{GetOrders, GetOrdersUseCaseError},
+    scenarios::get_orders_use_case::GetOrdersUseCase,
+};
 
 use super::{
     order_model::{OrderModel, ToModel},
     validated::validate_query_string,
 };
-use crate::main::{to_error::ToRestError, validated::Validated};
+use crate::main::{
+    endpoint_url::API_V1_ORDER_GET_ALL, to_error::ToRestError, validated::Validated,
+};
 
-pub async fn execute<T: GetOrders + Send + Debug>(
+pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
@@ -70,16 +77,9 @@ impl ToRestError for GetOrdersUseCaseError {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct CursorPagedModel<T, ID> {
-    pub list: Vec<T>,
-    pub next: Option<ID>,
-    pub count: usize,
-}
-
-impl<T, ID> CursorPagedModel<T, ID> {
-    pub fn new(list: Vec<T>, next: Option<ID>) -> Self {
-        let count = list.len();
-        Self { list, next, count }
-    }
+pub fn get_orders_endpoint_config(cfg: &mut web::ServiceConfig) {
+    cfg.route(
+        API_V1_ORDER_GET_ALL,
+        web::get().to(get_orders_endpoint::<GetOrdersUseCase>),
+    );
 }
