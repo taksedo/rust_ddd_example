@@ -6,13 +6,16 @@ use std::{
 use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
 use common::common_rest::main::rest_responses::{resource_not_found, to_invalid_param_bad_request};
 use domain::main::menu::value_objects::meal_id::MealId;
-use usecase::main::menu::remove_meal_from_menu::{
-    RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
+use usecase::main::menu::{
+    remove_meal_from_menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError},
+    scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
 };
 
-use crate::main::{to_error::ToRestError, validated::Validated};
+use crate::main::{
+    endpoint_url::API_V1_MENU_DELETE_BY_ID, to_error::ToRestError, validated::Validated,
+};
 
-pub async fn execute<T: RemoveMealFromMenu + Send + Debug>(
+pub async fn remove_meal_from_menu_endpoint<T: RemoveMealFromMenu + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
@@ -33,4 +36,11 @@ impl ToRestError for RemoveMealFromMenuUseCaseError {
     fn to_rest_error(self) -> HttpResponse {
         resource_not_found()
     }
+}
+
+pub fn remove_meal_from_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
+    cfg.route(
+        API_V1_MENU_DELETE_BY_ID,
+        web::delete().to(remove_meal_from_menu_endpoint::<RemoveMealFromMenuUseCase>),
+    );
 }

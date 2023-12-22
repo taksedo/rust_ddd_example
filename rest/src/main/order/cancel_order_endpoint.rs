@@ -8,11 +8,16 @@ use common::common_rest::main::rest_responses::{
     resource_not_found, rest_business_error, to_invalid_param_bad_request,
 };
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::main::order::cancel_order::{CancelOrder, CancelOrderUseCaseError};
+use usecase::main::order::{
+    cancel_order::{CancelOrder, CancelOrderUseCaseError},
+    scenarios::cancel_order_use_case::CancelOrderUseCase,
+};
 
-use crate::main::{to_error::ToRestError, validated::Validated};
+use crate::main::{
+    endpoint_url::API_V1_ORDER_CANCEL_BY_ID, to_error::ToRestError, validated::Validated,
+};
 
-pub async fn execute<T: CancelOrder + Send + Debug>(
+pub async fn cancel_order_endpoint<T: CancelOrder + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
@@ -38,4 +43,11 @@ impl ToRestError for CancelOrderUseCaseError {
             }
         }
     }
+}
+
+pub fn cancel_order_endpoint_config(cfg: &mut web::ServiceConfig) {
+    cfg.route(
+        API_V1_ORDER_CANCEL_BY_ID,
+        web::put().to(cancel_order_endpoint::<CancelOrderUseCase>),
+    );
 }

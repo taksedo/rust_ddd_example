@@ -18,6 +18,7 @@ use crate::{
         endpoint_url::API_V1_MENU_GET_BY_ID,
         menu::{add_meal_to_menu_endpoint, add_meal_to_menu_endpoint::AddMealToMenuRestRequest},
     },
+    test::menu::add_meal_to_menu_endpoint_test::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,
     test_fixtures::{MockAddMealToMenu, StringMethodsForRestTestExt},
 };
 
@@ -40,7 +41,7 @@ async fn created_successfully() {
         price.to_bigdecimal().to_f64().unwrap(),
     ));
 
-    let resp = add_meal_to_menu_endpoint::execute(mock_shared_state, meal).await;
+    let resp = add_meal_to_menu_endpoint(mock_shared_state, meal).await;
 
     mock_add_meal_to_menu
         .lock()
@@ -73,7 +74,7 @@ async fn validation_error() {
         BigDecimal::new(BigInt::from(1), 20).to_f64().unwrap(),
     ));
 
-    let resp = add_meal_to_menu_endpoint::execute(mock_shared_state as _, meal).await;
+    let resp = add_meal_to_menu_endpoint(mock_shared_state as _, meal).await;
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();
 
@@ -104,7 +105,7 @@ async fn meal_already_exists() {
         rnd_price().to_f64(),
     ));
 
-    let resp = add_meal_to_menu_endpoint::execute(mock_shared_state, meal).await;
+    let resp = add_meal_to_menu_endpoint(mock_shared_state, meal).await;
 
     assert_eq!(resp.status(), StatusCode::UNPROCESSABLE_ENTITY);
 

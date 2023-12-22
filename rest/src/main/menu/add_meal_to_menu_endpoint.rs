@@ -15,10 +15,15 @@ use domain::main::menu::value_objects::{
 };
 use http::Uri;
 use serde::{Deserialize, Serialize};
-use usecase::main::menu::add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError};
+use usecase::main::menu::{
+    add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
+    scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase,
+};
 
 use crate::main::{
-    endpoint_url::API_V1_MENU_GET_BY_ID, to_error::ToRestError, validated::Validated,
+    endpoint_url::{API_V1_MENU_ADD_TO_MENU, API_V1_MENU_GET_BY_ID},
+    to_error::ToRestError,
+    validated::Validated,
 };
 
 #[derive(new, Serialize, Deserialize, Debug)]
@@ -28,7 +33,7 @@ pub struct AddMealToMenuRestRequest {
     price: f64,
 }
 
-pub async fn execute<T>(
+pub async fn add_meal_to_menu_endpoint<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     request: web::Json<AddMealToMenuRestRequest>,
 ) -> HttpResponse
@@ -71,4 +76,11 @@ impl ToRestError for AddMealToMenuUseCaseError {
     fn to_rest_error(self) -> HttpResponse {
         rest_business_error("Meal already exists", "already_exists")
     }
+}
+
+pub fn add_meal_to_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
+    cfg.route(
+        API_V1_MENU_ADD_TO_MENU,
+        web::post().to(add_meal_to_menu_endpoint::<AddMealToMenuUseCase>),
+    );
 }
