@@ -72,10 +72,6 @@ pub async fn start_web_backend() {
                 .configure(confirm_order_endpoint_config)
                 .configure(get_order_by_id_endpoint_config)
                 .configure(get_orders_endpoint_config)
-                //cli
-                // .route("/telnet", web::get().to(telnet_handler))
-                // .app_data(listener.clone())
-                //
                 .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())
                 .app_data(GET_MEAL_BY_ID_USE_CASE.clone())
                 .app_data(GET_MENU_USE_CASE.clone())
@@ -122,7 +118,7 @@ pub async fn start_web_backend() {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                thread::spawn(|| {
+                thread::spawn(move || {
                     handle_client(&mut stream);
                 });
             }

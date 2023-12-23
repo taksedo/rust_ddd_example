@@ -15,7 +15,6 @@ serde_derive.workspace = true
 smart-default.workspace = true
 bigdecimal.workspace = true
 dotenvy.workspace = true
-crossterm.workspace = true
 
 domain.workspace = true
 usecase.workspace = true

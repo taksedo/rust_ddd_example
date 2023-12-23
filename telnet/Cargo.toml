@@ -8,6 +8,5 @@ edition.workspace = true
 [dependencies]
 usecase.workspace = true
 tokio.workspace = true
-crossterm.workspace = true
-prettytable-rs = "0.10.0"
+prettytable-rs.workspace = true
 actix-web.workspace = true

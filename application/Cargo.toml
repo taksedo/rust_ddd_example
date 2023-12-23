@@ -35,4 +35,3 @@ postgres_persistence.workspace = true
 usecase.workspace = true
 rest.workspace = true
 telnet.workspace = true
-crossterm.workspace = true
