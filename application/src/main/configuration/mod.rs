@@ -1,3 +1,4 @@
+pub mod handle_client;
 pub mod application_configuration;
 pub mod messaging_configuration;
 pub mod persistence_configuration;
