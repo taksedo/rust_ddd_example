@@ -2,6 +2,7 @@ use std::error::Error;
 
 use futures_lite::StreamExt;
 use futures_util::sink::SinkExt;
+use log::info;
 use nectar::{event::TelnetEvent, TelnetCodec};
 use telnet::main::menu::{
     get_health_command::get_health_command, get_menu_command::get_menu_command,
@@ -34,9 +35,11 @@ pub async fn handle_client(stream: TcpStream) -> Result<(), Box<dyn Error>> {
                         break;
                     }
                     "check health" => {
+                        info!("Checking health by Telnet");
                         get_health_command(&mut frame).await?;
                     }
                     "get menu" => {
+                        info!("Getting menu by Telnet");
                         get_menu_command(GET_MENU_USE_CASE.clone() as _, &mut frame).await?;
                     }
                     // // ...or just echo back whatever the user has said!
