@@ -42,7 +42,7 @@
         // "rust-analyzer.checkOnSave.command": "check"
       },
       "runArgs": [
-        "--cpus=2"
+        "--cpus=4"
         // <-- specify the number of CPUs you want
       ]
     }
@@ -50,5 +50,5 @@
   // "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "workspaceFolder": "/workspaces",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "rustup default stable && rustup component add rustfmt && rustup component add clippy"
+  "postCreateCommand": "rustup default stable && rustup component add rustfmt && rustup component add clippy && cargo install diesel_cli --no-default-features --features postgres && diesel migration run"
 }
