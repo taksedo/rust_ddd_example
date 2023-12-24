@@ -7,25 +7,6 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'rust_hex_sandbox'",
-            "sourceLanguages": ["rust"],
-            "cargo": {
-                "args": [
-                    "build",
-                    "--bin=rust_ddd_example",
-                    "--package=rust_ddd_example"
-                ],
-                "filter": {
-                    "name": "rust_ddd_example",
-                    "kind": "bin"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
             "name": "Debug unit tests in executable 'rust_hex_sandbox'",
             "cargo": {
                 "args": [
@@ -56,9 +37,10 @@
                 "args": [
                     "build",
                     "--bin=rust_ddd_example_shop",
-                    "--package=rust_ddd_example_shop"
+                    "--package=rust_ddd_example_shop",
+                    "--color=always"
                 ]
-            }
+            }            
           }
     ]
 }

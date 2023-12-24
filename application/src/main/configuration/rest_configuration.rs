@@ -1,4 +1,4 @@
-use std::{env, net::IpAddr};
+use std::{env, error::Error, net::IpAddr};
 
 use actix_cors::Cors;
 use actix_web::{
@@ -7,6 +7,7 @@ use actix_web::{
     App, HttpServer,
 };
 use dotenvy::dotenv;
+use log::{error, info};
 use rest::main::{
     menu::{
         add_meal_to_menu_endpoint::add_meal_to_menu_endpoint_config,
@@ -22,71 +23,101 @@ use rest::main::{
         get_orders_endpoint::get_orders_endpoint_config,
     },
 };
+use tokio::{net::TcpListener, task};
 
-use crate::main::configuration::use_case_configuration::{
-    ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
-    GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDERS_USECASE, GET_ORDER_BY_ID,
-    REMOVE_MEAL_FROM_MENU_USECASE,
+use crate::main::configuration::{
+    handle_client::handle_client,
+    use_case_configuration::{
+        ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
+        GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDERS_USECASE, GET_ORDER_BY_ID,
+        REMOVE_MEAL_FROM_MENU_USECASE,
+    },
 };
 
-#[actix_web::main]
-pub async fn start_web_backend() -> std::io::Result<()> {
+#[tokio::main]
+pub async fn start_web_backend() -> Result<(), Box<dyn Error>> {
     dotenv().ok();
 
-    env_logger::init_from_env(
-        env_logger::Env::new().default_filter_or(env::var("LOG_LEVEL").unwrap()),
-    );
-    log::info!("Log level is set to {:?}", env::var("LOG_LEVEL").unwrap());
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or(env::var("LOG_LEVEL")?));
+    info!("Log level is set to {:?}", env::var("LOG_LEVEL")?);
 
-    let host_url = env::var("HOST_URL").unwrap().parse::<Uri>().unwrap();
-    let host_address = host_url.host().unwrap();
-    let host_port = host_url.port().unwrap();
+    let http_host_url = env::var("HTTP_HOST_URL")?;
 
-    log::info!("starting HTTP server at {}", env::var("HOST_URL").unwrap());
+    info!("Starting HTTP server at {}", http_host_url.clone());
 
-    HttpServer::new(move || {
-        App::new()
-            .configure(get_health_status_config)
-            .configure(add_meal_to_menu_endpoint_config)
-            .configure(get_meal_by_id_endpoint_config)
-            .configure(get_menu_endpoint_config)
-            .configure(remove_meal_from_menu_endpoint_config)
-            .configure(cancel_order_endpoint_config)
-            .configure(confirm_order_endpoint_config)
-            .configure(get_order_by_id_endpoint_config)
-            .configure(get_orders_endpoint_config)
-            .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())
-            .app_data(GET_MEAL_BY_ID_USE_CASE.clone())
-            .app_data(GET_MENU_USE_CASE.clone())
-            .app_data(REMOVE_MEAL_FROM_MENU_USECASE.clone())
-            .app_data(CANCEL_ORDER_USECASE.clone())
-            .app_data(CONFIRM_ORDER_USECASE.clone())
-            .app_data(GET_ORDER_BY_ID.clone())
-            .app_data(GET_ORDERS_USECASE.clone())
-            .wrap(
-                Cors::default()
-                    .allowed_origin(&env::var("HOST_URL").unwrap())
-                    .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
-                    .allowed_headers(vec![
-                        header::AUTHORIZATION,
-                        header::ACCEPT,
-                        header::LOCATION,
-                        header::CONTENT_TYPE,
-                    ])
-                    .supports_credentials()
-                    .max_age(3600),
-            )
-            .wrap(Logger::default())
-    })
-    .bind((
-        host_address
-            .parse::<IpAddr>()
-            .expect("Wrong IP address configured"),
-        host_port
-            .to_string()
-            .parse::<u16>()
-            .expect("Wrong port configured"),
-    ))?
-    .run()
-    .await
+    let handle_web_backend = task::spawn(async {
+        let http_host_url = env::var("HTTP_HOST_URL").unwrap();
+        let host_url = http_host_url.parse::<Uri>().unwrap();
+        let host_address = host_url.host().unwrap();
+        let host_port = host_url.port().unwrap();
+        HttpServer::new(move || {
+            App::new()
+                .configure(get_health_status_config)
+                .configure(add_meal_to_menu_endpoint_config)
+                .configure(get_meal_by_id_endpoint_config)
+                .configure(get_menu_endpoint_config)
+                .configure(remove_meal_from_menu_endpoint_config)
+                .configure(cancel_order_endpoint_config)
+                .configure(confirm_order_endpoint_config)
+                .configure(get_order_by_id_endpoint_config)
+                .configure(get_orders_endpoint_config)
+                .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())
+                .app_data(GET_MEAL_BY_ID_USE_CASE.clone())
+                .app_data(GET_MENU_USE_CASE.clone())
+                .app_data(REMOVE_MEAL_FROM_MENU_USECASE.clone())
+                .app_data(CANCEL_ORDER_USECASE.clone())
+                .app_data(CONFIRM_ORDER_USECASE.clone())
+                .app_data(GET_ORDER_BY_ID.clone())
+                .app_data(GET_ORDERS_USECASE.clone())
+                .wrap(
+                    Cors::default()
+                        .allowed_origin(&http_host_url)
+                        .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+                        .allowed_headers(vec![
+                            header::AUTHORIZATION,
+                            header::ACCEPT,
+                            header::LOCATION,
+                            header::CONTENT_TYPE,
+                        ])
+                        .supports_credentials()
+                        .max_age(3600),
+                )
+                .wrap(Logger::default())
+        })
+        .bind((
+            host_address
+                .parse::<IpAddr>()
+                .expect("Wrong IP address configured"),
+            host_port
+                .to_string()
+                .parse::<u16>()
+                .expect("Wrong port configured"),
+        ))
+        .unwrap()
+        .run()
+        .await
+        .unwrap();
+    });
+
+    let telnet_startup = task::spawn(async move {
+        let telnet_host_url = env::var("TELNET_HOST_URL").unwrap();
+        let listener = TcpListener::bind(&telnet_host_url).await.unwrap();
+        info!("Starting Telnet server at {telnet_host_url}");
+        loop {
+            match listener.accept().await {
+                Ok((stream, _)) => {
+                    tokio::spawn(async move {
+                        if let Err(e) = handle_client(stream).await {
+                            error!("error: {}", e);
+                        }
+                    });
+                }
+                Err(e) => println!("couldn't get client: {:?}", e),
+            }
+        }
+    });
+
+    handle_web_backend.await?;
+    telnet_startup.await?;
+    Ok(())
 }

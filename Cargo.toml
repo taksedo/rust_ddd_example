@@ -73,7 +73,12 @@ kafka = "0.10.0"
 uuid = { version = "1.6.1", features = ["v4"] }
 thiserror = "1.0.50"
 assert-panic = "1.0.1"
-termion = "2.0.3"
+prettytable-rs = "0.10.0"
+nectar = "0.1.0"
+tokio-util = { version = "0.7", default-features = false, features = ["codec"] }
+futures-util = { version = "0.3", default-features = false, features = [
+    "sink",
+] }
 
 common = { git = "https://github.com/taksedo/rust_ddd_example_common.git", branch = "master", package = "rust_ddd_example_common" }
 domain = { path = "domain" }
@@ -82,10 +87,10 @@ postgres_persistence = { path = "postgres_persistence" }
 in_memory_persistence = { path = "in_memory_persistence" }
 rest = { path = "rest" }
 application = { path = "application" }
+telnet = { path = "telnet" }
 
 [dependencies]
 application = { path = "application" }
-telnet = { path = "telnet" }
 
 [build-dependencies]
 winresource = "0.1.15"
