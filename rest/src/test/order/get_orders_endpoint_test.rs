@@ -28,11 +28,7 @@ async fn limit_reached() {
 
     let mock_shared_state = Data::new(mock_get_orders.clone());
     let req = TestRequest::default()
-        .uri(&format!(
-            "/?startId={}&limit={}",
-            start_id.to_i64().to_string(),
-            limit.to_string()
-        ))
+        .uri(&format!("/?startId={}&limit={}", start_id.to_i64(), limit))
         .to_http_request();
 
     dbg!(&req);
@@ -78,11 +74,7 @@ async fn returned_successfully_without_next_page() {
 
     let mock_shared_state = Data::new(mock_get_orders.clone());
     let req = TestRequest::default()
-        .uri(&format!(
-            "/?startId={}&limit={}",
-            single.id.to_i64().to_string(),
-            limit.to_string()
-        ))
+        .uri(&format!("/?startId={}&limit={}", single.id.to_i64(), limit))
         .to_http_request();
 
     let resp = get_orders_endpoint(mock_shared_state, req).await;
@@ -141,11 +133,7 @@ async fn returned_successfully_with_next_page() {
 
     let mock_shared_state = Data::new(mock_get_orders.clone());
     let req = TestRequest::default()
-        .uri(&format!(
-            "/?startId={}&limit={}",
-            first.id.to_i64().to_string(),
-            limit.to_string()
-        ))
+        .uri(&format!("/?startId={}&limit={}", first.id.to_i64(), limit))
         .to_http_request();
 
     let resp = get_orders_endpoint(mock_shared_state, req).await;

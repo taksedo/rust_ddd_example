@@ -1,15 +1,21 @@
 use std::{
+    error::Error,
     fmt::Debug,
-    io::Write,
-    net::TcpStream,
     sync::{Arc, Mutex},
 };
 
 use actix_web::web::Data;
+use futures_util::SinkExt;
+use nectar::{event::TelnetEvent, TelnetCodec};
 use prettytable::{row, Table};
+use tokio::net::TcpStream;
+use tokio_util::codec::Framed;
 use usecase::main::menu::get_menu::GetMenu;
 
-pub fn get_menu_command<T>(usecase: Data<Arc<Mutex<T>>>, mut stream: TcpStream)
+pub async fn get_menu_command<T>(
+    usecase: Data<Arc<Mutex<T>>>,
+    frame: &mut Framed<TcpStream, TelnetCodec>,
+) -> Result<(), Box<dyn Error>>
 where
     T: GetMenu + Send + Debug,
 {
@@ -29,8 +35,6 @@ where
 
     let table_string = table.to_string();
 
-    let _ = stream.write(table_string.as_bytes());
-
-    // let _ = table.print(&mut stream.try_clone().unwrap());
-    stream.flush().unwrap();
+    frame.send(TelnetEvent::Message(table_string)).await?;
+    Ok(())
 }

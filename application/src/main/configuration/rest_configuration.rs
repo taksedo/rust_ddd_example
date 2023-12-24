@@ -1,8 +1,4 @@
-use std::{
-    env,
-    net::{IpAddr, TcpListener},
-    thread,
-};
+use std::{env, error::Error, net::IpAddr};
 
 use actix_cors::Cors;
 use actix_web::{
@@ -11,7 +7,7 @@ use actix_web::{
     App, HttpServer,
 };
 use dotenvy::dotenv;
-
+use log::{error, info};
 use rest::main::{
     menu::{
         add_meal_to_menu_endpoint::add_meal_to_menu_endpoint_config,
@@ -27,8 +23,7 @@ use rest::main::{
         get_orders_endpoint::get_orders_endpoint_config,
     },
 };
-
-use tokio::task;
+use tokio::{net::TcpListener, task};
 
 use crate::main::configuration::{
     handle_client::handle_client,
@@ -40,21 +35,15 @@ use crate::main::configuration::{
 };
 
 #[tokio::main]
-pub async fn start_web_backend() {
+pub async fn start_web_backend() -> Result<(), Box<dyn Error>> {
     dotenv().ok();
 
-    env_logger::init_from_env(
-        env_logger::Env::new().default_filter_or(env::var("LOG_LEVEL").unwrap()),
-    );
-    log::info!("Log level is set to {:?}", env::var("LOG_LEVEL").unwrap());
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or(env::var("LOG_LEVEL")?));
+    info!("Log level is set to {:?}", env::var("LOG_LEVEL")?);
 
-    // let host_url = env::var("HOST_URL").unwrap().parse::<Uri>().unwrap();
-    // let host_address = host_url.host().unwrap();
-    // let host_port = host_url.port().unwrap();
+    let http_host_url = env::var("HTTP_HOST_URL")?;
 
-    let http_host_url = env::var("HTTP_HOST_URL").unwrap();
-
-    log::info!("Starting HTTP server at {}", http_host_url.clone());
+    info!("Starting HTTP server at {}", http_host_url.clone());
 
     let handle_web_backend = task::spawn(async {
         let http_host_url = env::var("HTTP_HOST_URL").unwrap();
@@ -110,23 +99,25 @@ pub async fn start_web_backend() {
         .unwrap();
     });
 
-    let telnet_host_url = env::var("TELNET_HOST_URL").unwrap();
-
-    let listener = TcpListener::bind(&telnet_host_url).unwrap();
-    log::info!("Starting Telnet server at {telnet_host_url}");
-
-    for stream in listener.incoming() {
-        match stream {
-            Ok(mut stream) => {
-                thread::spawn(move || {
-                    handle_client(&mut stream);
-                });
-            }
-            Err(e) => {
-                eprintln!("Error accepting connection: {}", e);
+    let telnet_startup = task::spawn(async move {
+        let telnet_host_url = env::var("TELNET_HOST_URL").unwrap();
+        let listener = TcpListener::bind(&telnet_host_url).await.unwrap();
+        info!("Starting Telnet server at {telnet_host_url}");
+        loop {
+            match listener.accept().await {
+                Ok((stream, _)) => {
+                    tokio::spawn(async move {
+                        if let Err(e) = handle_client(stream).await {
+                            error!("error: {}", e);
+                        }
+                    });
+                }
+                Err(e) => println!("couldn't get client: {:?}", e),
             }
         }
-    }
+    });
 
-    let _ = handle_web_backend.await.unwrap();
+    handle_web_backend.await?;
+    telnet_startup.await?;
+    Ok(())
 }

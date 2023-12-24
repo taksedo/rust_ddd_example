@@ -10,3 +10,6 @@ usecase.workspace = true
 tokio.workspace = true
 prettytable-rs.workspace = true
 actix-web.workspace = true
+nectar.workspace = true
+tokio-util.workspace = true
+futures-util.workspace = true
