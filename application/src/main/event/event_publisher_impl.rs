@@ -6,12 +6,15 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use common::events::main::{
-    domain_event_listener::DomainEventListener, domain_event_publisher::DomainEventPublisher,
+use common::{
+    events::main::{
+        domain_event_listener::DomainEventListener, domain_event_publisher::DomainEventPublisher,
+    },
+    types::main::base::generic_types::AM,
 };
 use derive_new::new;
 
-type VecOfDomainEventListenerType<Event> = Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>;
+type VecOfDomainEventListenerType<Event> = Vec<AM<dyn DomainEventListener<Event>>>;
 
 #[derive(new, Debug, Default, Clone)]
 pub struct EventPublisherImpl<Event: Debug> {
@@ -24,17 +27,13 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
     pub fn register_listener(&mut self, listener: impl DomainEventListener<Event> + 'static) {
         let event_type = listener.event_type();
         self.listener_map.entry(event_type).or_insert_with(|| {
-            let vector: Vec<Arc<Mutex<(dyn DomainEventListener<Event> + 'static)>>> =
+            let vector: Vec<AM<(dyn DomainEventListener<Event> + 'static)>> =
                 vec![Arc::new(Mutex::new(listener))];
             vector
         });
     }
 
-    fn send_events(
-        &self,
-        listeners: Vec<Arc<Mutex<dyn DomainEventListener<Event>>>>,
-        event: Event,
-    ) {
+    fn send_events(&self, listeners: Vec<AM<dyn DomainEventListener<Event>>>, event: Event) {
         listeners
             .iter()
             .for_each(|l| l.lock().unwrap().handle(&event))

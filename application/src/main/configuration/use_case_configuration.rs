@@ -17,48 +17,43 @@ use usecase::main::{
             remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
         },
     },
-    order::{
-        access::{
-            shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister,
-        },
-        scenarios::{
-            cancel_order_use_case::CancelOrderUseCase, confirm_order_use_case::ConfirmOrderUseCase,
-            get_order_by_id_use_case::GetOrderByIdUseCase, get_orders_use_case::GetOrdersUseCase,
-        },
+    order::scenarios::{
+        cancel_order_use_case::CancelOrderUseCase, confirm_order_use_case::ConfirmOrderUseCase,
+        get_order_by_id_use_case::GetOrderByIdUseCase, get_orders_use_case::GetOrdersUseCase,
     },
 };
 
 use crate::main::configuration::persistence_configuration::{
-    OrderRepositoryType, MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY,
+    ORepository, MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY,
 };
 
 const GET_ORDERS_MAX_SIZE: usize = 10;
 
 lazy_static! {
-    pub static ref ADD_MEAL_TO_MENU_USE_CASE: Data<Arc<Mutex<AddMealToMenuUseCase>>> = Data::new(
+    pub static ref ADD_MEAL_TO_MENU_USE_CASE: Data<AM<AddMealToMenuUseCase>> = Data::new(
         add_meal_to_menu_use_case(MEAL_REPOSITORY.clone() as _, MEAL_ID_GENERATOR.clone() as _,)
     )
     .clone();
-    pub static ref GET_MEAL_BY_ID_USE_CASE: Data<Arc<Mutex<GetMealByIdUseCase>>> =
+    pub static ref GET_MEAL_BY_ID_USE_CASE: Data<AM<GetMealByIdUseCase>> =
         Data::new(get_meal_by_id_use_case(MEAL_REPOSITORY.clone()).clone());
-    pub static ref GET_MENU_USE_CASE: Data<Arc<Mutex<GetMenuUseCase>>> =
+    pub static ref GET_MENU_USE_CASE: Data<AM<GetMenuUseCase>> =
         Data::new(get_menu_use_case(MEAL_REPOSITORY.clone())).clone();
-    pub static ref REMOVE_MEAL_FROM_MENU_USECASE: Data<Arc<Mutex<RemoveMealFromMenuUseCase>>> =
+    pub static ref REMOVE_MEAL_FROM_MENU_USECASE: Data<AM<RemoveMealFromMenuUseCase>> =
         Data::new(remove_meal_from_menu_usecase(MEAL_REPOSITORY.clone())).clone();
-    pub static ref CANCEL_ORDER_USECASE: Data<AM<CancelOrderUseCase<OrderRepositoryType, OrderRepositoryType>>> =
+    pub static ref CANCEL_ORDER_USECASE: Data<AM<CancelOrderUseCase<ORepository, ORepository>>> =
         Data::new(cancel_order_usecase(ORDER_REPOSITORY.clone()).clone());
-    pub static ref CONFIRM_ORDER_USECASE: Data<AM<ConfirmOrderUseCase<OrderRepositoryType, OrderRepositoryType>>> =
+    pub static ref CONFIRM_ORDER_USECASE: Data<AM<ConfirmOrderUseCase<ORepository, ORepository>>> =
         Data::new(confirm_order_usecase(ORDER_REPOSITORY.clone()).clone());
-    pub static ref GET_ORDER_BY_ID: Data<AM<GetOrderByIdUseCase<OrderRepositoryType>>> =
+    pub static ref GET_ORDER_BY_ID: Data<AM<GetOrderByIdUseCase<ORepository>>> =
         Data::new(get_order_by_id_usecase(ORDER_REPOSITORY.clone()).clone());
-    pub static ref GET_ORDERS_USECASE: Data<AM<GetOrdersUseCase<OrderRepositoryType>>> =
+    pub static ref GET_ORDERS_USECASE: Data<AM<GetOrdersUseCase<ORepository>>> =
         Data::new(get_orders_usecase(ORDER_REPOSITORY.clone()).clone());
 }
 
 pub fn add_meal_to_menu_use_case<U, V>(
-    meal_repository: Arc<Mutex<U>>,
-    meal_id_generator: Arc<Mutex<V>>,
-) -> Arc<Mutex<AddMealToMenuUseCase>>
+    meal_repository: AM<U>,
+    meal_id_generator: AM<V>,
+) -> AM<AddMealToMenuUseCase>
 where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
     V: Debug + Send + MealIdGenerator + 'static,
@@ -67,13 +62,13 @@ where
 
     let usecase = AddMealToMenuUseCase::new(
         meal_repository.clone() as _,
-        meal_id_generator,
+        meal_id_generator.clone() as _,
         Arc::new(Mutex::new(rule)),
     );
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn get_meal_by_id_use_case<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMealByIdUseCase>>
+pub fn get_meal_by_id_use_case<U>(meal_repository: AM<U>) -> AM<GetMealByIdUseCase>
 where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {
@@ -81,7 +76,7 @@ where
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn get_menu_use_case<U>(meal_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetMenuUseCase>>
+pub fn get_menu_use_case<U>(meal_repository: AM<U>) -> AM<GetMenuUseCase>
 where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {
@@ -89,9 +84,7 @@ where
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn remove_meal_from_menu_usecase<U>(
-    meal_repository: Arc<Mutex<U>>,
-) -> Arc<Mutex<RemoveMealFromMenuUseCase>>
+pub fn remove_meal_from_menu_usecase<U>(meal_repository: AM<U>) -> AM<RemoveMealFromMenuUseCase>
 where
     U: Debug + Send + MealExtractor + MealPersister + 'static,
 {
@@ -100,37 +93,27 @@ where
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn cancel_order_usecase<U>(order_repository: Arc<Mutex<U>>) -> AM<CancelOrderUseCase<U, U>>
-where
-    U: Debug + Send + ShopOrderExtractor + ShopOrderPersister + 'static,
-{
+pub fn cancel_order_usecase(
+    order_repository: AM<ORepository>,
+) -> AM<CancelOrderUseCase<ORepository, ORepository>> {
     let usecase = CancelOrderUseCase::new(order_repository.clone(), order_repository.clone());
     Arc::new(Mutex::new(usecase))
 }
-pub fn confirm_order_usecase<U>(
-    order_repository: Arc<Mutex<U>>,
-) -> Arc<Mutex<ConfirmOrderUseCase<U, U>>>
-where
-    U: Debug + Send + ShopOrderExtractor + ShopOrderPersister + 'static,
-{
+pub fn confirm_order_usecase(
+    order_repository: AM<ORepository>,
+) -> AM<ConfirmOrderUseCase<ORepository, ORepository>> {
     let usecase = ConfirmOrderUseCase::new(order_repository.clone(), order_repository.clone());
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn get_order_by_id_usecase<U>(
-    order_repository: Arc<Mutex<U>>,
-) -> Arc<Mutex<GetOrderByIdUseCase<U>>>
-where
-    U: Debug + Send + ShopOrderExtractor + 'static,
-{
+pub fn get_order_by_id_usecase(
+    order_repository: AM<ORepository>,
+) -> AM<GetOrderByIdUseCase<ORepository>> {
     let usecase = GetOrderByIdUseCase::new(order_repository.clone());
     Arc::new(Mutex::new(usecase))
 }
 
-pub fn get_orders_usecase<U>(order_repository: Arc<Mutex<U>>) -> Arc<Mutex<GetOrdersUseCase<U>>>
-where
-    U: Debug + Send + ShopOrderExtractor + 'static,
-{
+pub fn get_orders_usecase(order_repository: AM<ORepository>) -> AM<GetOrdersUseCase<ORepository>> {
     let usecase = GetOrdersUseCase::new(order_repository.clone(), || GET_ORDERS_MAX_SIZE + 1);
     Arc::new(Mutex::new(usecase))
 }
