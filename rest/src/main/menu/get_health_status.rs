@@ -3,6 +3,11 @@ use actix_web::{
     HttpResponse,
 };
 
+/// Check health status
+#[utoipa::path(get, path = "/health",tag = "Health",
+    responses(
+    (status = 200, description = "Application is healthy", example = "Healthy!"),
+))]
 pub async fn get_health_status() -> HttpResponse {
     HttpResponse::Ok().json("Healthy!")
 }

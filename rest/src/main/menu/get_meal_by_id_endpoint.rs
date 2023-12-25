@@ -16,6 +16,9 @@ use crate::main::{
     validated::Validated,
 };
 
+/// Get a meal by id
+#[utoipa::path(get, path = API_V1_MENU_GET_BY_ID, tag = "Meal", 
+params(("id" = i64, Path,  description = "Meal id")))]
 pub async fn get_meal_by_id_endpoint<T: GetMealById + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,

@@ -9,10 +9,11 @@ use actix_web::{
 use log::info;
 use rest::main::{
     menu::{
-        add_meal_to_menu_endpoint::add_meal_to_menu_endpoint_config, get_health_status,
+        add_meal_to_menu_endpoint::{add_meal_to_menu_endpoint_config, AddMealToMenuRestRequest},
         get_health_status::get_health_status_config,
         get_meal_by_id_endpoint::get_meal_by_id_endpoint_config,
         get_menu_endpoint::get_menu_endpoint_config,
+        meal_model::MealModel,
         remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint_config,
     },
     order::{
@@ -24,7 +25,7 @@ use rest::main::{
 };
 use serde::{Deserialize, Serialize};
 use tokio::{task, task::JoinHandle};
-use utoipa::{Modify, OpenApi, ToSchema};
+use utoipa::{OpenApi, ToSchema};
 use utoipa_swagger_ui::SwaggerUi;
 
 use crate::main::configuration::{
@@ -53,12 +54,17 @@ pub fn rest_backend_startup() -> JoinHandle<()> {
 
         #[derive(OpenApi)]
         #[openapi(
-            paths(rest::main::menu::get_health_status::get_health_status),
-            components(schemas(TokenClaims))
+            paths(
+                rest::main::menu::get_health_status::get_health_status,
+                rest::main::menu::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,
+                rest::main::menu::get_meal_by_id_endpoint::get_meal_by_id_endpoint
+            ),
+            components(schemas(AddMealToMenuRestRequest, MealModel))
         )]
         struct ApiDoc;
 
         let openapi = ApiDoc::openapi();
+
         HttpServer::new(move || {
             App::new()
                 .service(

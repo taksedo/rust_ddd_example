@@ -19,6 +19,7 @@ use usecase::main::menu::{
     add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
     scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase,
 };
+use utoipa::ToSchema;
 
 use crate::main::{
     endpoint_url::{API_V1_MENU_ADD_TO_MENU, API_V1_MENU_GET_BY_ID},
@@ -26,13 +27,22 @@ use crate::main::{
     validated::Validated,
 };
 
-#[derive(new, Serialize, Deserialize, Debug)]
+#[derive(new, Serialize, Deserialize, Debug, ToSchema)]
 pub struct AddMealToMenuRestRequest {
+    /// Name of the meal
+    #[schema(required = true)]
     name: String,
+    /// Description of the meal
+    #[schema(required = false)]
     description: String,
+    /// Price of the meal
+    #[schema(required = true)]
     price: f64,
 }
 
+/// Add a meal to the menu
+#[utoipa::path(post, path = API_V1_MENU_ADD_TO_MENU, tag = "Meal",
+request_body(content = AddMealToMenuRestRequest))]
 pub async fn add_meal_to_menu_endpoint<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     request: web::Json<AddMealToMenuRestRequest>,

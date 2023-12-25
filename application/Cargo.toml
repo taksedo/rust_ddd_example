@@ -2,6 +2,8 @@
 name = "application"
 version.workspace = true
 edition.workspace = true
+authors.workspace = true
+description.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -26,8 +28,8 @@ futures-lite.workspace = true
 testcontainers.workspace = true
 kafka.workspace = true
 testcontainers-modules.workspace = true
-utoipa-swagger-ui = { version = "5", features = ["actix-web"] }
-utoipa = {version = "4.1.0", features = ["actix_extras", "chrono"]}
+utoipa.workspace = true
+utoipa-swagger-ui.workspace = true
 
 
 common.workspace = true
