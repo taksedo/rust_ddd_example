@@ -1,8 +1,6 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
+use common::types::main::base::generic_types::AM;
 use derive_new::new;
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -13,12 +11,12 @@ use crate::main::order::{
 };
 
 #[derive(new, Debug)]
-pub struct GetOrdersUseCase {
-    shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
+pub struct GetOrdersUseCase<ShOExtractor: ShopOrderExtractor> {
+    shop_order_extractor: AM<ShOExtractor>,
     limit: fn() -> usize,
 }
 
-impl GetOrders for GetOrdersUseCase {
+impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtractor> {
     fn execute(
         &mut self,
         start_id: ShopOrderId,

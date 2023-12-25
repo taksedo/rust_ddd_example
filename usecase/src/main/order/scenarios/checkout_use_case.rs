@@ -1,6 +1,4 @@
-use std::sync::{Arc, Mutex};
-
-use common::types::main::errors::error::ToError;
+use common::types::main::{base::generic_types::AM, errors::error::ToError};
 use derive_new::new;
 use domain::main::order::{
     customer_has_active_order::CustomerHasActiveOrder,
@@ -19,16 +17,47 @@ use crate::main::{
 };
 
 #[derive(new, Debug)]
-pub struct CheckoutUseCase {
-    id_generator: Arc<Mutex<dyn ShopOrderIdGenerator>>,
-    cart_extractor: Arc<Mutex<dyn CartExtractor>>,
-    active_order: Arc<Mutex<dyn CustomerHasActiveOrder>>,
-    get_meal_price: Arc<Mutex<dyn GetMealPrice>>,
-    payment_url_provider: Arc<Mutex<dyn PaymentUrlProvider>>,
-    shop_order_persister: Arc<Mutex<dyn ShopOrderPersister>>,
+pub struct CheckoutUseCase<
+    ShOIdGenerator,
+    CExtractor,
+    CustomerHasActiveO,
+    GetMPrice,
+    PaymUrlProvider,
+    ShOPersister,
+> where
+    ShOIdGenerator: ShopOrderIdGenerator,
+    CExtractor: CartExtractor,
+    CustomerHasActiveO: CustomerHasActiveOrder,
+    GetMPrice: GetMealPrice,
+    PaymUrlProvider: PaymentUrlProvider,
+    ShOPersister: ShopOrderPersister,
+{
+    id_generator: AM<ShOIdGenerator>,
+    cart_extractor: AM<CExtractor>,
+    active_order: AM<CustomerHasActiveO>,
+    get_meal_price: AM<GetMPrice>,
+    payment_url_provider: AM<PaymUrlProvider>,
+    shop_order_persister: AM<ShOPersister>,
 }
 
-impl Checkout for CheckoutUseCase {
+impl<ShOIdGenerator, CExtractor, CustomerHasActiveO, GetMPrice, PaymUrlProvider, ShOPersister>
+    Checkout
+    for CheckoutUseCase<
+        ShOIdGenerator,
+        CExtractor,
+        CustomerHasActiveO,
+        GetMPrice,
+        PaymUrlProvider,
+        ShOPersister,
+    >
+where
+    ShOIdGenerator: ShopOrderIdGenerator + 'static,
+    CExtractor: CartExtractor,
+    CustomerHasActiveO: CustomerHasActiveOrder + 'static,
+    GetMPrice: GetMealPrice + 'static,
+    PaymUrlProvider: PaymentUrlProvider,
+    ShOPersister: ShopOrderPersister,
+{
     fn execute(&self, request: CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError> {
         self.cart_extractor
             .lock()
@@ -37,10 +66,10 @@ impl Checkout for CheckoutUseCase {
             .map_or(Err(CheckoutUseCaseError::CartNotFound), |cart| {
                 ShopOrder::checkout(
                     cart,
-                    self.id_generator.clone() as _,
-                    self.active_order.clone() as _,
+                    self.id_generator.clone(),
+                    self.active_order.clone(),
                     request.delivery_to,
-                    self.get_meal_price.clone() as _,
+                    self.get_meal_price.clone(),
                 )
                 .map_err(|err| err.to_error())
             })

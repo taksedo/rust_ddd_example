@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::main::base::generic_types::AM;
 use derive_new::new;
 use domain::main::{
     cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId,
@@ -11,12 +10,21 @@ use crate::main::cart::{
 };
 
 #[derive(new, Debug)]
-pub struct RemoveMealFromCartUseCase {
-    cart_extractor: Arc<Mutex<dyn CartExtractor>>,
-    cart_persister: Arc<Mutex<dyn CartPersister>>,
+pub struct RemoveMealFromCartUseCase<CExtractor, CPersister>
+where
+    CExtractor: CartExtractor,
+    CPersister: CartPersister,
+{
+    cart_extractor: AM<CExtractor>,
+    cart_persister: AM<CPersister>,
 }
 
-impl RemoveMealFromCart for RemoveMealFromCartUseCase {
+impl<CExtractor, CPersister> RemoveMealFromCart
+    for RemoveMealFromCartUseCase<CExtractor, CPersister>
+where
+    CExtractor: CartExtractor,
+    CPersister: CartPersister,
+{
     fn execute(
         &self,
         for_customer: CustomerId,

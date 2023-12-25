@@ -24,10 +24,13 @@ use rest::main::{
 };
 use tokio::{task, task::JoinHandle};
 
-use crate::main::configuration::use_case_configuration::{
-    ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
-    GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDERS_USECASE, GET_ORDER_BY_ID,
-    REMOVE_MEAL_FROM_MENU_USECASE,
+use crate::main::configuration::{
+    persistence_configuration::OrderRepositoryType,
+    use_case_configuration::{
+        ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
+        GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDERS_USECASE, GET_ORDER_BY_ID,
+        REMOVE_MEAL_FROM_MENU_USECASE,
+    },
 };
 
 pub fn rest_backend_startup() -> JoinHandle<()> {
@@ -46,10 +49,12 @@ pub fn rest_backend_startup() -> JoinHandle<()> {
                 .configure(get_meal_by_id_endpoint_config)
                 .configure(get_menu_endpoint_config)
                 .configure(remove_meal_from_menu_endpoint_config)
-                .configure(cancel_order_endpoint_config)
-                .configure(confirm_order_endpoint_config)
-                .configure(get_order_by_id_endpoint_config)
-                .configure(get_orders_endpoint_config)
+                .configure(cancel_order_endpoint_config::<OrderRepositoryType, OrderRepositoryType>)
+                .configure(
+                    confirm_order_endpoint_config::<OrderRepositoryType, OrderRepositoryType>,
+                )
+                .configure(get_order_by_id_endpoint_config::<OrderRepositoryType>)
+                .configure(get_orders_endpoint_config::<OrderRepositoryType>)
                 .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())
                 .app_data(GET_MEAL_BY_ID_USE_CASE.clone())
                 .app_data(GET_MENU_USE_CASE.clone())

@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::main::base::generic_types::AM;
 use derive_new::new;
 use domain::main::cart::value_objects::customer_id::CustomerId;
 
@@ -12,12 +11,20 @@ use crate::main::{
 };
 
 #[derive(new, Debug)]
-pub struct GetCartUseCase {
-    meal_extractor: Arc<Mutex<dyn MealExtractor>>,
-    cart_extractor: Arc<Mutex<dyn CartExtractor>>,
+pub struct GetCartUseCase<MExtractor, CExtractor>
+where
+    MExtractor: MealExtractor,
+    CExtractor: CartExtractor,
+{
+    meal_extractor: AM<MExtractor>,
+    cart_extractor: AM<CExtractor>,
 }
 
-impl GetCart for GetCartUseCase {
+impl<MExtractor, CExtractor> GetCart for GetCartUseCase<MExtractor, CExtractor>
+where
+    MExtractor: MealExtractor,
+    CExtractor: CartExtractor,
+{
     fn execute(&self, for_customer: CustomerId) -> Result<CartInfo, GetCartUseCaseError> {
         let cart = &self.cart_extractor.lock().unwrap().get_cart(for_customer);
         if let Some(option_value) = cart {

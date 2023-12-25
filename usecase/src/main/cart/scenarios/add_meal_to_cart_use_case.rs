@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::main::base::generic_types::AM;
 use derive_new::new;
 use domain::main::{
     cart::{
@@ -18,14 +17,27 @@ use crate::main::{
 };
 
 #[derive(new, Debug)]
-pub struct AddMealToCartUseCase {
-    cart_extractor: Arc<Mutex<dyn CartExtractor>>,
-    id_generator: Arc<Mutex<dyn CartIdGenerator>>,
-    meal_extractor: Arc<Mutex<dyn MealExtractor>>,
-    cart_persister: Arc<Mutex<dyn CartPersister>>,
+pub struct AddMealToCartUseCase<CExtractor, CIdGenerator, MExtractor, CPersister>
+where
+    CExtractor: CartExtractor,
+    CIdGenerator: CartIdGenerator,
+    MExtractor: MealExtractor,
+    CPersister: CartPersister,
+{
+    cart_extractor: AM<CExtractor>,
+    id_generator: AM<CIdGenerator>,
+    meal_extractor: AM<MExtractor>,
+    cart_persister: AM<CPersister>,
 }
 
-impl AddMealToCart for AddMealToCartUseCase {
+impl<CExtractor, CIdGenerator, MExtractor, CPersister> AddMealToCart
+    for AddMealToCartUseCase<CExtractor, CIdGenerator, MExtractor, CPersister>
+where
+    CExtractor: CartExtractor,
+    CIdGenerator: CartIdGenerator + 'static,
+    MExtractor: MealExtractor,
+    CPersister: CartPersister,
+{
     fn execute(
         &mut self,
         for_customer: CustomerId,
@@ -44,7 +56,14 @@ impl AddMealToCart for AddMealToCartUseCase {
     }
 }
 
-impl AddMealToCartUseCase {
+impl<CExtractor, CIdGenerator, MExtractor, CPersister>
+    AddMealToCartUseCase<CExtractor, CIdGenerator, MExtractor, CPersister>
+where
+    CExtractor: CartExtractor,
+    CIdGenerator: CartIdGenerator + 'static,
+    MExtractor: MealExtractor,
+    CPersister: CartPersister,
+{
     fn get_or_create_cart(&self, for_customer: CustomerId) -> Cart {
         if let Some(result) = self.cart_extractor.lock().unwrap().get_cart(for_customer) {
             result

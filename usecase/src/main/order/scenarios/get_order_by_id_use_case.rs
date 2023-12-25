@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::main::base::generic_types::AM;
 use derive_new::new;
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -10,11 +9,11 @@ use crate::main::order::{
 };
 
 #[derive(new, Debug)]
-pub struct GetOrderByIdUseCase {
-    shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
+pub struct GetOrderByIdUseCase<ShOExtractor: ShopOrderExtractor> {
+    shop_order_extractor: AM<ShOExtractor>,
 }
 
-impl GetOrderById for GetOrderByIdUseCase {
+impl<ShOExtractor: ShopOrderExtractor> GetOrderById for GetOrderByIdUseCase<ShOExtractor> {
     fn execute(&mut self, id: ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
         self.shop_order_extractor
             .lock()
