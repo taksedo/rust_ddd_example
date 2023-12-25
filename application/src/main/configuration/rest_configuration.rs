@@ -9,7 +9,7 @@ use actix_web::{
 use log::info;
 use rest::main::{
     menu::{
-        add_meal_to_menu_endpoint::add_meal_to_menu_endpoint_config,
+        add_meal_to_menu_endpoint::add_meal_to_menu_endpoint_config, get_health_status,
         get_health_status::get_health_status_config,
         get_meal_by_id_endpoint::get_meal_by_id_endpoint_config,
         get_menu_endpoint::get_menu_endpoint_config,
@@ -22,7 +22,10 @@ use rest::main::{
         get_orders_endpoint::get_orders_endpoint_config,
     },
 };
+use serde::{Deserialize, Serialize};
 use tokio::{task, task::JoinHandle};
+use utoipa::{Modify, OpenApi, ToSchema};
+use utoipa_swagger_ui::SwaggerUi;
 
 use crate::main::configuration::{
     persistence_configuration::ORepository,
@@ -33,6 +36,11 @@ use crate::main::configuration::{
     },
 };
 
+#[derive(Serialize, Deserialize, Clone, ToSchema)]
+pub struct TokenClaims {
+    id: i32,
+}
+
 pub fn rest_backend_startup() -> JoinHandle<()> {
     task::spawn(async {
         let http_host_url = env::var("HTTP_HOST_URL").unwrap();
@@ -42,8 +50,21 @@ pub fn rest_backend_startup() -> JoinHandle<()> {
         let host_url = http_host_url.parse::<Uri>().unwrap();
         let host_address = host_url.host().unwrap();
         let host_port = host_url.port().unwrap();
+
+        #[derive(OpenApi)]
+        #[openapi(
+            paths(rest::main::menu::get_health_status::get_health_status),
+            components(schemas(TokenClaims))
+        )]
+        struct ApiDoc;
+
+        let openapi = ApiDoc::openapi();
         HttpServer::new(move || {
             App::new()
+                .service(
+                    SwaggerUi::new("/swagger-ui/{_:.*}")
+                        .url("/api-docs/openapi.json", openapi.clone()),
+                )
                 .configure(get_health_status_config)
                 .configure(add_meal_to_menu_endpoint_config)
                 .configure(get_meal_by_id_endpoint_config)

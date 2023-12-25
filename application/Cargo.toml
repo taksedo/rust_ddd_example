@@ -26,6 +26,8 @@ futures-lite.workspace = true
 testcontainers.workspace = true
 kafka.workspace = true
 testcontainers-modules.workspace = true
+utoipa-swagger-ui = { version = "5", features = ["actix-web"] }
+utoipa = {version = "4.1.0", features = ["actix_extras", "chrono"]}
 
 
 common.workspace = true
