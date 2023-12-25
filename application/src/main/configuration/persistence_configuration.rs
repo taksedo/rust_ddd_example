@@ -14,32 +14,30 @@ use postgres_persistence::main::{
 
 use crate::main::configuration::application_configuration::EVENT_PUBLISHER;
 
-pub type OrderRepositoryType = OrderRepository;
+pub type ORepository = OrderRepository;
 
 lazy_static! {
-    pub static ref MEAL_ID_GENERATOR: Arc<Mutex<MealIdGenerator>> = meal_id_generator();
-    pub static ref MEAL_REPOSITORY: Arc<Mutex<MealRepository>> = meal_repository();
-    pub static ref ORDER_ID_GENERATOR: Arc<Mutex<OrderIdGenerator>> = order_id_generator();
+    pub static ref MEAL_ID_GENERATOR: AM<MealIdGenerator> = meal_id_generator();
+    pub static ref MEAL_REPOSITORY: AM<MealRepository> = meal_repository();
+    pub static ref ORDER_ID_GENERATOR: AM<OrderIdGenerator> = order_id_generator();
     pub static ref ORDER_REPOSITORY: AM<OrderRepository> = order_repository();
 }
 
-pub fn meal_id_generator() -> Arc<Mutex<MealIdGenerator>> {
+pub fn meal_id_generator() -> AM<MealIdGenerator> {
     Arc::new(Mutex::new(MealIdGenerator::new(establish_connection())))
 }
 
-pub fn meal_repository() -> Arc<Mutex<MealRepository>> {
+pub fn meal_repository() -> AM<MealRepository> {
     Arc::new(Mutex::new(MealRepository::new(
         establish_connection(),
         EVENT_PUBLISHER.clone() as _,
     )))
 }
 
-pub fn order_id_generator() -> Arc<Mutex<OrderIdGenerator>> {
+pub fn order_id_generator() -> AM<OrderIdGenerator> {
     Arc::new(Mutex::new(OrderIdGenerator::new()))
 }
 
-pub fn order_repository() -> AM<OrderRepositoryType> {
-    Arc::new(Mutex::new(OrderRepositoryType::new(
-        EVENT_PUBLISHER.clone() as _,
-    )))
+pub fn order_repository() -> AM<ORepository> {
+    Arc::new(Mutex::new(ORepository::new(EVENT_PUBLISHER.clone() as _)))
 }
