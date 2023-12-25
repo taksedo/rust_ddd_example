@@ -1,20 +1,21 @@
-use std::{
-    mem::{discriminant, Discriminant},
-    sync::{Arc, Mutex},
-};
+use std::mem::{discriminant, Discriminant};
 
-use common::events::main::domain_event_listener::DomainEventListener;
+use common::{
+    events::main::domain_event_listener::DomainEventListener, types::main::base::generic_types::AM,
+};
 use derive_new::new;
 use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 
 use crate::main::order::providers::order_exporter::OrderExporter;
 
 #[derive(new, Debug)]
-pub struct ExportOrderAfterCheckoutRule {
-    pub order_exporter: Arc<Mutex<dyn OrderExporter>>,
+pub struct ExportOrderAfterCheckoutRule<OExporter: OrderExporter> {
+    pub order_exporter: AM<OExporter>,
 }
 
-impl DomainEventListener<ShopOrderEventEnum> for ExportOrderAfterCheckoutRule {
+impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
+    for ExportOrderAfterCheckoutRule<OExported>
+{
     fn event_type(&self) -> Discriminant<ShopOrderEventEnum> {
         let event: ShopOrderEventEnum = ShopOrderCreatedDomainEvent::default().into();
         discriminant(&event)

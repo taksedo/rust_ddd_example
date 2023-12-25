@@ -1,9 +1,8 @@
-use std::{
-    mem::{discriminant, Discriminant},
-    sync::{Arc, Mutex},
-};
+use std::mem::{discriminant, Discriminant};
 
-use common::events::main::domain_event_listener::DomainEventListener;
+use common::{
+    events::main::domain_event_listener::DomainEventListener, types::main::base::generic_types::AM,
+};
 use derive_new::new;
 use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 use tracing::info;
@@ -11,12 +10,21 @@ use tracing::info;
 use crate::main::cart::access::{cart_extractor::CartExtractor, cart_remover::CartRemover};
 
 #[derive(new, Debug)]
-pub struct RemoveCartAfterCheckoutRule {
-    cart_extractor: Arc<Mutex<dyn CartExtractor>>,
-    cart_remover: Arc<Mutex<dyn CartRemover>>,
+pub struct RemoveCartAfterCheckoutRule<CExtractor, CRemover>
+where
+    CExtractor: CartExtractor,
+    CRemover: CartRemover,
+{
+    cart_extractor: AM<CExtractor>,
+    cart_remover: AM<CRemover>,
 }
 
-impl DomainEventListener<ShopOrderEventEnum> for RemoveCartAfterCheckoutRule {
+impl<CExtractor, CRemover> DomainEventListener<ShopOrderEventEnum>
+    for RemoveCartAfterCheckoutRule<CExtractor, CRemover>
+where
+    CExtractor: CartExtractor,
+    CRemover: CartRemover,
+{
     fn event_type(&self) -> Discriminant<ShopOrderEventEnum> {
         let event: ShopOrderEventEnum = ShopOrderCreatedDomainEvent::default().into();
         discriminant(&event)

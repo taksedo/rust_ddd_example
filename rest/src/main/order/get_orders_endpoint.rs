@@ -10,6 +10,7 @@ use common::common_rest::main::{
 };
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::{
+    access::shop_order_extractor::ShopOrderExtractor,
     get_orders::{GetOrders, GetOrdersUseCaseError},
     scenarios::get_orders_use_case::GetOrdersUseCase,
 };
@@ -77,9 +78,11 @@ impl ToRestError for GetOrdersUseCaseError {
     }
 }
 
-pub fn get_orders_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn get_orders_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
+    cfg: &mut web::ServiceConfig,
+) {
     cfg.route(
         API_V1_ORDER_GET_ALL,
-        web::get().to(get_orders_endpoint::<GetOrdersUseCase>),
+        web::get().to(get_orders_endpoint::<GetOrdersUseCase<ShOExtractor>>),
     );
 }

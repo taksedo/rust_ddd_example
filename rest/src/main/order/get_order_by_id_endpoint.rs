@@ -7,6 +7,7 @@ use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use common::common_rest::main::rest_responses::{resource_not_found, to_invalid_param_bad_request};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::{
+    access::shop_order_extractor::ShopOrderExtractor,
     get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
     scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,
 };
@@ -45,9 +46,11 @@ impl ToRestError for GetOrderByIdUseCaseError {
     }
 }
 
-pub fn get_order_by_id_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn get_order_by_id_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
+    cfg: &mut web::ServiceConfig,
+) {
     cfg.route(
         API_V1_ORDER_GET_BY_ID,
-        web::get().to(get_order_by_id_endpoint::<GetOrderByIdUseCase>),
+        web::get().to(get_order_by_id_endpoint::<GetOrderByIdUseCase<ShOExtractor>>),
     );
 }

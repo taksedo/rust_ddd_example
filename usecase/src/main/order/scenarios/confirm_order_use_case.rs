@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::main::base::generic_types::AM;
 use derive_new::new;
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -9,12 +8,20 @@ use crate::main::order::{
 };
 
 #[derive(new, Debug)]
-pub struct ConfirmOrderUseCase {
-    shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
-    shop_order_persister: Arc<Mutex<dyn ShopOrderPersister>>,
+pub struct ConfirmOrderUseCase<ShOExtractor, ShOPersister>
+where
+    ShOExtractor: ShopOrderExtractor,
+    ShOPersister: ShopOrderPersister,
+{
+    shop_order_extractor: AM<ShOExtractor>,
+    shop_order_persister: AM<ShOPersister>,
 }
 
-impl ConfirmOrder for ConfirmOrderUseCase {
+impl<ShOExtractor, ShOPersister> ConfirmOrder for ConfirmOrderUseCase<ShOExtractor, ShOPersister>
+where
+    ShOExtractor: ShopOrderExtractor,
+    ShOPersister: ShopOrderPersister,
+{
     fn execute(&mut self, order_id: ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
         self.shop_order_extractor
             .lock()

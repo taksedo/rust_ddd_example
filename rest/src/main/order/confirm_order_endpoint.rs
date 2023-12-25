@@ -9,6 +9,7 @@ use common::common_rest::main::rest_responses::{
 };
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::{
+    access::{shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister},
     confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError},
     scenarios::confirm_order_use_case::ConfirmOrderUseCase,
 };
@@ -45,9 +46,13 @@ impl ToRestError for ConfirmOrderUseCaseError {
     }
 }
 
-pub fn confirm_order_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn confirm_order_endpoint_config<ShOExtractor, ShOPersister>(cfg: &mut web::ServiceConfig)
+where
+    ShOExtractor: ShopOrderExtractor + 'static,
+    ShOPersister: ShopOrderPersister + 'static,
+{
     cfg.route(
         API_V1_ORDER_CONFIRM_BY_ID,
-        web::put().to(confirm_order_endpoint::<ConfirmOrderUseCase>),
+        web::put().to(confirm_order_endpoint::<ConfirmOrderUseCase<ShOExtractor, ShOPersister>>),
     );
 }
