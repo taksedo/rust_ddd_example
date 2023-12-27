@@ -12,7 +12,6 @@ name: Check and Lint
 jobs:
   common_check:
     name: Common - Check
-    working-directory: common
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,11 +21,11 @@ jobs:
           toolchain: stable
           override: true
       - uses: actions-rs/cargo@v1
+        working-directory: common
         with:
           command: check
   shop_check:
     name: Shop - Check
-    working-directory: shop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,11 +35,11 @@ jobs:
           toolchain: stable
           override: true
       - uses: actions-rs/cargo@v1
+        working-directory: shop
         with:
           command: check
   common_fmt:
     name: Common - Rustfmt
-    working-directory: common
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -51,6 +50,7 @@ jobs:
           override: true
       - run: rustup component add rustfmt
       - uses: actions-rs/cargo@v1
+        working-directory: common
         with:
           command: fmt
           args: --all -- --check
