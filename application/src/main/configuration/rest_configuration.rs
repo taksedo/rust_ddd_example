@@ -6,13 +6,15 @@ use actix_web::{
     middleware::Logger,
     App, HttpServer,
 };
+use common::common_rest::main::rest_responses::{GenericErrorResponse, ValidationError};
 use log::info;
 use rest::main::{
     menu::{
-        add_meal_to_menu_endpoint::add_meal_to_menu_endpoint_config,
+        add_meal_to_menu_endpoint::{add_meal_to_menu_endpoint_config, AddMealToMenuRestRequest},
         get_health_status::get_health_status_config,
         get_meal_by_id_endpoint::get_meal_by_id_endpoint_config,
         get_menu_endpoint::get_menu_endpoint_config,
+        meal_model::MealModel,
         remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint_config,
     },
     order::{
@@ -20,9 +22,13 @@ use rest::main::{
         confirm_order_endpoint::confirm_order_endpoint_config,
         get_order_by_id_endpoint::get_order_by_id_endpoint_config,
         get_orders_endpoint::get_orders_endpoint_config,
+        order_model::{AddressModel, OrderItemModel, OrderModel},
     },
 };
+use serde::{Deserialize, Serialize};
 use tokio::{task, task::JoinHandle};
+use utoipa::{OpenApi, ToSchema};
+use utoipa_swagger_ui::SwaggerUi;
 
 use crate::main::configuration::{
     persistence_configuration::ORepository,
@@ -33,6 +39,11 @@ use crate::main::configuration::{
     },
 };
 
+#[derive(Serialize, Deserialize, Clone, ToSchema)]
+pub struct TokenClaims {
+    id: i32,
+}
+
 pub fn rest_backend_startup() -> JoinHandle<()> {
     task::spawn(async {
         let http_host_url = env::var("HTTP_HOST_URL").unwrap();
@@ -42,8 +53,50 @@ pub fn rest_backend_startup() -> JoinHandle<()> {
         let host_url = http_host_url.parse::<Uri>().unwrap();
         let host_address = host_url.host().unwrap();
         let host_port = host_url.port().unwrap();
+
+        #[derive(OpenApi)]
+        #[openapi(
+            info(title = "Rust DDD Example", description = "API Documenation"),
+            paths(
+                rest::main::menu::get_health_status::get_health_status,
+                rest::main::menu::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,
+                rest::main::menu::get_meal_by_id_endpoint::get_meal_by_id_endpoint,
+                rest::main::menu::get_menu_endpoint::get_menu_endpoint,
+                rest::main::menu::remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint,
+                rest::main::order::get_orders_endpoint::get_orders_endpoint,
+                rest::main::order::get_order_by_id_endpoint::get_order_by_id_endpoint,
+                rest::main::order::cancel_order_endpoint::cancel_order_endpoint,
+                rest::main::order::confirm_order_endpoint::confirm_order_endpoint,
+
+            ),
+            components(
+                schemas(
+                    AddMealToMenuRestRequest,
+                    MealModel,
+                    GenericErrorResponse,
+                    ValidationError,
+                    OrderModel,
+                    OrderItemModel,
+                    AddressModel
+                ),
+                responses(MealModel, GenericErrorResponse, OrderModel)
+            ),
+            tags(
+                (name = "Health", description = "Health check"),
+                (name = "Meal", description = "All about Meal"),
+                (name = "Order", description = "Operations with Order")
+            )
+        )]
+        struct ApiDoc;
+
+        let openapi = ApiDoc::openapi();
+
         HttpServer::new(move || {
             App::new()
+                .service(
+                    SwaggerUi::new("/swagger-ui/{_:.*}")
+                        .url("/api-docs/openapi.json", openapi.clone()),
+                )
                 .configure(get_health_status_config)
                 .configure(add_meal_to_menu_endpoint_config)
                 .configure(get_meal_by_id_endpoint_config)

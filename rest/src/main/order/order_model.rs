@@ -4,26 +4,45 @@ use derive_new::new;
 use serde::Serialize;
 use serde_derive::Deserialize;
 use usecase::main::order::dto::order_details::{OrderDetails, OrderItemDetails};
+use utoipa::{ToResponse, ToSchema};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, ToSchema, ToResponse)]
 pub struct OrderModel {
+    /// ID of the order
+    #[schema(example = 54389)]
     pub id: i64,
+    /// Address of the order
     pub address: AddressModel,
+    /// A list of orders item
     pub items: Vec<OrderItemModel>,
+    /// Total price of the order
+    #[schema(example = "556.45")]
     pub total_price: String,
+    /// Version of the order
+    #[schema(example = 3)]
     pub version: i64,
+    /// Flag of readiness for order cancellation or confirmation
+    #[schema(example = true)]
     pub ready_for_confirm_or_cancel: bool,
 }
 
-#[derive(new, Serialize, Deserialize, Debug, Clone)]
+#[derive(new, Serialize, Deserialize, Debug, Clone, ToSchema)]
 pub struct OrderItemModel {
+    /// Meal ID
+    #[schema(example = 349283)]
     pub meal_id: i64,
+    /// Meal quantity
+    #[schema(example = 3)]
     pub count: i32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, ToSchema)]
 pub struct AddressModel {
+    /// Street name
+    #[schema(example = "Palm str.")]
     pub street: String,
+    /// Building number
+    #[schema(example = "5")]
     pub building: i16,
 }
 

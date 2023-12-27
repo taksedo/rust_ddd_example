@@ -23,6 +23,40 @@ use crate::main::{
     endpoint_url::API_V1_ORDER_GET_ALL, to_error::ToRestError, validated::Validated,
 };
 
+/// Get orders with pagination
+#[utoipa::path(
+    get,
+    path = API_V1_ORDER_GET_ALL,
+    tag = "Order",
+    responses(
+        (
+            status = OK,
+            body = Vec<OrderModel>,
+            description = "OK" 
+        ),
+        (
+            status = BAD_REQUEST,
+            description = "Bad request",
+            body = GenericErrorResponse,
+            example = json!(
+                {
+                    "type": "http://0.0.0.0:8080/bad_request",
+                    "title": "Bad request",
+                    "status": 400,
+                    "invalid_params": 
+                    [
+                        {"message": "Mandatory parameter 'startId' in query is absent"},
+                        {"message": "Mandatory parameter 'limit' in query is absent"}
+                    ]
+                }
+            )
+        ),
+    ),
+    params(
+        ("limit" = usize, Query, description = "Pagination limit"),
+        ("startId" = i64, Query, description = "Pagination start ID")
+    )
+)]
 pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,

@@ -12,11 +12,13 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
+authors = ["Ruslan Valiev"]
+description = "Rust DDD Sample Project"
 
 [package]
 name = "rust_ddd_example_shop"
-authors = ["Ruslan Valiev"]
-description = "Rust DDD Sample Project"
+authors.workspace = true
+description.workspace = true
 
 version.workspace = true
 edition.workspace = true
@@ -79,6 +81,8 @@ tokio-util = { version = "0.7", default-features = false, features = ["codec"] }
 futures-util = { version = "0.3", default-features = false, features = [
     "sink",
 ] }
+utoipa-swagger-ui = { version = "5", features = ["actix-web"] }
+utoipa = {version = "4.1.0", features = ["actix_extras", "chrono"]}
 
 common = { git = "https://github.com/taksedo/rust_ddd_example_common.git", branch = "master", package = "rust_ddd_example_common" }
 domain = { path = "domain" }

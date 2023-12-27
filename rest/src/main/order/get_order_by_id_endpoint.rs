@@ -4,7 +4,9 @@ use std::{
 };
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::main::rest_responses::{resource_not_found, to_invalid_param_bad_request};
+use common::common_rest::main::rest_responses::{
+    get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
+};
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::{
     access::shop_order_extractor::ShopOrderExtractor,
@@ -19,6 +21,44 @@ use crate::main::{
     validated::Validated,
 };
 
+/// Get an order by id
+#[utoipa::path(
+    get,
+    path = API_V1_ORDER_GET_BY_ID,
+    tag = "Order",
+    responses(
+        (
+            status = OK,
+            body = OrderModel,
+            description = "OK" 
+        ),
+        (
+            status = BAD_REQUEST,
+            description = "Bad request",
+            body = GenericErrorResponse,
+            example = json!(
+                {
+                    "type":"http://0.0.0.0:8080/bad_request",
+                    "title":"Bad request",
+                    "status":400,
+                    "invalid_params":
+                    [
+                        {"message": "Wrong Shop Order Id"}
+                    ]
+                }
+            )
+        ),
+        (
+            status = NOT_FOUND,
+            description = "Order not found",
+            body = GenericErrorResponse,
+            example = json!(&(get_json_from_http_response(resource_not_found())))
+        ),
+    ),
+    params(
+        ("id" = i64, description = "id"),
+    )
+)]
 pub async fn get_order_by_id_endpoint<T: GetOrderById + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,

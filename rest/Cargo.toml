@@ -15,6 +15,8 @@ serde_derive.workspace = true
 smart-default.workspace = true
 bigdecimal.workspace = true
 dotenvy.workspace = true
+utoipa = {version = "4.1.0", features = ["actix_extras", "chrono"]}
+utoipa-swagger-ui = { version = "5", features = ["actix-web"] }
 
 domain.workspace = true
 usecase.workspace = true
