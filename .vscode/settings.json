@@ -4,7 +4,8 @@
         "editor.formatOnSave": true, // Optional
         "rust-analyzer.checkOnSave": false,
         "rust-analyzer.rustfmt.rangeFormatting.enable": true,
-        "rust-analyzer.rust.analyzerTargetDir": true
+        "rust-analyzer.rust.analyzerTargetDir": true,
+        "rustTestExplorer.rootCargoManifestFilePath": "./shop/Cargo.toml"
     },
 }
 
