@@ -22,7 +22,7 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1        
         with:
-          command: check --manifest-path common/Cargo.toml
+          command: check -Zscrip --manifest-path common/Cargo.toml
   shop_check:
     name: Shop - Check
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: check --manifest-path shop/Cargo.toml
+          command: check -Zscrip --manifest-path shop/Cargo.toml
   common_fmt:
     name: Common - Rustfmt
     runs-on: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
           toolchain: stable
           components: clippy
           override: true
-      - uses: actions-rs/clippy-check@v1
+      - uses: reinismu/clippy-check@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
