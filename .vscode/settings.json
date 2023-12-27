@@ -2,6 +2,8 @@
     "[rust]": {
         "editor.defaultFormatter": "rust-lang.rust-analyzer", // Makes the magic
         "editor.formatOnSave": true, // Optional
-        "rust-analyzer.checkOnSave": false
+        "rust-analyzer.checkOnSave": false,
+        "rust-analyzer.rustfmt.rangeFormatting.enable": true
     },
 }
+

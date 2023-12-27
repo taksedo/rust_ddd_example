@@ -6,6 +6,7 @@ use actix_web::{
     middleware::Logger,
     App, HttpServer,
 };
+use common::common_rest::main::rest_responses::{GenericErrorResponse, ValidationError};
 use log::info;
 use rest::main::{
     menu::{
@@ -21,6 +22,7 @@ use rest::main::{
         confirm_order_endpoint::confirm_order_endpoint_config,
         get_order_by_id_endpoint::get_order_by_id_endpoint_config,
         get_orders_endpoint::get_orders_endpoint_config,
+        order_model::{AddressModel, OrderItemModel, OrderModel},
     },
 };
 use serde::{Deserialize, Serialize};
@@ -54,12 +56,36 @@ pub fn rest_backend_startup() -> JoinHandle<()> {
 
         #[derive(OpenApi)]
         #[openapi(
+            info(title = "Rust DDD Example", description = "API Documenation"),
             paths(
                 rest::main::menu::get_health_status::get_health_status,
                 rest::main::menu::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,
-                rest::main::menu::get_meal_by_id_endpoint::get_meal_by_id_endpoint
+                rest::main::menu::get_meal_by_id_endpoint::get_meal_by_id_endpoint,
+                rest::main::menu::get_menu_endpoint::get_menu_endpoint,
+                rest::main::menu::remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint,
+                rest::main::order::get_orders_endpoint::get_orders_endpoint,
+                rest::main::order::get_order_by_id_endpoint::get_order_by_id_endpoint,
+                rest::main::order::cancel_order_endpoint::cancel_order_endpoint,
+                rest::main::order::confirm_order_endpoint::confirm_order_endpoint,
+
             ),
-            components(schemas(AddMealToMenuRestRequest, MealModel))
+            components(
+                schemas(
+                    AddMealToMenuRestRequest,
+                    MealModel,
+                    GenericErrorResponse,
+                    ValidationError,
+                    OrderModel,
+                    OrderItemModel,
+                    AddressModel
+                ),
+                responses(MealModel, GenericErrorResponse, OrderModel)
+            ),
+            tags(
+                (name = "Health", description = "Health check"),
+                (name = "Meal", description = "All about Meal"),
+                (name = "Order", description = "Operations with Order")
+            )
         )]
         struct ApiDoc;
 

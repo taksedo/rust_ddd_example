@@ -30,19 +30,57 @@ use crate::main::{
 #[derive(new, Serialize, Deserialize, Debug, ToSchema)]
 pub struct AddMealToMenuRestRequest {
     /// Name of the meal
-    #[schema(required = true)]
+    #[schema(example = "Шаурма средняя", required = true)]
     name: String,
     /// Description of the meal
-    #[schema(required = false)]
+    #[schema(example = "Средний размер, средняя цена", required = true)]
     description: String,
     /// Price of the meal
-    #[schema(required = true)]
+    #[schema(example = 200, required = true)]
     price: f64,
 }
 
 /// Add a meal to the menu
-#[utoipa::path(post, path = API_V1_MENU_ADD_TO_MENU, tag = "Meal",
-request_body(content = AddMealToMenuRestRequest))]
+#[utoipa::path(
+    post,
+    path = API_V1_MENU_ADD_TO_MENU,
+    tag = "Meal",
+    request_body(
+        content = AddMealToMenuRestRequest,
+    ),
+    responses(
+        (
+            status = CREATED,
+            description = "Created",
+            headers(
+                ("location" = String, description = "Location of new Meal")
+            )
+        ),
+        (
+            status = BAD_REQUEST,
+            description = "Bad request",
+            body = GenericErrorResponse,
+            example = json!(
+                {
+                    "type":"http://0.0.0.0:8080/bad_request",
+                    "title":"Bad request",
+                    "status":400,
+                    "invalid_params":
+                    [
+                        {"message":"Meal name is empty."},
+                        {"message":"Meal description is empty"},
+                        {"message":"Price scale must not be > 2"}
+                    ]
+                }
+            )
+        ),
+        (
+            status = UNPROCESSABLE_ENTITY,
+            description = "Meal already exists",
+            body = GenericErrorResponse,
+            example = json!({"type":"http://0.0.0.0:8080/already_exists","title":"Meal already exists","status":422})
+        ),
+    ))]
 pub async fn add_meal_to_menu_endpoint<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     request: web::Json<AddMealToMenuRestRequest>,

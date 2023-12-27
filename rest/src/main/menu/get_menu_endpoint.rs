@@ -8,6 +8,20 @@ use usecase::main::menu::{get_menu::GetMenu, scenario::get_menu_use_case::GetMen
 
 use crate::main::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
 
+/// Get the menu
+#[utoipa::path(
+    get,
+    path = API_V1_MENU_GET_ALL,
+    tag = "Meal",
+    responses(
+        (
+            status = OK,
+            body = Vec<MealModel>,
+            description = "OK" 
+        )
+    )
+)]
+
 pub async fn get_menu_endpoint<T: GetMenu + Send + Debug>(
     shared_state: web::Data<Arc<Mutex<T>>>,
 ) -> HttpResponse {
