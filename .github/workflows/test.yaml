@@ -23,6 +23,7 @@ jobs:
           toolchain: nightly
           override: true
       - name: Cache dependencies
+        working-directory: shop
         uses: actions/cache@v2
         env:
           cache-name: cache-dependencies
@@ -36,18 +37,21 @@ jobs:
             target
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Generate test result and coverage report
+        working-directory: shop
         run: |
           cargo install cargo2junit grcov;
           cargo test $CARGO_OPTIONS --all -- -Z unstable-options --format json | cargo2junit > results.xml;
           zip -0 ccov.zip `find . \( -name "*.gc*" \) -print`;
           grcov ccov.zip -s . -t lcov --llvm --ignore-not-existing --ignore "/*" --ignore "tests/*" -o lcov.info;
       - name: Upload test results
+        working-directory: shop
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           check_name: Test Results
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: results.xml
       - name: Upload to CodeCov
+        working-directory: shop
         uses: codecov/codecov-action@v1
         with:
           # required for private repositories:
