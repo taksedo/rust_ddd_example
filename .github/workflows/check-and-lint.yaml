@@ -10,7 +10,7 @@ env:
 name: Check and Lint
 
 jobs:
-  check:
+  common_check:
     name: Common - Check
     working-directory: common
     runs-on: ubuntu-latest
@@ -24,6 +24,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
+  shop_check:
     name: Shop - Check
     working-directory: shop
     runs-on: ubuntu-latest
@@ -37,7 +38,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
-  fmt:
+  common_fmt:
     name: Common - Rustfmt
     working-directory: common
     runs-on: ubuntu-latest
@@ -53,6 +54,7 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+  shop_fmt:
     name: Shop - Rustfmt
     working-directory: shop
     runs-on: ubuntu-latest
@@ -69,7 +71,7 @@ jobs:
           command: fmt
           args: --all -- --check
 
-  clippy:
+  common_clippy:
     name: Common - Clippy
     working-directory: common
     runs-on: ubuntu-latest
@@ -85,6 +87,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
           name: Clippy Output
+  shop_clippy:
     name: Shop - Clippy
     working-directory: shop
     runs-on: ubuntu-latest
