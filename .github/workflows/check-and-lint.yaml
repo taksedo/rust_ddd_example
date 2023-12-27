@@ -22,7 +22,7 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1        
         with:
-          command: check
+          command: check --manifest-path common/Cargo.toml
   shop_check:
     name: Shop - Check
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: check
+          command: check --manifest-path shop/Cargo.toml
   common_fmt:
     name: Common - Rustfmt
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --manifest-path common/Cargo.toml --all -- --check
+          args: --manifest-path shop/Cargo.toml --all -- --check
 
   common_clippy:
     name: Common - Clippy
@@ -81,7 +81,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
-          working-directory: ./common
+          working-directory: common
           name: Common Clippy Output
   shop_clippy:
     name: Shop - Clippy
@@ -97,5 +97,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
-          working-directory: ./shop
+          working-directory: shop
           name: Shop Clippy Output
