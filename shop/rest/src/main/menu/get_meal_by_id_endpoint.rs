@@ -4,7 +4,9 @@ use std::{
 };
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::main::rest_responses::{resource_not_found, to_invalid_param_bad_request, get_json_from_http_response};
+use common::common_rest::main::rest_responses::{
+    get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
+};
 use domain::main::menu::value_objects::meal_id::MealId;
 use usecase::main::menu::{
     get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
@@ -28,7 +30,7 @@ use crate::main::{
             description = "Meal id"
         )
     ),
-    responses(        
+    responses(
         (
             status = NOT_FOUND,
             description = "Meal not found",
