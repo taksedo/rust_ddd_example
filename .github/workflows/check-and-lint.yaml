@@ -53,7 +53,6 @@ jobs:
           args: --manifest-path common/Cargo.toml --all -- --check
   shop_fmt:
     name: Shop - Rustfmt
-    working-directory: shop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -70,7 +69,6 @@ jobs:
 
   common_clippy:
     name: Common - Clippy
-    working-directory: common
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -87,7 +85,6 @@ jobs:
           name: Common Clippy Output
   shop_clippy:
     name: Shop - Clippy
-    working-directory: shop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
