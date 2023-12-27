@@ -20,8 +20,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - uses: actions-rs/cargo@v1
-        working-directory: common
+      - uses: actions-rs/cargo@v1        
         with:
           command: check
   shop_check:
@@ -35,7 +34,6 @@ jobs:
           toolchain: stable
           override: true
       - uses: actions-rs/cargo@v1
-        working-directory: shop
         with:
           command: check
   common_fmt:
@@ -50,10 +48,9 @@ jobs:
           override: true
       - run: rustup component add rustfmt
       - uses: actions-rs/cargo@v1
-        working-directory: common
         with:
           command: fmt
-          args: --all -- --check
+          args: --manifest-path common/Cargo.toml --all -- --check
   shop_fmt:
     name: Shop - Rustfmt
     working-directory: shop
@@ -69,7 +66,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --all -- --check
+          args: --manifest-path common/Cargo.toml --all -- --check
 
   common_clippy:
     name: Common - Clippy
@@ -86,7 +83,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
-          name: Clippy Output
+          working-directory: ./common
+          name: Common Clippy Output
   shop_clippy:
     name: Shop - Clippy
     working-directory: shop
@@ -102,4 +100,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
-          name: Clippy Output
+          working-directory: ./shop
+          name: Shop Clippy Output
