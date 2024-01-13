@@ -41,7 +41,7 @@ services:
   application-db:
     user: root
     container_name: meal_shop_db
-    image: postgres:13
+    image: postgres:16
     command:
       - "postgres"
       - "-c"

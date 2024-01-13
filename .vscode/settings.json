@@ -2,10 +2,15 @@
     "[rust]": {
         "editor.defaultFormatter": "rust-lang.rust-analyzer", // Makes the magic
         "editor.formatOnSave": true, // Optional
-        "rust-analyzer.checkOnSave": false,
-        "rust-analyzer.rustfmt.rangeFormatting.enable": true,
-        "rust-analyzer.rust.analyzerTargetDir": true,
-        "rustTestExplorer.rootCargoManifestFilePath": "./shop/Cargo.toml"
+
+        "rustTestExplorer.rootCargoManifestFilePath": "./shop/Cargo.toml",
     },
+    "rust-analyzer.linkedProjects": [
+        "./common/Cargo.toml",
+        "./shop/Cargo.toml"
+    ],
+    "rust-analyzer.checkOnSave": true,
+    "rust-analyzer.rustfmt.rangeFormatting.enable": true,
+    "rust-analyzer.rust.analyzerTargetDir": true,
 }
 
