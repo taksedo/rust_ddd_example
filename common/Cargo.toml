@@ -15,9 +15,9 @@ edition = "2021"
 derive-new = "0.6.0"
 derive_more = { version = "1.0.0-beta.6", features = ["full"] }
 time = { version = "0.3.21", features = ["default", "serde-well-known"] }
-serde = { version = "1.0.163", features = ["derive", "rc", "alloc"] }
-serde_derive = "1.0.163"
-erased-serde = "0.4.1"
+serde = { version = "1", features = ["derive", "rc", "alloc"] }
+serde_derive = "1"
+erased-serde = "0"
 derivative = "2.2.0"
 enum_dispatch = "0.3.12"
 enum_access = "0.4.0"
@@ -28,7 +28,7 @@ lazy_static = "1.4.0"
 smart-default = "0.7.1"
 fake = { version = "2.9.1", features = ["derive"] }
 utoipa = "4"
-utoipa-swagger-ui = "5"
+utoipa-swagger-ui = "6"
 
 types = { path = "types" }
 
