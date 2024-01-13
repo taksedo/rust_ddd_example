@@ -21,14 +21,14 @@
                 }
             },
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/shop"
         },
         {
             "type": "lldb",
             "request": "launch",
             "name": "run rust_ddd_example_shop",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/shop",
             "sourceMap": {},
             "sourceLanguages": [
               "rust"
