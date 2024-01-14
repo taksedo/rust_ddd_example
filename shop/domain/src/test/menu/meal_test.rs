@@ -72,7 +72,7 @@ fn add_meal__success() {
     assert!(test_meal.visible());
 
     let popped_events = test_meal.entity_params.pop_events();
-    let popped_events = popped_events.get(0).unwrap();
+    let popped_events = popped_events.first().unwrap();
 
     let expected_event: &MealEventEnum =
         &MealAddedToMenuDomainEvent::new(id_generator.lock().unwrap().meal_id).into();

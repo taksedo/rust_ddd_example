@@ -134,7 +134,7 @@ impl MockMealPersister {
             .unwrap()
             .entity_params
             .pop_events()
-            .get(0)
+            .first()
             .unwrap()
             .clone();
         assert_eq!(events.type_id(), event_enum.type_id());
