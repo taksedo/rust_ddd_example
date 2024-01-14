@@ -22,9 +22,3 @@ Dev container includes following containers:
 + kafka
 + kafka-ui
 + db
-
-Before starting the App db migration is needed. To manage this please start the following script
-
-```shell
-tools/scripts/migration_run.sh
-```
