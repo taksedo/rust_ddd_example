@@ -4,8 +4,6 @@ services:
     image: mcr.microsoft.com/devcontainers/rust:0-1-bullseye
     volumes:
       - ..:/workspaces:cached
-    cap_add:
-      - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
     command: /bin/sh -c "while sleep 1000; do :; done && rustup update stable"
