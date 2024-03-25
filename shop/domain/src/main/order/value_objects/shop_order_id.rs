@@ -9,13 +9,11 @@ use crate::main::order::shop_order::ShopOrderError;
     Debug, Copy, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default, Ord, PartialOrd,
 )]
 #[non_exhaustive]
-pub struct ShopOrderId {
-    value: i64,
-}
+pub struct ShopOrderId(i64);
 
 impl ShopOrderId {
     pub fn to_i64(&self) -> i64 {
-        self.value.to_i64().unwrap()
+        self.0.to_i64().unwrap()
     }
 }
 
@@ -24,8 +22,8 @@ impl TryFrom<i64> for ShopOrderId {
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         match value {
-            x if (0..i64::MAX).contains(&x) => Ok(ShopOrderId { value }),
-            _ => Err(ShopOrderError::IdGenerationError),
+            x if (0..i64::MAX).contains(&x) => Ok(Self(value)),
+            _ => Err(Self::Error::IdGenerationError),
         }
     }
 }
