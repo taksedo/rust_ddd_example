@@ -5,19 +5,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Hash, Default)]
 #[non_exhaustive]
-pub struct MealName {
-    value: String,
-}
+pub struct MealName(String);
 
 impl TryFrom<&str> for MealName {
     type Error = CreateMealNameError;
 
     fn try_from(value: &str) -> Result<MealName, Self::Error> {
         match value {
-            x if x.is_empty() || x == " " => Err(CreateMealNameError::EmptyMealNameError),
-            _ => Ok(MealName {
-                value: value.to_string(),
-            }),
+            x if x.is_empty() || x == " " => Err(Self::Error::EmptyMealNameError),
+            _ => Ok(Self(value.to_string())),
         }
     }
 }
@@ -33,6 +29,6 @@ impl BusinessError for CreateMealNameError {}
 
 impl fmt::Display for MealName {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", &self.value)
+        write!(f, "{}", &self.0)
     }
 }

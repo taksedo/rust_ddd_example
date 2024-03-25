@@ -6,13 +6,11 @@ use crate::main::cart::cart::CartError;
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
 #[non_exhaustive]
-pub struct CartId {
-    value: i64,
-}
+pub struct CartId(i64);
 
 impl CartId {
     pub fn to_i64(&self) -> i64 {
-        self.value
+        self.0
     }
 }
 
@@ -25,8 +23,8 @@ impl TryFrom<i64> for CartId {
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         match value {
-            x if x > 0 && x < i64::MAX => Ok(Self { value }),
-            _ => Err(CartError::IdGenerationError),
+            x if x > 0 && x < i64::MAX => Ok(Self(value)),
+            _ => Err(Self::Error::IdGenerationError),
         }
     }
 }
