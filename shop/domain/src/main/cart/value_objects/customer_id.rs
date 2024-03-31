@@ -6,20 +6,17 @@ use serde_derive::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(new, Debug, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash, Copy)]
-pub struct CustomerId {
-    #[new(value = "Uuid::new_v4()")]
-    value: Uuid,
-}
+pub struct CustomerId(#[new(value = "Uuid::new_v4()")] Uuid);
 
 impl From<Uuid> for CustomerId {
     fn from(value: Uuid) -> Self {
-        Self { value }
+        Self(value)
     }
 }
 
 impl fmt::Display for CustomerId {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", &self.value)
+        write!(f, "{}", &self.0)
     }
 }
 
