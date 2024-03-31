@@ -21,6 +21,14 @@
       <sourceFolder url="file://$MODULE_DIR$/common/common_rest/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/common/common_telnet/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/rust_ddd_example/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/application/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/domain/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/in_memory_persistence/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/postgres_persistence/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/rest/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/telnet/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/usecase/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/domain/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/cart/target" />

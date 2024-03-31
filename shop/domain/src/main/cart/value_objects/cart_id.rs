@@ -23,7 +23,7 @@ impl TryFrom<i64> for CartId {
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         match value {
-            x if x > 0 && x < i64::MAX => Ok(Self(value)),
+            0..=i64::MAX => Ok(Self(value)),
             _ => Err(Self::Error::IdGenerationError),
         }
     }

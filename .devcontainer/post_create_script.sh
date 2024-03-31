@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-
+git config --global --add safe.directory /workspaces
 rustup default stable && \
 rustup component add rustfmt && \
 rustup component add clippy && \
