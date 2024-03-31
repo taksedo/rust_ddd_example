@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/rust
 {
-  "name": "Rust",
+  "name": "rust_ddd_example",
   "hostRequirements": {
     "cpus": 4
   },
@@ -47,8 +47,7 @@
       ]
     }
   },
-  // "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "workspaceFolder": "/workspaces",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "rustup default stable && rustup component add rustfmt && rustup component add clippy && cargo install diesel_cli --no-default-features --features postgres && cd shop && diesel migration run"
+  "postCreateCommand": "./post_create_script.sh"
 }
