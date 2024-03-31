@@ -22,7 +22,7 @@ impl TryFrom<i64> for ShopOrderId {
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         match value {
-            x if (0..i64::MAX).contains(&x) => Ok(Self(value)),
+            0..=i64::MAX => Ok(Self(value)),
             _ => Err(Self::Error::IdGenerationError),
         }
     }
