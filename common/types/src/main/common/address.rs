@@ -5,6 +5,7 @@ use crate::main::{
     common::address::CreateAddressError::{EmptyString, NonPositiveBuilding},
 };
 
+/// `Address` Value Object
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct Address {
     street: String,
@@ -14,10 +15,11 @@ pub struct Address {
 impl ValueObject for Address {}
 
 impl Address {
+    /// Get street name from [Address]
     pub fn street_to_string(&self) -> String {
         self.street.clone()
     }
-
+    /// Get building number from [Address]
     pub fn building_to_i16(&self) -> i16 {
         self.building
     }
@@ -29,7 +31,7 @@ impl TryFrom<(&str, i16)> for Address {
     fn try_from(value: (&str, i16)) -> Result<Self, Self::Error> {
         match value {
             (x, _) if x.is_empty() || x == " " => Err(EmptyString),
-            (_, x) if x <= 0 => Err(NonPositiveBuilding),
+            (_, ..=0) => Err(NonPositiveBuilding),
             _ => Ok(Self {
                 street: value.0.to_owned(),
                 building: value.1,
@@ -38,9 +40,12 @@ impl TryFrom<(&str, i16)> for Address {
     }
 }
 
+/// Number of errors for [Address]
 #[derive(Debug, Eq, PartialEq)]
 pub enum CreateAddressError {
+    /// Empty string error
     EmptyString,
+    /// Building number less or equal than Zero
     NonPositiveBuilding,
 }
 

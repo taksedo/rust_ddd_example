@@ -7,6 +7,7 @@ use smart_default::SmartDefault;
 use time::OffsetDateTime;
 use uuid::Uuid;
 
+/// Abstract struct for `DomainEvent`
 #[derive(
     Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Hash, Eq, Ord, PartialOrd,
 )]
