@@ -17,4 +17,5 @@ enum_access.workspace = true
 rstest.workspace = true
 rand.workspace = true
 smart-default.workspace = true
+fake.workspace = true
 uuid.workspace = true

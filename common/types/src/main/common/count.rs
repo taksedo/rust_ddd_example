@@ -4,45 +4,39 @@ use crate::main::base::value_object::ValueObject;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Copy, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct Count {
-    pub value: i32,
-}
+pub struct Count(i32);
 
 #[allow(clippy::absurd_extreme_comparisons)]
 impl Count {
     pub fn one() -> Self {
-        Self { value: 1 }
+        Self(1)
     }
 
     #[no_mangle]
     pub fn increment(&self) -> Result<Self, CountError> {
-        match self.value {
+        match self.0 {
             i32::MAX => Err(CountError::MaxValueReachedError),
-            _ => Ok(Self {
-                value: &self.value + 1,
-            }),
+            _ => Ok(Self(&self.0 + 1)),
         }
     }
 
     pub fn decrement(&self) -> Result<Self, CountError> {
-        match &self.value {
+        match &self.0 {
             0 => Err(CountError::MinValueReachedError),
-            _ => Ok(Self {
-                value: &self.value - 1,
-            }),
+            _ => Ok(Self(&self.0 - 1)),
         }
     }
 
     pub fn is_min(&self) -> bool {
-        self.value == 0
+        self.0 == 0
     }
 
     pub fn is_max(&self) -> bool {
-        self.value == i32::MAX
+        self.0 == i32::MAX
     }
 
     pub fn to_i32(&self) -> i32 {
-        self.value
+        self.0
     }
 }
 
@@ -54,7 +48,7 @@ impl TryFrom<i32> for Count {
             #[allow(clippy::absurd_extreme_comparisons)]
             _ if value > i32::MAX => Err(CountError::MaxValueReachedError),
             _ if value < 0 => Err(CountError::NegativeValueError),
-            _ => Ok(Self { value }),
+            _ => Ok(Self(value)),
         }
     }
 }

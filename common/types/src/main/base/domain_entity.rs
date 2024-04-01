@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::main::base::value_object::ValueObject;
 
+/// Abstract class for all `Entities` and `Aggregates`.
 #[derive(new, Clone, Default, Derivative, Serialize, Deserialize, Ord, PartialOrd, Eq)]
 #[derivative(PartialEq, Debug)]
 pub struct DomainEntity<T, Event> {
@@ -17,17 +18,21 @@ pub struct DomainEntity<T, Event> {
 }
 
 pub trait DomainEntityTrait<Event> {
+    /// Add `Event` to a struct
     fn add_event(&mut self, event: Event);
+    /// Extract all `Events` from a struct's stack
     fn pop_events(&mut self) -> Vec<Event>;
 }
 
 impl<Event: Clone, T> DomainEntityTrait<Event> for DomainEntity<T, Event> {
+    /// Add `Event` to `DomainEntity` stack
     fn add_event(&mut self, event: Event) {
         if self.events.is_empty() {
             self.version = self.version.next();
         }
         self.events.push(event)
     }
+    /// Extract all `Events` from `DomainEntity` stack
     fn pop_events(&mut self) -> Vec<Event> {
         let res = self.events.clone();
         self.events = Vec::new();
@@ -36,35 +41,29 @@ impl<Event: Clone, T> DomainEntityTrait<Event> for DomainEntity<T, Event> {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq, PartialEq, Default, Ord, PartialOrd)]
-pub struct Version {
-    value: i64,
-}
+pub struct Version(i64);
 
 impl Version {
     /// Returns next `Version`
-    pub fn next(&self) -> Version {
-        Self {
-            value: &self.value + 1,
-        }
+    pub fn next(&self) -> Self {
+        Version(&self.0 + 1)
     }
 
     /// Returns previous `Version`
-    pub fn previous(&self) -> Version {
-        Self {
-            value: &self.value - 1,
-        }
+    pub fn previous(&self) -> Self {
+        Self(&self.0 - 1)
     }
 
     /// Converts `Version` to `i64`
     pub fn to_i64(&self) -> i64 {
-        self.value
+        self.0
     }
 }
 
 impl From<i64> for Version {
     /// Gets `Version` from `i64`
     fn from(value: i64) -> Self {
-        Self { value }
+        Self(value)
     }
 }
 
@@ -76,8 +75,9 @@ mod domain_entity_test {
 
     use derive_new::new;
 
-    use super::*;
     use crate::main::base::domain_event::DomainEventTrait;
+
+    use super::*;
 
     #[test]
     #[allow(non_snake_case)]
