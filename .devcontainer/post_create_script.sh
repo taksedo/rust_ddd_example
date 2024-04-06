@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 git config --global --add safe.directory /workspaces
+rustup install nightly && \
+rustup component add rustfmt --toolchain nightly-x86_64-unknown-linux-gnu && \
 rustup default stable && \
 rustup component add rustfmt && \
 rustup component add clippy && \
