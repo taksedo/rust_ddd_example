@@ -1,8 +1,8 @@
 use std::sync::{Arc, Mutex};
 
 use common::{
-    events::main::domain_event_publisher::DomainEventPublisher,
-    types::main::base::domain_entity::DomainEntityTrait,
+    events::domain_event_publisher::DomainEventPublisher,
+    types::base::domain_entity::DomainEntityTrait,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -107,7 +107,7 @@ impl MealExtractor for PostgresMealRepository {
                         .iter()
                         .map(|meal_res_iter| Meal::from(meal_res_iter.clone()))
                         .collect();
-                    Some(res.get(0).unwrap().clone())
+                    Some(res.first().unwrap().clone())
                 } else {
                     None
                 }

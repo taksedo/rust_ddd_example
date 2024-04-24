@@ -3,7 +3,7 @@ use std::{env, error::Error};
 use dotenvy::dotenv;
 use log::info;
 
-use crate::main::configuration::{
+use crate::configuration::{
     telnet_server_configuration::telnet_backend_startup,
     web_api_configuration::rest_backend_startup,
 };

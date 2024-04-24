@@ -1,4 +1,4 @@
-use common::types::main::{base::generic_types::AM, errors::error::ToError};
+use common::types::{base::generic_types::AM, errors::error::ToError};
 use derive_new::new;
 use domain::main::order::{
     customer_has_active_order::CustomerHasActiveOrder,

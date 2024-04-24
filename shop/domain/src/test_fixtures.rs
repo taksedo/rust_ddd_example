@@ -2,13 +2,11 @@ use std::collections::{HashMap, HashSet};
 
 use bigdecimal::{BigDecimal, FromPrimitive};
 use common::types::{
-    main::{
-        base::{
-            domain_entity::{DomainEntity, Version},
-            domain_event::DomainEventTrait,
-        },
-        common::address::Address,
+    base::{
+        domain_entity::{DomainEntity, Version},
+        domain_event::DomainEventTrait,
     },
+    common::address::Address,
     test_fixtures::rnd_count,
 };
 use derive_new::new;

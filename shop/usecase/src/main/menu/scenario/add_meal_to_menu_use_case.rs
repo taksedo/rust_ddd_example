@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use common::types::main::{base::domain_event::DomainEventTrait, errors::error::ToError};
+use common::types::{base::domain_event::DomainEventTrait, errors::error::ToError};
 use derive_new::new;
 use domain::{
     self,

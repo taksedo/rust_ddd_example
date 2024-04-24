@@ -1,7 +1,7 @@
-#![allow(special_module_name)]
-
-pub mod main;
+pub mod application_startup;
+pub mod configuration;
+pub mod controllers;
+pub mod event;
+pub mod listeners;
 #[cfg(test)]
-mod test;
-#[cfg(test)]
-pub mod test_fixtures;
+pub(crate) mod test_fixtures;

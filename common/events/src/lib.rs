@@ -1,3 +1,2 @@
-#![allow(special_module_name)]
-
-pub mod main;
+pub mod domain_event_listener;
+pub mod domain_event_publisher;

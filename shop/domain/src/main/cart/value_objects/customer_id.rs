@@ -1,6 +1,6 @@
 use std::{fmt, fmt::Formatter};
 
-use common::types::main::base::value_object::ValueObject;
+use common::types::base::value_object::ValueObject;
 use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
 use uuid::Uuid;

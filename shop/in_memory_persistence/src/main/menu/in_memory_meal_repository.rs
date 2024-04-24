@@ -5,8 +5,8 @@ use std::{
 };
 
 use common::{
-    events::main::domain_event_publisher::DomainEventPublisher,
-    types::main::base::domain_entity::DomainEntityTrait,
+    events::domain_event_publisher::DomainEventPublisher,
+    types::base::domain_entity::DomainEntityTrait,
 };
 use derivative::Derivative;
 use derive_new::new;

@@ -4,7 +4,7 @@ use std::{
 };
 
 use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
-use common::common_rest::main::rest_responses::{
+use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
 };
 use domain::main::menu::value_objects::meal_id::MealId;

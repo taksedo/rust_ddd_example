@@ -1,6 +1,6 @@
 use std::{any::type_name, fmt::Debug};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use domain::{
     main::{cart::cart::Cart, menu::meal::Meal, order::shop_order::ShopOrder},

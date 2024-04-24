@@ -12,7 +12,7 @@ use tokio_util::codec::Framed;
 
 use super::use_case_configuration::GET_MENU_USE_CASE;
 
-pub async fn handle_telnet_client(stream: TcpStream) -> Result<(), Box<dyn Error>> {
+pub(super) async fn handle_telnet_client(stream: TcpStream) -> Result<(), Box<dyn Error>> {
     // We construct a 'Frame', which is just a wrapper around the underlying
     // stream that is decoded by the `nectar::TelnetCodec`.
     let mut frame = Framed::new(stream, TelnetCodec::new(1024));

@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-use common::common_rest::main::rest_responses::{
+use common::common_rest::rest_responses::{
     error_type_url, not_found_type_url, GenericErrorResponse,
 };
 use domain::test_fixtures::rnd_order_id;

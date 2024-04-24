@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::types::base::domain_entity::DomainEntityTrait;
 
 use crate::{
     main::menu::{meal::Meal, meal_restorer::MealRestorer},

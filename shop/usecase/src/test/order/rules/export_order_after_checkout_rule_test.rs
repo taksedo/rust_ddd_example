@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use common::events::main::domain_event_listener::DomainEventListener;
+use common::events::domain_event_listener::DomainEventListener;
 use domain::{
     main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum},
     test_fixtures::{rnd_customer_id, rnd_order_id, rnd_price},

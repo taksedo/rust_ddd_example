@@ -1,6 +1,6 @@
 use std::{fmt, fmt::Formatter};
 
-use common::types::main::{base::value_object::ValueObject, errors::error::BusinessError};
+use common::types::{base::value_object::ValueObject, errors::error::BusinessError};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize, Serialize)]

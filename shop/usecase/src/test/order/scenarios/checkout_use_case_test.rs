@@ -4,7 +4,7 @@ use std::{
 };
 
 use actix_web::http::Uri;
-use common::types::{main::common::address::Address, test_fixtures::rnd_count};
+use common::types::{common::address::Address, test_fixtures::rnd_count};
 use derive_new::new;
 use domain::{
     main::{

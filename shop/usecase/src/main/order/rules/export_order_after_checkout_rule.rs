@@ -1,8 +1,6 @@
 use std::mem::{discriminant, Discriminant};
 
-use common::{
-    events::main::domain_event_listener::DomainEventListener, types::main::base::generic_types::AM,
-};
+use common::{events::domain_event_listener::DomainEventListener, types::base::generic_types::AM};
 use derive_new::new;
 use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 

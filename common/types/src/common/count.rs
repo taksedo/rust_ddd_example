@@ -1,6 +1,6 @@
 use serde_derive::{Deserialize, Serialize};
 
-use crate::main::base::value_object::ValueObject;
+use crate::base::value_object::ValueObject;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Copy, Serialize, Deserialize)]
 #[non_exhaustive]

@@ -1,4 +1,4 @@
-use common::types::main::{
+use common::types::{
     base::domain_entity::Version,
     common::{address::Address, count::Count},
 };

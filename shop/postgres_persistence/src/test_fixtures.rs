@@ -1,6 +1,6 @@
 use std::sync::{atomic::AtomicU32, Arc, Mutex, OnceLock};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
 use domain::{

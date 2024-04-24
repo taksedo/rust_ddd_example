@@ -1,6 +1,6 @@
 use std::{any::Any, collections::HashMap, mem::discriminant};
 
-use common::types::main::{
+use common::types::{
     base::domain_entity::DomainEntityTrait,
     common::{address::Address, count::Count},
 };

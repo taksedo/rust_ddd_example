@@ -1,5 +1,4 @@
-#![allow(special_module_name)]
-
-pub mod main;
-
+pub mod base;
+pub mod common;
+pub mod errors;
 pub mod test_fixtures;
