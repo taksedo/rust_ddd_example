@@ -20,7 +20,7 @@ fn successfully_payed() {
     extractor.lock().unwrap().order = Some(order.clone());
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let handler = PayOrderHandler::new(extractor.clone() as _, persister.clone() as _);
+    let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
     let result = handler.execute(order.entity_params.id);
 
     assert!(result.is_ok());
@@ -45,7 +45,7 @@ fn invalid_state() {
     extractor.lock().unwrap().order = Some(order.clone());
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let handler = PayOrderHandler::new(extractor.clone() as _, persister.clone() as _);
+    let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
     let result = handler.execute(order.entity_params.id);
 
     assert!(result.is_err());
@@ -63,7 +63,7 @@ fn order_not_found() {
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let handler = PayOrderHandler::new(extractor.clone() as _, persister.clone() as _);
+    let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
     let order_id = rnd_order_id();
     let result = handler.execute(order_id);
 

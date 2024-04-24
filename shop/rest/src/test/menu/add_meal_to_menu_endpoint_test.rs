@@ -74,7 +74,7 @@ async fn validation_error() {
         BigDecimal::new(BigInt::from(1), 20).to_f64().unwrap(),
     ));
 
-    let resp = add_meal_to_menu_endpoint(mock_shared_state as _, meal).await;
+    let resp = add_meal_to_menu_endpoint(mock_shared_state, meal).await;
     let body = resp.into_body().try_into_bytes().unwrap();
     let body_text = std::str::from_utf8(&body).unwrap();
 

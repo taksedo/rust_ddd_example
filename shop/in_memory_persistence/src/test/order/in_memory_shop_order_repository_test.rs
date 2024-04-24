@@ -19,7 +19,7 @@ use crate::{
 #[test]
 fn saving_order_order_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
     let order = order_with_events();
 
     repository.save(order.clone());
@@ -45,7 +45,7 @@ fn saving_order_order_exist() {
     existing_order.entity_params.id = id;
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
     repository
         .storage
@@ -70,7 +70,7 @@ fn get_by_id_order_exist() {
     let existing_order = rnd_order(Default::default());
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
     let id = existing_order.entity_params.id;
 
@@ -83,7 +83,7 @@ fn get_by_id_order_exist() {
 #[test]
 fn get_by_id_order_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
     let order = repository.get_by_id(rnd_order_id());
     assert!(order.is_none());
 }
@@ -91,7 +91,7 @@ fn get_by_id_order_doesnt_exist() {
 #[test]
 fn get_last_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
     let order = repository.get_last_order(rnd_customer_id());
     assert!(order.is_none());
 }
@@ -107,7 +107,7 @@ fn get_last_success() {
     last_order.for_customer = customer_id;
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
     repository.save(first_order);
     repository.save(last_order.clone());
@@ -121,7 +121,7 @@ fn get_last_success() {
 fn get_all_storage_is_empty() {
     let order_id = rnd_order_id();
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
     let order = repository.get_all(order_id, 100);
     assert!(order.is_empty());
 }
@@ -132,7 +132,7 @@ fn get_all_limit_is_less_than_collection() {
     let collection_size = 20;
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
     for i in 0..collection_size {
         let mut order = rnd_order(Default::default());
@@ -153,7 +153,7 @@ fn get_all_limit_is_bigger_than_collection() {
     let collection_size = 5;
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
     for i in 0..collection_size {
         let mut order = rnd_order(Default::default());

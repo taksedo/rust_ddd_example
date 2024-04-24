@@ -19,7 +19,7 @@ fn successfully_removed() {
     meal_extractor.lock().unwrap().meal = Some(meal.clone());
 
     let mut use_case =
-        RemoveMealFromMenuUseCase::new(meal_extractor.clone() as _, meal_persister.clone() as _);
+        RemoveMealFromMenuUseCase::new(meal_extractor.clone(), meal_persister.clone());
     let result = use_case.execute(meal.entity_params.id);
 
     assert!(result.is_ok());
@@ -48,7 +48,7 @@ fn meal_not_found() {
     let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
     let mut use_case =
-        RemoveMealFromMenuUseCase::new(meal_extractor.clone() as _, meal_persister.clone() as _);
+        RemoveMealFromMenuUseCase::new(meal_extractor.clone(), meal_persister.clone());
 
     let meal_id = rnd_meal_id();
 

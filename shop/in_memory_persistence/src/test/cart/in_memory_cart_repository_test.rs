@@ -16,7 +16,7 @@ use crate::{
 #[test]
 fn saving_cart_cart_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryCartRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryCartRepository::new(event_publisher.clone());
     let cart = cart_with_events();
 
     repository.save(cart.clone());
@@ -38,7 +38,7 @@ fn saving_cart_cart_exists() {
     existing_cart.for_customer = customer_id;
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryCartRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryCartRepository::new(event_publisher.clone());
     repository.storage.insert(customer_id, existing_cart);
 
     let updated_cart = cart_with_events();
@@ -59,7 +59,7 @@ fn get_by_id_cart_exists() {
     existing_cart.for_customer = customer_id;
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryCartRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryCartRepository::new(event_publisher.clone());
     repository
         .storage
         .insert(customer_id, existing_cart.clone());
@@ -79,7 +79,7 @@ fn get_by_id_cart_exists() {
 #[test]
 fn get_by_id_cart_doesnt_exist() {
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryCartRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryCartRepository::new(event_publisher.clone());
     let cart = repository.get_cart(rnd_customer_id());
 
     assert!(cart.is_none());
@@ -89,7 +89,7 @@ fn get_by_id_cart_doesnt_exist() {
 fn delete_cart_cart_exists() {
     let existing_cart = rnd_cart();
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
-    let mut repository = InMemoryCartRepository::new(event_publisher.clone() as _);
+    let mut repository = InMemoryCartRepository::new(event_publisher.clone());
     repository
         .storage
         .insert(existing_cart.for_customer, existing_cart.clone());

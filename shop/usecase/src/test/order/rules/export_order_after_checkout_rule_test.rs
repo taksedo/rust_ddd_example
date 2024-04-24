@@ -18,7 +18,7 @@ fn order_has_been_exported() {
     let total_price = rnd_price();
 
     let exporter = Arc::new(Mutex::new(MockOrderExporter::default()));
-    let mut rule = ExportOrderAfterCheckoutRule::new(exporter.clone() as _);
+    let mut rule = ExportOrderAfterCheckoutRule::new(exporter.clone());
 
     let event: ShopOrderEventEnum =
         ShopOrderCreatedDomainEvent::new(order_id, customer_id, total_price.clone()).into();
