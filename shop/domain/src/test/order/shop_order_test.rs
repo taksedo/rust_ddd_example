@@ -52,10 +52,10 @@ fn checkout_success() {
 
     let result = ShopOrder::checkout(
         cart.clone(),
-        id_generator.clone() as _,
-        Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false))) as _,
+        id_generator.clone(),
+        Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false))),
         address.clone(),
-        get_meal_price.clone() as _,
+        get_meal_price.clone(),
     );
 
     let mut order = result.unwrap();
@@ -102,10 +102,10 @@ fn checkout_already_has_active_user() {
 
     let result = ShopOrder::checkout(
         cart.clone(),
-        id_generator.clone() as _,
-        Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(true))) as _,
+        id_generator.clone(),
+        Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(true))),
         address.clone(),
-        meal_price_only_for_special_meal.clone() as _,
+        meal_price_only_for_special_meal.clone(),
     );
 
     assert!(result.is_err());
@@ -124,10 +124,10 @@ fn checkout_empty_cart() {
         .insert(rnd_meal_id(), rnd_price());
     let result = ShopOrder::checkout(
         cart.clone(),
-        id_generator.clone() as _,
-        Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false))) as _,
+        id_generator.clone(),
+        Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false))),
         rnd_address(),
-        get_meal_price.clone() as _,
+        get_meal_price.clone(),
     );
 
     assert!(result.is_err());

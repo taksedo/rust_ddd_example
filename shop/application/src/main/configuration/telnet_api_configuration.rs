@@ -12,7 +12,7 @@ use tokio_util::codec::Framed;
 
 use super::use_case_configuration::GET_MENU_USE_CASE;
 
-pub async fn handle_client(stream: TcpStream) -> Result<(), Box<dyn Error>> {
+pub async fn handle_telnet_client(stream: TcpStream) -> Result<(), Box<dyn Error>> {
     // We construct a 'Frame', which is just a wrapper around the underlying
     // stream that is decoded by the `nectar::TelnetCodec`.
     let mut frame = Framed::new(stream, TelnetCodec::new(1024));
@@ -40,7 +40,7 @@ pub async fn handle_client(stream: TcpStream) -> Result<(), Box<dyn Error>> {
                     }
                     "get menu" => {
                         info!("Getting menu by Telnet");
-                        get_menu_command(GET_MENU_USE_CASE.clone() as _, &mut frame).await?;
+                        get_menu_command(GET_MENU_USE_CASE.clone(), &mut frame).await?;
                     }
                     // // ...or just echo back whatever the user has said!
                     _ => {

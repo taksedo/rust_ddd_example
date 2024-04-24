@@ -4,7 +4,8 @@ use dotenvy::dotenv;
 use log::info;
 
 use crate::main::configuration::{
-    rest_configuration::rest_backend_startup, telnet_configuration::telnet_backend_startup,
+    telnet_server_configuration::telnet_backend_startup,
+    web_api_configuration::rest_backend_startup,
 };
 
 #[tokio::main]

@@ -56,7 +56,7 @@ pub fn rest_backend_startup() -> JoinHandle<()> {
 
         #[derive(OpenApi)]
         #[openapi(
-            info(title = "Rust DDD Example", description = "API Documenation"),
+            info(title = "Rust DDD Example", description = "API Documentation"),
             paths(
                 rest::main::menu::get_health_status::get_health_status,
                 rest::main::menu::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,

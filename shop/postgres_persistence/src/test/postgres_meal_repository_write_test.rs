@@ -27,7 +27,7 @@ fn save_new_instance() {
 
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
 
-    let mut repository = PostgresMealRepository::new(conn, publisher.clone() as _);
+    let mut repository = PostgresMealRepository::new(conn, publisher.clone());
     repository.save(rnd_meal.clone());
 
     publisher
@@ -53,7 +53,7 @@ fn save_new_instance_but_already_exists_with_the_same_id() {
 
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
 
-    let mut repository = PostgresMealRepository::new(conn, publisher.clone() as _);
+    let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let meal_id = rnd_meal_id();
     let mut first = rnd_meal_with_event(meal_id);
@@ -75,7 +75,7 @@ fn save_new_instance_but_already_exists_with_the_same_name() {
 
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
 
-    let mut repository = PostgresMealRepository::new(conn, publisher.clone() as _);
+    let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let meal_name = rnd_meal_name();
     let mut first = rnd_meal_with_event(rnd_meal_id());
@@ -96,7 +96,7 @@ fn create_new_instance_and_then_update_it() {
 
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
 
-    let mut repository = PostgresMealRepository::new(conn, publisher.clone() as _);
+    let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let rnd_meal = rnd_meal_with_event(rnd_meal_id());
     let meal_id = rnd_meal.entity_params.id;
@@ -122,7 +122,7 @@ fn save_again_without_changes() {
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
-    let mut repository = PostgresMealRepository::new(conn, publisher.clone() as _);
+    let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let rnd_meal = rnd_meal_with_event(rnd_meal_id());
     let meal_id = rnd_meal.entity_params.id;
@@ -149,7 +149,7 @@ fn saving_failed_if_version_outdated() {
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
-    let mut repository = PostgresMealRepository::new(conn, publisher.clone() as _);
+    let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let rnd_meal = rnd_meal_with_event(rnd_meal_id());
     repository.save(rnd_meal.clone());

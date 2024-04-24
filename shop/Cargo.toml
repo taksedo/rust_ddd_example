@@ -50,7 +50,7 @@ bigdecimal = { version = "0.4.2", features = ["serde"] }
 mockall = "0.12.0"
 fake = { version = "2.9.1", features = ["derive", "bigdecimal"] }
 rand = "0.8.5"
-rstest = "0.18.2"
+rstest = "0.19.0"
 time = { version = "0.3.21", features = ["default", "serde-well-known"] }
 enum_access = "0.4.0"
 enum_dispatch = "0.3.11"
@@ -82,9 +82,9 @@ futures-util = { version = "0.3", default-features = false, features = [
     "sink",
 ] }
 utoipa-swagger-ui = { version = "6", features = ["actix-web"] }
-utoipa = {version = "4.1.0", features = ["actix_extras", "chrono"]}
+utoipa = { version = "4.1.0", features = ["actix_extras", "chrono"] }
 
-common = { path = "../common" , package = "rust_ddd_example_common" }
+common = { path = "../common", package = "rust_ddd_example_common" }
 domain = { path = "domain" }
 usecase = { path = "usecase" }
 postgres_persistence = { path = "postgres_persistence" }

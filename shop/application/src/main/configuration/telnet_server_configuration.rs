@@ -3,7 +3,7 @@ use std::env;
 use log::{error, info};
 use tokio::{net::TcpListener, task, task::JoinHandle};
 
-use crate::main::configuration::handle_client::handle_client;
+use crate::main::configuration::telnet_api_configuration::handle_telnet_client;
 
 pub fn telnet_backend_startup() -> JoinHandle<()> {
     task::spawn(async move {
@@ -14,7 +14,7 @@ pub fn telnet_backend_startup() -> JoinHandle<()> {
             match listener.accept().await {
                 Ok((stream, _)) => {
                     tokio::spawn(async move {
-                        if let Err(e) = handle_client(stream).await {
+                        if let Err(e) = handle_telnet_client(stream).await {
                             error!("error: {}", e);
                         }
                     });

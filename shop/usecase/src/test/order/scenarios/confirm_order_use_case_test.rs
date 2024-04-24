@@ -20,7 +20,7 @@ fn successfully_confirmed() {
     extractor.lock().unwrap().order = Some(order.clone());
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let mut use_case = ConfirmOrderUseCase::new(extractor.clone() as _, persister.clone() as _);
+    let mut use_case = ConfirmOrderUseCase::new(extractor.clone(), persister.clone());
     let result = use_case.execute(order.entity_params.id);
 
     assert!(result.is_ok());
@@ -45,7 +45,7 @@ fn invalid_state() {
     extractor.lock().unwrap().order = Some(order.clone());
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let mut use_case = ConfirmOrderUseCase::new(extractor.clone() as _, persister.clone() as _);
+    let mut use_case = ConfirmOrderUseCase::new(extractor.clone(), persister.clone());
     let result = use_case.execute(order.entity_params.id);
 
     assert!(result.is_err());
@@ -66,7 +66,7 @@ fn order_not_found() {
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
-    let mut use_case = ConfirmOrderUseCase::new(extractor.clone() as _, persister.clone() as _);
+    let mut use_case = ConfirmOrderUseCase::new(extractor.clone(), persister.clone());
 
     let order_id = rnd_order_id();
     let result = use_case.execute(order_id);

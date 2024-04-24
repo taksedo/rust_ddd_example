@@ -18,7 +18,7 @@ fn price_has_been_provided() {
     let extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
     extractor.lock().unwrap().meal = Some(meal.clone());
 
-    let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone() as _);
+    let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
     let result = get_meal_price.invoke(meal.entity_params.id);
 
     extractor
@@ -31,7 +31,7 @@ fn price_has_been_provided() {
 #[test]
 fn meal_not_found() {
     let extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
-    let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone() as _);
+    let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
 
     let meal_id = rnd_meal_id();
 
