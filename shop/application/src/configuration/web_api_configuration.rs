@@ -30,7 +30,7 @@ use tokio::{task, task::JoinHandle};
 use utoipa::{OpenApi, ToSchema};
 use utoipa_swagger_ui::SwaggerUi;
 
-use crate::main::configuration::{
+use crate::configuration::{
     persistence_configuration::ORepository,
     use_case_configuration::{
         ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
@@ -44,7 +44,7 @@ pub struct TokenClaims {
     id: i32,
 }
 
-pub fn rest_backend_startup() -> JoinHandle<()> {
+pub(crate) fn rest_backend_startup() -> JoinHandle<()> {
     task::spawn(async {
         let http_host_url = env::var("HTTP_HOST_URL").unwrap();
         info!("Starting HTTP server at {}", http_host_url);

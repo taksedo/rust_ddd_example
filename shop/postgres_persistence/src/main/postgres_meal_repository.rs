@@ -107,7 +107,7 @@ impl MealExtractor for PostgresMealRepository {
                         .iter()
                         .map(|meal_res_iter| Meal::from(meal_res_iter.clone()))
                         .collect();
-                    Some(res.get(0).unwrap().clone())
+                    Some(res.first().unwrap().clone())
                 } else {
                     None
                 }

@@ -3,9 +3,9 @@ use std::env;
 use log::{error, info};
 use tokio::{net::TcpListener, task, task::JoinHandle};
 
-use crate::main::configuration::telnet_api_configuration::handle_telnet_client;
+use crate::configuration::telnet_api_configuration::handle_telnet_client;
 
-pub fn telnet_backend_startup() -> JoinHandle<()> {
+pub(crate) fn telnet_backend_startup() -> JoinHandle<()> {
     task::spawn(async move {
         let telnet_host_url = env::var("TELNET_HOST_URL").unwrap();
         let listener = TcpListener::bind(&telnet_host_url).await.unwrap();

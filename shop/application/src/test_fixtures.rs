@@ -9,7 +9,7 @@ use testcontainers::{
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
 
-pub use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
+use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 
 #[derive(Debug)]
 pub struct TestRabbitMq {
@@ -66,8 +66,8 @@ impl TestRabbitMq {
 }
 
 static TEST_RABBITMQ_COUNTER: AtomicU32 = AtomicU32::new(0);
-pub static RABBITMQ_ADDRESS: OnceLock<String> = OnceLock::new();
-pub static RABBITMQ_QUEUE_NAME: OnceLock<String> = OnceLock::new();
+pub(crate) static RABBITMQ_ADDRESS: OnceLock<String> = OnceLock::new();
+pub(crate) static RABBITMQ_QUEUE_NAME: OnceLock<String> = OnceLock::new();
 
 pub struct TestKafka {
     #[allow(dead_code)]
