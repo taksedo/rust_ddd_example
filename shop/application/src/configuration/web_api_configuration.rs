@@ -6,7 +6,7 @@ use actix_web::{
     middleware::Logger,
     App, HttpServer,
 };
-use common::common_rest::main::rest_responses::{GenericErrorResponse, ValidationError};
+use common::common_rest::rest_responses::{GenericErrorResponse, ValidationError};
 use log::info;
 use rest::main::{
     menu::{

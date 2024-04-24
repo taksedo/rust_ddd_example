@@ -6,7 +6,7 @@ use std::{
 
 use actix_web::{http, web, HttpResponse};
 use bigdecimal::BigDecimal;
-use common::common_rest::main::rest_responses::{
+use common::common_rest::rest_responses::{
     created, rest_business_error, to_invalid_param_bad_request,
 };
 use derive_new::new;

@@ -1,4 +1,4 @@
-use common::types::main::base::domain_entity::{DomainEntity, Version};
+use common::types::base::domain_entity::{DomainEntity, Version};
 
 use super::{meal::Meal, value_objects::meal_name::MealName};
 use crate::main::menu::{

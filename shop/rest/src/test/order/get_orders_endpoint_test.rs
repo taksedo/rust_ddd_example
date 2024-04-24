@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-use common::common_rest::main::{
+use common::common_rest::{
     cursor_paged_model::CursorPagedModel,
     rest_responses::{bad_request_type_url, GenericErrorResponse},
 };

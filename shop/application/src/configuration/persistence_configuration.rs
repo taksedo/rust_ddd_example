@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use common::types::main::base::generic_types::AM;
+use common::types::base::generic_types::AM;
 use in_memory_persistence::main::order::{
     in_memory_incremental_shop_order_id_generator::InMemoryIncrementalShopOrderIdGenerator as OrderIdGenerator,
     in_memory_shop_order_repository::InMemoryShopOrderRepository as OrderRepository,

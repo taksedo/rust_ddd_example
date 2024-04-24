@@ -4,7 +4,7 @@ use std::{
 };
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::main::{
+use common::common_rest::{
     cursor_paged_model::CursorPagedModel,
     rest_responses::{to_invalid_param_bad_request, ValidationError},
 };

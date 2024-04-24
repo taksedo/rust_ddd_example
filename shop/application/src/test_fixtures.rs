@@ -9,7 +9,7 @@ use testcontainers::{
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
 
-use crate::main::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
+use crate::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 
 #[derive(Debug)]
 pub struct TestRabbitMq {

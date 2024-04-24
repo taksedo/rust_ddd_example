@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use common::types::main::base::generic_types::AM;
+use common::types::base::generic_types::AM;
 use lazy_static::lazy_static;
 
 use crate::event::kafka_event_publisher_impl::KafkaEventPublisherImpl;

@@ -1,5 +1,5 @@
 use actix_web::http::Uri;
-use common::types::main::common::address::Address;
+use common::types::common::address::Address;
 use derive_new::new;
 use domain::main::{
     cart::value_objects::customer_id::CustomerId, menu::value_objects::price::Price,

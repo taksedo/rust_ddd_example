@@ -4,7 +4,7 @@ use derivative::Derivative;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::main::base::value_object::ValueObject;
+use crate::base::value_object::ValueObject;
 
 /// Abstract class for all `Entities` and `Aggregates`.
 #[derive(new, Clone, Default, Derivative, Serialize, Deserialize, Ord, PartialOrd, Eq)]

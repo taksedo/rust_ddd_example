@@ -1,4 +1,4 @@
-use common::types::main::base::generic_types::AM;
+use common::types::base::generic_types::AM;
 use derive_new::new;
 use domain::main::cart::value_objects::customer_id::CustomerId;
 

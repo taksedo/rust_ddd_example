@@ -7,10 +7,10 @@ use std::{
 };
 
 use common::{
-    events::main::{
+    events::{
         domain_event_listener::DomainEventListener, domain_event_publisher::DomainEventPublisher,
     },
-    types::main::base::generic_types::AM,
+    types::base::generic_types::AM,
 };
 use derive_new::new;
 

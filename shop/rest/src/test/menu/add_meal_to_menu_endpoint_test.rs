@@ -6,7 +6,7 @@ use actix_web::{
     web::{Data, Json},
 };
 use bigdecimal::{num_bigint::BigInt, BigDecimal, ToPrimitive};
-use common::common_rest::main::rest_responses::{
+use common::common_rest::rest_responses::{
     bad_request_type_url, error_type_url, GenericErrorResponse,
 };
 use domain::test_fixtures::{rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price};

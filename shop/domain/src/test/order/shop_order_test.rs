@@ -6,8 +6,7 @@ use std::{
 
 use bigdecimal::{num_bigint::BigInt, BigDecimal};
 use common::types::{
-    main::{base::domain_entity::DomainEntityTrait, common::count::Count},
-    test_fixtures::rnd_count,
+    base::domain_entity::DomainEntityTrait, common::count::Count, test_fixtures::rnd_count,
 };
 use derive_new::new;
 use smart_default::SmartDefault;

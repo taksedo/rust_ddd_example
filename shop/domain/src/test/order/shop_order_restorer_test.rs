@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use common::types::main::base::domain_entity::{DomainEntityTrait, Version};
+use common::types::base::domain_entity::{DomainEntityTrait, Version};
 use time::OffsetDateTime;
 
 use crate::{

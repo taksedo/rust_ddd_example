@@ -1,6 +1,6 @@
 use std::{env, fmt::Debug, time::Duration};
 
-use common::events::main::domain_event_publisher::DomainEventPublisher;
+use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use domain::main::{
     menu::meal_events::MealEventEnum, order::customer_order_events::ShopOrderEventEnum,
@@ -64,7 +64,7 @@ impl Debug for KafkaEventPublisherImpl {
     }
 }
 
-pub(super) const MEAL_TOPIC_NAME: &str = "meal_topic";
+pub(crate) const MEAL_TOPIC_NAME: &str = "meal_topic";
 pub(super) const ORDER_TOPIC_NAME: &str = "order_topic";
 
 #[cfg(test)]
@@ -85,7 +85,7 @@ mod test {
 
     use super::*;
     use crate::{
-        main::event::kafka_event_publisher_impl::{KafkaEventPublisherImpl, MEAL_TOPIC_NAME},
+        event::kafka_event_publisher_impl::{KafkaEventPublisherImpl, MEAL_TOPIC_NAME},
         test_fixtures::{TestKafka, KAFKA_ADDRESS},
     };
 

@@ -2,7 +2,7 @@
 
 use std::sync::{atomic::AtomicI64, Arc, Mutex};
 
-use common::types::main::base::domain_entity::DomainEntityTrait;
+use common::types::base::domain_entity::DomainEntityTrait;
 use derive_new::new;
 
 use crate::{

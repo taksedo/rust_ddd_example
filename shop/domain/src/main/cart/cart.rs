@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use common::types::main::{
+use common::types::{
     base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
     common::count::Count,
 };

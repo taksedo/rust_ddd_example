@@ -3,7 +3,7 @@
 use std::str::FromStr;
 
 use bigdecimal::BigDecimal;
-use common::types::main::common::count::Count;
+use common::types::common::count::Count;
 use rstest::rstest;
 
 use crate::main::menu::value_objects::price::{CreatePriceError, Price};

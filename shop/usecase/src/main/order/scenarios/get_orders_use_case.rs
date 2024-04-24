@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::main::base::generic_types::AM;
+use common::types::base::generic_types::AM;
 use derive_new::new;
 use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 

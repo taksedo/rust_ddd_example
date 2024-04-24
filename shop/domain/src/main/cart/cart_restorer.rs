@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use common::types::main::{
+use common::types::{
     base::domain_entity::{DomainEntity, Version},
     common::count::Count,
 };

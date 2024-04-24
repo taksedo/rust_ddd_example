@@ -1,6 +1,6 @@
 use rand::{thread_rng, Rng};
 
-use crate::main::common::count::Count;
+use crate::common::count::Count;
 
 pub fn rnd_count() -> Count {
     let value = thread_rng().gen_range(2..5000);
