@@ -64,8 +64,9 @@ impl Meal {
     pub fn remove_meal_from_menu(&mut self) {
         if !self.removed {
             self.removed = true;
-            let removing_event = MealRemovedFromMenuDomainEvent::new(self.entity_params.id);
-            self.entity_params.add_event(removing_event.into())
+            let id = self.entity_params.id;
+            self.entity_params
+                .add_event(MealRemovedFromMenuDomainEvent::new(id).into())
         }
     }
 }

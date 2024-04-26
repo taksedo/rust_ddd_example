@@ -27,10 +27,7 @@ fn successfully_removed() {
     let meal = meal_persister.lock().unwrap().meal.clone().unwrap();
     //todo: придумать более изящное тестирование meal
 
-    meal_persister
-        .lock()
-        .unwrap()
-        .verify_invoked_meal(Some(&meal));
+    meal_persister.lock().unwrap().verify_invoked_meal(&meal);
 
     meal_extractor
         .lock()

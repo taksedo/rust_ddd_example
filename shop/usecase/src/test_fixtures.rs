@@ -120,10 +120,8 @@ impl MockMealPersister {
         }
     }
 
-    pub fn verify_invoked_meal(&self, meal: Option<&Meal>) {
-        if meal.is_some() {
-            assert_eq!(&self.meal.clone().unwrap(), meal.unwrap())
-        }
+    pub fn verify_invoked_meal(&self, meal: &Meal) {
+        assert_eq!(&self.meal.clone().unwrap(), meal)
     }
 
     pub fn verify_events_after_deletion(&mut self, id: &MealId) {
@@ -185,7 +183,7 @@ impl MealExtractor for MockMealExtractor {
     fn get_all(&mut self) -> Vec<Meal> {
         self.all = true;
         if self.meal.is_some() {
-            vec![self.to_owned().meal.unwrap()]
+            vec![self.to_owned().meal.unwrap().clone()]
         } else {
             vec![]
         }

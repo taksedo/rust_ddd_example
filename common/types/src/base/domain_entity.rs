@@ -76,7 +76,7 @@ mod domain_entity_test {
     use derive_new::new;
 
     use super::*;
-    use crate::main::base::domain_event::DomainEventTrait;
+    use crate::base::domain_event::DomainEventTrait;
 
     #[test]
     #[allow(non_snake_case)]

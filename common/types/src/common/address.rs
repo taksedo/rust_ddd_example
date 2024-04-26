@@ -63,7 +63,11 @@ mod test {
     fn create_address_success() {
         let street = &*StreetName().fake::<String>();
         let str_building_number = BuildingNumber().fake::<String>();
-        let building = str_building_number.parse::<i16>().unwrap();
+        let building = if let Ok(unwrapped_value) = str_building_number.parse::<i16>() {
+            unwrapped_value
+        } else {
+            i16::MAX
+        };
 
         let result = Address::try_from((street, building));
 
