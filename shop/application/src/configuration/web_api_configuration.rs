@@ -44,7 +44,7 @@ pub struct TokenClaims {
     id: i32,
 }
 
-pub(crate) fn rest_backend_startup() -> JoinHandle<()> {
+pub(crate) fn web_api_backend_startup() -> JoinHandle<()> {
     task::spawn(async {
         let http_host_url = env::var("HTTP_HOST_URL").unwrap();
         info!("Starting HTTP server at {}", http_host_url);
