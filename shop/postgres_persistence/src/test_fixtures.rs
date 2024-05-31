@@ -1,4 +1,4 @@
-use std::sync::{atomic::AtomicU32, Arc, Mutex, OnceLock};
+use std::sync::{atomic::AtomicU32, Arc, Mutex};
 
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
@@ -12,7 +12,7 @@ use domain::{
     test_fixtures::{rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists},
 };
 use log::warn;
-use testcontainers::{clients::Cli, core::WaitFor, Container, GenericImage};
+use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage};
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
@@ -24,13 +24,11 @@ pub struct TestDb {
     curr_test_db_name: String,
     delete_on_drop: bool,
     #[allow(dead_code)]
-    container: Container<'static, GenericImage>,
+    container: Container<GenericImage>,
 }
 
 impl TestDb {
     pub fn new() -> Self {
-        static DOCKER: OnceLock<Cli> = OnceLock::new();
-        DOCKER.get_or_init(Cli::default);
         let msg = WaitFor::message_on_stderr("database system is ready to accept connections");
 
         let pg_container = GenericImage::new("postgres", "13")
@@ -39,9 +37,8 @@ impl TestDb {
             .with_env_var("POSTGRES_PASSWORD", "123")
             .with_wait_for(msg);
 
-        let node: Container<'static, GenericImage> = DOCKER.get().unwrap().run(pg_container);
+        let node = pg_container.start();
         let port = &node.get_host_port_ipv4(5432);
-
         let curr_test_db_name = format!(
             "test_db_{}_{}",
             std::process::id(),

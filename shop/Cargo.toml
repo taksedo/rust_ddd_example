@@ -33,7 +33,7 @@ LegalCopyright = "Taksedo (C) 2023"
 [workspace.dependencies]
 derive-new = "0.6.0"
 derive_more = { version = "1.0.0-beta.6", features = ["full"] }
-actix-web = "4.3.1"
+actix-web = "4.6.0"
 actix-cors = "0"
 actix-service = "2.0.2"
 structmap = "0.1.6"
@@ -64,7 +64,7 @@ diesel_logger = "0.3.0"
 lapin = "2.2.1"
 async-trait = "0.1.68"
 futures-lite = "2.0.1"
-testcontainers = "0.15.0"
+testcontainers = { version = "0.16.7", features = ["blocking"] }
 testcontainers-modules = { version = "0", features = ["kafka", "postgres", "rabbitmq"] }
 tokio = { version = "1.35.1", features = ["full"] }
 tracing = "0.1.37"
@@ -73,7 +73,7 @@ tracing-test = "0.2.4"
 url = "2.3.1"
 kafka = "0.10.0"
 uuid = { version = "1.6.1", features = ["v4"] }
-thiserror = "1.0.50"
+thiserror = "1.0.61"
 assert-panic = "1.0.1"
 prettytable-rs = "0.10.0"
 nectar = "0"
@@ -81,8 +81,9 @@ tokio-util = { version = "0.7", default-features = false, features = ["codec"] }
 futures-util = { version = "0.3", default-features = false, features = [
     "sink",
 ] }
-utoipa-swagger-ui = { version = "6", features = ["actix-web"] }
-utoipa = { version = "4.1.0", features = ["actix_extras", "chrono"] }
+utoipa-swagger-ui = { version = "7", features = ["actix-web"] }
+utoipa = { version = "4.2.3", features = ["actix_extras", "chrono"] }
+lombok = "0.4.0"
 
 common = { path = "../common", package = "rust_ddd_example_common" }
 domain = { path = "domain" }

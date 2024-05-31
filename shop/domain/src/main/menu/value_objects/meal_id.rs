@@ -1,9 +1,10 @@
 use std::fmt::Debug;
 
 use bigdecimal::ToPrimitive;
+use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash, Display)]
 #[non_exhaustive]
 pub struct MealId(i64);
 
