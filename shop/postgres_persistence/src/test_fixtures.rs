@@ -37,8 +37,8 @@ impl TestDb {
             .with_env_var("POSTGRES_PASSWORD", "123")
             .with_wait_for(msg);
 
-        let node = pg_container.start();
-        let port = &node.get_host_port_ipv4(5432);
+        let node = pg_container.start().unwrap();
+        let port = &node.get_host_port_ipv4(5432).unwrap();
         let curr_test_db_name = format!(
             "test_db_{}_{}",
             std::process::id(),

@@ -4,7 +4,7 @@ use lapin::{Connection, ConnectionProperties};
 use testcontainers::{
     core::{CmdWaitFor, ExecCommand, WaitFor},
     runners::AsyncRunner,
-    ContainerAsync, GenericImage,
+    ContainerAsync, GenericImage, Image,
 };
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
@@ -35,8 +35,8 @@ impl TestRabbitMq {
             .with_env_var("RABBITMQ_DEFAULT_USER", "guest")
             .with_env_var("RABBITMQ_DEFAULT_PASS", "guest")
             .with_wait_for(msg);
-        let node = rabbitmq_container.start().await;
-        let port = &node.get_host_port_ipv4(5672).await;
+        let node = rabbitmq_container.start().await.unwrap();
+        let port = &node.get_host_port_ipv4(5672).await.unwrap();
         RABBITMQ_QUEUE_NAME.get_or_init(|| {
             format!(
                 "test_queue_{}_{}",
@@ -78,9 +78,9 @@ impl TestKafka {
 
         let _ = tracing_subscriber::fmt::try_init();
 
-        let node = Kafka::default().start().await;
+        let node = Kafka::default().start().await.unwrap();
 
-        let port = &node.get_host_port_ipv4(9093).await;
+        let port = &node.get_host_port_ipv4(9093).await.unwrap();
         let test_container_kafka_url = format!("localhost:{port}");
 
         KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
@@ -95,10 +95,26 @@ impl TestKafka {
             MEAL_TOPIC_NAME,
         ];
         node.exec(ExecCommand::new(cmd).with_cmd_ready_condition(CmdWaitFor::seconds(2)))
-            .await;
+            .await
+            .unwrap();
 
         Self { container: node }
     }
 }
 
+impl Image for TestKafka {
+    type Args = ();
+
+    fn name(&self) -> String {
+        todo!()
+    }
+
+    fn tag(&self) -> String {
+        todo!()
+    }
+
+    fn ready_conditions(&self) -> Vec<WaitFor> {
+        todo!()
+    }
+}
 pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();
