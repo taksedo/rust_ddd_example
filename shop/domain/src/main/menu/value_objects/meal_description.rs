@@ -1,9 +1,8 @@
-use std::{fmt, fmt::Formatter};
-
 use common::types::{base::value_object::ValueObject, errors::error::BusinessError};
+use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Deserialize, Serialize, Display)]
 #[non_exhaustive]
 pub struct MealDescription(String);
 
@@ -26,9 +25,3 @@ pub enum CreateMealDescriptionError {
 }
 
 impl BusinessError for CreateMealDescriptionError {}
-
-impl fmt::Display for MealDescription {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", &self.0)
-    }
-}

@@ -2,9 +2,9 @@ use std::sync::{atomic::AtomicU32, OnceLock};
 
 use lapin::{Connection, ConnectionProperties};
 use testcontainers::{
-    clients::Cli,
-    core::{ExecCommand, WaitFor},
-    Container, GenericImage,
+    core::{CmdWaitFor, ExecCommand, WaitFor},
+    runners::AsyncRunner,
+    ContainerAsync, GenericImage, Image,
 };
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
@@ -14,7 +14,7 @@ use crate::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 #[derive(Debug)]
 pub struct TestRabbitMq {
     #[allow(dead_code)]
-    container: Container<'static, GenericImage>,
+    container: ContainerAsync<GenericImage>,
 }
 
 impl TestRabbitMq {
@@ -24,9 +24,6 @@ impl TestRabbitMq {
         }
 
         let _ = tracing_subscriber::fmt::try_init();
-
-        static DOCKER_CLIENT: OnceLock<Cli> = OnceLock::new();
-        DOCKER_CLIENT.get_or_init(Cli::default);
 
         let msg = WaitFor::message_on_stdout("  * rabbitmq_management_agent");
 
@@ -38,9 +35,8 @@ impl TestRabbitMq {
             .with_env_var("RABBITMQ_DEFAULT_USER", "guest")
             .with_env_var("RABBITMQ_DEFAULT_PASS", "guest")
             .with_wait_for(msg);
-        let node: Container<'static, GenericImage> =
-            DOCKER_CLIENT.get().unwrap().run(rabbitmq_container);
-        let port = &node.get_host_port_ipv4(5672);
+        let node = rabbitmq_container.start().await.unwrap();
+        let port = &node.get_host_port_ipv4(5672).await.unwrap();
         RABBITMQ_QUEUE_NAME.get_or_init(|| {
             format!(
                 "test_queue_{}_{}",
@@ -71,7 +67,7 @@ pub(crate) static RABBITMQ_QUEUE_NAME: OnceLock<String> = OnceLock::new();
 
 pub struct TestKafka {
     #[allow(dead_code)]
-    pub container: Container<'static, Kafka>,
+    pub container: ContainerAsync<Kafka>,
 }
 
 impl TestKafka {
@@ -82,30 +78,43 @@ impl TestKafka {
 
         let _ = tracing_subscriber::fmt::try_init();
 
-        static DOCKER_CLIENT: OnceLock<Cli> = OnceLock::new();
-        DOCKER_CLIENT.get_or_init(Cli::default);
+        let node = Kafka::default().start().await.unwrap();
 
-        let node = DOCKER_CLIENT.get().unwrap().run(Kafka::default());
-
-        let port = &node.get_host_port_ipv4(9093);
+        let port = &node.get_host_port_ipv4(9093).await.unwrap();
         let test_container_kafka_url = format!("localhost:{port}");
 
         KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
         debug!(?KAFKA_ADDRESS);
 
-        let cmd = format!(
-            "kafka-topics --bootstrap-server localhost:9092 --create --topic {MEAL_TOPIC_NAME}"
-        );
-        let ready_conditions = vec![WaitFor::message_on_stdout(
-            "Received response {error_code=0,_tagged_fields={}} for request UPDATE_METADATA with correlation",
-        )];
-        node.exec(ExecCommand {
-            cmd,
-            ready_conditions,
-        });
+        let cmd = vec![
+            "kafka-topics",
+            "--bootstrap-server",
+            "localhost:9092",
+            "--create",
+            "--topic",
+            MEAL_TOPIC_NAME,
+        ];
+        node.exec(ExecCommand::new(cmd).with_cmd_ready_condition(CmdWaitFor::seconds(2)))
+            .await
+            .unwrap();
 
         Self { container: node }
     }
 }
 
+impl Image for TestKafka {
+    type Args = ();
+
+    fn name(&self) -> String {
+        todo!()
+    }
+
+    fn tag(&self) -> String {
+        todo!()
+    }
+
+    fn ready_conditions(&self) -> Vec<WaitFor> {
+        todo!()
+    }
+}
 pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();
