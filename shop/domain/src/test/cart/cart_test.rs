@@ -51,7 +51,7 @@ fn add_meal_no_meal_in_cart_success() {
         .all(|event| { matches!(event, CartEventEnum::MealAddedToCartDomainEvent(_)) }));
     assert!(cart.meals.iter().all(|item| {
         let (&item_meal_id, &item_count) = item;
-        (item_meal_id == meal.entity_params.id) && (item_count == Count::one())
+        (item_meal_id == *meal.get_id()) && (item_count == Count::one())
     }))
 }
 
@@ -60,16 +60,15 @@ fn add_meal_has_meals_in_cart_success() {
     let meal = rnd_meal();
     let count = Count::try_from(2).unwrap();
     let mut cart = rnd_cart();
-    cart.meals.insert(meal.entity_params.id, count);
+    cart.meals.insert(*meal.get_id(), count);
 
     cart.add_meal(meal.clone());
     assert!(cart.entity_param.pop_events().iter().all(|event| {
-        event
-            == &MealAddedToCartDomainEvent::new(cart.entity_param.id, meal.entity_params.id).into()
+        event == &MealAddedToCartDomainEvent::new(cart.entity_param.id, *meal.get_id()).into()
     }));
     assert!(cart.meals.iter().all(|item| {
         let (&item_meal_id, &item_count) = item;
-        (item_meal_id == meal.entity_params.id) && (item_count == Count::try_from(3).unwrap())
+        (item_meal_id == *meal.get_id()) && (item_count == Count::try_from(3).unwrap())
     }))
 }
 
@@ -77,7 +76,7 @@ fn add_meal_has_meals_in_cart_success() {
 fn remove_meal_cart_is_empty_success() {
     let meal = rnd_meal();
     let mut cart = rnd_cart();
-    cart.remove_meals(meal.entity_params.id);
+    cart.remove_meals(*meal.get_id());
     assert!(cart.entity_param.pop_events().is_empty());
 }
 
@@ -86,17 +85,17 @@ fn remove_meal_meal_not_in_cart() {
     let existing_meal = rnd_meal();
     let count = Count::try_from(12).unwrap();
     let non_existing_meal = rnd_meal();
-    let meals = HashMap::from([(existing_meal.entity_params.id, count)]);
+    let meals = HashMap::from([(*existing_meal.get_id(), count)]);
 
     let mut cart = rnd_cart();
 
     cart.meals = meals.clone();
 
-    cart.remove_meals(non_existing_meal.entity_params.id);
+    cart.remove_meals(*non_existing_meal.get_id());
     assert!(cart.entity_param.pop_events().is_empty());
     assert!(cart.meals.iter().all(|item| {
-        let (&item_meal_id, &item_count) = item;
-        meals.get_key_value(&item_meal_id).unwrap() == (&item_meal_id, &item_count)
+        let (item_meal_id, &item_count) = item;
+        meals.get_key_value(&item_meal_id).unwrap() == (item_meal_id, &item_count)
     }));
 }
 
@@ -109,19 +108,19 @@ fn remove_meal_meal_in_cart_success() {
     let count = rnd_count();
 
     let meals = HashMap::from([
-        (meal_for_removing.entity_params.id, removing_count),
-        (meal.entity_params.id, count),
+        (*meal_for_removing.get_id(), removing_count),
+        (*meal.get_id(), count),
     ]);
     let mut cart = rnd_cart();
     cart.meals = meals.clone();
 
-    cart.remove_meals(meal_for_removing.entity_params.id);
+    cart.remove_meals(*meal_for_removing.get_id());
     cart.entity_param
         .pop_events()
         .iter()
         .all(|event| match event {
             CartEventEnum::MealRemovedFromCartDomainEvent(event_str) => {
-                assert_eq!(event_str.meal_id, meal_for_removing.entity_params.id);
+                assert_eq!(event_str.meal_id, *meal_for_removing.get_id());
                 assert_eq!(event_str.cart_id, cart.entity_param.id);
                 true
             }

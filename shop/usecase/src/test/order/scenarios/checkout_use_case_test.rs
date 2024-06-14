@@ -35,7 +35,7 @@ fn order_created_successfully() {
     let count = rnd_count();
     let customer_id = rnd_customer_id();
     let mut cart = rnd_cart();
-    cart.meals = HashMap::from([(meal.entity_params.id, count)]);
+    cart.meals = HashMap::from([(*meal.get_id(), count)]);
     cart.for_customer = customer_id;
 
     let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
@@ -74,9 +74,9 @@ fn order_created_successfully() {
         .verify_invoked(&cart.for_customer);
     order_persister.lock().unwrap().verify_invoked(
         &order_id,
-        &address.clone(),
+        &address,
         &customer_id,
-        &meal.entity_params.id,
+        meal.get_id(),
         &count,
         &price,
     );
@@ -219,7 +219,7 @@ struct MockGetMealPrice {
 }
 
 impl GetMealPrice for MockGetMealPrice {
-    fn invoke(&self, _: MealId) -> Price {
+    fn invoke(&self, _: &MealId) -> Price {
         self.price.clone()
     }
 }

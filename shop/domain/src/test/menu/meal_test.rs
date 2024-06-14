@@ -2,7 +2,6 @@
 
 use std::sync::{atomic::AtomicI64, Arc, Mutex};
 
-use common::types::base::domain_entity::DomainEntityTrait;
 use derive_new::new;
 
 use crate::{
@@ -17,6 +16,7 @@ use crate::{
     },
     test_fixtures::{
         print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
+        rnd_removed_meal,
     },
 };
 
@@ -62,16 +62,13 @@ fn add_meal__success() {
     );
 
     let mut test_meal = result.unwrap();
-    assert_eq!(
-        &test_meal.entity_params.id,
-        &id_generator.lock().unwrap().meal_id
-    );
-    assert_eq!(test_meal.name, name);
-    assert_eq!(test_meal.description, description);
-    assert_eq!(test_meal.price, price);
+    assert_eq!(test_meal.get_id(), &id_generator.lock().unwrap().meal_id);
+    assert_eq!(*test_meal.get_name(), name);
+    assert_eq!(*test_meal.get_description(), description);
+    assert_eq!(*test_meal.get_price(), price);
     assert!(test_meal.visible());
 
-    let popped_events = test_meal.entity_params.pop_events();
+    let popped_events = test_meal.pop_events();
     let popped_events = popped_events.first().unwrap();
 
     let expected_event: &MealEventEnum =
@@ -95,14 +92,14 @@ fn add_meal_to_menu__already_exists_with_the_same_name() {
 fn remove_meal_from_menu__success() {
     let mut test_meal = rnd_meal();
     test_meal.remove_meal_from_menu();
-    assert!(test_meal.removed);
+    assert!(test_meal.get_removed());
     assert!(!test_meal.visible());
 
-    let popped_events = test_meal.entity_params.pop_events();
+    let popped_events = test_meal.pop_events();
     let popped_events = popped_events.get(0).unwrap();
 
     let expected_event = &MealEventEnum::MealRemovedFromMenuDomainEvent(
-        MealRemovedFromMenuDomainEvent::new(test_meal.entity_params.id),
+        MealRemovedFromMenuDomainEvent::new(*test_meal.get_id()),
     );
     assert_eq!(
         print_type_of(&popped_events),
@@ -112,13 +109,12 @@ fn remove_meal_from_menu__success() {
 
 #[test]
 fn remove_meal_from_menu__already_removed() {
-    let mut test_meal = rnd_meal();
-    test_meal.removed = true;
+    let mut test_meal = rnd_removed_meal();
     test_meal.remove_meal_from_menu();
 
-    assert!(test_meal.removed);
+    assert!(test_meal.get_removed());
     assert!(!test_meal.visible());
 
-    let popped_events = test_meal.entity_params.pop_events();
+    let popped_events = test_meal.pop_events();
     assert!(popped_events.is_empty());
 }

@@ -1,13 +1,18 @@
 use std::sync::{atomic::AtomicU32, Arc, Mutex};
 
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::{
+    events::domain_event_publisher::DomainEventPublisher, types::base::domain_entity::DomainEntity,
+};
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
 use domain::{
     main::menu::{
         meal::Meal,
         meal_events::MealEventEnum,
-        value_objects::meal_id::{MealId, MealIdGenerator},
+        value_objects::{
+            meal_id::{MealId, MealIdGenerator},
+            meal_name::MealName,
+        },
     },
     test_fixtures::{rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists},
 };
@@ -153,4 +158,39 @@ pub fn rnd_meal_with_event(meal_id: MealId) -> Meal {
         meal_price,
     )
     .unwrap()
+}
+
+pub trait EntitySetters<Id, Name> {
+    fn set_id(&self, id: Id) -> Self;
+    fn set_name(&self, name: Name) -> Self;
+}
+
+impl EntitySetters<MealId, MealName> for Meal {
+    fn set_id(&self, meal_id: MealId) -> Self {
+        Self::with_all_args(
+            DomainEntity::with_events(
+                meal_id,
+                *self.get_version(),
+                self.get_entity_params().get_events().clone(),
+            ),
+            self.get_name().clone(),
+            self.get_description().clone(),
+            self.get_price().clone(),
+            *self.get_removed(),
+        )
+    }
+
+    fn set_name(&self, meal_name: MealName) -> Self {
+        Self::with_all_args(
+            DomainEntity::with_events(
+                *self.get_id(),
+                *self.get_version(),
+                self.get_entity_params().get_events().clone(),
+            ),
+            meal_name,
+            self.get_description().clone(),
+            self.get_price().clone(),
+            *self.get_removed(),
+        )
+    }
 }

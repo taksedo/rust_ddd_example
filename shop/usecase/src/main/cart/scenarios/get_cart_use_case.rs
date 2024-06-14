@@ -32,14 +32,14 @@ where
                 .meals
                 .iter()
                 .map(|(meal_id, count)| {
-                    let meal = &self.meal_extractor.lock().unwrap().get_by_id(*meal_id);
+                    let meal = &self.meal_extractor.lock().unwrap().get_by_id(meal_id);
                     if meal.is_none() {
                         panic!("Meal #{} not found", meal_id.to_i64())
                     }
                     CartItem {
                         meal_id: *meal_id,
                         count: *count,
-                        meal_name: meal.clone().unwrap().name,
+                        meal_name: meal.clone().unwrap().get_name().to_owned(),
                     }
                 })
                 .collect();

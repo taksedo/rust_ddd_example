@@ -15,7 +15,7 @@ pub struct GetMealByIdUseCase {
 }
 
 impl GetMealById for GetMealByIdUseCase {
-    fn execute(&mut self, id: MealId) -> Result<MealInfo, GetMealByIdUseCaseError> {
+    fn execute(&mut self, id: &MealId) -> Result<MealInfo, GetMealByIdUseCaseError> {
         match self.meal_extractor.lock().unwrap().get_by_id(id) {
             res if res.is_some() && res.clone().unwrap().visible() => {
                 let res = res.unwrap();

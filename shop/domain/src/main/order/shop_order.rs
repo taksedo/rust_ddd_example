@@ -60,7 +60,7 @@ impl ShopOrder {
             let mut set = HashSet::new();
 
             for (meal_id, count) in meals.iter() {
-                let price = get_meal_price.lock().unwrap().invoke(*meal_id);
+                let price = get_meal_price.lock().unwrap().invoke(meal_id);
                 set.insert(OrderItem::new(*meal_id, price, *count));
             }
             let id = id_generator.lock().unwrap().generate();

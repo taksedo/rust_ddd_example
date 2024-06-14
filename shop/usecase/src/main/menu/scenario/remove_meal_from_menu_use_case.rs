@@ -15,7 +15,7 @@ pub struct RemoveMealFromMenuUseCase {
 }
 
 impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
-    fn execute(&mut self, id: MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
+    fn execute(&mut self, id: &MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
         let mut meal = self
             .meal_extractor
             .lock()

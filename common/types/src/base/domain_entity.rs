@@ -2,12 +2,15 @@ use std::fmt::Debug;
 
 use derivative::Derivative;
 use derive_new::new;
+use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 
 use crate::base::value_object::ValueObject;
 
 /// Abstract class for all `Entities` and `Aggregates`.
-#[derive(new, Clone, Default, Derivative, Serialize, Deserialize, Ord, PartialOrd, Eq)]
+#[derive(
+    new, Clone, Default, Derivative, Serialize, Deserialize, Ord, PartialOrd, Eq, Getter, Setter,
+)]
 #[derivative(PartialEq, Debug)]
 pub struct DomainEntity<T, Event> {
     pub id: T,
@@ -15,6 +18,16 @@ pub struct DomainEntity<T, Event> {
     #[new(value = "vec![]")]
     #[derivative(PartialEq = "ignore")]
     pub events: Vec<Event>,
+}
+
+impl<T, Event> DomainEntity<T, Event> {
+    pub fn with_events(id: T, version: Version, events: Vec<Event>) -> Self {
+        Self {
+            id,
+            version,
+            events,
+        }
+    }
 }
 
 pub trait DomainEntityTrait<Event> {

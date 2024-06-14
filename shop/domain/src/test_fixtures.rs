@@ -76,12 +76,24 @@ pub fn version() -> Version {
 
 pub fn rnd_meal() -> Meal {
     MealRestorer::restore_meal(
-        rnd_meal_id(),
-        rnd_meal_name(),
-        rnd_meal_description(),
-        rnd_price(),
+        &rnd_meal_id(),
+        &rnd_meal_name(),
+        &rnd_meal_description(),
+        &rnd_price(),
         false,
-        Version::default(),
+        &Version::default(),
+        vec![],
+    )
+}
+
+pub fn rnd_removed_meal() -> Meal {
+    MealRestorer::restore_meal(
+        &rnd_meal_id(),
+        &rnd_meal_name(),
+        &rnd_meal_description(),
+        &rnd_price(),
+        true,
+        &Version::default(),
         vec![],
     )
 }

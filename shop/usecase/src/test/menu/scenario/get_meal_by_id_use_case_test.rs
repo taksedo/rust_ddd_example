@@ -16,7 +16,7 @@ fn meal_not_found() {
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
     let mut use_case = GetMealByIdUseCase::new(meal_extractor);
 
-    let meal_id = rnd_meal_id();
+    let meal_id = &rnd_meal_id();
     let result = use_case.execute(meal_id);
 
     assert_eq!(result, Err(GetMealByIdUseCaseError::MealNotFound));
@@ -38,7 +38,7 @@ fn meal_removed() {
     }));
 
     let mut use_case = GetMealByIdUseCase::new(meal_extractor);
-    let result = use_case.execute(meal.entity_params.id);
+    let result = use_case.execute(meal.get_id());
 
     assert_eq!(result, Err(GetMealByIdUseCaseError::MealNotFound));
     use_case
@@ -47,7 +47,7 @@ fn meal_removed() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.entity_params.id);
+        .verify_invoked_get_by_id(meal.get_id());
 }
 
 #[test]
@@ -59,17 +59,17 @@ fn meal_extracted_successfully() {
     }));
     let mut use_case = GetMealByIdUseCase::new(meal_extractor);
 
-    let result = use_case.execute(meal.entity_params.id);
+    let result = use_case.execute(meal.get_id());
     let meal_info = result;
 
     assert_eq!(
         meal_info.unwrap(),
         MealInfo {
-            id: meal.entity_params.id,
-            name: meal.name,
-            description: meal.description,
-            price: meal.price,
-            version: meal.entity_params.version,
+            id: *meal.get_id(),
+            name: meal.get_name().to_owned(),
+            description: meal.get_description().to_owned(),
+            price: meal.get_price().to_owned(),
+            version: *meal.get_version(),
         }
     );
     use_case
@@ -78,5 +78,5 @@ fn meal_extracted_successfully() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.entity_params.id);
+        .verify_invoked_get_by_id(&meal.get_id());
 }

@@ -36,28 +36,27 @@ pub struct MealDbDto {
 impl From<Meal> for MealDbDto {
     fn from(value: Meal) -> Self {
         Self {
-            id: value.entity_params.id.to_i64(),
-            name: value.name.to_string(),
-            description: Some(value.description.to_string()),
-            price: value.price.to_bigdecimal(),
-            removed: value.removed,
-            version: value.entity_params.version.to_i64(),
+            id: value.get_id().to_i64(),
+            name: value.get_name().to_string(),
+            description: Some(value.get_description().to_string()),
+            price: value.get_price().to_bigdecimal(),
+            removed: *value.get_removed(),
+            version: value.get_version().to_i64(),
         }
     }
 }
 
 impl From<MealDbDto> for Meal {
     fn from(value: MealDbDto) -> Self {
-        Self {
-            entity_params: DomainEntity {
-                id: MealId::try_from(value.id).unwrap(),
-                version: Version::from(value.version),
-                events: vec![],
-            },
-            name: MealName::try_from(value.name.as_str()).unwrap(),
-            description: MealDescription::try_from(value.description.unwrap().as_str()).unwrap(),
-            price: Price::try_from(value.price).unwrap(),
-            removed: value.removed,
-        }
+        Self::with_all_args(
+            DomainEntity::new(
+                MealId::try_from(value.id).unwrap(),
+                Version::from(value.version),
+            ),
+            MealName::try_from(value.name.as_str()).unwrap(),
+            MealDescription::try_from(value.description.unwrap().as_str()).unwrap(),
+            Price::try_from(value.price).unwrap(),
+            value.removed,
+        )
     }
 }

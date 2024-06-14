@@ -147,6 +147,7 @@ mod test {
         AnotherTestEvent(AnotherTestEvent),
     }
 
+    #[allow(dead_code)]
     #[enum_dispatch]
     trait DomainEventTrait {}
 
@@ -167,7 +168,7 @@ mod test {
     impl<Event: Debug> EventPublisherImpl<Event> {
         fn get_listener(&self, event_type: Event) -> &Arc<Mutex<dyn DomainEventListener<Event>>> {
             let result = self.listener_map.get(&discriminant(&event_type)).unwrap();
-            result.get(0).unwrap()
+            result.first().unwrap()
         }
     }
 }

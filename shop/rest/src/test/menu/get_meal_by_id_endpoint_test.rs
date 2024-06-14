@@ -36,7 +36,7 @@ async fn returned_successfully() {
     mock_get_meal_by_id
         .lock()
         .unwrap()
-        .verify_invoked(MealId::try_from(meal_info.id).unwrap());
+        .verify_invoked(&MealId::try_from(meal_info.id).unwrap());
 }
 
 #[actix_web::test]

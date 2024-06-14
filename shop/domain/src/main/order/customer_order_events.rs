@@ -67,5 +67,6 @@ pub enum ShopOrderEventEnum {
     ShopOrderPaidDomainEvent,
 }
 
+#[allow(dead_code)]
 #[enum_dispatch]
 trait ShopOrderEventTrait {}

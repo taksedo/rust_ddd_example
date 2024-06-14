@@ -47,5 +47,6 @@ pub enum MealEventEnum {
     TestEvent,
 }
 
+#[allow(dead_code)]
 #[enum_dispatch]
 trait MealEventTrait {}
