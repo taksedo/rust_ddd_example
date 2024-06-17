@@ -21,11 +21,11 @@ pub struct MealInfo {
 impl From<Meal> for MealInfo {
     fn from(value: Meal) -> Self {
         Self {
-            id: value.entity_params.id,
-            name: value.clone().name,
-            description: value.to_owned().description,
-            price: value.to_owned().price,
-            version: value.entity_params.version,
+            id: *value.get_id(),
+            name: value.get_name().to_owned(),
+            description: value.get_description().to_owned(),
+            price: value.get_price().to_owned(),
+            version: *value.get_version(),
         }
     }
 }

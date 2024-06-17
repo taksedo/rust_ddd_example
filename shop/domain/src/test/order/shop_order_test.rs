@@ -357,8 +357,8 @@ struct HashMapStoragePriceProvider {
 }
 
 impl GetMealPrice for HashMapStoragePriceProvider {
-    fn invoke(&self, for_meal_id: MealId) -> Price {
-        let result = &self.storage.get(&for_meal_id);
+    fn invoke(&self, for_meal_id: &MealId) -> Price {
+        let result = &self.storage.get(for_meal_id);
         result.unwrap().clone()
     }
 }

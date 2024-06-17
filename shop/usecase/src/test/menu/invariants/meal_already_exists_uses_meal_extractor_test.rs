@@ -19,7 +19,7 @@ fn meal_already_exists() {
     }));
     let mut rule = MealAlreadyExistsUsesMealExtractor::new(extractor);
 
-    let result = rule.invoke(&meal.name);
+    let result = rule.invoke(&meal.get_name());
 
     assert!(result);
 
@@ -28,7 +28,7 @@ fn meal_already_exists() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_name(&meal.name);
+        .verify_invoked_get_by_name(&meal.get_name());
 }
 
 #[test]
@@ -40,7 +40,7 @@ fn meal_already_exists_but_removed() {
     }));
     let mut rule = MealAlreadyExistsUsesMealExtractor::new(extractor);
 
-    let result = rule.invoke(&meal.name);
+    let result = rule.invoke(&meal.get_name());
 
     assert!(!result);
     rule.extractor
@@ -48,7 +48,7 @@ fn meal_already_exists_but_removed() {
         .unwrap()
         .downcast_ref::<MockMealExtractor>()
         .unwrap()
-        .verify_invoked_get_by_name(&meal.name);
+        .verify_invoked_get_by_name(&meal.get_name());
 }
 
 #[test]

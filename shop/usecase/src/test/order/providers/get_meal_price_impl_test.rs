@@ -19,13 +19,13 @@ fn price_has_been_provided() {
     extractor.lock().unwrap().meal = Some(meal.clone());
 
     let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
-    let result = get_meal_price.invoke(meal.entity_params.id);
+    let result = get_meal_price.invoke(meal.get_id());
 
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.entity_params.id);
-    assert_eq!(result, meal.price);
+        .verify_invoked_get_by_id(&meal.get_id());
+    assert_eq!(result, meal.get_price().to_owned());
 }
 
 #[test]
@@ -35,7 +35,7 @@ fn meal_not_found() {
 
     let meal_id = rnd_meal_id();
 
-    assert_panic!( {get_meal_price.invoke(meal_id);}, String, starts with &format!("Meal #{:?} not found", meal_id));
+    assert_panic!( {get_meal_price.invoke(&meal_id);}, String, starts with &format!("Meal #{:?} not found", meal_id));
 
     extractor.lock().unwrap().verify_invoked_get_by_id(&meal_id);
 }

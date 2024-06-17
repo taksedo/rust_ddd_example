@@ -10,24 +10,20 @@ pub struct MealRestorer {}
 
 impl MealRestorer {
     pub fn restore_meal(
-        id: MealId,
-        name: MealName,
-        description: MealDescription,
-        price: Price,
+        id: &MealId,
+        name: &MealName,
+        description: &MealDescription,
+        price: &Price,
         removed: bool,
-        version: Version,
+        version: &Version,
         events: Vec<MealEventEnum>,
     ) -> Meal {
-        Meal {
-            entity_params: DomainEntity {
-                id,
-                version,
-                events,
-            },
-            name,
-            description,
-            price,
+        Meal::with_all_args(
+            DomainEntity::with_events(*id, *version, events),
+            name.clone(),
+            description.clone(),
+            price.clone(),
             removed,
-        }
+        )
     }
 }

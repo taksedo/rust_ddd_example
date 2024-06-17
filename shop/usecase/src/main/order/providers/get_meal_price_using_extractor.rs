@@ -9,10 +9,10 @@ use domain::main::{
 use crate::main::menu::access::meal_extractor::MealExtractor;
 
 impl GetMealPrice for GetMealPriceUsingExtractor {
-    fn invoke(&self, for_meal_id: MealId) -> Price {
+    fn invoke(&self, for_meal_id: &MealId) -> Price {
         let meal = &self.extractor.lock().unwrap().get_by_id(for_meal_id);
         assert!(meal.is_some(), "Meal #{:?} not found", for_meal_id);
-        meal.clone().unwrap().price
+        meal.clone().unwrap().get_price().clone()
     }
 }
 

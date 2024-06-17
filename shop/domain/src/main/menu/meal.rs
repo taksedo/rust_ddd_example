@@ -8,6 +8,7 @@ use common::types::{
     errors::error::BusinessError,
 };
 use derive_new::new;
+use lombok::Getter;
 use serde::{Deserialize, Serialize};
 
 use crate::main::menu::{
@@ -21,17 +22,32 @@ use crate::main::menu::{
     },
 };
 
-#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getter)]
 pub struct Meal {
-    pub entity_params: DomainEntity<MealId, MealEventEnum>,
-    pub name: MealName,
-    pub description: MealDescription,
-    pub price: Price,
+    entity_params: DomainEntity<MealId, MealEventEnum>,
+    name: MealName,
+    description: MealDescription,
+    price: Price,
     #[new(value = "false")]
-    pub removed: bool,
+    removed: bool,
 }
 
 impl Meal {
+    pub fn with_all_args(
+        entity_params: DomainEntity<MealId, MealEventEnum>,
+        name: MealName,
+        description: MealDescription,
+        price: Price,
+        removed: bool,
+    ) -> Self {
+        Self {
+            entity_params,
+            name,
+            description,
+            price,
+            removed,
+        }
+    }
     pub fn add_meal_to_menu(
         id_generator: Arc<Mutex<dyn MealIdGenerator>>,
         meal_exists: Arc<Mutex<dyn MealAlreadyExists>>,
@@ -68,6 +84,18 @@ impl Meal {
             self.entity_params
                 .add_event(MealRemovedFromMenuDomainEvent::new(id).into())
         }
+    }
+
+    pub fn get_id(&self) -> &MealId {
+        self.entity_params.get_id()
+    }
+
+    pub fn get_version(&self) -> &Version {
+        self.entity_params.get_version()
+    }
+
+    pub fn pop_events(&mut self) -> Vec<MealEventEnum> {
+        self.entity_params.pop_events()
     }
 }
 

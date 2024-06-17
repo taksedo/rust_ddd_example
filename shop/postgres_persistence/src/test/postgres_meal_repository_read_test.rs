@@ -21,7 +21,7 @@ fn get_by_id__not_found() {
     let mut repository =
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
 
-    let result = repository.get_by_id(rnd_meal_id());
+    let result = repository.get_by_id(&rnd_meal_id());
 
     assert!(result.is_none())
 }
@@ -38,8 +38,8 @@ fn get_by_id__successfully_returned() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let meal_id = meal.entity_params.id;
-    let result = repository.get_by_id(meal_id);
+    let meal_id = *meal.get_id();
+    let result = repository.get_by_id(&meal_id);
 
     assert!(result.is_some());
     assert_eq!(result.unwrap(), meal);
@@ -55,7 +55,7 @@ fn get_by_name__not_found() {
     let mut repository =
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
 
-    let result = repository.get_by_name(rnd_meal_name());
+    let result = repository.get_by_name(&rnd_meal_name());
 
     assert!(result.is_none());
 }
@@ -72,7 +72,7 @@ fn get_by_name__successfully_returned() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let meal_name = meal.name.clone();
+    let meal_name = meal.get_name();
     let result = repository.get_by_name(meal_name);
 
     assert!(result.is_some());

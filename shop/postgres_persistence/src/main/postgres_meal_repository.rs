@@ -1,9 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use common::{
-    events::domain_event_publisher::DomainEventPublisher,
-    types::base::domain_entity::DomainEntityTrait,
-};
+use common::events::domain_event_publisher::DomainEventPublisher;
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
@@ -28,8 +25,8 @@ impl PostgresMealRepository {
     fn update(&mut self, meal_param: Meal) {
         let connection = &mut self.connection;
         let new_meal = MealDbDto::from(meal_param.clone());
-        let meal_id = meal_param.entity_params.id.to_i64();
-        let previous_version = meal_param.entity_params.version.previous().to_i64();
+        let meal_id = meal_param.get_id().to_i64();
+        let previous_version = meal_param.get_version().previous().to_i64();
 
         diesel::update(meal)
             .filter(id.eq(meal_id))
@@ -40,7 +37,7 @@ impl PostgresMealRepository {
                 panic!(
                     "Meal #{} [version = {}] is outdated",
                     meal_id,
-                    meal_param.entity_params.version.to_i64()
+                    meal_param.get_version().to_i64()
                 )
             });
     }
@@ -58,12 +55,12 @@ impl PostgresMealRepository {
 
 impl MealPersister for PostgresMealRepository {
     fn save(&mut self, mut meal_param: Meal) {
-        let events = meal_param.entity_params.pop_events();
+        let events = meal_param.pop_events();
         let mut res_vec = vec![];
         if !events.is_empty() {
             events.iter().for_each(|event| {
                 if let MealEventEnum::MealAddedToMenuDomainEvent(ev) = event {
-                    if ev.meal_id == meal_param.entity_params.id {
+                    if ev.meal_id == *meal_param.get_id() {
                         res_vec.insert(res_vec.len(), ev);
                     }
                 }
@@ -79,7 +76,7 @@ impl MealPersister for PostgresMealRepository {
 }
 
 impl MealExtractor for PostgresMealRepository {
-    fn get_by_id(&mut self, meal_id: MealId) -> Option<Meal> {
+    fn get_by_id(&mut self, meal_id: &MealId) -> Option<Meal> {
         use super::schema::shop::meal::dsl::*;
         let connection = &mut self.connection;
         let result = meal
@@ -91,7 +88,7 @@ impl MealExtractor for PostgresMealRepository {
         Some(Meal::from(result))
     }
 
-    fn get_by_name(&mut self, meal_name: MealName) -> Option<Meal> {
+    fn get_by_name(&mut self, meal_name: &MealName) -> Option<Meal> {
         use super::schema::shop::meal::dsl::*;
         let connection = &mut self.connection;
 

@@ -9,7 +9,7 @@ pub trait AddMealToCart: Debug + Send {
     fn execute(
         &mut self,
         for_customer: CustomerId,
-        meal_id: MealId,
+        meal_id: &MealId,
     ) -> Result<(), AddMealToCartUseCaseError>;
 }
 

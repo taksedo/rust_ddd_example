@@ -4,10 +4,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use common::{
-    events::domain_event_publisher::DomainEventPublisher,
-    types::base::domain_entity::DomainEntityTrait,
-};
+use common::events::domain_event_publisher::DomainEventPublisher;
 use derivative::Derivative;
 use derive_new::new;
 use domain::main::menu::{
@@ -29,28 +26,28 @@ impl MealPersister for InMemoryMealRepository {
         self.event_publisher
             .lock()
             .unwrap()
-            .publish(&meal.entity_params.pop_events());
-        self.storage.insert(meal.entity_params.id, meal);
+            .publish(&meal.pop_events());
+        self.storage.insert(*meal.get_id(), meal);
     }
 }
 
 impl MealExtractor for InMemoryMealRepository {
-    fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
-        self.storage.get(&id).map(|meal| meal.to_owned()).take()
+    fn get_by_id(&mut self, id: &MealId) -> Option<Meal> {
+        self.storage.get(id).map(|meal| meal.to_owned()).take()
     }
 
-    fn get_by_name(&mut self, name: MealName) -> Option<Meal> {
+    fn get_by_name(&mut self, name: &MealName) -> Option<Meal> {
         self.storage
             .values()
             .map(|value| value.to_owned())
-            .find(|value| value.name == name)
+            .find(|value| value.get_name() == name)
     }
 
     fn get_all(&mut self) -> Vec<Meal> {
         let storage: &HashMap<MealId, Meal> = &self.storage;
         storage
             .iter()
-            .filter(|(&_k, v)| !v.to_owned().removed)
+            .filter(|(&_k, v)| !v.to_owned().get_removed())
             .map(|(&_k, v)| v.to_owned())
             .collect()
     }

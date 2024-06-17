@@ -31,16 +31,16 @@ fn cart_doesnt_exist_successfully_added() {
     );
 
     let customer_id = rnd_customer_id();
-    let result = use_case.execute(customer_id, meal.entity_params.id);
+    let result = use_case.execute(customer_id, meal.get_id());
 
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.entity_params.id);
+        .verify_invoked_get_by_id(&meal.get_id());
     cart_persister.lock().unwrap().verify_invoked(
         None,
         Some(&id_generator.lock().unwrap().id),
-        Some(&meal.entity_params.id),
+        Some(meal.get_id()),
         Some(&customer_id),
     );
     assert!(result.is_ok())
@@ -68,13 +68,13 @@ fn cart_exists_successfully_added() {
         cart_persister.clone(),
     );
 
-    let result = use_case.execute(customer_id, meal.clone().entity_params.id);
+    let result = use_case.execute(customer_id, meal.clone().get_id());
     assert!(result.is_ok());
 
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.entity_params.id);
+        .verify_invoked_get_by_id(&meal.get_id());
 
     let existing_cart = cart_persister.lock().unwrap().cart.clone().unwrap();
 
@@ -83,7 +83,7 @@ fn cart_exists_successfully_added() {
     cart_persister.lock().unwrap().verify_invoked(
         Some(&existing_cart),
         None,
-        Some(&meal.entity_params.id),
+        Some(&meal.get_id()),
         None,
     );
     cart_extractor.lock().unwrap().verify_invoked(&customer_id);
@@ -104,12 +104,12 @@ fn mel_not_found() {
         cart_persister.clone(),
     );
 
-    let result = use_case.execute(rnd_customer_id(), meal.entity_params.id);
+    let result = use_case.execute(rnd_customer_id(), meal.get_id());
 
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.entity_params.id);
+        .verify_invoked_get_by_id(&meal.get_id());
     cart_persister.lock().unwrap().verify_empty();
     cart_extractor.lock().unwrap().verify_empty();
     assert_eq!(result.unwrap_err(), AddMealToCartUseCaseError::MealNotFound);

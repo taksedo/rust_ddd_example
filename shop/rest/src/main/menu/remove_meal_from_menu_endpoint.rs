@@ -62,7 +62,7 @@ pub async fn remove_meal_from_menu_endpoint<T: RemoveMealFromMenu + Send + Debug
     let error_list = Arc::new(Mutex::new(vec![]));
 
     match MealId::validated(id, error_list.clone()) {
-        Ok(meal_id) => match shared_state.lock().unwrap().execute(meal_id) {
+        Ok(meal_id) => match shared_state.lock().unwrap().execute(&meal_id) {
             Ok(_) => HttpResponse::new(StatusCode::NO_CONTENT),
             Err(e) => e.to_rest_error(),
         },

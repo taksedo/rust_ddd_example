@@ -41,7 +41,7 @@ where
     fn execute(
         &mut self,
         for_customer: CustomerId,
-        meal_id: MealId,
+        meal_id: &MealId,
     ) -> Result<(), AddMealToCartUseCaseError> {
         self.meal_extractor
             .lock()

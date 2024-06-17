@@ -64,7 +64,7 @@ pub async fn get_meal_by_id_endpoint<T: GetMealById + Send + Debug>(
     let error_list = Arc::new(Mutex::new(vec![]));
 
     match MealId::validated(id, error_list.clone()) {
-        Ok(meal_id) => match shared_state.lock().unwrap().execute(meal_id) {
+        Ok(meal_id) => match shared_state.lock().unwrap().execute(&meal_id) {
             Ok(meal_info) => HttpResponse::Ok()
                 .content_type(ContentType::json())
                 .body(serde_json::to_string(&MealModel::from(meal_info)).unwrap()),

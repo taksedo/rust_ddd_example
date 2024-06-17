@@ -94,26 +94,26 @@ pub struct MockGetMealById {
 }
 
 impl GetMealById for MockGetMealById {
-    fn execute(&mut self, id: MealId) -> Result<MealInfo, GetMealByIdUseCaseError> {
-        self.id = id;
+    fn execute(&mut self, id: &MealId) -> Result<MealInfo, GetMealByIdUseCaseError> {
+        self.id = *id;
         self.response.clone()
     }
 }
 
 impl MockGetMealById {
-    pub fn verify_invoked(&self, id: MealId) {
-        assert_eq!(self.id, id)
+    pub fn verify_invoked(&self, id: &MealId) {
+        assert_eq!(self.id, *id)
     }
 }
 
 pub fn rnd_meal_info() -> MealInfo {
     let meal = rnd_meal();
     MealInfo {
-        id: meal.entity_params.id,
-        name: meal.name.clone(),
-        description: meal.description.clone(),
-        price: meal.price.clone(),
-        version: meal.entity_params.version,
+        id: *meal.get_id(),
+        name: meal.get_name().clone(),
+        description: meal.get_description().clone(),
+        price: meal.get_price().clone(),
+        version: *meal.get_version(),
     }
 }
 
@@ -147,8 +147,8 @@ pub struct MockRemoveMealFromMenu {
 }
 
 impl RemoveMealFromMenu for MockRemoveMealFromMenu {
-    fn execute(&mut self, id: MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
-        self.id = id;
+    fn execute(&mut self, id: &MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
+        self.id = *id;
         self.response
     }
 }

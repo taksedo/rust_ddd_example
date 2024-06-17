@@ -107,16 +107,16 @@ impl MockMealPersister {
     ) {
         let meal = &self.meal.clone().unwrap();
         if id.is_some() {
-            assert_eq!(&meal.entity_params.id, id.unwrap())
+            assert_eq!(meal.get_id(), id.unwrap())
         }
         if name.is_some() {
-            assert_eq!(&meal.name, name.unwrap())
+            assert_eq!(meal.get_name(), name.unwrap())
         }
         if description.is_some() {
-            assert_eq!(&meal.description, description.unwrap())
+            assert_eq!(meal.get_description(), description.unwrap())
         }
         if price.is_some() {
-            assert_eq!(&meal.price, price.unwrap())
+            assert_eq!(meal.get_price(), price.unwrap())
         }
     }
 
@@ -130,7 +130,6 @@ impl MockMealPersister {
             .to_owned()
             .meal
             .unwrap()
-            .entity_params
             .pop_events()
             .first()
             .unwrap()
@@ -162,18 +161,18 @@ pub struct MockMealExtractor {
 }
 
 impl MealExtractor for MockMealExtractor {
-    fn get_by_id(&mut self, id: MealId) -> Option<Meal> {
-        self.id = Option::from(id);
-        if Some(&self.meal).is_some() && self.id == Some(id) {
+    fn get_by_id(&mut self, id: &MealId) -> Option<Meal> {
+        self.id = Option::from(*id);
+        if Some(&self.meal).is_some() && self.id == Some(*id) {
             self.clone().meal
         } else {
             None
         }
     }
 
-    fn get_by_name(&mut self, name: MealName) -> Option<Meal> {
+    fn get_by_name(&mut self, name: &MealName) -> Option<Meal> {
         self.name = Option::from(name.to_owned());
-        if Some(&self.meal).is_some() && self.to_owned().name.unwrap() == name {
+        if Some(&self.meal).is_some() && &self.to_owned().name.unwrap() == name {
             self.to_owned().meal
         } else {
             None

@@ -52,25 +52,25 @@ impl Cart {
         cart
     }
 
-    pub fn create_new_meal(&mut self, meal_id: MealId) {
-        self.meals.insert(meal_id, Count::one());
+    pub fn create_new_meal(&mut self, meal_id: &MealId) {
+        self.meals.insert(*meal_id, Count::one());
         self.entity_param
-            .add_event(MealAddedToCartDomainEvent::new(self.entity_param.id, meal_id).into());
+            .add_event(MealAddedToCartDomainEvent::new(self.entity_param.id, *meal_id).into());
     }
 
-    pub fn update_existing_meal(&mut self, meal_id: MealId, count: Count) {
+    pub fn update_existing_meal(&mut self, meal_id: &MealId, count: Count) {
         count
             .increment()
             .map(|increment_count| {
-                if let Some(x) = self.meals.get_mut(&meal_id) {
+                if let Some(x) = self.meals.get_mut(meal_id) {
                     *x = increment_count
                 }
             })
             .expect("You have too much the same meals in you cart")
     }
     pub fn add_meal(&mut self, meal: Meal) {
-        let meal_id = meal.entity_params.id;
-        let count_of_currently_meals_in_cart = self.meals.get(&meal_id);
+        let meal_id = meal.get_id();
+        let count_of_currently_meals_in_cart = self.meals.get(meal_id);
         if let Some(unwrapped_count) = count_of_currently_meals_in_cart {
             self.update_existing_meal(meal_id, *unwrapped_count)
         } else {

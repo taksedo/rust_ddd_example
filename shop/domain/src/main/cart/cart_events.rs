@@ -29,6 +29,7 @@ pub struct MealRemovedFromCartDomainEvent {
     pub meal_id: MealId,
 }
 
+#[allow(dead_code)]
 #[enum_dispatch]
 trait CartEventTrait {}
 
