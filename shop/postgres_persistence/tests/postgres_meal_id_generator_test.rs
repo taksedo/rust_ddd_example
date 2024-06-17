@@ -8,11 +8,13 @@ use domain::{
     main::menu::value_objects::meal_id::{MealId, MealIdGenerator},
     test_fixtures::rnd_meal_id,
 };
-
-use crate::{
-    main::{database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator},
-    test_fixtures::TestDb,
+use postgres_persistence::main::{
+    database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator,
 };
+
+use crate::test_fixtures::TestDb;
+
+mod test_fixtures;
 
 #[test]
 fn generate_id_integration_test() {

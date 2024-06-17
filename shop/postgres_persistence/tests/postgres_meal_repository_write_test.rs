@@ -6,15 +6,15 @@ use domain::{
     main::menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum},
     test_fixtures::{rnd_meal_id, rnd_meal_name},
 };
+use postgres_persistence::main::{
+    database_start::MIGRATIONS, meal_db_dto::MealDbDto,
+    postgres_meal_repository::PostgresMealRepository,
+};
 use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
-use crate::{
-    main::{
-        database_start::MIGRATIONS, meal_db_dto::MealDbDto,
-        postgres_meal_repository::PostgresMealRepository,
-    },
-    test_fixtures::{rnd_meal_with_event, EntitySetters, MockEventPublisher, TestDb},
-};
+use crate::test_fixtures::{rnd_meal_with_event, EntitySetters, MockEventPublisher, TestDb};
+
+mod test_fixtures;
 
 #[test]
 fn save_new_instance() {
