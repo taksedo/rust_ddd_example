@@ -2,15 +2,13 @@ use std::fmt::Debug;
 
 use derivative::Derivative;
 use derive_new::new;
-use lombok::{Getter, Setter};
+use lombok::Getter;
 use serde::{Deserialize, Serialize};
 
 use crate::base::value_object::ValueObject;
 
 /// Abstract class for all `Entities` and `Aggregates`.
-#[derive(
-    new, Clone, Default, Derivative, Serialize, Deserialize, Ord, PartialOrd, Eq, Getter, Setter,
-)]
+#[derive(new, Clone, Default, Derivative, Serialize, Deserialize, Ord, PartialOrd, Eq, Getter)]
 #[derivative(PartialEq, Debug)]
 pub struct DomainEntity<T, Event> {
     pub id: T,
