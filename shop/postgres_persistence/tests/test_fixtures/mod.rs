@@ -17,7 +17,7 @@ use domain::{
     test_fixtures::{rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists},
 };
 use log::warn;
-use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage};
+use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage, ImageExt};
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
@@ -37,10 +37,10 @@ impl TestDb {
         let msg = WaitFor::message_on_stderr("database system is ready to accept connections");
 
         let pg_container = GenericImage::new("postgres", "13")
+            .with_wait_for(msg)
             .with_env_var("POSTGRES_DB", "postgres")
             .with_env_var("POSTGRES_USER", "root")
-            .with_env_var("POSTGRES_PASSWORD", "123")
-            .with_wait_for(msg);
+            .with_env_var("POSTGRES_PASSWORD", "123");
 
         let node = pg_container.start().unwrap();
         let port = &node.get_host_port_ipv4(5432).unwrap();
