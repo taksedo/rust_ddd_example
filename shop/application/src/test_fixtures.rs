@@ -4,7 +4,7 @@ use lapin::{Connection, ConnectionProperties};
 use testcontainers::{
     core::{CmdWaitFor, ExecCommand, WaitFor},
     runners::AsyncRunner,
-    ContainerAsync, GenericImage, Image,
+    ContainerAsync, GenericImage, Image, ImageExt,
 };
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
@@ -28,13 +28,13 @@ impl TestRabbitMq {
         let msg = WaitFor::message_on_stdout("  * rabbitmq_management_agent");
 
         let rabbitmq_container = GenericImage::new("pivotalrabbitmq/rabbitmq-stream", "latest")
+            .with_wait_for(msg)
             .with_env_var(
                 "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS",
                 "-rabbitmq_stream advertised_host localhost",
             )
             .with_env_var("RABBITMQ_DEFAULT_USER", "guest")
-            .with_env_var("RABBITMQ_DEFAULT_PASS", "guest")
-            .with_wait_for(msg);
+            .with_env_var("RABBITMQ_DEFAULT_PASS", "guest");
         let node = rabbitmq_container.start().await.unwrap();
         let port = &node.get_host_port_ipv4(5672).await.unwrap();
         RABBITMQ_QUEUE_NAME.get_or_init(|| {
@@ -103,13 +103,11 @@ impl TestKafka {
 }
 
 impl Image for TestKafka {
-    type Args = ();
-
-    fn name(&self) -> String {
+    fn name(&self) -> &str {
         todo!()
     }
 
-    fn tag(&self) -> String {
+    fn tag(&self) -> &str {
         todo!()
     }
 
