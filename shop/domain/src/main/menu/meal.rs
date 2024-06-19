@@ -8,7 +8,7 @@ use common::types::{
     errors::error::BusinessError,
 };
 use derive_new::new;
-use lombok::Getter;
+use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 
 use crate::main::menu::{
@@ -22,7 +22,7 @@ use crate::main::menu::{
     },
 };
 
-#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getter)]
+#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getter, Setter)]
 pub struct Meal {
     entity_params: DomainEntity<MealId, MealEventEnum>,
     name: MealName,
@@ -88,6 +88,10 @@ impl Meal {
 
     pub fn get_id(&self) -> &MealId {
         self.entity_params.get_id()
+    }
+
+    pub fn set_id(&mut self, id: MealId) {
+        self.entity_params.set_id(id);
     }
 
     pub fn get_version(&self) -> &Version {

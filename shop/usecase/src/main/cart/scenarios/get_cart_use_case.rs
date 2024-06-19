@@ -26,10 +26,10 @@ where
     CExtractor: CartExtractor,
 {
     fn execute(&self, for_customer: CustomerId) -> Result<CartInfo, GetCartUseCaseError> {
-        let cart = &self.cart_extractor.lock().unwrap().get_cart(for_customer);
+        let cart = &self.cart_extractor.lock().unwrap().get_cart(&for_customer);
         if let Some(option_value) = cart {
             let cart_item_list = option_value
-                .meals
+                .get_meals()
                 .iter()
                 .map(|(meal_id, count)| {
                     let meal = &self.meal_extractor.lock().unwrap().get_by_id(meal_id);

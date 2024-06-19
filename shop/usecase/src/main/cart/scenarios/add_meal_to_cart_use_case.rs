@@ -65,7 +65,7 @@ where
     CPersister: CartPersister,
 {
     fn get_or_create_cart(&self, for_customer: CustomerId) -> Cart {
-        if let Some(result) = self.cart_extractor.lock().unwrap().get_cart(for_customer) {
+        if let Some(result) = self.cart_extractor.lock().unwrap().get_cart(&for_customer) {
             result
         } else {
             Cart::create(self.id_generator.clone(), for_customer)

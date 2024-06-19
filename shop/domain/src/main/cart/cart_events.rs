@@ -12,7 +12,6 @@ pub struct CartCreatedDomainEvent {
     domain_event_params: DomainEvent,
     pub cart_id: CartId,
 }
-
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]
 pub struct MealAddedToCartDomainEvent {
     #[new(value = "DomainEvent::default()")]

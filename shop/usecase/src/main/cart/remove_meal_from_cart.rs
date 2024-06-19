@@ -8,8 +8,8 @@ use thiserror::Error;
 pub trait RemoveMealFromCart: Debug + Send {
     fn execute(
         &self,
-        for_customer: CustomerId,
-        meal_id: MealId,
+        for_customer: &CustomerId,
+        meal_id: &MealId,
     ) -> Result<(), RemoveMealFromCartUseCaseError>;
 }
 

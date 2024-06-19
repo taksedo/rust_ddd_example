@@ -243,16 +243,16 @@ impl MockCartPersister {
             assert_eq!(self_cart, cart.unwrap());
         }
         if cart_id.is_some() {
-            assert_eq!(&self_cart.entity_param.id, cart_id.unwrap());
+            assert_eq!(self_cart.get_id(), cart_id.unwrap());
         }
         if meal_id.is_some() {
             assert_eq!(
-                &self_cart.meals,
+                self_cart.get_meals(),
                 &HashMap::from([(*meal_id.unwrap(), Count::one())])
             );
         }
         if customer_id.is_some() {
-            assert_eq!(&self_cart.for_customer, customer_id.unwrap());
+            assert_eq!(self_cart.get_for_customer(), customer_id.unwrap());
         }
     }
 
@@ -273,8 +273,8 @@ pub struct MockCartRemover {
 }
 
 impl MockCartRemover {
-    pub fn verify_invoked(&self, cart_id: CartId) {
-        assert_eq!(self.id.unwrap(), cart_id)
+    pub fn verify_invoked(&self, cart_id: &CartId) {
+        assert_eq!(&self.id.unwrap(), cart_id)
     }
 
     pub fn verify_empty(&self) {
@@ -284,7 +284,7 @@ impl MockCartRemover {
 
 impl CartRemover for MockCartRemover {
     fn delete_cart(&mut self, cart: Cart) {
-        self.id = Some(cart.entity_param.id);
+        self.id = Some(*cart.get_id());
     }
 }
 
@@ -295,8 +295,8 @@ pub struct MockCartExtractor {
 }
 
 impl CartExtractor for MockCartExtractor {
-    fn get_cart(&mut self, for_customer: CustomerId) -> Option<Cart> {
-        self.for_customer = Some(for_customer);
+    fn get_cart(&mut self, for_customer: &CustomerId) -> Option<Cart> {
+        self.for_customer = Some(*for_customer);
         self.cart.as_ref().cloned()
     }
 }

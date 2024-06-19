@@ -7,6 +7,7 @@ use common::types::{
     base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
     common::count::Count,
 };
+use lombok::{Getter, Setter};
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
@@ -25,20 +26,20 @@ use crate::main::{
     menu::{meal::Meal, value_objects::meal_id::MealId},
 };
 
-#[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Getter, Setter)]
 pub struct Cart {
-    pub entity_param: DomainEntity<CartId, CartEventEnum>,
+    pub(crate) entity_params: DomainEntity<CartId, CartEventEnum>,
     #[default(Default::default())]
-    pub for_customer: CustomerId,
+    pub(crate) for_customer: CustomerId,
     #[default(_code = "OffsetDateTime::now_utc()")]
-    pub created: OffsetDateTime,
-    pub meals: HashMap<MealId, Count>,
+    pub(crate) created: OffsetDateTime,
+    pub(crate) meals: HashMap<MealId, Count>,
 }
 
 impl Cart {
     pub fn create(id_generator: Arc<Mutex<dyn CartIdGenerator>>, for_customer: CustomerId) -> Self {
         let mut cart = Self {
-            entity_param: DomainEntity {
+            entity_params: DomainEntity {
                 id: id_generator.lock().unwrap().generate(),
                 version: Version::default(),
                 events: vec![],
@@ -47,15 +48,15 @@ impl Cart {
             created: OffsetDateTime::now_utc(),
             meals: HashMap::new(),
         };
-        cart.entity_param
-            .add_event(CartCreatedDomainEvent::new(cart.entity_param.id).into());
+        cart.entity_params
+            .add_event(CartCreatedDomainEvent::new(*cart.get_id()).into());
         cart
     }
 
     pub fn create_new_meal(&mut self, meal_id: &MealId) {
         self.meals.insert(*meal_id, Count::one());
-        self.entity_param
-            .add_event(MealAddedToCartDomainEvent::new(self.entity_param.id, *meal_id).into());
+        self.entity_params
+            .add_event(MealAddedToCartDomainEvent::new(self.entity_params.id, *meal_id).into());
     }
 
     pub fn update_existing_meal(&mut self, meal_id: &MealId, count: Count) {
@@ -78,12 +79,24 @@ impl Cart {
         }
     }
 
-    pub fn remove_meals(&mut self, meal_id: MealId) {
-        if self.meals.remove(&meal_id).is_some() {
-            self.entity_param.add_event(
-                MealRemovedFromCartDomainEvent::new(self.entity_param.id, meal_id).into(),
+    pub fn remove_meals(&mut self, meal_id: &MealId) {
+        if self.meals.remove(meal_id).is_some() {
+            self.entity_params.add_event(
+                MealRemovedFromCartDomainEvent::new(self.entity_params.id, *meal_id).into(),
             )
         }
+    }
+
+    pub fn get_id(&self) -> &CartId {
+        self.entity_params.get_id()
+    }
+
+    pub fn get_version(&self) -> &Version {
+        self.entity_params.get_version()
+    }
+
+    pub fn pop_events(&mut self) -> Vec<CartEventEnum> {
+        self.entity_params.pop_events()
     }
 }
 

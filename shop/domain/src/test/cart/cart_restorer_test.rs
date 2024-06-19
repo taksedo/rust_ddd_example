@@ -17,8 +17,8 @@ fn restore_cart_success() {
     let created = OffsetDateTime::now_utc();
     let cart = CartRestorer::restore_cart(cart_id, guest_id, created, meals.clone(), version);
 
-    assert_eq!(cart.entity_param.id, cart_id);
-    assert_eq!(cart.for_customer, guest_id);
-    assert_eq!(cart.entity_param.version, version);
-    assert_eq!(cart.meals, meals);
+    assert_eq!(cart.get_id(), &cart_id);
+    assert_eq!(cart.get_for_customer(), &guest_id);
+    assert_eq!(cart.get_version(), &version);
+    assert_eq!(cart.get_meals(), &meals);
 }

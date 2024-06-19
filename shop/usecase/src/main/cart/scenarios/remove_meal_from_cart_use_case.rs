@@ -27,8 +27,8 @@ where
 {
     fn execute(
         &self,
-        for_customer: CustomerId,
-        meal_id: MealId,
+        for_customer: &CustomerId,
+        meal_id: &MealId,
     ) -> Result<(), RemoveMealFromCartUseCaseError> {
         self.cart_extractor
             .lock()

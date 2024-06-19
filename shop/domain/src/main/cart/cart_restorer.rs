@@ -25,7 +25,7 @@ impl CartRestorer {
         version: Version,
     ) -> Cart {
         Cart {
-            entity_param: DomainEntity {
+            entity_params: DomainEntity {
                 id,
                 version,
                 events: vec![],

@@ -12,7 +12,7 @@ use postgres_persistence::main::{
 };
 use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
-use crate::test_fixtures::{rnd_meal_with_event, EntitySetters, MockEventPublisher, TestDb};
+use crate::test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb};
 
 mod test_fixtures;
 
@@ -55,9 +55,9 @@ fn save_new_instance_but_already_exists_with_the_same_id() {
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let meal_id = rnd_meal_id();
-    let first = rnd_meal_with_event(meal_id);
-    let second = rnd_meal_with_event(meal_id);
-    let first = first.set_id(meal_id);
+    let mut first = rnd_meal_with_event(meal_id);
+    let mut second = rnd_meal_with_event(meal_id);
+    first.set_id(meal_id);
     second.set_id(meal_id);
 
     repository.save(first);
@@ -77,10 +77,10 @@ fn save_new_instance_but_already_exists_with_the_same_name() {
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let meal_name = rnd_meal_name();
-    let first = rnd_meal_with_event(rnd_meal_id());
-    let second = rnd_meal_with_event(rnd_meal_id());
-    let first = first.set_name(meal_name.clone());
-    let second = second.set_name(meal_name);
+    let mut first = rnd_meal_with_event(rnd_meal_id());
+    let mut second = rnd_meal_with_event(rnd_meal_id());
+    first.set_name(meal_name.clone());
+    second.set_name(meal_name);
 
     repository.save(first);
     repository.save(second);

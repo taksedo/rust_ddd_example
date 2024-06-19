@@ -3,10 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use common::{
-    events::domain_event_publisher::DomainEventPublisher,
-    types::base::domain_entity::DomainEntityTrait,
-};
+use common::events::domain_event_publisher::DomainEventPublisher;
 use derivative::Derivative;
 use derive_new::new;
 use domain::main::cart::{
@@ -24,23 +21,23 @@ pub struct InMemoryCartRepository {
 }
 
 impl CartExtractor for InMemoryCartRepository {
-    fn get_cart(&mut self, for_customer: CustomerId) -> Option<Cart> {
-        Some(self.storage.get(&for_customer)?.clone())
+    fn get_cart(&mut self, for_customer: &CustomerId) -> Option<Cart> {
+        Some(self.storage.get(for_customer)?.clone())
     }
 }
 
 impl CartPersister for InMemoryCartRepository {
     fn save(&mut self, mut cart: Cart) {
         dbg!(&cart);
-        let popped_events = cart.entity_param.pop_events();
+        let popped_events = cart.pop_events();
         dbg!(&popped_events);
         self.event_publisher.lock().unwrap().publish(&popped_events);
-        self.storage.insert(cart.for_customer, cart);
+        self.storage.insert(*cart.get_for_customer(), cart);
     }
 }
 
 impl CartRemover for InMemoryCartRepository {
     fn delete_cart(&mut self, cart: Cart) {
-        self.storage.remove(&cart.for_customer);
+        self.storage.remove(cart.get_for_customer());
     }
 }
