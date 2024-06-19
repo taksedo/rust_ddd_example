@@ -47,9 +47,7 @@ impl<Event: Clone, T> DomainEntityTrait<Event> for DomainEntity<T, Event> {
     }
     /// Extract all `Events` from `DomainEntity` stack
     fn pop_events(&mut self) -> Vec<Event> {
-        let res = self.events.clone();
-        self.events = Vec::new();
-        res
+        std::mem::take(&mut self.events)
     }
 }
 
