@@ -5,9 +5,10 @@ use std::{
 };
 
 use common::types::{
-    base::domain_entity::{DomainEntity, DomainEntityTrait},
+    base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
     common::{address::Address, count::Count},
 };
+use derive_getters::Getters;
 use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
@@ -29,15 +30,16 @@ use crate::main::{
     },
 };
 
-#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, SmartDefault)]
+#[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, SmartDefault, Getters)]
 pub struct ShopOrder {
-    pub entity_params: DomainEntity<ShopOrderId, ShopOrderEventEnum>,
+    #[getter(skip)]
+    pub(crate) entity_params: DomainEntity<ShopOrderId, ShopOrderEventEnum>,
     #[default(OffsetDateTime::now_utc())]
-    pub created: OffsetDateTime,
-    pub for_customer: CustomerId,
-    pub address: Address,
-    pub order_items: HashSet<OrderItem>,
-    pub state: OrderState,
+    pub(crate) created: OffsetDateTime,
+    pub(crate) for_customer: CustomerId,
+    pub(crate) address: Address,
+    pub(crate) order_items: HashSet<OrderItem>,
+    pub(crate) state: OrderState,
 }
 
 impl ShopOrder {
@@ -51,11 +53,11 @@ impl ShopOrder {
         if customer_has_active_order
             .lock()
             .unwrap()
-            .invoke(cart.for_customer)
+            .invoke(cart.for_customer())
         {
             return Err(CheckoutError::AlreadyHasActiveOrder);
         }
-        let meals = cart.meals;
+        let meals = cart.meals();
         if !meals.is_empty() {
             let mut set = HashSet::new();
 
@@ -67,14 +69,14 @@ impl ShopOrder {
             let mut shop_order = ShopOrder::new(
                 DomainEntity::new(id, Default::default()),
                 OffsetDateTime::now_utc(),
-                cart.for_customer,
+                *cart.for_customer(),
                 address,
                 set,
                 Default::default(),
             );
             let total_price = shop_order.total_price();
             shop_order.entity_params.add_event(
-                ShopOrderCreatedDomainEvent::new(id, cart.for_customer, total_price).into(),
+                ShopOrderCreatedDomainEvent::new(id, *cart.for_customer(), total_price).into(),
             );
             Ok(shop_order)
         } else {
@@ -144,6 +146,18 @@ impl ShopOrder {
 
     pub fn ready_for_confirm_or_cancel(&self) -> bool {
         matches!(&self.state, Paid(_))
+    }
+
+    pub fn id(&self) -> &ShopOrderId {
+        self.entity_params.id()
+    }
+
+    pub fn version(&self) -> &Version {
+        self.entity_params.version()
+    }
+
+    pub fn pop_events(&mut self) -> Vec<ShopOrderEventEnum> {
+        self.entity_params.pop_events()
     }
 }
 

@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use domain::{
     main::cart::cart_events::{CartEventEnum, MealAddedToCartDomainEvent},
-    test_fixtures::{rnd_cart, rnd_customer_id},
+    test_fixtures::{rnd_cart, rnd_cart_with_customer_id, rnd_customer_id},
 };
 use usecase::main::cart::access::{
     cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
@@ -21,21 +21,20 @@ fn saving_cart_cart_doesnt_exist() {
 
     repository.save(cart.clone());
 
-    let stored_cart = repository.storage.get(cart.get_for_customer()).unwrap();
+    let stored_cart = repository.storage.get(cart.for_customer()).unwrap();
     assert_eq!(stored_cart, &cart);
     assert_eq!(event_publisher.lock().unwrap().storage.len(), 1);
 
     let binding = event_publisher.lock().unwrap();
     let event: &CartEventEnum = binding.storage.first().unwrap();
     let event_struct: MealAddedToCartDomainEvent = event.clone().try_into().unwrap();
-    assert_eq!(event_struct.cart_id, *cart.get_id());
+    assert_eq!(event_struct.cart_id, *cart.id());
 }
 
 #[test]
 fn saving_cart_cart_exists() {
     let customer_id = rnd_customer_id();
-    let mut existing_cart = rnd_cart();
-    existing_cart.set_for_customer(customer_id);
+    let existing_cart = rnd_cart_with_customer_id(customer_id);
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryCartRepository::new(event_publisher.clone());
@@ -49,14 +48,13 @@ fn saving_cart_cart_exists() {
     let event: &CartEventEnum = binding.storage.first().unwrap();
     let event_struct: Result<MealAddedToCartDomainEvent, _> = event.clone().try_into();
     assert!(event_struct.is_ok());
-    assert_eq!(event_struct.unwrap().cart_id, *updated_cart.get_id());
+    assert_eq!(event_struct.unwrap().cart_id, *updated_cart.id());
 }
 
 #[test]
 fn get_by_id_cart_exists() {
     let customer_id = rnd_customer_id();
-    let mut existing_cart = rnd_cart();
-    existing_cart.set_for_customer(customer_id);
+    let existing_cart = rnd_cart_with_customer_id(customer_id);
 
     let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
     let mut repository = InMemoryCartRepository::new(event_publisher.clone());
@@ -70,10 +68,10 @@ fn get_by_id_cart_exists() {
 
     let cart = cart.unwrap();
     assert_eq!(cart, existing_cart);
-    assert_eq!(cart.get_id(), existing_cart.get_id());
-    assert_eq!(cart.get_for_customer(), existing_cart.get_for_customer());
-    assert_eq!(cart.get_created(), existing_cart.get_created());
-    assert_eq!(cart.get_meals(), existing_cart.get_meals());
+    assert_eq!(cart.id(), existing_cart.id());
+    assert_eq!(cart.for_customer(), existing_cart.for_customer());
+    assert_eq!(cart.created(), existing_cart.created());
+    assert_eq!(cart.meals(), existing_cart.meals());
 }
 
 #[test]
@@ -92,7 +90,7 @@ fn delete_cart_cart_exists() {
     let mut repository = InMemoryCartRepository::new(event_publisher.clone());
     repository
         .storage
-        .insert(*existing_cart.get_for_customer(), existing_cart.clone());
+        .insert(*existing_cart.for_customer(), existing_cart.clone());
 
     repository.delete_cart(existing_cart);
     assert!(repository.storage.is_empty());
@@ -101,13 +99,13 @@ fn delete_cart_cart_exists() {
 #[test]
 fn copy_cart_test() {
     let src = cart_with_events();
-    assert!(!src.get_meals().is_empty());
+    assert!(!src.meals().is_empty());
 
     let copy = src.clone();
 
     assert_eq!(src, copy);
-    assert_eq!(src.get_id(), copy.get_id());
-    assert_eq!(src.get_for_customer(), copy.get_for_customer());
-    assert_eq!(src.get_created(), copy.get_created());
-    assert_eq!(src.get_meals(), copy.get_meals());
+    assert_eq!(src.id(), copy.id());
+    assert_eq!(src.for_customer(), copy.for_customer());
+    assert_eq!(src.created(), copy.created());
+    assert_eq!(src.meals(), copy.meals());
 }

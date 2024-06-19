@@ -19,13 +19,13 @@ fn price_has_been_provided() {
     extractor.lock().unwrap().meal = Some(meal.clone());
 
     let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
-    let result = get_meal_price.invoke(meal.get_id());
+    let result = get_meal_price.invoke(meal.id());
 
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.get_id());
-    assert_eq!(result, meal.get_price().to_owned());
+        .verify_invoked_get_by_id(&meal.id());
+    assert_eq!(result, meal.price().to_owned());
 }
 
 #[test]

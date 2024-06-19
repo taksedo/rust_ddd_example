@@ -381,7 +381,7 @@ struct MockCustomerHasActiveOrder {
 }
 
 impl CustomerHasActiveOrder for MockCustomerHasActiveOrder {
-    fn invoke(&mut self, _for_customer: CustomerId) -> bool {
+    fn invoke(&mut self, _for_customer: &CustomerId) -> bool {
         self.status
     }
 }

@@ -65,7 +65,7 @@ pub async fn confirm_order_endpoint<T: ConfirmOrder + Send + Debug>(
     let error_list = Arc::new(Mutex::new(vec![]));
 
     match ShopOrderId::validated(id, error_list.clone()) {
-        Ok(order_id) => match shared_state.lock().unwrap().execute(order_id) {
+        Ok(order_id) => match shared_state.lock().unwrap().execute(&order_id) {
             Ok(_) => HttpResponse::new(StatusCode::NO_CONTENT),
             Err(e) => e.to_rest_error(),
         },

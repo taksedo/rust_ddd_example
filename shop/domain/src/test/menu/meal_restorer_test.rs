@@ -17,9 +17,9 @@ fn restore_meal__success() {
     let mut meal: Meal =
         MealRestorer::restore_meal(mealId, name, description, price, *removed, version, vec![]);
 
-    assert_eq!(meal.get_id(), mealId);
-    assert_eq!(meal.get_name(), name);
-    assert_eq!(meal.get_removed(), removed);
-    assert_eq!(meal.get_version(), version);
+    assert_eq!(meal.id(), mealId);
+    assert_eq!(meal.name(), name);
+    assert_eq!(meal.removed(), removed);
+    assert_eq!(meal.version(), version);
     assert_eq!(meal.pop_events().len(), 0)
 }

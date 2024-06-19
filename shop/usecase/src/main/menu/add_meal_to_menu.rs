@@ -7,9 +7,9 @@ use domain::main::menu::value_objects::{
 pub trait AddMealToMenu: Debug + Send {
     fn execute(
         &mut self,
-        name: MealName,
-        description: MealDescription,
-        price: Price,
+        name: &MealName,
+        description: &MealDescription,
+        price: &Price,
     ) -> Result<MealId, AddMealToMenuUseCaseError>;
 }
 

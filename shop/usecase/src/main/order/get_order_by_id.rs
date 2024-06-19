@@ -6,7 +6,7 @@ use thiserror::Error;
 use crate::main::order::dto::order_details::OrderDetails;
 
 pub trait GetOrderById: Debug + Send {
-    fn execute(&mut self, id: ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError>;
+    fn execute(&mut self, id: &ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError>;
 }
 
 #[derive(Error, Debug, Clone, PartialEq, Copy)]

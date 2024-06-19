@@ -19,4 +19,4 @@ rand.workspace = true
 smart-default.workspace = true
 fake.workspace = true
 uuid.workspace = true
-lombok.workspace = true
+derive-getters.workspace = true

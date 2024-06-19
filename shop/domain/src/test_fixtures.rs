@@ -6,7 +6,7 @@ use common::types::{
         domain_entity::{DomainEntity, Version},
         domain_event::DomainEventTrait,
     },
-    common::address::Address,
+    common::{address::Address, count::Count},
     test_fixtures::rnd_count,
 };
 use derive_new::new;
@@ -121,6 +121,29 @@ pub fn rnd_cart() -> Cart {
     )
 }
 
+pub fn rnd_cart_with_customer_id(customer_id: CustomerId) -> Cart {
+    CartRestorer::restore_cart(
+        rnd_cart_id(),
+        customer_id,
+        OffsetDateTime::now_utc(),
+        HashMap::new(),
+        version(),
+    )
+}
+
+pub fn rnd_cart_with_customer_id_and_meals(
+    customer_id: CustomerId,
+    meals: HashMap<MealId, Count>,
+) -> Cart {
+    CartRestorer::restore_cart(
+        rnd_cart_id(),
+        customer_id,
+        OffsetDateTime::now_utc(),
+        meals,
+        version(),
+    )
+}
+
 pub fn rnd_order_id() -> ShopOrderId {
     ShopOrderId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
 }
@@ -136,6 +159,28 @@ pub fn rnd_order(order_items: HashSet<OrderItem>) -> ShopOrder {
         rnd_customer_id(),
         rnd_address(),
         order_items,
+        OrderState::new_completed(),
+    )
+}
+
+pub fn rnd_order_with_customer_id(customer_id: CustomerId) -> ShopOrder {
+    ShopOrder::new(
+        DomainEntity::new(rnd_order_id(), Default::default()),
+        OffsetDateTime::now_utc(),
+        customer_id,
+        rnd_address(),
+        [rnd_order_item()].into(),
+        OrderState::new_completed(),
+    )
+}
+
+pub fn rnd_order_with_id(id: ShopOrderId) -> ShopOrder {
+    ShopOrder::new(
+        DomainEntity::new(id, Default::default()),
+        OffsetDateTime::now_utc(),
+        rnd_customer_id(),
+        rnd_address(),
+        [rnd_order_item()].into(),
         OrderState::new_completed(),
     )
 }

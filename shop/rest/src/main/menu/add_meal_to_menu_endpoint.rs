@@ -104,7 +104,7 @@ where
             match shared_state
                 .lock()
                 .unwrap()
-                .execute(meal_name, meal_description, price)
+                .execute(&meal_name, &meal_description, &price)
             {
                 Ok(meal_id) => created(
                     API_V1_MENU_GET_BY_ID

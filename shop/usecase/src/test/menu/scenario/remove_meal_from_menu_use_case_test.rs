@@ -20,7 +20,7 @@ fn successfully_removed() {
 
     let mut use_case =
         RemoveMealFromMenuUseCase::new(meal_extractor.clone(), meal_persister.clone());
-    let result = use_case.execute(meal.get_id());
+    let result = use_case.execute(meal.id());
 
     assert!(result.is_ok());
 
@@ -32,12 +32,12 @@ fn successfully_removed() {
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.get_id());
+        .verify_invoked_get_by_id(&meal.id());
 
     meal_persister
         .lock()
         .unwrap()
-        .verify_events_after_deletion(&meal.get_id());
+        .verify_events_after_deletion(&meal.id());
 }
 
 #[test]

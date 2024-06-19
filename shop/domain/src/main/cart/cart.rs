@@ -7,7 +7,7 @@ use common::types::{
     base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
     common::count::Count,
 };
-use lombok::{Getter, Setter};
+use derive_getters::Getters;
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
@@ -26,8 +26,9 @@ use crate::main::{
     menu::{meal::Meal, value_objects::meal_id::MealId},
 };
 
-#[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Getter, Setter)]
+#[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Getters)]
 pub struct Cart {
+    #[getter(skip)]
     pub(crate) entity_params: DomainEntity<CartId, CartEventEnum>,
     #[default(Default::default())]
     pub(crate) for_customer: CustomerId,
@@ -49,7 +50,7 @@ impl Cart {
             meals: HashMap::new(),
         };
         cart.entity_params
-            .add_event(CartCreatedDomainEvent::new(*cart.get_id()).into());
+            .add_event(CartCreatedDomainEvent::new(*cart.id()).into());
         cart
     }
 
@@ -70,7 +71,7 @@ impl Cart {
             .expect("You have too much the same meals in you cart")
     }
     pub fn add_meal(&mut self, meal: Meal) {
-        let meal_id = meal.get_id();
+        let meal_id = meal.id();
         let count_of_currently_meals_in_cart = self.meals.get(meal_id);
         if let Some(unwrapped_count) = count_of_currently_meals_in_cart {
             self.update_existing_meal(meal_id, *unwrapped_count)
@@ -87,12 +88,12 @@ impl Cart {
         }
     }
 
-    pub fn get_id(&self) -> &CartId {
-        self.entity_params.get_id()
+    pub fn id(&self) -> &CartId {
+        self.entity_params.id()
     }
 
-    pub fn get_version(&self) -> &Version {
-        self.entity_params.get_version()
+    pub fn version(&self) -> &Version {
+        self.entity_params.version()
     }
 
     pub fn pop_events(&mut self) -> Vec<CartEventEnum> {

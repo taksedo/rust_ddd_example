@@ -34,16 +34,16 @@ pub struct AddMealToMenuUseCase {
 impl AddMealToMenu for AddMealToMenuUseCase {
     fn execute(
         &mut self,
-        name: MealName,
-        description: MealDescription,
-        price: Price,
+        name: &MealName,
+        description: &MealDescription,
+        price: &Price,
     ) -> Result<MealId, AddMealToMenuUseCaseError> {
         Meal::add_meal_to_menu(
             self.id_generator.clone(),
             self.meal_exists.clone(),
-            name,
-            description,
-            price,
+            name.clone(),
+            description.clone(),
+            price.clone(),
         )
         .map_err(MealError::to_error)
         .map(|new_meal_in_menu| {
@@ -51,7 +51,7 @@ impl AddMealToMenu for AddMealToMenuUseCase {
                 .lock()
                 .unwrap()
                 .save(new_meal_in_menu.clone());
-            *new_meal_in_menu.get_id()
+            *new_meal_in_menu.id()
         })
     }
 }

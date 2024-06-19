@@ -30,18 +30,18 @@ pub trait ToDetails {
 impl ToDetails for ShopOrder {
     fn to_details(&self) -> OrderDetails {
         let items: Vec<OrderItemDetails> = self
-            .order_items
+            .order_items()
             .iter()
             .map(|it| OrderItemDetails::new(it.meal_id, it.count))
             .collect();
         OrderDetails {
-            id: self.entity_params.id,
-            state: self.state.clone(),
-            address: self.address.clone(),
+            id: *self.id(),
+            state: self.state().clone(),
+            address: self.address().clone(),
             ready_for_confirm_or_cancel: self.ready_for_confirm_or_cancel(),
             items,
             total: self.total_price(),
-            version: self.entity_params.version,
+            version: *self.version(),
         }
     }
 }

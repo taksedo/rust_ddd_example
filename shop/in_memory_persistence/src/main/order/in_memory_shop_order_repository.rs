@@ -3,10 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use common::{
-    events::domain_event_publisher::DomainEventPublisher,
-    types::base::domain_entity::DomainEntityTrait,
-};
+use common::events::domain_event_publisher::DomainEventPublisher;
 use derivative::Derivative;
 use derive_new::new;
 use domain::main::{
@@ -32,30 +29,30 @@ impl ShopOrderPersister for InMemoryShopOrderRepository {
         self.event_publisher
             .lock()
             .unwrap()
-            .publish(&order.entity_params.pop_events());
-        self.storage.insert(order.entity_params.id, order);
+            .publish(&order.pop_events());
+        self.storage.insert(*order.id(), order);
     }
 }
 
 impl ShopOrderExtractor for InMemoryShopOrderRepository {
-    fn get_by_id(&mut self, order_id: ShopOrderId) -> Option<ShopOrder> {
+    fn get_by_id(&mut self, order_id: &ShopOrderId) -> Option<ShopOrder> {
         self.storage
-            .get(&order_id)
+            .get(order_id)
             .map(|order| order.to_owned())
             .take()
     }
 
-    fn get_last_order(&mut self, for_customer: CustomerId) -> Option<ShopOrder> {
+    fn get_last_order(&mut self, for_customer: &CustomerId) -> Option<ShopOrder> {
         self.storage
             .values()
-            .filter(|order| order.for_customer == for_customer)
+            .filter(|order| order.for_customer() == for_customer)
             .collect::<Vec<_>>()
             .into_iter()
-            .max_by(|o1, o2| o1.created.cmp(&o2.created))
+            .max_by(|o1, o2| o1.created().cmp(o2.created()))
             .cloned()
     }
 
-    fn get_all(&mut self, start_id: ShopOrderId, limit: usize) -> Vec<ShopOrder> {
+    fn get_all(&mut self, start_id: &ShopOrderId, limit: usize) -> Vec<ShopOrder> {
         self.storage
             .range(start_id..)
             .take(limit)

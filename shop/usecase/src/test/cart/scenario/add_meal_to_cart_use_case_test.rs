@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use derive_new::new;
 use domain::{
     main::cart::value_objects::cart_id::{CartId, CartIdGenerator},
-    test_fixtures::{rnd_cart, rnd_customer_id, rnd_meal},
+    test_fixtures::{rnd_cart_with_customer_id, rnd_customer_id, rnd_meal},
 };
 
 use crate::{
@@ -31,16 +31,16 @@ fn cart_doesnt_exist_successfully_added() {
     );
 
     let customer_id = rnd_customer_id();
-    let result = use_case.execute(customer_id, meal.get_id());
+    let result = use_case.execute(customer_id, meal.id());
 
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.get_id());
+        .verify_invoked_get_by_id(&meal.id());
     cart_persister.lock().unwrap().verify_invoked(
         None,
         Some(&id_generator.lock().unwrap().id),
-        Some(meal.get_id()),
+        Some(meal.id()),
         Some(&customer_id),
     );
     assert!(result.is_ok())
@@ -50,8 +50,7 @@ fn cart_doesnt_exist_successfully_added() {
 fn cart_exists_successfully_added() {
     let meal = rnd_meal();
     let customer_id = rnd_customer_id();
-    let mut existing_cart = rnd_cart();
-    existing_cart.set_for_customer(customer_id);
+    let existing_cart = rnd_cart_with_customer_id(customer_id);
 
     let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
@@ -68,13 +67,13 @@ fn cart_exists_successfully_added() {
         cart_persister.clone(),
     );
 
-    let result = use_case.execute(customer_id, meal.clone().get_id());
+    let result = use_case.execute(customer_id, meal.clone().id());
     assert!(result.is_ok());
 
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.get_id());
+        .verify_invoked_get_by_id(&meal.id());
 
     let existing_cart = cart_persister.lock().unwrap().cart.clone().unwrap();
 
@@ -83,7 +82,7 @@ fn cart_exists_successfully_added() {
     cart_persister.lock().unwrap().verify_invoked(
         Some(&existing_cart),
         None,
-        Some(&meal.get_id()),
+        Some(&meal.id()),
         None,
     );
     cart_extractor.lock().unwrap().verify_invoked(&customer_id);
@@ -104,12 +103,12 @@ fn mel_not_found() {
         cart_persister.clone(),
     );
 
-    let result = use_case.execute(rnd_customer_id(), meal.get_id());
+    let result = use_case.execute(rnd_customer_id(), meal.id());
 
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.get_id());
+        .verify_invoked_get_by_id(&meal.id());
     cart_persister.lock().unwrap().verify_empty();
     cart_extractor.lock().unwrap().verify_empty();
     assert_eq!(result.unwrap_err(), AddMealToCartUseCaseError::MealNotFound);

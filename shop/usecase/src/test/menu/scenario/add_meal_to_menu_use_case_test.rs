@@ -32,7 +32,7 @@ fn successfully_added() {
         id_generator.clone(),
         Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
     );
-    let result = add_to_menu_use_case.execute(name.clone(), description.clone(), price.clone());
+    let result = add_to_menu_use_case.execute(&name, &description, &price);
 
     let id = id_generator.lock().unwrap().id;
 
@@ -60,7 +60,7 @@ fn meal_already_exists() {
         id_generator,
         Arc::new(Mutex::new(TestMealAlreadyExists { value: true })),
     );
-    let result = add_to_menu_use_case.execute(name, description, price);
+    let result = add_to_menu_use_case.execute(&name, &description, &price);
 
     assert_eq!(result, Err(AddMealToMenuUseCaseError::AlreadyExists));
 }

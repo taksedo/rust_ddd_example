@@ -19,7 +19,7 @@ pub struct GetOrdersUseCase<ShOExtractor: ShopOrderExtractor> {
 impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtractor> {
     fn execute(
         &mut self,
-        start_id: ShopOrderId,
+        start_id: &ShopOrderId,
         limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError> {
         let max_size = (self.limit)();

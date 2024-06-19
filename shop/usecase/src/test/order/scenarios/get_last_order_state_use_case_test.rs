@@ -21,14 +21,14 @@ fn status_successfully_received() {
     extractor.lock().unwrap().order = Some(order.clone());
 
     let use_case = GetLastOrderStateUseCase::new(extractor.clone());
-    let result = use_case.execute(order.for_customer);
+    let result = use_case.execute(order.for_customer());
 
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_last_order(&order.for_customer);
+        .verify_invoked_get_last_order(order.for_customer());
     assert!(result.is_ok());
-    assert_eq!(result.unwrap(), order.state)
+    assert_eq!(&result.unwrap(), order.state())
 }
 
 #[test]
@@ -37,7 +37,7 @@ fn order_not_found() {
     let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
     let order_id = rnd_order_id();
-    let result = use_case.execute(order_id);
+    let result = use_case.execute(&order_id);
 
     extractor
         .lock()
@@ -54,23 +54,23 @@ fn order_expected_successfully() {
     extractor.lock().unwrap().order = Some(order.clone());
     let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
-    let result = use_case.execute(order.entity_params.id);
+    let result = use_case.execute(&order.id());
     assert!(result.is_ok());
     let details = result.unwrap();
 
-    assert_eq!(details.id, order.entity_params.id);
-    assert_eq!(details.address, order.address);
-    assert_eq!(details.state, order.state);
+    assert_eq!(&details.id, order.id());
+    assert_eq!(&details.address, order.address());
+    assert_eq!(&details.state, order.state());
     assert_eq!(details.total, order.total_price());
     assert_eq!(
         details.ready_for_confirm_or_cancel,
         order.ready_for_confirm_or_cancel()
     );
-    assert_eq!(details.items.len(), order.order_items.len());
+    assert_eq!(details.items.len(), order.order_items().len());
 
     details.items.iter().for_each(|i| {
         let src_item: Vec<_> = order
-            .order_items
+            .order_items()
             .iter()
             .filter(|&it| it.meal_id == i.meal_id && it.count == i.count)
             .collect();
@@ -79,5 +79,5 @@ fn order_expected_successfully() {
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&order.entity_params.id);
+        .verify_invoked_get_by_id(&order.id());
 }

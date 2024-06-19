@@ -15,7 +15,7 @@ pub struct PayOrderHandler {
 }
 
 impl PayOrder for PayOrderHandler {
-    fn execute(&self, order_id: ShopOrderId) -> Result<(), PayOrderHandlerError> {
+    fn execute(&self, order_id: &ShopOrderId) -> Result<(), PayOrderHandlerError> {
         self.shop_order_extractor
             .lock()
             .unwrap()

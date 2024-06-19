@@ -39,11 +39,11 @@ fn get_menu() {
     assert_eq!(
         menu,
         vec![MealInfo {
-            id: *meal.get_id(),
-            name: meal.get_name().to_owned(),
-            description: meal.get_description().to_owned(),
-            price: meal.get_price().to_owned(),
-            version: *meal.get_version(),
+            id: *meal.id(),
+            name: meal.name().to_owned(),
+            description: meal.description().to_owned(),
+            price: meal.price().to_owned(),
+            version: *meal.version(),
         }]
     );
     use_case

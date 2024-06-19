@@ -9,7 +9,7 @@ use postgres_persistence::main::{
 };
 use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
-use crate::test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb};
+use crate::test_fixtures::{rnd_new_meal_with_meal_id, MockEventPublisher, TestDb};
 
 mod test_fixtures;
 
@@ -30,7 +30,7 @@ fn get_by_id__not_found() {
 
 #[test]
 fn get_by_id__successfully_returned() {
-    let meal = rnd_meal_with_event(rnd_meal_id());
+    let meal = rnd_new_meal_with_meal_id(rnd_meal_id());
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -40,7 +40,7 @@ fn get_by_id__successfully_returned() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let meal_id = *meal.get_id();
+    let meal_id = *meal.id();
     let result = repository.get_by_id(&meal_id);
 
     assert!(result.is_some());
@@ -64,7 +64,7 @@ fn get_by_name__not_found() {
 
 #[test]
 fn get_by_name__successfully_returned() {
-    let meal = rnd_meal_with_event(rnd_meal_id());
+    let meal = rnd_new_meal_with_meal_id(rnd_meal_id());
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -74,7 +74,7 @@ fn get_by_name__successfully_returned() {
         PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
     repository.save(meal.clone());
 
-    let meal_name = meal.get_name();
+    let meal_name = meal.name();
     let result = repository.get_by_name(meal_name);
 
     assert!(result.is_some());
@@ -98,7 +98,7 @@ fn get_all__table_is_empty() {
 
 #[test]
 fn get_all__table_is_not_empty() {
-    let meal = rnd_meal_with_event(rnd_meal_id());
+    let meal = rnd_new_meal_with_meal_id(rnd_meal_id());
     let db = TestDb::new();
     let mut conn = db.conn();
 
@@ -116,7 +116,7 @@ fn get_all__table_is_not_empty() {
 
 #[test]
 fn get_all__table_is_not_empty_but_removed() {
-    let mut meal = rnd_meal_with_event(rnd_meal_id());
+    let mut meal = rnd_new_meal_with_meal_id(rnd_meal_id());
     meal.remove_meal_from_menu();
     let db = TestDb::new();
     let mut conn = db.conn();

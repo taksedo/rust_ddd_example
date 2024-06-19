@@ -19,7 +19,7 @@ fn storage_is_empty() {
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
 
-    let result = use_case.execute(order_id, limit());
+    let result = use_case.execute(&order_id, limit());
     let list = result.unwrap();
 
     assert!(list.is_empty());
@@ -31,13 +31,13 @@ fn storage_is_not_empty() {
     let limit: fn() -> usize = || 10;
 
     let order = rnd_order(Default::default());
-    let order_id = order.entity_params.id;
+    let order_id = order.id();
 
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
     extractor.lock().unwrap().order = Some(order.clone());
 
     let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
-    let result = use_case.execute(order_id, limit());
+    let result = use_case.execute(&order_id, limit());
     let list = result.unwrap();
 
     extractor.lock().unwrap().verify_invoked_get_all();
@@ -52,7 +52,7 @@ fn limit_exceed() {
     let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
 
     let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
-    let result = use_case.execute(order_id, limit() + 1);
+    let result = use_case.execute(&order_id, limit() + 1);
 
     assert!(result.is_err());
 

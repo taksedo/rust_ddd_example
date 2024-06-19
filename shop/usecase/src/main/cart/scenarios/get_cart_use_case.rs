@@ -29,7 +29,7 @@ where
         let cart = &self.cart_extractor.lock().unwrap().get_cart(&for_customer);
         if let Some(option_value) = cart {
             let cart_item_list = option_value
-                .get_meals()
+                .meals()
                 .iter()
                 .map(|(meal_id, count)| {
                     let meal = &self.meal_extractor.lock().unwrap().get_by_id(meal_id);
@@ -39,7 +39,7 @@ where
                     CartItem {
                         meal_id: *meal_id,
                         count: *count,
-                        meal_name: meal.clone().unwrap().get_name().to_owned(),
+                        meal_name: meal.clone().unwrap().name().to_owned(),
                     }
                 })
                 .collect();
