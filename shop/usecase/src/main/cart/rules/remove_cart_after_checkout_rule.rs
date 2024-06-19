@@ -36,7 +36,7 @@ where
             .cart_extractor
             .lock()
             .unwrap()
-            .get_cart(event_struct.clone().for_customer);
+            .get_cart(&event_struct.for_customer);
 
         if result.is_none() {
             let _ = tracing_subscriber::fmt::try_init();

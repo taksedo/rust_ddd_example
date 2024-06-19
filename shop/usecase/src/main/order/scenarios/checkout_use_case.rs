@@ -62,7 +62,7 @@ where
         self.cart_extractor
             .lock()
             .unwrap()
-            .get_cart(request.for_customer)
+            .get_cart(&request.for_customer)
             .map_or(Err(CheckoutUseCaseError::CartNotFound), |cart| {
                 ShopOrder::checkout(
                     cart,

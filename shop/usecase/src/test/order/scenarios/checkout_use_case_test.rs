@@ -35,8 +35,8 @@ fn order_created_successfully() {
     let count = rnd_count();
     let customer_id = rnd_customer_id();
     let mut cart = rnd_cart();
-    cart.meals = HashMap::from([(*meal.get_id(), count)]);
-    cart.for_customer = customer_id;
+    cart.set_meals(HashMap::from([(*meal.get_id(), count)]));
+    cart.set_for_customer(customer_id);
 
     let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
 
@@ -67,11 +67,11 @@ fn order_created_successfully() {
     active_order_rule
         .lock()
         .unwrap()
-        .verify_invoked(&cart.for_customer);
+        .verify_invoked(&cart.get_for_customer());
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(&cart.for_customer);
+        .verify_invoked(&cart.get_for_customer());
     order_persister.lock().unwrap().verify_invoked(
         &order_id,
         &address,
@@ -127,7 +127,7 @@ fn cart_not_found() {
 #[test]
 fn cart_is_empty() {
     let cart = rnd_cart();
-    let customer_id = cart.for_customer;
+    let customer_id = cart.get_for_customer();
 
     let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
 
@@ -150,7 +150,7 @@ fn cart_is_empty() {
         order_persister.clone(),
     );
 
-    let checkout_request = checkout_request(rnd_address(), customer_id);
+    let checkout_request = checkout_request(rnd_address(), *customer_id);
     let result = use_case.execute(checkout_request.clone());
 
     order_persister.lock().unwrap().verify_empty();
@@ -193,7 +193,7 @@ fn already_has_active_order() {
     order_persister.lock().unwrap().verify_empty();
     cart_extractor.lock().unwrap().verify_empty();
     active_order_rule.lock().unwrap().verify_empty();
-    let result = use_case.execute(checkout_request(rnd_address(), cart.for_customer));
+    let result = use_case.execute(checkout_request(rnd_address(), *cart.get_for_customer()));
     assert!(result.is_err());
     assert_eq!(
         result.unwrap_err(),

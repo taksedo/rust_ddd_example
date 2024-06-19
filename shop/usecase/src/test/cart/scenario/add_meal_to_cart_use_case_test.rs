@@ -51,7 +51,7 @@ fn cart_exists_successfully_added() {
     let meal = rnd_meal();
     let customer_id = rnd_customer_id();
     let mut existing_cart = rnd_cart();
-    existing_cart.for_customer = customer_id;
+    existing_cart.set_for_customer(customer_id);
 
     let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
     let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
