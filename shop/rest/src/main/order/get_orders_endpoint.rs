@@ -71,7 +71,7 @@ pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
         validate_query_string::<usize>(req, "limit", error_list.clone()),
     ) {
         (Ok(start_id), Ok(limit)) => {
-            match shared_state.lock().unwrap().execute(start_id, limit + 1) {
+            match shared_state.lock().unwrap().execute(&start_id, limit + 1) {
                 Ok(order_details_list) => {
                     let list: Vec<OrderModel> = order_details_list
                         .into_iter()

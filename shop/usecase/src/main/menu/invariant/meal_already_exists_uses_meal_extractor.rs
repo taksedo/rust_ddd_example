@@ -15,8 +15,7 @@ pub struct MealAlreadyExistsUsesMealExtractor {
 impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
     fn invoke(&mut self, name: &MealName) -> bool {
         let meal_found_by_get = self.extractor.lock().unwrap().get_by_name(name);
-        let meal_found_by_get_is_removed =
-            *meal_found_by_get.clone().unwrap_or_default().get_removed();
+        let meal_found_by_get_is_removed = *meal_found_by_get.clone().unwrap_or_default().removed();
         meal_found_by_get.is_some() & !meal_found_by_get_is_removed
     }
 }

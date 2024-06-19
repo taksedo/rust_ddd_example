@@ -4,7 +4,7 @@ use domain::main::order::value_objects::shop_order_id::ShopOrderId;
 use thiserror::Error;
 
 pub trait CancelOrder: Debug + Send {
-    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError>;
+    fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError>;
 }
 
 #[derive(Error, Debug, Clone, PartialEq, Copy)]

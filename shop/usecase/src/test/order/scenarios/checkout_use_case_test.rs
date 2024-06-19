@@ -15,7 +15,10 @@ use domain::{
             value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator},
         },
     },
-    test_fixtures::{rnd_address, rnd_cart, rnd_customer_id, rnd_meal, rnd_order_id, rnd_price},
+    test_fixtures::{
+        rnd_address, rnd_cart, rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal,
+        rnd_order_id, rnd_price,
+    },
 };
 use smart_default::SmartDefault;
 
@@ -34,9 +37,8 @@ fn order_created_successfully() {
     let address = rnd_address();
     let count = rnd_count();
     let customer_id = rnd_customer_id();
-    let mut cart = rnd_cart();
-    cart.set_meals(HashMap::from([(*meal.get_id(), count)]));
-    cart.set_for_customer(customer_id);
+    let cart =
+        rnd_cart_with_customer_id_and_meals(customer_id, HashMap::from([(*meal.id(), count)]));
 
     let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
 
@@ -60,23 +62,23 @@ fn order_created_successfully() {
     );
 
     let checkout_request = checkout_request(address.clone(), customer_id);
-    let result = use_case.execute(checkout_request);
+    let result = use_case.execute(&checkout_request);
 
     let order_id = id_generator.lock().unwrap().id;
 
     active_order_rule
         .lock()
         .unwrap()
-        .verify_invoked(&cart.get_for_customer());
+        .verify_invoked(&cart.for_customer());
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(&cart.get_for_customer());
+        .verify_invoked(&cart.for_customer());
     order_persister.lock().unwrap().verify_invoked(
         &order_id,
         &address,
         &customer_id,
-        meal.get_id(),
+        meal.id(),
         &count,
         &price,
     );
@@ -111,7 +113,7 @@ fn cart_not_found() {
     );
 
     let checkout_request = checkout_request(rnd_address(), rnd_customer_id());
-    let result = use_case.execute(checkout_request.clone());
+    let result = use_case.execute(&checkout_request);
 
     order_persister.lock().unwrap().verify_empty();
     active_order_rule.lock().unwrap().verify_empty();
@@ -127,7 +129,7 @@ fn cart_not_found() {
 #[test]
 fn cart_is_empty() {
     let cart = rnd_cart();
-    let customer_id = cart.get_for_customer();
+    let customer_id = cart.for_customer();
 
     let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
 
@@ -151,7 +153,7 @@ fn cart_is_empty() {
     );
 
     let checkout_request = checkout_request(rnd_address(), *customer_id);
-    let result = use_case.execute(checkout_request.clone());
+    let result = use_case.execute(&checkout_request);
 
     order_persister.lock().unwrap().verify_empty();
     active_order_rule
@@ -193,7 +195,7 @@ fn already_has_active_order() {
     order_persister.lock().unwrap().verify_empty();
     cart_extractor.lock().unwrap().verify_empty();
     active_order_rule.lock().unwrap().verify_empty();
-    let result = use_case.execute(checkout_request(rnd_address(), *cart.get_for_customer()));
+    let result = use_case.execute(&checkout_request(rnd_address(), *cart.for_customer()));
     assert!(result.is_err());
     assert_eq!(
         result.unwrap_err(),
@@ -231,7 +233,7 @@ struct TestPaymentUrlProvider {
 }
 
 impl PaymentUrlProvider for TestPaymentUrlProvider {
-    fn provide_url(&self, _order_id: ShopOrderId, _price: Price) -> Uri {
+    fn provide_url(&self, order_id: &ShopOrderId, price: Price) -> Uri {
         self.payment_url.as_str().parse::<Uri>().unwrap()
     }
 }

@@ -12,13 +12,15 @@ use postgres_persistence::main::{
 };
 use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
-use crate::test_fixtures::{rnd_meal_with_event, MockEventPublisher, TestDb};
+use crate::test_fixtures::{
+    rnd_new_meal_with_meal_id, rnd_new_meal_with_name, MockEventPublisher, TestDb,
+};
 
 mod test_fixtures;
 
 #[test]
 fn save_new_instance() {
-    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
+    let rnd_meal = rnd_new_meal_with_meal_id(rnd_meal_id());
 
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -33,9 +35,7 @@ fn save_new_instance() {
     publisher
         .lock()
         .unwrap()
-        .verify_contains(vec![
-            MealAddedToMenuDomainEvent::new(*rnd_meal.get_id()).into()
-        ]);
+        .verify_contains(vec![MealAddedToMenuDomainEvent::new(*rnd_meal.id()).into()]);
 
     let result = repository.get_all();
     dbg!(&result);
@@ -55,10 +55,8 @@ fn save_new_instance_but_already_exists_with_the_same_id() {
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let meal_id = rnd_meal_id();
-    let mut first = rnd_meal_with_event(meal_id);
-    let mut second = rnd_meal_with_event(meal_id);
-    first.set_id(meal_id);
-    second.set_id(meal_id);
+    let first = rnd_new_meal_with_meal_id(meal_id);
+    let second = rnd_new_meal_with_meal_id(meal_id);
 
     repository.save(first);
     repository.save(second);
@@ -77,10 +75,8 @@ fn save_new_instance_but_already_exists_with_the_same_name() {
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let meal_name = rnd_meal_name();
-    let mut first = rnd_meal_with_event(rnd_meal_id());
-    let mut second = rnd_meal_with_event(rnd_meal_id());
-    first.set_name(meal_name.clone());
-    second.set_name(meal_name);
+    let first = rnd_new_meal_with_name(&meal_name);
+    let second = rnd_new_meal_with_name(&meal_name);
 
     repository.save(first);
     repository.save(second);
@@ -97,8 +93,8 @@ fn create_new_instance_and_then_update_it() {
 
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
-    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
-    let meal_id = *rnd_meal.clone().get_id();
+    let rnd_meal = rnd_new_meal_with_meal_id(rnd_meal_id());
+    let meal_id = *rnd_meal.clone().id();
     repository.save(rnd_meal);
 
     let mut rnd_meal = repository.get_by_id(&meal_id).unwrap();
@@ -123,8 +119,8 @@ fn save_again_without_changes() {
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
-    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
-    let meal_id = *rnd_meal.clone().get_id();
+    let rnd_meal = rnd_new_meal_with_meal_id(rnd_meal_id());
+    let meal_id = *rnd_meal.clone().id();
     repository.save(rnd_meal);
 
     let rnd_meal = repository.get_by_id(&meal_id).unwrap();
@@ -135,7 +131,7 @@ fn save_again_without_changes() {
         .lock()
         .unwrap()
         .verify_contains(vec![Into::<MealEventEnum>::into(
-            MealAddedToMenuDomainEvent::new(*rnd_meal.get_id()),
+            MealAddedToMenuDomainEvent::new(*rnd_meal.id()),
         )]);
 }
 
@@ -150,7 +146,7 @@ fn saving_failed_if_version_outdated() {
     let publisher = Arc::new(Mutex::new(MockEventPublisher::default()));
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
-    let rnd_meal = rnd_meal_with_event(rnd_meal_id());
+    let rnd_meal = rnd_new_meal_with_meal_id(rnd_meal_id());
     repository.save(rnd_meal.clone());
 
     let mut copy_of_rnd_meal = rnd_meal;

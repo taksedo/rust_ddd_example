@@ -58,7 +58,7 @@ where
     PaymUrlProvider: PaymentUrlProvider,
     ShOPersister: ShopOrderPersister,
 {
-    fn execute(&self, request: CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError> {
+    fn execute(&self, request: &CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError> {
         self.cart_extractor
             .lock()
             .unwrap()
@@ -68,7 +68,7 @@ where
                     cart,
                     self.id_generator.clone(),
                     self.active_order.clone(),
-                    request.delivery_to,
+                    request.delivery_to.clone(),
                     self.get_meal_price.clone(),
                 )
                 .map_err(|err| err.to_error())
@@ -79,13 +79,13 @@ where
                     .unwrap()
                     .save(order.clone());
                 PaymentInfo {
-                    order_id: order.entity_params.id,
+                    order_id: *order.id(),
                     price: order.total_price(),
                     payment_url: self
                         .payment_url_provider
                         .lock()
                         .unwrap()
-                        .provide_url(order.entity_params.id, order.total_price()),
+                        .provide_url(order.id(), order.total_price()),
                 }
             })
     }

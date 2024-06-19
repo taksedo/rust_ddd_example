@@ -36,12 +36,12 @@ pub struct MealDbDto {
 impl From<Meal> for MealDbDto {
     fn from(value: Meal) -> Self {
         Self {
-            id: value.get_id().to_i64(),
-            name: value.get_name().to_string(),
-            description: Some(value.get_description().to_string()),
-            price: value.get_price().to_bigdecimal(),
-            removed: *value.get_removed(),
-            version: value.get_version().to_i64(),
+            id: value.id().to_i64(),
+            name: value.name().to_string(),
+            description: Some(value.description().to_string()),
+            price: value.price().to_bigdecimal(),
+            removed: *value.removed(),
+            version: value.version().to_i64(),
         }
     }
 }

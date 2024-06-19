@@ -21,11 +21,11 @@ pub struct MealInfo {
 impl From<Meal> for MealInfo {
     fn from(value: Meal) -> Self {
         Self {
-            id: *value.get_id(),
-            name: value.get_name().to_owned(),
-            description: value.get_description().to_owned(),
-            price: value.get_price().to_owned(),
-            version: *value.get_version(),
+            id: *value.id(),
+            name: value.name().to_owned(),
+            description: value.description().to_owned(),
+            price: value.price().to_owned(),
+            version: *value.version(),
         }
     }
 }

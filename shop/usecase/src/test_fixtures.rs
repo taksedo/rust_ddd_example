@@ -1,9 +1,6 @@
 use std::{any::Any, collections::HashMap, mem::discriminant};
 
-use common::types::{
-    base::domain_entity::DomainEntityTrait,
-    common::{address::Address, count::Count},
-};
+use common::types::common::{address::Address, count::Count};
 use derive_new::new;
 use domain::{
     main::{
@@ -107,16 +104,16 @@ impl MockMealPersister {
     ) {
         let meal = &self.meal.clone().unwrap();
         if id.is_some() {
-            assert_eq!(meal.get_id(), id.unwrap())
+            assert_eq!(meal.id(), id.unwrap())
         }
         if name.is_some() {
-            assert_eq!(meal.get_name(), name.unwrap())
+            assert_eq!(meal.name(), name.unwrap())
         }
         if description.is_some() {
-            assert_eq!(meal.get_description(), description.unwrap())
+            assert_eq!(meal.description(), description.unwrap())
         }
         if price.is_some() {
-            assert_eq!(meal.get_price(), price.unwrap())
+            assert_eq!(meal.price(), price.unwrap())
         }
     }
 
@@ -243,16 +240,16 @@ impl MockCartPersister {
             assert_eq!(self_cart, cart.unwrap());
         }
         if cart_id.is_some() {
-            assert_eq!(self_cart.get_id(), cart_id.unwrap());
+            assert_eq!(self_cart.id(), cart_id.unwrap());
         }
         if meal_id.is_some() {
             assert_eq!(
-                self_cart.get_meals(),
+                self_cart.meals(),
                 &HashMap::from([(*meal_id.unwrap(), Count::one())])
             );
         }
         if customer_id.is_some() {
-            assert_eq!(self_cart.get_for_customer(), customer_id.unwrap());
+            assert_eq!(self_cart.for_customer(), customer_id.unwrap());
         }
     }
 
@@ -284,7 +281,7 @@ impl MockCartRemover {
 
 impl CartRemover for MockCartRemover {
     fn delete_cart(&mut self, cart: Cart) {
-        self.id = Some(*cart.get_id());
+        self.id = Some(*cart.id());
     }
 }
 
@@ -320,26 +317,25 @@ pub struct MockShopOrderExtractor {
 }
 
 impl ShopOrderExtractor for MockShopOrderExtractor {
-    fn get_by_id(&mut self, order_id: ShopOrderId) -> Option<ShopOrder> {
-        self.id = Some(order_id);
-        if self.order.is_some() && self.order.clone().unwrap().entity_params.id == self.id.unwrap()
-        {
+    fn get_by_id(&mut self, order_id: &ShopOrderId) -> Option<ShopOrder> {
+        self.id = Some(*order_id);
+        if self.order.is_some() && self.order.clone().unwrap().id() == &self.id.unwrap() {
             self.order.as_ref().cloned()
         } else {
             None
         }
     }
 
-    fn get_last_order(&mut self, for_customer: CustomerId) -> Option<ShopOrder> {
-        self.for_customer = Some(for_customer);
-        if self.order.is_some() && self.order.clone().unwrap().for_customer == for_customer {
+    fn get_last_order(&mut self, for_customer: &CustomerId) -> Option<ShopOrder> {
+        self.for_customer = Some(*for_customer);
+        if self.order.is_some() && self.order.clone().unwrap().for_customer() == for_customer {
             self.order.as_ref().cloned()
         } else {
             None
         }
     }
 
-    fn get_all(&mut self, _start_id: ShopOrderId, _limit: usize) -> Vec<ShopOrder> {
+    fn get_all(&mut self, start_id: &ShopOrderId, limit: usize) -> Vec<ShopOrder> {
         self.all = true;
         if self.order.is_some() {
             vec![self.order.clone().unwrap()]
@@ -400,19 +396,19 @@ impl MockShopOrderPersister {
         count_items: &Count,
         price_items: &Price,
     ) {
-        assert_eq!(&self.order.clone().unwrap().entity_params.id, order_id);
-        assert_eq!(&self.order.clone().unwrap().address, address);
-        assert_eq!(&self.order.clone().unwrap().for_customer, customer_id);
-        assert_eq!(self.order.clone().unwrap().order_items.len(), 1);
+        let order = self.order.clone().unwrap();
+        assert_eq!(order.id(), order_id);
+        assert_eq!(order.address(), address);
+        assert_eq!(order.for_customer(), customer_id);
+        assert_eq!(order.order_items().len(), 1);
 
-        let binding = self.order.clone().unwrap();
-        let order_item = binding.order_items.iter().next().unwrap();
+        let order_item = order.order_items().iter().next().unwrap();
         assert_eq!(order_item.meal_id, *meal_id);
         assert_eq!(order_item.count, *count_items);
         assert_eq!(order_item.price, *price_items);
     }
     pub fn verify_events_after_cancellation(&self, id: &ShopOrderId) {
-        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let events = self.order.clone().unwrap().pop_events();
         let first_event = events.first().unwrap().clone();
         let etalon_event = ShopOrderCancelledDomainEvent::new(*id);
         assert_eq!(events.len(), 1);
@@ -424,7 +420,7 @@ impl MockShopOrderPersister {
         assert_eq!(first_event_struct.order_id, *id);
     }
     pub fn verify_events_after_completion(&mut self, id: &ShopOrderId) {
-        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let events = self.order.clone().unwrap().pop_events();
         let first_event = events.first().unwrap().clone();
         let etalon_event = ShopOrderCompletedDomainEvent::new(*id);
         assert_eq!(events.len(), 1);
@@ -437,7 +433,7 @@ impl MockShopOrderPersister {
     }
 
     pub fn verify_events_after_confirmation(&mut self, id: &ShopOrderId) {
-        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let events = self.order.clone().unwrap().pop_events();
         let first_event = events.first().unwrap().clone();
         let etalon_event = ShopOrderConfirmedDomainEvent::new(*id);
         assert_eq!(events.len(), 1);
@@ -450,7 +446,7 @@ impl MockShopOrderPersister {
     }
 
     pub fn verify_events_after_payment(&mut self, id: &ShopOrderId) {
-        let events = self.order.clone().unwrap().entity_params.pop_events();
+        let events = self.order.clone().unwrap().pop_events();
         let first_event = events.first().unwrap().clone();
         let etalon_event = ShopOrderPaidDomainEvent::new(*id);
         assert_eq!(events.len(), 1);
@@ -512,8 +508,8 @@ impl MockCustomerHasActiveOrder {
 }
 
 impl CustomerHasActiveOrder for MockCustomerHasActiveOrder {
-    fn invoke(&mut self, for_customer: CustomerId) -> bool {
-        self.for_customer = Some(for_customer);
+    fn invoke(&mut self, for_customer: &CustomerId) -> bool {
+        self.for_customer = Some(*for_customer);
         self.has_active
     }
 }

@@ -6,5 +6,5 @@ use domain::main::{
 };
 
 pub trait PaymentUrlProvider: Debug + Send {
-    fn provide_url(&self, order_id: ShopOrderId, price: Price) -> Uri;
+    fn provide_url(&self, order_id: &ShopOrderId, price: Price) -> Uri;
 }

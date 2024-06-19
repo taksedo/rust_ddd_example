@@ -25,8 +25,8 @@ impl PostgresMealRepository {
     fn update(&mut self, meal_param: Meal) {
         let connection = &mut self.connection;
         let new_meal = MealDbDto::from(meal_param.clone());
-        let meal_id = meal_param.get_id().to_i64();
-        let previous_version = meal_param.get_version().previous().to_i64();
+        let meal_id = meal_param.id().to_i64();
+        let previous_version = meal_param.version().previous().to_i64();
 
         diesel::update(meal)
             .filter(id.eq(meal_id))
@@ -37,7 +37,7 @@ impl PostgresMealRepository {
                 panic!(
                     "Meal #{} [version = {}] is outdated",
                     meal_id,
-                    meal_param.get_version().to_i64()
+                    meal_param.version().to_i64()
                 )
             });
     }
@@ -56,22 +56,21 @@ impl PostgresMealRepository {
 impl MealPersister for PostgresMealRepository {
     fn save(&mut self, mut meal_param: Meal) {
         let events = meal_param.pop_events();
-        let mut res_vec = vec![];
         if !events.is_empty() {
-            events.iter().for_each(|event| {
-                if let MealEventEnum::MealAddedToMenuDomainEvent(ev) = event {
-                    if ev.meal_id == *meal_param.get_id() {
-                        res_vec.insert(res_vec.len(), ev);
-                    }
+            let mut flag = false;
+            for event in events.iter() {
+                if matches!(event, MealEventEnum::MealAddedToMenuDomainEvent(x) if &x.meal_id == meal_param.id())
+                {
+                    self.insert(meal_param.clone());
+                    flag = true;
+                    break;
                 }
-            });
-            if !res_vec.is_empty() {
-                self.insert(meal_param)
-            } else {
-                self.update(meal_param)
             }
+            if !flag {
+                self.update(meal_param);
+            }
+            self.event_publisher.lock().unwrap().publish(&events);
         }
-        self.event_publisher.lock().unwrap().publish(&events);
     }
 }
 

@@ -68,7 +68,7 @@ pub async fn get_order_by_id_endpoint<T: GetOrderById + Send + Debug>(
     let error_list = Arc::new(Mutex::new(vec![]));
 
     match ShopOrderId::validated(id, error_list.clone()) {
-        Ok(order_id) => match shared_state.lock().unwrap().execute(order_id) {
+        Ok(order_id) => match shared_state.lock().unwrap().execute(&order_id) {
             Ok(it) => HttpResponse::Ok()
                 .content_type(ContentType::json())
                 .body(serde_json::to_string(&ToModel::<OrderModel>::to_model(it)).unwrap()),

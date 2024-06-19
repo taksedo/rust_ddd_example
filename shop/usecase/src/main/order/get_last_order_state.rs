@@ -6,7 +6,7 @@ use thiserror::Error;
 pub trait GetLastOrderState: Debug + Send {
     fn execute(
         &self,
-        for_customer: CustomerId,
+        for_customer: &CustomerId,
     ) -> Result<OrderState, GetLastOrderStateUseCaseError>;
 }
 

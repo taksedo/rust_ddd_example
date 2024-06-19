@@ -22,7 +22,7 @@ where
     ShOExtractor: ShopOrderExtractor,
     ShOPersister: ShopOrderPersister,
 {
-    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
+    fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
         self.shop_order_extractor
             .lock()
             .unwrap()

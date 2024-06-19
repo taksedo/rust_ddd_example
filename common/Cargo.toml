@@ -30,7 +30,7 @@ fake = { version = "2.9.1", features = ["derive"] }
 utoipa = "4"
 utoipa-swagger-ui = "6"
 uuid = { version = "1.8.0", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
-lombok = "0.4.0"
+derive-getters = "0.4.0"
 
 types = { path = "types" }
 

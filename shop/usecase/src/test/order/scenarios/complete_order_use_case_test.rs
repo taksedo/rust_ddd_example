@@ -21,7 +21,7 @@ fn successfully_completed() {
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
     let use_case = CompleteOrderUseCase::new(extractor.clone(), persister.clone());
-    let result = use_case.execute(order.entity_params.id);
+    let result = use_case.execute(&order.id());
 
     assert!(result.is_ok());
 
@@ -30,11 +30,11 @@ fn successfully_completed() {
     persister
         .lock()
         .unwrap()
-        .verify_events_after_completion(&order.entity_params.id);
+        .verify_events_after_completion(&order.id());
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&order.entity_params.id);
+        .verify_invoked_get_by_id(&order.id());
 }
 
 #[test]
@@ -45,7 +45,7 @@ fn invalid_state() {
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
     let use_case = CompleteOrderUseCase::new(extractor.clone(), persister.clone());
-    let result = use_case.execute(order.entity_params.id);
+    let result = use_case.execute(&order.id());
 
     assert!(result.is_err());
     assert_eq!(
@@ -57,7 +57,7 @@ fn invalid_state() {
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&order.entity_params.id);
+        .verify_invoked_get_by_id(&order.id());
 }
 
 #[test]
@@ -68,7 +68,7 @@ fn order_not_found() {
     let use_case = CompleteOrderUseCase::new(extractor.clone(), persister.clone());
 
     let order_id = rnd_order_id();
-    let result = use_case.execute(order_id);
+    let result = use_case.execute(&order_id);
 
     assert!(result.is_err());
     assert_eq!(

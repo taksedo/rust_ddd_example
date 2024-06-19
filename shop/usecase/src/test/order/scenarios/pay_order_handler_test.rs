@@ -21,7 +21,7 @@ fn successfully_payed() {
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
     let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
-    let result = handler.execute(order.entity_params.id);
+    let result = handler.execute(&order.id());
 
     assert!(result.is_ok());
 
@@ -31,11 +31,11 @@ fn successfully_payed() {
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&order.entity_params.id);
+        .verify_invoked_get_by_id(&order.id());
     persister
         .lock()
         .unwrap()
-        .verify_events_after_payment(&order.entity_params.id);
+        .verify_events_after_payment(&order.id());
 }
 
 #[test]
@@ -46,7 +46,7 @@ fn invalid_state() {
     let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
     let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
-    let result = handler.execute(order.entity_params.id);
+    let result = handler.execute(&order.id());
 
     assert!(result.is_err());
     assert_eq!(result.unwrap_err(), PayOrderHandlerError::InvalidOrderState);
@@ -55,7 +55,7 @@ fn invalid_state() {
     extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&order.entity_params.id);
+        .verify_invoked_get_by_id(&order.id());
 }
 
 #[test]
@@ -65,7 +65,7 @@ fn order_not_found() {
 
     let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
     let order_id = rnd_order_id();
-    let result = handler.execute(order_id);
+    let result = handler.execute(&order_id);
 
     assert!(result.is_err());
     assert_eq!(result.unwrap_err(), PayOrderHandlerError::OrderNotFound);

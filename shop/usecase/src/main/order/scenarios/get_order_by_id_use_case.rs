@@ -14,7 +14,7 @@ pub struct GetOrderByIdUseCase<ShOExtractor: ShopOrderExtractor> {
 }
 
 impl<ShOExtractor: ShopOrderExtractor> GetOrderById for GetOrderByIdUseCase<ShOExtractor> {
-    fn execute(&mut self, id: ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
+    fn execute(&mut self, id: &ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
         self.shop_order_extractor
             .lock()
             .unwrap()

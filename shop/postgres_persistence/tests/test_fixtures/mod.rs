@@ -7,9 +7,14 @@ use domain::{
     main::menu::{
         meal::Meal,
         meal_events::MealEventEnum,
-        value_objects::meal_id::{MealId, MealIdGenerator},
+        value_objects::{
+            meal_id::{MealId, MealIdGenerator},
+            meal_name::MealName,
+        },
     },
-    test_fixtures::{rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists},
+    test_fixtures::{
+        rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
+    },
 };
 use log::warn;
 use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage, ImageExt};
@@ -139,8 +144,25 @@ impl MealIdGenerator for TestMealIdGenerator {
     }
 }
 
-pub fn rnd_meal_with_event(meal_id: MealId) -> Meal {
+pub fn rnd_new_meal_with_meal_id(meal_id: MealId) -> Meal {
     let meal_name = rnd_meal_name();
+    let meal_description = rnd_meal_description();
+    let meal_price = rnd_price();
+    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new(meal_id)));
+
+    Meal::add_meal_to_menu(
+        id_generator.clone(),
+        Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
+        meal_name,
+        meal_description,
+        meal_price,
+    )
+    .unwrap()
+}
+
+pub fn rnd_new_meal_with_name(meal_name: &MealName) -> Meal {
+    let meal_id = rnd_meal_id();
+    let meal_name = meal_name.clone();
     let meal_description = rnd_meal_description();
     let meal_price = rnd_price();
     let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new(meal_id)));

@@ -4,7 +4,7 @@ use std::{
 };
 
 use common::types::test_fixtures::rnd_count;
-use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_meal};
+use domain::test_fixtures::{rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal};
 
 use crate::{
     main::cart::{
@@ -22,9 +22,8 @@ fn cart_successfully_extracted() {
 
     let customer_id = rnd_customer_id();
 
-    let mut cart = rnd_cart();
-    cart.set_for_customer(customer_id);
-    cart.set_meals(HashMap::from([(*meal.get_id(), count)]));
+    let cart =
+        rnd_cart_with_customer_id_and_meals(customer_id, HashMap::from([(*meal.id(), count)]));
 
     let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
     cart_extractor.lock().unwrap().cart = Some(cart.clone());
@@ -38,20 +37,16 @@ fn cart_successfully_extracted() {
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(cart.get_for_customer());
+        .verify_invoked(cart.for_customer());
     meal_extractor
         .lock()
         .unwrap()
-        .verify_invoked_get_by_id(&meal.get_id());
+        .verify_invoked_get_by_id(&meal.id());
     let extracted_cart = result.unwrap();
     assert_eq!(extracted_cart.for_customer, customer_id);
     assert_eq!(
         extracted_cart.items,
-        vec![CartItem::new(
-            *meal.get_id(),
-            meal.get_name().to_owned(),
-            count
-        )]
+        vec![CartItem::new(*meal.id(), meal.name().to_owned(), count)]
     )
 }
 

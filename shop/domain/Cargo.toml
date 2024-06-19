@@ -19,7 +19,7 @@ enum_dispatch.workspace = true
 smart-default.workspace = true
 uuid.workspace = true
 derive_more.workspace = true
-lombok.workspace = true
+derive-getters.workspace = true
 
 common.workspace = true
 

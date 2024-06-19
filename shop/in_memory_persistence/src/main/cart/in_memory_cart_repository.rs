@@ -32,12 +32,12 @@ impl CartPersister for InMemoryCartRepository {
         let popped_events = cart.pop_events();
         dbg!(&popped_events);
         self.event_publisher.lock().unwrap().publish(&popped_events);
-        self.storage.insert(*cart.get_for_customer(), cart);
+        self.storage.insert(*cart.for_customer(), cart);
     }
 }
 
 impl CartRemover for InMemoryCartRepository {
     fn delete_cart(&mut self, cart: Cart) {
-        self.storage.remove(cart.get_for_customer());
+        self.storage.remove(cart.for_customer());
     }
 }

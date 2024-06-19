@@ -15,7 +15,7 @@ pub struct CompleteOrderUseCase {
 }
 
 impl CompleteOrder for CompleteOrderUseCase {
-    fn execute(&self, order_id: ShopOrderId) -> Result<(), CompleteOrderUseCaseError> {
+    fn execute(&self, order_id: &ShopOrderId) -> Result<(), CompleteOrderUseCaseError> {
         self.shop_order_extractor
             .lock()
             .unwrap()

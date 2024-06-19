@@ -83,7 +83,7 @@ futures-util = { version = "0.3", default-features = false, features = [
 ] }
 utoipa-swagger-ui = { version = "7", features = ["actix-web"] }
 utoipa = { version = "4.2.3", features = ["actix_extras", "chrono"] }
-lombok = "0.4.0"
+derive-getters = "0.4.0"
 
 common = { path = "../common", package = "rust_ddd_example_common" }
 domain = { path = "domain" }

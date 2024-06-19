@@ -16,14 +16,14 @@ pub struct GetLastOrderStateUseCase {
 impl GetLastOrderState for GetLastOrderStateUseCase {
     fn execute(
         &self,
-        for_customer: CustomerId,
+        for_customer: &CustomerId,
     ) -> Result<OrderState, GetLastOrderStateUseCaseError> {
         self.shop_order_extractor
             .lock()
             .unwrap()
             .get_last_order(for_customer)
             .map_or(Err(GetLastOrderStateUseCaseError::OrderNotFound), |order| {
-                Ok(order.state)
+                Ok(order.state().clone())
             })
     }
 }

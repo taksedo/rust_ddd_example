@@ -67,13 +67,13 @@ impl Default for MockAddMealToMenu {
 impl AddMealToMenu for MockAddMealToMenu {
     fn execute(
         &mut self,
-        name: MealName,
-        description: MealDescription,
-        price: Price,
+        name: &MealName,
+        description: &MealDescription,
+        price: &Price,
     ) -> Result<MealId, AddMealToMenuUseCaseError> {
-        self.name = name;
-        self.description = description;
-        self.price = price;
+        self.name = name.clone();
+        self.description = description.clone();
+        self.price = price.clone();
         self.response.to_owned()
     }
 }
@@ -109,11 +109,11 @@ impl MockGetMealById {
 pub fn rnd_meal_info() -> MealInfo {
     let meal = rnd_meal();
     MealInfo {
-        id: *meal.get_id(),
-        name: meal.get_name().clone(),
-        description: meal.get_description().clone(),
-        price: meal.get_price().clone(),
-        version: *meal.get_version(),
+        id: *meal.id(),
+        name: meal.name().clone(),
+        description: meal.description().clone(),
+        price: meal.price().clone(),
+        version: *meal.version(),
     }
 }
 
@@ -161,8 +161,8 @@ pub struct MockCancelOrder {
 }
 
 impl CancelOrder for MockCancelOrder {
-    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
-        self.id = order_id;
+    fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
+        self.id = *order_id;
         self.response
     }
 }
@@ -181,8 +181,8 @@ impl MockConfirmOrder {
 }
 
 impl ConfirmOrder for MockConfirmOrder {
-    fn execute(&mut self, order_id: ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
-        self.id = order_id;
+    fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
+        self.id = *order_id;
         self.response
     }
 }
@@ -200,8 +200,8 @@ impl MockGetOrderById {
 }
 
 impl GetOrderById for MockGetOrderById {
-    fn execute(&mut self, id: ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
-        self.id = id;
+    fn execute(&mut self, id: &ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
+        self.id = *id;
         self.clone().response
     }
 }
@@ -216,10 +216,10 @@ pub struct MockGetOrders {
 impl GetOrders for MockGetOrders {
     fn execute(
         &mut self,
-        start_id: ShopOrderId,
+        start_id: &ShopOrderId,
         limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError> {
-        self.start_id = start_id;
+        self.start_id = *start_id;
         self.limit = limit;
         self.response.clone()
     }

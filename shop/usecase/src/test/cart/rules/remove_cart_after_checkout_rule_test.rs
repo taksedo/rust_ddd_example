@@ -23,7 +23,7 @@ fn successfully_removed() {
     let mut rule = RemoveCartAfterCheckoutRule::new(cart_extractor.clone(), cart_remover.clone());
     let event: ShopOrderEventEnum = ShopOrderCreatedDomainEvent::new(
         rnd_order_id(),
-        cart.clone().get_for_customer().clone(),
+        cart.clone().for_customer().clone(),
         rnd_price(),
     )
     .into();
@@ -33,8 +33,8 @@ fn successfully_removed() {
     cart_extractor
         .lock()
         .unwrap()
-        .verify_invoked(&cart.get_for_customer());
-    cart_remover.lock().unwrap().verify_invoked(cart.get_id());
+        .verify_invoked(&cart.for_customer());
+    cart_remover.lock().unwrap().verify_invoked(cart.id());
 }
 
 #[test]

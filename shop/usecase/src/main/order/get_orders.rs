@@ -9,7 +9,7 @@ use crate::main::order::dto::order_details::OrderDetails;
 pub trait GetOrders: Debug + Send {
     fn execute(
         &mut self,
-        start_id: ShopOrderId,
+        start_id: &ShopOrderId,
         limit: usize,
     ) -> Result<Vec<OrderDetails>, GetOrdersUseCaseError>;
 }

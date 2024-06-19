@@ -27,7 +27,7 @@ impl MealPersister for InMemoryMealRepository {
             .lock()
             .unwrap()
             .publish(&meal.pop_events());
-        self.storage.insert(*meal.get_id(), meal);
+        self.storage.insert(*meal.id(), meal);
     }
 }
 
@@ -40,14 +40,14 @@ impl MealExtractor for InMemoryMealRepository {
         self.storage
             .values()
             .map(|value| value.to_owned())
-            .find(|value| value.get_name() == name)
+            .find(|value| value.name() == name)
     }
 
     fn get_all(&mut self) -> Vec<Meal> {
         let storage: &HashMap<MealId, Meal> = &self.storage;
         storage
             .iter()
-            .filter(|(&_k, v)| !v.to_owned().get_removed())
+            .filter(|(&_k, v)| !v.to_owned().removed())
             .map(|(&_k, v)| v.to_owned())
             .collect()
     }

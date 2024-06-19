@@ -7,8 +7,8 @@ use common::types::{
     base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
     errors::error::BusinessError,
 };
+use derive_getters::Getters;
 use derive_new::new;
-use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 
 use crate::main::menu::{
@@ -22,8 +22,9 @@ use crate::main::menu::{
     },
 };
 
-#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getter, Setter)]
+#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getters)]
 pub struct Meal {
+    #[getter(skip)]
     entity_params: DomainEntity<MealId, MealEventEnum>,
     name: MealName,
     description: MealDescription,
@@ -86,16 +87,12 @@ impl Meal {
         }
     }
 
-    pub fn get_id(&self) -> &MealId {
-        self.entity_params.get_id()
+    pub fn id(&self) -> &MealId {
+        self.entity_params.id()
     }
 
-    pub fn set_id(&mut self, id: MealId) {
-        self.entity_params.set_id(id);
-    }
-
-    pub fn get_version(&self) -> &Version {
-        self.entity_params.get_version()
+    pub fn version(&self) -> &Version {
+        self.entity_params.version()
     }
 
     pub fn pop_events(&mut self) -> Vec<MealEventEnum> {
