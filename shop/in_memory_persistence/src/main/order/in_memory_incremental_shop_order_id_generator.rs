@@ -16,3 +16,16 @@ impl ShopOrderIdGenerator for InMemoryIncrementalShopOrderIdGenerator {
         ShopOrderId::try_from(*order_id).unwrap()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn id_is_incremented() {
+        let mut generator = InMemoryIncrementalShopOrderIdGenerator::new();
+        let order_id_1 = generator.generate();
+        let order_id_2 = generator.generate();
+        assert_eq!(order_id_1.to_i64(), order_id_2.to_i64() - 1);
+    }
+}
