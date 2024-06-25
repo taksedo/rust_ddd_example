@@ -1,7 +1,7 @@
 use bigdecimal::BigDecimal;
 use common::types::base::domain_entity::{DomainEntity, Version};
 use diesel::prelude::*;
-use domain::main::menu::{
+use domain::menu::{
     meal::Meal,
     value_objects::{
         meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,

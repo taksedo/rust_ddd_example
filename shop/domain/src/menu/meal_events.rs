@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-use crate::main::menu::value_objects::meal_id::MealId;
+use crate::menu::value_objects::meal_id::MealId;
 #[cfg(test)]
 use crate::test_fixtures::TestEvent;
 

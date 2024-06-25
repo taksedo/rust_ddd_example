@@ -1,8 +1,6 @@
 use common::types::base::generic_types::AM;
 use derive_new::new;
-use domain::main::{
-    cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId,
-};
+use domain::{cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId};
 
 use crate::main::cart::{
     access::{cart_extractor::CartExtractor, cart_persister::CartPersister},

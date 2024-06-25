@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-use domain::main::{
+use domain::{
     menu::value_objects::{meal_id::MealId, price::Price},
     order::get_meal_price::GetMealPrice,
 };

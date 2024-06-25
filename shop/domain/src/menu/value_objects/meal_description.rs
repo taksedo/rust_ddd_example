@@ -42,7 +42,7 @@ mod tests {
         let type_name = result.type_name();
         assert_eq!(
             type_name,
-            "domain::main::menu::value_objects::meal_description::MealDescription"
+            "domain::menu::value_objects::meal_description::MealDescription"
         );
         let description = result;
         assert_eq!(description.to_string(), value);

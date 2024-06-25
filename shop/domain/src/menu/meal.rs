@@ -11,7 +11,7 @@ use derive_getters::Getters;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::main::menu::{
+use crate::menu::{
     meal_already_exists::MealAlreadyExists,
     meal_events::{MealAddedToMenuDomainEvent, MealEventEnum, MealRemovedFromMenuDomainEvent},
     value_objects::{

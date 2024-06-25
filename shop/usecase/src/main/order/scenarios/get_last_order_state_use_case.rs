@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-use domain::main::{cart::value_objects::customer_id::CustomerId, order::shop_order::OrderState};
+use domain::{cart::value_objects::customer_id::CustomerId, order::shop_order::OrderState};
 
 use crate::main::order::{
     access::shop_order_extractor::ShopOrderExtractor,

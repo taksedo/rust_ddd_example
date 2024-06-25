@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use domain::main::{cart::value_objects::customer_id::CustomerId, order::shop_order::OrderState};
+use domain::{cart::value_objects::customer_id::CustomerId, order::shop_order::OrderState};
 use thiserror::Error;
 
 pub trait GetLastOrderState: Debug + Send {

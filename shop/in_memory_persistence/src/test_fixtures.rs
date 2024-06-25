@@ -3,7 +3,9 @@ use std::{any::type_name, fmt::Debug};
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use domain::{
-    main::{cart::cart::Cart, menu::meal::Meal, order::shop_order::ShopOrder},
+    cart::cart::Cart,
+    menu::meal::Meal,
+    order::shop_order::ShopOrder,
     test_fixtures::{rnd_cart, rnd_meal},
 };
 use usecase::test_fixtures::order_ready_for_complete;

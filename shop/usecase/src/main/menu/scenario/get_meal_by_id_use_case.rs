@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-use domain::main::menu::value_objects::meal_id::MealId;
+use domain::menu::value_objects::meal_id::MealId;
 
 use crate::main::menu::{
     access::meal_extractor::MealExtractor,

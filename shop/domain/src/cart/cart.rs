@@ -12,7 +12,7 @@ use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
-use crate::main::{
+use crate::{
     cart::{
         cart_events::{
             CartCreatedDomainEvent, CartEventEnum, MealAddedToCartDomainEvent,

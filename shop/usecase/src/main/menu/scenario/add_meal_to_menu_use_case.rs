@@ -7,7 +7,7 @@ use common::types::{base::domain_event::DomainEventTrait, errors::error::ToError
 use derive_new::new;
 use domain::{
     self,
-    main::menu::{
+    menu::{
         meal::{Meal, MealError},
         meal_already_exists::MealAlreadyExists,
         value_objects::{

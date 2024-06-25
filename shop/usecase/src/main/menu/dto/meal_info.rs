@@ -1,5 +1,5 @@
 use common::types::base::domain_entity::Version;
-use domain::main::menu::{
+use domain::menu::{
     meal::Meal,
     value_objects::{
         meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,

@@ -3,7 +3,7 @@ use common::types::{
     common::{address::Address, count::Count},
 };
 use derive_new::new;
-use domain::main::{
+use domain::{
     menu::value_objects::{meal_id::MealId, price::Price},
     order::{
         shop_order::{OrderState, ShopOrder},

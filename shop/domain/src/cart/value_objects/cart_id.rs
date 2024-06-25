@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde_derive::{Deserialize, Serialize};
 
-use crate::main::cart::cart::CartError;
+use crate::cart::cart::CartError;
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, Default, Eq, Hash)]
 #[non_exhaustive]

@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use common::types::common::count::Count;
 use derive_new::new;
-use domain::main::{
+use domain::{
     cart::value_objects::customer_id::CustomerId,
     menu::value_objects::{meal_id::MealId, meal_name::MealName},
 };

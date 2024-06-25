@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
 use derive_new::new;
-use domain::main::cart::value_objects::cart_id::{CartId, CartIdGenerator};
+use domain::cart::value_objects::cart_id::{CartId, CartIdGenerator};
 
 #[derive(Debug, new)]
 pub struct InMemoryIncrementalCartIdGenerator {

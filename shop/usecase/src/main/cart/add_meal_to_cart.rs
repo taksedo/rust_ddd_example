@@ -1,8 +1,6 @@
 use std::fmt::Debug;
 
-use domain::main::{
-    cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId,
-};
+use domain::{cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId};
 use thiserror::Error;
 
 pub trait AddMealToCart: Debug + Send {

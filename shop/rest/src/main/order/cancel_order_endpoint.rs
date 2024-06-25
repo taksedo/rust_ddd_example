@@ -8,7 +8,7 @@ use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, rest_business_error,
     to_invalid_param_bad_request,
 };
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
+use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::{
     access::{shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister},
     cancel_order::{CancelOrder, CancelOrderUseCaseError},

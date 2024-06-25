@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use derive_new::new;
-use domain::main::{
+use domain::{
     cart::value_objects::customer_id::CustomerId,
     order::customer_has_active_order::CustomerHasActiveOrder,
 };

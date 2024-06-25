@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use domain::main::{
+use domain::{
     cart::value_objects::customer_id::CustomerId, menu::value_objects::price::Price,
     order::value_objects::shop_order_id::ShopOrderId,
 };

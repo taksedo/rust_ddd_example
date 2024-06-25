@@ -1,6 +1,6 @@
 use common::types::{base::generic_types::AM, errors::error::ToError};
 use derive_new::new;
-use domain::main::order::{
+use domain::order::{
     customer_has_active_order::CustomerHasActiveOrder,
     get_meal_price::GetMealPrice,
     shop_order::{CheckoutError, ShopOrder},
@@ -110,11 +110,9 @@ mod tests {
     use actix_web::http::Uri;
     use common::types::{common::address::Address, test_fixtures::rnd_count};
     use domain::{
-        main::{
-            cart::value_objects::customer_id::CustomerId,
-            menu::value_objects::{meal_id::MealId, price::Price},
-            order::value_objects::shop_order_id::ShopOrderId,
-        },
+        cart::value_objects::customer_id::CustomerId,
+        menu::value_objects::{meal_id::MealId, price::Price},
+        order::value_objects::shop_order_id::ShopOrderId,
         test_fixtures::{
             rnd_address, rnd_cart, rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal,
             rnd_order_id, rnd_price,

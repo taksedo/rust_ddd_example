@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use bigdecimal::ToPrimitive;
 use serde_derive::{Deserialize, Serialize};
 
-use crate::main::order::shop_order::ShopOrderError;
+use crate::order::shop_order::ShopOrderError;
 
 #[derive(
     Debug, Copy, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default, Ord, PartialOrd,

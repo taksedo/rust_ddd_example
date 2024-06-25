@@ -10,7 +10,7 @@ use common::common_rest::rest_responses::{
     created, rest_business_error, to_invalid_param_bad_request,
 };
 use derive_new::new;
-use domain::main::menu::value_objects::{
+use domain::menu::value_objects::{
     meal_description::MealDescription, meal_name::MealName, price::Price,
 };
 use http::Uri;

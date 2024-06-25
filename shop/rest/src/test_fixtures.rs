@@ -1,10 +1,8 @@
 use domain::{
-    main::{
-        menu::value_objects::{
-            meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
-        },
-        order::{shop_order::OrderState, value_objects::shop_order_id::ShopOrderId},
+    menu::value_objects::{
+        meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
     },
+    order::{shop_order::OrderState, value_objects::shop_order_id::ShopOrderId},
     test_fixtures::{
         order_with_state, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
     },

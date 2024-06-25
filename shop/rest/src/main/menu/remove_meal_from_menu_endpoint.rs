@@ -7,7 +7,7 @@ use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
 use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
 };
-use domain::main::menu::value_objects::meal_id::MealId;
+use domain::menu::value_objects::meal_id::MealId;
 use usecase::main::menu::{
     remove_meal_from_menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError},
     scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,

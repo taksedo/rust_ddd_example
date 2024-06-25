@@ -7,7 +7,7 @@ use std::{
 
 use actix_web::{web::Query, HttpRequest};
 use common::common_rest::rest_responses::ValidationError;
-use domain::main::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
+use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
 
 use crate::main::validated::Validated;
 

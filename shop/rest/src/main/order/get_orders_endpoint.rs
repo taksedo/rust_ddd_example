@@ -8,7 +8,7 @@ use common::common_rest::{
     cursor_paged_model::CursorPagedModel,
     rest_responses::{to_invalid_param_bad_request, ValidationError},
 };
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
+use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::{
     access::shop_order_extractor::ShopOrderExtractor,
     get_orders::{GetOrders, GetOrdersUseCaseError},

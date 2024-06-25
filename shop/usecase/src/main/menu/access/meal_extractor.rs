@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use domain::main::menu::{
+use domain::menu::{
     meal::Meal,
     value_objects::{meal_id::MealId, meal_name::MealName},
 };

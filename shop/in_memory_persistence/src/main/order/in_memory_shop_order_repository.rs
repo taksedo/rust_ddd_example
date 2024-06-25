@@ -6,7 +6,7 @@ use std::{
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derivative::Derivative;
 use derive_new::new;
-use domain::main::{
+use domain::{
     cart::value_objects::customer_id::CustomerId,
     order::{
         customer_order_events::ShopOrderEventEnum, shop_order::ShopOrder,
@@ -64,7 +64,7 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
 #[cfg(test)]
 mod tests {
     use domain::{
-        main::order::customer_order_events::ShopOrderCompletedDomainEvent,
+        order::customer_order_events::ShopOrderCompletedDomainEvent,
         test_fixtures::{
             rnd_customer_id, rnd_order, rnd_order_id, rnd_order_with_customer_id, rnd_order_with_id,
         },

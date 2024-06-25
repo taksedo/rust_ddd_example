@@ -7,7 +7,7 @@ use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
 };
-use domain::main::order::value_objects::shop_order_id::ShopOrderId;
+use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::main::order::{
     access::shop_order_extractor::ShopOrderExtractor,
     get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
@@ -99,7 +99,7 @@ pub fn get_order_by_id_endpoint_config<ShOExtractor: ShopOrderExtractor + 'stati
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
-    use domain::{main::order::shop_order::OrderState, test_fixtures::rnd_order_id};
+    use domain::{order::shop_order::OrderState, test_fixtures::rnd_order_id};
     use dotenvy::dotenv;
 
     use super::*;

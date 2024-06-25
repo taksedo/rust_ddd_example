@@ -6,7 +6,7 @@ use std::{
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derivative::Derivative;
 use derive_new::new;
-use domain::main::cart::{
+use domain::cart::{
     cart::Cart, cart_events::CartEventEnum, value_objects::customer_id::CustomerId,
 };
 use usecase::main::cart::access::{
@@ -45,7 +45,7 @@ impl CartRemover for InMemoryCartRepository {
 #[cfg(test)]
 mod tests {
     use domain::{
-        main::cart::cart_events::MealAddedToCartDomainEvent,
+        cart::cart_events::MealAddedToCartDomainEvent,
         test_fixtures::{rnd_cart, rnd_cart_with_customer_id, rnd_customer_id},
     };
 

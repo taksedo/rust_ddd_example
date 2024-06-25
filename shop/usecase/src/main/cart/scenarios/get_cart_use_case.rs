@@ -1,6 +1,6 @@
 use common::types::base::generic_types::AM;
 use derive_new::new;
-use domain::main::cart::value_objects::customer_id::CustomerId;
+use domain::cart::value_objects::customer_id::CustomerId;
 
 use crate::main::{
     cart::{

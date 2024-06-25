@@ -7,7 +7,7 @@ use std::{
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derivative::Derivative;
 use derive_new::new;
-use domain::main::menu::{
+use domain::menu::{
     meal::Meal,
     meal_events::MealEventEnum,
     value_objects::{meal_id::MealId, meal_name::MealName},
@@ -57,7 +57,7 @@ impl MealExtractor for InMemoryMealRepository {
 #[allow(non_snake_case)]
 mod tests {
     use domain::{
-        main::menu::meal_events::MealRemovedFromMenuDomainEvent,
+        menu::meal_events::MealRemovedFromMenuDomainEvent,
         test_fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name, rnd_removed_meal},
     };
 
@@ -103,7 +103,7 @@ mod tests {
         let event: MealRemovedFromMenuDomainEvent = event.try_into().unwrap();
         assert_eq!(
             type_of(&event),
-            "&domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent"
+            "&domain::menu::meal_events::MealRemovedFromMenuDomainEvent"
         );
         assert_eq!(event.meal_id, *updated_meal.id());
     }

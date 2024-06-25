@@ -1,6 +1,6 @@
 use common::types::base::generic_types::AM;
 use derive_new::new;
-use domain::main::{
+use domain::{
     cart::{
         cart::Cart,
         value_objects::{cart_id::CartIdGenerator, customer_id::CustomerId},
@@ -78,7 +78,7 @@ mod tests {
     use std::sync::{Arc, Mutex};
 
     use domain::{
-        main::cart::value_objects::cart_id::CartId,
+        cart::value_objects::cart_id::CartId,
         test_fixtures::{rnd_cart_with_customer_id, rnd_customer_id, rnd_meal},
     };
 

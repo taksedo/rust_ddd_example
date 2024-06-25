@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{select, sql_function, sql_types, PgConnection, RunQueryDsl};
-use domain::main::menu::value_objects::meal_id::{MealId, MealIdGenerator};
+use domain::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 
 #[derive(new, Derivative)]
 #[derivative(Debug)]

@@ -2,7 +2,7 @@ use std::mem::{discriminant, Discriminant};
 
 use common::{events::domain_event_listener::DomainEventListener, types::base::generic_types::AM};
 use derive_new::new;
-use domain::main::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
+use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 use tracing::info;
 
 use crate::main::cart::access::{cart_extractor::CartExtractor, cart_remover::CartRemover};

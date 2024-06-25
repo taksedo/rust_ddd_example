@@ -6,7 +6,7 @@ use common::types::{
 };
 use time::OffsetDateTime;
 
-use crate::main::{
+use crate::{
     cart::{
         cart::Cart,
         value_objects::{cart_id::CartId, customer_id::CustomerId},

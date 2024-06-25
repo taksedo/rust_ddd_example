@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use bigdecimal::*;
 use common::common_rest::rest_responses::ValidationError;
-use domain::main::menu::value_objects::{
+use domain::menu::value_objects::{
     meal_description::{CreateMealDescriptionError, MealDescription},
     meal_id::{MealId, MealIdError},
     meal_name::{CreateMealNameError, MealName},

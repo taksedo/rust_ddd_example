@@ -1,7 +1,7 @@
 use common::types::base::domain_entity::{DomainEntity, Version};
 
 use super::{meal::Meal, value_objects::meal_name::MealName};
-use crate::main::menu::{
+use crate::menu::{
     meal_events::MealEventEnum,
     value_objects::{meal_description::MealDescription, meal_id::MealId, price::Price},
 };
