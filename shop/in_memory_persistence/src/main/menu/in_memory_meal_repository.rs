@@ -54,6 +54,7 @@ impl MealExtractor for InMemoryMealRepository {
 }
 
 #[cfg(test)]
+#[allow(non_snake_case)]
 mod tests {
     use super::*;
     use crate::test_fixtures::{meal_with_events, type_of, TestEventPublisher};
