@@ -110,12 +110,13 @@ impl BusinessError for MealError {}
 #[allow(non_snake_case)]
 #[cfg(test)]
 mod tests {
+    use std::sync::atomic::AtomicI64;
+
     use super::*;
     use crate::test_fixtures::{
         print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
         rnd_removed_meal,
     };
-    use std::sync::atomic::AtomicI64;
 
     #[derive(Debug, new, Default)]
     pub(crate) struct TestMealIdGenerator {

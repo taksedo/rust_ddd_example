@@ -108,10 +108,12 @@ pub enum CartError {
 
 #[cfg(test)]
 mod tests {
+    use std::mem::discriminant;
+
+    use common::types::test_fixtures::rnd_count;
+
     use super::*;
     use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
-    use common::types::test_fixtures::rnd_count;
-    use std::mem::discriminant;
 
     #[test]
     fn create_cart_success() {

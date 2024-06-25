@@ -22,9 +22,10 @@ impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::{rnd_meal, rnd_meal_name};
+
     use super::*;
     use crate::test_fixtures::{removed_meal, MockMealExtractor};
-    use domain::test_fixtures::{rnd_meal, rnd_meal_name};
 
     #[test]
     fn meal_already_exists() {

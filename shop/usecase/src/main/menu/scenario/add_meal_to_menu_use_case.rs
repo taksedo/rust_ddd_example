@@ -70,11 +70,12 @@ impl DomainEventTrait for AddMealToMenuUseCase {}
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::test_fixtures::MockMealPersister;
     use domain::test_fixtures::{
         rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
     };
+
+    use super::*;
+    use crate::test_fixtures::MockMealPersister;
 
     #[test]
     fn successfully_added() {

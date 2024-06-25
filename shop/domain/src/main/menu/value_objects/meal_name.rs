@@ -29,8 +29,9 @@ impl BusinessError for CreateMealNameError {}
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
-    use super::*;
     use rstest::rstest;
+
+    use super::*;
 
     #[test]
     fn create_name__success() {

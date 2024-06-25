@@ -73,8 +73,9 @@ impl BusinessError for CreatePriceError {}
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
-    use super::*;
     use rstest::rstest;
+
+    use super::*;
 
     #[rstest]
     fn create_price__success(#[values(0_u64, 1_u64)] value: u64) {

@@ -29,9 +29,10 @@ impl BusinessError for CreateMealDescriptionError {}
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
-    use super::*;
     use mockall::Any;
     use rstest::rstest;
+
+    use super::*;
 
     #[test]
     fn create_description__success() {

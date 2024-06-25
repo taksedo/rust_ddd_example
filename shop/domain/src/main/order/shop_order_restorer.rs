@@ -39,9 +39,10 @@ impl ShopOrderRestorer {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::domain_entity::DomainEntityTrait;
+
     use super::*;
     use crate::test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item};
-    use common::types::base::domain_entity::DomainEntityTrait;
 
     #[test]
     fn restore_user_success() {

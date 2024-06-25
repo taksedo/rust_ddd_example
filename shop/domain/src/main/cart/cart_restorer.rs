@@ -39,9 +39,10 @@ impl CartRestorer {
 
 #[cfg(test)]
 mod tests {
+    use common::types::test_fixtures::rnd_count;
+
     use super::*;
     use crate::test_fixtures::{rnd_cart_id, rnd_customer_id, rnd_meal_id, version};
-    use common::types::test_fixtures::rnd_count;
 
     #[test]
     fn restore_cart_success() {

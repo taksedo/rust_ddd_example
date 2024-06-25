@@ -228,15 +228,16 @@ pub enum ShopOrderError {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
+    use bigdecimal::{num_bigint::BigInt, BigDecimal};
+    use common::types::test_fixtures::rnd_count;
+    use derive_more::FromStr;
+
     use super::*;
     use crate::test_fixtures::{
         order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_price,
     };
-    use bigdecimal::num_bigint::BigInt;
-    use bigdecimal::BigDecimal;
-    use common::types::test_fixtures::rnd_count;
-    use derive_more::FromStr;
-    use std::collections::HashMap;
 
     #[test]
     fn checkout_success() {

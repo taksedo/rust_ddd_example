@@ -28,9 +28,10 @@ impl GetMealById for GetMealByIdUseCase {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::{rnd_meal, rnd_meal_id};
+
     use super::*;
     use crate::test_fixtures::{removed_meal, MockMealExtractor};
-    use domain::test_fixtures::{rnd_meal, rnd_meal_id};
 
     #[test]
     fn meal_not_found() {

@@ -56,10 +56,13 @@ impl MealExtractor for InMemoryMealRepository {
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
+    use domain::{
+        main::menu::meal_events::MealRemovedFromMenuDomainEvent,
+        test_fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name, rnd_removed_meal},
+    };
+
     use super::*;
     use crate::test_fixtures::{meal_with_events, type_of, TestEventPublisher};
-    use domain::main::menu::meal_events::MealRemovedFromMenuDomainEvent;
-    use domain::test_fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name, rnd_removed_meal};
 
     #[test]
     fn saving_meal__meal_doesnt_exist() {

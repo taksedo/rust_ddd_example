@@ -63,12 +63,15 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
 
 #[cfg(test)]
 mod tests {
+    use domain::{
+        main::order::customer_order_events::ShopOrderCompletedDomainEvent,
+        test_fixtures::{
+            rnd_customer_id, rnd_order, rnd_order_id, rnd_order_with_customer_id, rnd_order_with_id,
+        },
+    };
+
     use super::*;
     use crate::test_fixtures::{order_with_events, TestEventPublisher};
-    use domain::main::order::customer_order_events::ShopOrderCompletedDomainEvent;
-    use domain::test_fixtures::{
-        rnd_customer_id, rnd_order, rnd_order_id, rnd_order_with_customer_id, rnd_order_with_id,
-    };
 
     #[test]
     fn saving_order_order_doesnt_exist() {

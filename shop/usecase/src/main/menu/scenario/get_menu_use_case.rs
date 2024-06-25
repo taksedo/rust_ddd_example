@@ -25,9 +25,10 @@ impl GetMenu for GetMenuUseCase {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::rnd_meal;
+
     use super::*;
     use crate::test_fixtures::MockMealExtractor;
-    use domain::test_fixtures::rnd_meal;
 
     #[test]
     #[allow(non_snake_case)]
