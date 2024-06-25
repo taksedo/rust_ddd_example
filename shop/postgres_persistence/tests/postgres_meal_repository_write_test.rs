@@ -6,7 +6,7 @@ use domain::{
     menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum},
     test_fixtures::{rnd_meal_id, rnd_meal_name},
 };
-use postgres_persistence::main::{
+use postgres_persistence::{
     database_start::MIGRATIONS, meal_db_dto::MealDbDto,
     postgres_meal_repository::PostgresMealRepository,
 };

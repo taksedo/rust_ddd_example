@@ -8,7 +8,7 @@ use domain::{
     menu::value_objects::meal_id::{MealId, MealIdGenerator},
     test_fixtures::rnd_meal_id,
 };
-use postgres_persistence::main::{
+use postgres_persistence::{
     database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator,
 };
 

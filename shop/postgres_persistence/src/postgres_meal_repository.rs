@@ -11,7 +11,7 @@ use domain::menu::{
 };
 use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
-use crate::main::{meal_db_dto::MealDbDto, schema::shop::meal::dsl::*};
+use crate::{meal_db_dto::MealDbDto, schema::shop::meal::dsl::*};
 
 #[derive(Derivative, new)]
 #[derivative(Debug)]

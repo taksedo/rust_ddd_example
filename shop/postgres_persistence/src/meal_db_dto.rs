@@ -22,7 +22,7 @@ use serde::*;
     Debug,
 )]
 #[diesel(primary_key(id))]
-#[diesel(table_name = crate::main::schema::shop::meal)]
+#[diesel(table_name = crate::schema::shop::meal)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct MealDbDto {
     pub id: i64,
