@@ -1,2 +1,0 @@
-mod in_memory_cart_repository_test;
-mod in_memory_incremental_cart_id_generator_test;
