@@ -2,5 +2,5 @@
 # see diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "postgres_persistence/src/main/schema.rs"
+file = "postgres_persistence/src/schema.rs"
 schema = "shop"

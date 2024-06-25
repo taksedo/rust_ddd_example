@@ -1,12 +1,12 @@
 use std::sync::{Arc, Mutex};
 
 use common::types::base::generic_types::AM;
-use in_memory_persistence::main::order::{
+use in_memory_persistence::order::{
     in_memory_incremental_shop_order_id_generator::InMemoryIncrementalShopOrderIdGenerator as OrderIdGenerator,
     in_memory_shop_order_repository::InMemoryShopOrderRepository as OrderRepository,
 };
 use lazy_static::lazy_static;
-use postgres_persistence::main::{
+use postgres_persistence::{
     database_start::establish_connection,
     postgres_meal_id_generator::PostgresMealIdGenerator as MealIdGenerator,
     postgres_meal_repository::PostgresMealRepository as MealRepository,

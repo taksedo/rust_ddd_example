@@ -5,10 +5,10 @@ use diesel::{
 };
 use diesel_migrations::MigrationHarness;
 use domain::{
-    main::menu::value_objects::meal_id::{MealId, MealIdGenerator},
+    menu::value_objects::meal_id::{MealId, MealIdGenerator},
     test_fixtures::rnd_meal_id,
 };
-use postgres_persistence::main::{
+use postgres_persistence::{
     database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator,
 };
 

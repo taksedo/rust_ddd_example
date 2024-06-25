@@ -8,7 +8,7 @@ use actix_web::{
 };
 use common::common_rest::rest_responses::{GenericErrorResponse, ValidationError};
 use log::info;
-use rest::main::{
+use rest::{
     menu::{
         add_meal_to_menu_endpoint::{add_meal_to_menu_endpoint_config, AddMealToMenuRestRequest},
         get_health_status::get_health_status_config,
@@ -58,15 +58,15 @@ pub(crate) fn web_api_backend_startup() -> JoinHandle<()> {
         #[openapi(
             info(title = "Rust DDD Example", description = "API Documentation"),
             paths(
-                rest::main::menu::get_health_status::get_health_status,
-                rest::main::menu::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,
-                rest::main::menu::get_meal_by_id_endpoint::get_meal_by_id_endpoint,
-                rest::main::menu::get_menu_endpoint::get_menu_endpoint,
-                rest::main::menu::remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint,
-                rest::main::order::get_orders_endpoint::get_orders_endpoint,
-                rest::main::order::get_order_by_id_endpoint::get_order_by_id_endpoint,
-                rest::main::order::cancel_order_endpoint::cancel_order_endpoint,
-                rest::main::order::confirm_order_endpoint::confirm_order_endpoint,
+                rest::menu::get_health_status::get_health_status,
+                rest::menu::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,
+                rest::menu::get_meal_by_id_endpoint::get_meal_by_id_endpoint,
+                rest::menu::get_menu_endpoint::get_menu_endpoint,
+                rest::menu::remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint,
+                rest::order::get_orders_endpoint::get_orders_endpoint,
+                rest::order::get_order_by_id_endpoint::get_order_by_id_endpoint,
+                rest::order::cancel_order_endpoint::cancel_order_endpoint,
+                rest::order::confirm_order_endpoint::confirm_order_endpoint,
 
             ),
             components(

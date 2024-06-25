@@ -1,7 +1,6 @@
 #![allow(special_module_name)]
 
-pub mod main;
-#[cfg(test)]
-pub mod test;
-#[cfg(test)]
-pub mod test_fixtures;
+pub mod application_telnet_command;
+pub mod long_parameter_extractor;
+pub mod menu;
+pub mod server;

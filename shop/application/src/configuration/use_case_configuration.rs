@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use actix_web::web::Data;
 use common::types::base::generic_types::AM;
 use lazy_static::lazy_static;
-use usecase::main::{
+use usecase::{
     menu::{
         invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor,
         scenario::{

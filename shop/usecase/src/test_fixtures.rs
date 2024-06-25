@@ -3,33 +3,30 @@ use std::{any::Any, collections::HashMap, mem::discriminant};
 use common::types::common::{address::Address, count::Count};
 use derive_new::new;
 use domain::{
-    main::{
-        cart::{
-            cart::Cart,
-            value_objects::{cart_id::CartId, customer_id::CustomerId},
+    cart::{
+        cart::Cart,
+        value_objects::{cart_id::CartId, customer_id::CustomerId},
+    },
+    menu::{
+        meal::Meal,
+        meal_events::{MealEventEnum, MealRemovedFromMenuDomainEvent},
+        value_objects::{
+            meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
         },
-        menu::{
-            meal::Meal,
-            meal_events::{MealEventEnum, MealRemovedFromMenuDomainEvent},
-            value_objects::{
-                meal_description::MealDescription, meal_id::MealId, meal_name::MealName,
-                price::Price,
-            },
+    },
+    order::{
+        customer_has_active_order::CustomerHasActiveOrder,
+        customer_order_events::{
+            ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent,
+            ShopOrderConfirmedDomainEvent, ShopOrderEventEnum, ShopOrderPaidDomainEvent,
         },
-        order::{
-            customer_has_active_order::CustomerHasActiveOrder,
-            customer_order_events::{
-                ShopOrderCancelledDomainEvent, ShopOrderCompletedDomainEvent,
-                ShopOrderConfirmedDomainEvent, ShopOrderEventEnum, ShopOrderPaidDomainEvent,
-            },
-            shop_order::{OrderState, ShopOrder},
-            value_objects::shop_order_id::ShopOrderId,
-        },
+        shop_order::{OrderState, ShopOrder},
+        value_objects::shop_order_id::ShopOrderId,
     },
     test_fixtures::{order_with_state, rnd_meal},
 };
 
-use crate::main::{
+use crate::{
     cart::access::{
         cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
     },

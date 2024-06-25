@@ -4,10 +4,10 @@ use std::sync::{Arc, Mutex};
 
 use diesel_migrations::MigrationHarness;
 use domain::test_fixtures::{rnd_meal_id, rnd_meal_name};
-use postgres_persistence::main::{
+use postgres_persistence::{
     database_start::MIGRATIONS, postgres_meal_repository::PostgresMealRepository,
 };
-use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
+use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
 use crate::test_fixtures::{rnd_new_meal_with_meal_id, MockEventPublisher, TestDb};
 

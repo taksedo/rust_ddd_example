@@ -2,9 +2,7 @@ use std::{env, fmt::Debug, time::Duration};
 
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
-use domain::main::{
-    menu::meal_events::MealEventEnum, order::customer_order_events::ShopOrderEventEnum,
-};
+use domain::{menu::meal_events::MealEventEnum, order::customer_order_events::ShopOrderEventEnum};
 use kafka::producer::{Producer, Record, RequiredAcks};
 
 #[derive(new)]
@@ -72,7 +70,7 @@ mod test {
     use std::ops::Deref;
 
     use domain::{
-        main::menu::{
+        menu::{
             meal_events::MealAddedToMenuDomainEvent,
             value_objects::meal_id::{MealId, MealIdGenerator},
         },

@@ -4,7 +4,7 @@ use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
 use domain::{
-    main::menu::{
+    menu::{
         meal::Meal,
         meal_events::MealEventEnum,
         value_objects::{
