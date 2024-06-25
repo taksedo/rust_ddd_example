@@ -14,7 +14,7 @@ use usecase::main::order::{
     scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,
 };
 
-use crate::main::{
+use crate::{
     endpoint_url::API_V1_ORDER_GET_BY_ID,
     order::order_model::{OrderModel, ToModel},
     to_error::ToRestError,

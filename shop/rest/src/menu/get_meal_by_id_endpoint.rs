@@ -13,7 +13,7 @@ use usecase::main::menu::{
     scenario::get_meal_by_id_use_case::GetMealByIdUseCase,
 };
 
-use crate::main::{
+use crate::{
     endpoint_url::API_V1_MENU_GET_BY_ID, menu::meal_model::MealModel, to_error::ToRestError,
     validated::Validated,
 };

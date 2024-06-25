@@ -9,7 +9,7 @@ use actix_web::{web::Query, HttpRequest};
 use common::common_rest::rest_responses::ValidationError;
 use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
 
-use crate::main::validated::Validated;
+use crate::validated::Validated;
 
 impl Validated<ShopOrderId, i64> for ShopOrderId {
     fn validated(val: i64, error_list: Arc<Mutex<Vec<ValidationError>>>) -> Result<Self, ()> {

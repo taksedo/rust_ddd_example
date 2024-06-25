@@ -19,9 +19,7 @@ use super::{
     order_model::{OrderModel, ToModel},
     validated::validate_query_string,
 };
-use crate::main::{
-    endpoint_url::API_V1_ORDER_GET_ALL, to_error::ToRestError, validated::Validated,
-};
+use crate::{endpoint_url::API_V1_ORDER_GET_ALL, to_error::ToRestError, validated::Validated};
 
 /// Get orders with pagination
 #[utoipa::path(

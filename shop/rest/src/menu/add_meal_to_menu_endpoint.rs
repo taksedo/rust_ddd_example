@@ -21,7 +21,7 @@ use usecase::main::menu::{
 };
 use utoipa::ToSchema;
 
-use crate::main::{
+use crate::{
     endpoint_url::{API_V1_MENU_ADD_TO_MENU, API_V1_MENU_GET_BY_ID},
     to_error::ToRestError,
     validated::Validated,

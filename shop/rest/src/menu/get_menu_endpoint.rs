@@ -6,7 +6,7 @@ use std::{
 use actix_web::{http::header::ContentType, web, HttpResponse};
 use usecase::main::menu::{get_menu::GetMenu, scenario::get_menu_use_case::GetMenuUseCase};
 
-use crate::main::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
+use crate::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
 
 /// Get the menu
 #[utoipa::path(

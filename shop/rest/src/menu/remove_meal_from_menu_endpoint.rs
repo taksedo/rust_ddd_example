@@ -13,9 +13,7 @@ use usecase::main::menu::{
     scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
 };
 
-use crate::main::{
-    endpoint_url::API_V1_MENU_DELETE_BY_ID, to_error::ToRestError, validated::Validated,
-};
+use crate::{endpoint_url::API_V1_MENU_DELETE_BY_ID, to_error::ToRestError, validated::Validated};
 
 /// Remove the meal from the menu
 #[utoipa::path(

@@ -9,7 +9,7 @@ use domain::menu::value_objects::{
     price::{CreatePriceError, Price},
 };
 
-use crate::main::validated::Validated;
+use crate::validated::Validated;
 
 impl Validated<MealName, &str> for MealName {
     fn validated(val: &str, error_list: Arc<Mutex<Vec<ValidationError>>>) -> Result<Self, ()> {
