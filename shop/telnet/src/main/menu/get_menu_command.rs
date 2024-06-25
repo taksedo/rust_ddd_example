@@ -10,7 +10,7 @@ use nectar::{event::TelnetEvent, TelnetCodec};
 use prettytable::{row, Table};
 use tokio::net::TcpStream;
 use tokio_util::codec::Framed;
-use usecase::main::menu::get_menu::GetMenu;
+use usecase::menu::get_menu::GetMenu;
 
 pub async fn get_menu_command<T>(
     usecase: Data<Arc<Mutex<T>>>,

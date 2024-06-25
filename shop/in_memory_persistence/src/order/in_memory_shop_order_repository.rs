@@ -13,7 +13,7 @@ use domain::{
         value_objects::shop_order_id::ShopOrderId,
     },
 };
-use usecase::main::order::access::{
+use usecase::order::access::{
     shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister,
 };
 

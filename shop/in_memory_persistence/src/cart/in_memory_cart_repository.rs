@@ -9,7 +9,7 @@ use derive_new::new;
 use domain::cart::{
     cart::Cart, cart_events::CartEventEnum, value_objects::customer_id::CustomerId,
 };
-use usecase::main::cart::access::{
+use usecase::cart::access::{
     cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
 };
 

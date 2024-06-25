@@ -15,7 +15,7 @@ use domain::menu::value_objects::{
 };
 use http::Uri;
 use serde::{Deserialize, Serialize};
-use usecase::main::menu::{
+use usecase::menu::{
     add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
     scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase,
 };

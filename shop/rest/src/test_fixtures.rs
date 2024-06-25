@@ -8,7 +8,7 @@ use domain::{
     },
 };
 use smart_default::SmartDefault;
-use usecase::main::{
+use usecase::{
     menu::{
         add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
         dto::meal_info::MealInfo,

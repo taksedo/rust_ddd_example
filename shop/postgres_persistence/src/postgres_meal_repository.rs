@@ -9,7 +9,7 @@ use domain::menu::{
     meal_events::MealEventEnum,
     value_objects::{meal_id::MealId, meal_name::MealName},
 };
-use usecase::main::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
+use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
 use crate::{meal_db_dto::MealDbDto, schema::shop::meal::dsl::*};
 

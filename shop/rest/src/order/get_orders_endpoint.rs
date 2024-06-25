@@ -9,7 +9,7 @@ use common::common_rest::{
     rest_responses::{to_invalid_param_bad_request, ValidationError},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::main::order::{
+use usecase::order::{
     access::shop_order_extractor::ShopOrderExtractor,
     get_orders::{GetOrders, GetOrdersUseCaseError},
     scenarios::get_orders_use_case::GetOrdersUseCase,

@@ -1,7 +1,7 @@
 use bigdecimal::BigDecimal;
 use serde::Deserialize;
 use serde_derive::Serialize;
-use usecase::main::menu::dto::meal_info::MealInfo;
+use usecase::menu::dto::meal_info::MealInfo;
 use utoipa::{ToResponse, ToSchema};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ToSchema, ToResponse)]

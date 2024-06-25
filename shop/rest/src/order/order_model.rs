@@ -3,7 +3,7 @@ use common::types::common::address::Address;
 use derive_new::new;
 use serde::Serialize;
 use serde_derive::Deserialize;
-use usecase::main::order::dto::order_details::{OrderDetails, OrderItemDetails};
+use usecase::order::dto::order_details::{OrderDetails, OrderItemDetails};
 use utoipa::{ToResponse, ToSchema};
 
 #[derive(Serialize, Deserialize, Debug, Clone, ToSchema, ToResponse)]

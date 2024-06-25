@@ -26,7 +26,7 @@ use domain::{
     test_fixtures::{order_with_state, rnd_meal},
 };
 
-use crate::main::{
+use crate::{
     cart::access::{
         cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
     },

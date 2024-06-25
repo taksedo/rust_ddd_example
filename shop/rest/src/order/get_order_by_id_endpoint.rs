@@ -8,7 +8,7 @@ use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::main::order::{
+use usecase::order::{
     access::shop_order_extractor::ShopOrderExtractor,
     get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
     scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,

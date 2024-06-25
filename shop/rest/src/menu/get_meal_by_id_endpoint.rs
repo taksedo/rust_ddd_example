@@ -8,7 +8,7 @@ use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
 };
 use domain::menu::value_objects::meal_id::MealId;
-use usecase::main::menu::{
+use usecase::menu::{
     get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
     scenario::get_meal_by_id_use_case::GetMealByIdUseCase,
 };
@@ -93,7 +93,7 @@ mod tests {
     use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
     use domain::test_fixtures::rnd_meal_id;
     use dotenvy::dotenv;
-    use usecase::main::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
+    use usecase::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
 
     use super::*;
     use crate::test_fixtures::{rnd_meal_info, MockGetMealById};
