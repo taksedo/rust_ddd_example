@@ -1,1 +1,0 @@
-mod customer_has_active_order_impl_test;

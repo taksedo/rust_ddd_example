@@ -34,3 +34,33 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
         todo!()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::sync::{Arc, Mutex};
+
+    use domain::test_fixtures::{rnd_customer_id, rnd_order_id, rnd_price};
+
+    use super::*;
+    use crate::test_fixtures::MockOrderExporter;
+
+    #[test]
+    fn order_has_been_exported() {
+        let order_id = rnd_order_id();
+        let customer_id = rnd_customer_id();
+        let total_price = rnd_price();
+
+        let exporter = Arc::new(Mutex::new(MockOrderExporter::default()));
+        let mut rule = ExportOrderAfterCheckoutRule::new(exporter.clone());
+
+        let event: ShopOrderEventEnum =
+            ShopOrderCreatedDomainEvent::new(order_id, customer_id, total_price.clone()).into();
+
+        rule.handle(&event);
+
+        exporter
+            .lock()
+            .unwrap()
+            .verify_invoked(order_id, customer_id, total_price);
+    }
+}
