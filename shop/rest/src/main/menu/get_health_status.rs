@@ -15,3 +15,16 @@ pub async fn get_health_status() -> HttpResponse {
 pub fn get_health_status_config(cfg: &mut ServiceConfig) {
     cfg.route("/health", get().to(get_health_status));
 }
+
+#[cfg(test)]
+mod tests {
+    use actix_web::http::StatusCode;
+
+    use super::*;
+
+    #[actix_web::test]
+    async fn created_successfully() {
+        let resp = get_health_status().await;
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+}
