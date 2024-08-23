@@ -325,7 +325,7 @@ impl ShopOrderExtractor for MockShopOrderExtractor {
 
     fn get_last_order(&mut self, for_customer: &CustomerId) -> Option<ShopOrder> {
         self.for_customer = Some(*for_customer);
-        if self.order.is_some() && self.order.clone().unwrap().for_customer() == for_customer {
+        if self.order.is_some() && self.order.clone()?.for_customer() == for_customer {
             self.order.as_ref().cloned()
         } else {
             None

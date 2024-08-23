@@ -4,7 +4,7 @@ use lapin::{Connection, ConnectionProperties};
 use testcontainers::{
     core::{CmdWaitFor, ExecCommand, WaitFor},
     runners::AsyncRunner,
-    ContainerAsync, GenericImage, Image, ImageExt,
+    ContainerAsync, GenericImage, ImageExt,
 };
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
@@ -44,7 +44,7 @@ impl TestRabbitMq {
                 TEST_RABBITMQ_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
             )
         });
-        let test_container_rabbitmq_url = format!("amqp://guest:guest@localhost:{port}");
+        let test_container_rabbitmq_url = format!("amqp://guest:guest@host.docker.internal:{port}");
 
         RABBITMQ_ADDRESS.get_or_init(|| test_container_rabbitmq_url.clone());
         debug!(?RABBITMQ_ADDRESS);
@@ -81,7 +81,7 @@ impl TestKafka {
         let node = Kafka::default().start().await.unwrap();
 
         let port = &node.get_host_port_ipv4(9093).await.unwrap();
-        let test_container_kafka_url = format!("localhost:{port}");
+        let test_container_kafka_url = format!("host.docker.internal:{port}");
 
         KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
         debug!(?KAFKA_ADDRESS);
@@ -99,20 +99,6 @@ impl TestKafka {
             .unwrap();
 
         Self { container: node }
-    }
-}
-
-impl Image for TestKafka {
-    fn name(&self) -> &str {
-        todo!()
-    }
-
-    fn tag(&self) -> &str {
-        todo!()
-    }
-
-    fn ready_conditions(&self) -> Vec<WaitFor> {
-        todo!()
     }
 }
 pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();
