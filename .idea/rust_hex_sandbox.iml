@@ -28,6 +28,7 @@
       <sourceFolder url="file://$MODULE_DIR$/shop/rest/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/shop/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/shop/telnet/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/application/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/shop/usecase/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/domain/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />

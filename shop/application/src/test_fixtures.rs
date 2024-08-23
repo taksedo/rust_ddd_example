@@ -4,7 +4,7 @@ use lapin::{Connection, ConnectionProperties};
 use testcontainers::{
     core::{CmdWaitFor, ExecCommand, WaitFor},
     runners::AsyncRunner,
-    ContainerAsync, GenericImage,
+    ContainerAsync, GenericImage, Image, ImageExt,
 };
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
@@ -28,15 +28,15 @@ impl TestRabbitMq {
         let msg = WaitFor::message_on_stdout("  * rabbitmq_management_agent");
 
         let rabbitmq_container = GenericImage::new("pivotalrabbitmq/rabbitmq-stream", "latest")
+            .with_wait_for(msg)
             .with_env_var(
                 "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS",
                 "-rabbitmq_stream advertised_host localhost",
             )
             .with_env_var("RABBITMQ_DEFAULT_USER", "guest")
-            .with_env_var("RABBITMQ_DEFAULT_PASS", "guest")
-            .with_wait_for(msg);
-        let node = rabbitmq_container.start().await;
-        let port = &node.get_host_port_ipv4(5672).await;
+            .with_env_var("RABBITMQ_DEFAULT_PASS", "guest");
+        let node = rabbitmq_container.start().await.unwrap();
+        let port = &node.get_host_port_ipv4(5672).await.unwrap();
         RABBITMQ_QUEUE_NAME.get_or_init(|| {
             format!(
                 "test_queue_{}_{}",
@@ -44,7 +44,7 @@ impl TestRabbitMq {
                 TEST_RABBITMQ_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
             )
         });
-        let test_container_rabbitmq_url = format!("amqp://guest:guest@localhost:{port}");
+        let test_container_rabbitmq_url = format!("amqp://guest:guest@host.docker.internal:{port}");
 
         RABBITMQ_ADDRESS.get_or_init(|| test_container_rabbitmq_url.clone());
         debug!(?RABBITMQ_ADDRESS);
@@ -78,10 +78,11 @@ impl TestKafka {
 
         let _ = tracing_subscriber::fmt::try_init();
 
-        let node = Kafka::default().start().await;
+        let node = Kafka::default().start().await.unwrap();
 
-        let port = &node.get_host_port_ipv4(9093).await;
-        let test_container_kafka_url = format!("localhost:{port}");
+        let port_9092 = &node.get_host_port_ipv4(9092).await.unwrap();
+        let port_9093 = &node.get_host_port_ipv4(9093).await.unwrap();
+        let test_container_kafka_url = format!("host.docker.internal:{port_9093}");
 
         KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
         debug!(?KAFKA_ADDRESS);
@@ -95,10 +96,24 @@ impl TestKafka {
             MEAL_TOPIC_NAME,
         ];
         node.exec(ExecCommand::new(cmd).with_cmd_ready_condition(CmdWaitFor::seconds(2)))
-            .await;
+            .await
+            .unwrap();
 
         Self { container: node }
     }
 }
 
+// impl Image for TestKafka {
+//     fn name(&self) -> &str {
+//         todo!()
+//     }
+//
+//     fn tag(&self) -> &str {
+//         todo!()
+//     }
+//
+//     fn ready_conditions(&self) -> Vec<WaitFor> {
+//         todo!()
+//     }
+// }
 pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();

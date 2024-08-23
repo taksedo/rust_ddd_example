@@ -114,10 +114,9 @@ mod test {
         publisher
             .producer
             .send(&Record::from_value(topic_name, buffer.as_bytes()))
-            .unwrap();
-
+            .expect("Event send failed");
         let receiver = MockReceiver::new(
-            MEAL_TOPIC_NAME.to_string(),
+            topic_name.to_string(),
             "My Test Group".to_string(),
             Some(GroupOffsetStorage::Kafka),
         );

@@ -12,7 +12,7 @@ use domain::{
     test_fixtures::{rnd_meal_description, rnd_meal_name, rnd_price, TestMealAlreadyExists},
 };
 use log::warn;
-use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage};
+use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage, ImageExt};
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
@@ -32,20 +32,21 @@ impl TestDb {
         let msg = WaitFor::message_on_stderr("database system is ready to accept connections");
 
         let pg_container = GenericImage::new("postgres", "13")
+            .with_wait_for(msg)
             .with_env_var("POSTGRES_DB", "postgres")
             .with_env_var("POSTGRES_USER", "root")
-            .with_env_var("POSTGRES_PASSWORD", "123")
-            .with_wait_for(msg);
+            .with_env_var("POSTGRES_PASSWORD", "123");
 
-        let node = pg_container.start();
-        let port = &node.get_host_port_ipv4(5432);
+        let node = pg_container.start().unwrap();
+        let port = &node.get_host_port_ipv4(5432).unwrap();
         let curr_test_db_name = format!(
             "test_db_{}_{}",
             std::process::id(),
             TEST_DB_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
         );
 
-        let test_container_db_url = format!("postgres://root:123@localhost:{port}/postgres");
+        let test_container_db_url =
+            format!("postgres://root:123@host.docker.internal:{port}/postgres");
         let mut conn = PgConnection::establish(&test_container_db_url).unwrap();
         sql_query(format!("CREATE DATABASE {};", curr_test_db_name))
             .execute(&mut conn)
