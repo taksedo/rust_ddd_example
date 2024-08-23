@@ -4,7 +4,7 @@ use lapin::{Connection, ConnectionProperties};
 use testcontainers::{
     core::{CmdWaitFor, ExecCommand, WaitFor},
     runners::AsyncRunner,
-    ContainerAsync, GenericImage, Image, ImageExt,
+    ContainerAsync, GenericImage, ImageExt,
 };
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
@@ -99,20 +99,6 @@ impl TestKafka {
             .unwrap();
 
         Self { container: node }
-    }
-}
-
-impl Image for TestKafka {
-    fn name(&self) -> &str {
-        todo!()
-    }
-
-    fn tag(&self) -> &str {
-        todo!()
-    }
-
-    fn ready_conditions(&self) -> Vec<WaitFor> {
-        todo!()
     }
 }
 pub static KAFKA_ADDRESS: OnceLock<String> = OnceLock::new();

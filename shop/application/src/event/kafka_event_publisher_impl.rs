@@ -109,10 +109,9 @@ mod test {
 
         let buffer = test_events_str;
 
-        publisher
-            .producer
-            .send(&Record::from_value(topic_name, buffer.as_bytes()))
-            .unwrap();
+        let record = Record::from_value(topic_name, buffer.as_bytes());
+
+        publisher.producer.send(&record).unwrap();
 
         let receiver = MockReceiver::new(
             MEAL_TOPIC_NAME.to_string(),

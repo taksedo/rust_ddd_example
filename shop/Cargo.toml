@@ -31,59 +31,59 @@ LegalCopyright = "Taksedo (C) 2023"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
-derive-new = "0.6.0"
-derive_more = { version = "1.0.0-beta.6", features = ["full"] }
-actix-web = "4.6.0"
+derive-new = "0"
+derive_more = { version = "1", features = ["full"] }
+actix-web = "4"
 actix-cors = "0"
-actix-service = "2.0.2"
-structmap = "0.1.6"
-structmap-derive = "0.1.6"
-dotenvy = "0.15"
-log = "0.4.18"
+actix-service = "2"
+structmap = "0"
+structmap-derive = "0"
+dotenvy = "0"
+log = "0"
 env_logger = "0"
-derivative = "2.2.0"
-erased-serde = "0.4.1"
-serde_derive = "1.0.163"
-serde = { version = "1.0.163", features = ["derive", "rc", "alloc"] }
-serde_json = "1.0.96"
-bigdecimal = { version = "0.4.2", features = ["serde"] }
-mockall = "0.12.0"
-fake = { version = "2.9.1", features = ["derive", "bigdecimal"] }
-rand = "0.8.5"
+derivative = "2"
+erased-serde = "0"
+serde_derive = "1.0"
+serde = { version = "1.0", features = ["derive", "rc", "alloc"] }
+serde_json = "1.0"
+bigdecimal = { version = "0", features = ["serde"] }
+mockall = "0"
+fake = { version = "2", features = ["derive", "bigdecimal"] }
+rand = "0"
 rstest = "0"
-time = { version = "0.3.21", features = ["default", "serde-well-known"] }
-enum_access = "0.4.0"
-enum_dispatch = "0.3.11"
-smart-default = "0.7.1"
-const_format = "0.2.30"
-cargo-watch = "8.4.0"
-lazy_static = "1.4.0"
-diesel = { version = "= 2.1.6", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
-diesel_migrations = "2.1.0"
-diesel_logger = "0.3.0"
-lapin = "2.2.1"
-async-trait = "0.1.68"
-futures-lite = "2.0.1"
-testcontainers = { version = "0.18", features = ["blocking"] }
-testcontainers-modules = { version = "0", features = ["kafka", "postgres", "rabbitmq"] }
-tokio = { version = "1.35.1", features = ["full"] }
-tracing = "0.1.37"
-tracing-subscriber = "0.3.18"
-tracing-test = "0.2.4"
-url = "2.3.1"
-kafka = "0.10.0"
-uuid = { version = "1.6.1", features = ["v4"] }
-thiserror = "1.0.61"
-assert-panic = "1.0.1"
-prettytable-rs = "0.10.0"
+time = { version = "0.3", features = ["default", "serde-well-known"] }
+enum_access = "0"
+enum_dispatch = "0"
+smart-default = "0"
+const_format = "0"
+cargo-watch = "8"
+lazy_static = "1"
+diesel = { version = "= 2.1", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
+diesel_migrations = "= 2.1"
+diesel_logger = "= 0.3.0"
+lapin = "2"
+async-trait = "0"
+futures-lite = "2"
+testcontainers = { version = "= 0.21.1", features = ["blocking"] }
+testcontainers-modules = { version = "= 0.9.0", features = ["kafka", "postgres", "rabbitmq"] }
+tokio = { version = "1", features = ["full"] }
+tracing = "0"
+tracing-subscriber = "0"
+tracing-test = "0"
+url = "2"
+kafka = "0"
+uuid = { version = "1", features = ["v4"] }
+thiserror = "1"
+assert-panic = "1"
+prettytable-rs = "0"
 nectar = "0"
-tokio-util = { version = "0.7", default-features = false, features = ["codec"] }
-futures-util = { version = "0.3", default-features = false, features = [
+tokio-util = { version = "0", default-features = false, features = ["codec"] }
+futures-util = { version = "0", default-features = false, features = [
     "sink",
 ] }
 utoipa-swagger-ui = { version = "7", features = ["actix-web"] }
-utoipa = { version = "4.2.3", features = ["actix_extras", "chrono"] }
-derive-getters = "0.4.0"
+utoipa = { version = "4", features = ["actix_extras", "chrono"] }
+derive-getters = "0"
 
 common = { path = "../common", package = "rust_ddd_example_common" }
 domain = { path = "domain" }
