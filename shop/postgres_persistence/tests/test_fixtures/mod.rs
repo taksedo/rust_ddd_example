@@ -50,8 +50,7 @@ impl TestDb {
             TEST_DB_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
         );
 
-        let test_container_db_url =
-            format!("postgres://root:123@host.docker.internal:{port}/postgres");
+        let test_container_db_url = format!("postgres://root:123@localhost:{port}/postgres");
         let mut conn = PgConnection::establish(&test_container_db_url).unwrap();
         sql_query(format!("CREATE DATABASE {};", curr_test_db_name))
             .execute(&mut conn)
