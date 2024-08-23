@@ -12,10 +12,18 @@
       "version": "latest",
       "profile": "complete"
     },
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+//    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "customizations": {
+    "jetbrains": {
+      "settings": {
+        "com.intellij:app:BuiltInServerOptions.builtInServerPort": 62975,
+        "Docker:app:DockerSettings.dockerComposePath": "/usr/bin/docker",
+        "Docker:app:DockerSettings.dockerPath": "/usr/bin/docker",
+        "backend":""
+      }
+    },
     "vscode": {
       "extensions": [
         "vadimcn.vscode-lldb",
@@ -43,6 +51,8 @@
       ]
     }
   },
+  "containerUser": "root",
+  "remoteUser": "root",
   "workspaceFolder": "/workspaces",
   "shutdownAction": "stopCompose",
   "postCreateCommand": "bash .devcontainer/post_create_script.sh"

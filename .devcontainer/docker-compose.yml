@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   rust-ddd-example:
-    image: mcr.microsoft.com/devcontainers/rust:0-1-bullseye
+    image: mcr.microsoft.com/devcontainers/rust:1-1-bullseye
     volumes:
       - ..:/workspaces:cached
     security_opt:
