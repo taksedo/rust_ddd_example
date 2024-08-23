@@ -13,11 +13,10 @@
       "profile": "complete"
     },
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:2.7.1": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
       "moby": true
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "customizations": {
     "vscode": {
@@ -49,5 +48,5 @@
   },
   "workspaceFolder": "/workspaces",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "./post_create_script.sh"
+  "postCreateCommand": "bash .devcontainer/post_create_script.sh"
 }
