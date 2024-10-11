@@ -123,7 +123,7 @@ pub fn get_orders_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::common_rest::rest_responses::{bad_request_type_url, GenericErrorResponse};
-    use domain::test_fixtures::rnd_order_id;
+    use domain_test_fixtures::rnd_order_id;
     use dotenvy::dotenv;
 
     use super::*;

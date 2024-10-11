@@ -34,10 +34,14 @@ impl CompleteOrder for CompleteOrderUseCase {
 
 #[cfg(test)]
 mod tests {
-    use domain::test_fixtures::rnd_order_id;
+    use std::sync::{Arc, Mutex};
 
-    use super::*;
-    use crate::test_fixtures::{
+    use domain_test_fixtures::rnd_order_id;
+    use usecase::order::{
+        complete_order::{CompleteOrder, CompleteOrderUseCaseError},
+        scenarios::complete_order_use_case::CompleteOrderUseCase,
+    };
+    use usecase_test_fixtures::{
         order_not_ready_for_complete, order_ready_for_complete, MockShopOrderExtractor,
         MockShopOrderPersister,
     };

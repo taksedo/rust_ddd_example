@@ -69,13 +69,11 @@ pub(super) const ORDER_TOPIC_NAME: &str = "order_topic";
 mod test {
     use std::ops::Deref;
 
-    use domain::{
-        menu::{
-            meal_events::MealAddedToMenuDomainEvent,
-            value_objects::meal_id::{MealId, MealIdGenerator},
-        },
-        test_fixtures::rnd_meal_id,
+    use domain::menu::{
+        meal_events::MealAddedToMenuDomainEvent,
+        value_objects::meal_id::{MealId, MealIdGenerator},
     };
+    use domain_test_fixtures::rnd_meal_id;
     use kafka::{
         client::{FetchOffset, GroupOffsetStorage},
         consumer::Consumer,

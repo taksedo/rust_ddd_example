@@ -38,12 +38,15 @@ where
 
 #[cfg(test)]
 mod tests {
+
     use std::sync::{Arc, Mutex};
 
-    use domain::test_fixtures::rnd_order_id;
-
-    use super::*;
-    use crate::test_fixtures::{
+    use domain_test_fixtures::rnd_order_id;
+    use usecase::order::{
+        confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError},
+        scenarios::confirm_order_use_case::ConfirmOrderUseCase,
+    };
+    use usecase_test_fixtures::{
         order_not_ready_for_confirm, order_ready_for_confirm, MockShopOrderExtractor,
         MockShopOrderPersister,
     };

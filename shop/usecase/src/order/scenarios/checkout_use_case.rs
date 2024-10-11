@@ -108,20 +108,28 @@ mod tests {
     };
 
     use actix_web::http::Uri;
-    use common::types::{common::address::Address, test_fixtures::rnd_count};
+    use common::types::common::address::Address;
+    use common_test_fixtures::types::rnd_count;
+    use derive_new::new;
     use domain::{
         cart::value_objects::customer_id::CustomerId,
         menu::value_objects::{meal_id::MealId, price::Price},
-        order::value_objects::shop_order_id::ShopOrderId,
-        test_fixtures::{
-            rnd_address, rnd_cart, rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal,
-            rnd_order_id, rnd_price,
+        order::{
+            get_meal_price::GetMealPrice,
+            value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator},
         },
     };
+    use domain_test_fixtures::{
+        rnd_address, rnd_cart, rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal,
+        rnd_order_id, rnd_price,
+    };
     use smart_default::SmartDefault;
-
-    use super::*;
-    use crate::test_fixtures::{
+    use usecase::order::{
+        checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError},
+        providers::payment_url_provider::PaymentUrlProvider,
+        scenarios::checkout_use_case::CheckoutUseCase,
+    };
+    use usecase_test_fixtures::{
         MockCartExtractor, MockCustomerHasActiveOrder, MockShopOrderPersister,
     };
 
@@ -327,7 +335,7 @@ mod tests {
     }
 
     impl PaymentUrlProvider for TestPaymentUrlProvider {
-        fn provide_url(&self, order_id: &ShopOrderId, price: Price) -> Uri {
+        fn provide_url(&self, _order_id: &ShopOrderId, _price: Price) -> Uri {
             self.payment_url.as_str().parse::<Uri>().unwrap()
         }
     }

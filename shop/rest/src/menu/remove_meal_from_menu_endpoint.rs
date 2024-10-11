@@ -85,7 +85,7 @@ pub fn remove_meal_from_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
 mod tests {
     use actix_web::{body::MessageBody, test::TestRequest, web::Data};
     use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
-    use domain::test_fixtures::rnd_meal_id;
+    use domain_test_fixtures::rnd_meal_id;
     use dotenvy::dotenv;
 
     use super::*;

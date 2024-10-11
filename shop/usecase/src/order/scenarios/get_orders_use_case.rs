@@ -42,10 +42,13 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtract
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use domain::test_fixtures::{rnd_order, rnd_order_id};
-
-    use super::*;
-    use crate::test_fixtures::MockShopOrderExtractor;
+    use domain_test_fixtures::{rnd_order, rnd_order_id};
+    use usecase::order::{
+        dto::order_details::ToDetails,
+        get_orders::{GetOrders, GetOrdersUseCaseError},
+        scenarios::get_orders_use_case::GetOrdersUseCase,
+    };
+    use usecase_test_fixtures::MockShopOrderExtractor;
 
     #[test]
     fn storage_is_empty() {

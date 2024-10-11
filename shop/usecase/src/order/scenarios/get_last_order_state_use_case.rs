@@ -30,16 +30,18 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
 
 #[cfg(test)]
 mod tests {
-    use domain::test_fixtures::{rnd_order, rnd_order_id};
+    use std::sync::{Arc, Mutex};
 
-    use super::*;
-    use crate::{
-        order::{
-            get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
-            scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,
+    use domain_test_fixtures::{rnd_order, rnd_order_id};
+    use usecase::order::{
+        get_last_order_state::GetLastOrderState,
+        get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
+        scenarios::{
+            get_last_order_state_use_case::GetLastOrderStateUseCase,
+            get_order_by_id_use_case::GetOrderByIdUseCase,
         },
-        test_fixtures::MockShopOrderExtractor,
     };
+    use usecase_test_fixtures::MockShopOrderExtractor;
 
     #[test]
     fn status_successfully_received() {

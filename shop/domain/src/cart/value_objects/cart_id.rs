@@ -31,9 +31,8 @@ impl TryFrom<i64> for CartId {
 
 #[cfg(test)]
 mod tests {
+    use domain::cart::{cart::CartError, value_objects::cart_id::CartId};
     use rand::{thread_rng, Rng};
-
-    use super::*;
 
     #[test]
     fn check_equality() {

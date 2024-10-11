@@ -144,7 +144,7 @@ mod tests {
     use common::common_rest::rest_responses::{
         bad_request_type_url, error_type_url, GenericErrorResponse,
     };
-    use domain::test_fixtures::{rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price};
+    use domain_test_fixtures::{rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price};
     use dotenvy::dotenv;
 
     use super::*;

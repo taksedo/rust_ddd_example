@@ -31,14 +31,17 @@ impl PayOrder for PayOrderHandler {
 
 #[cfg(test)]
 mod tests {
-    use domain::test_fixtures::rnd_order_id;
+    use std::sync::{Arc, Mutex};
 
-    use super::*;
-    use crate::test_fixtures::{
+    use domain_test_fixtures::rnd_order_id;
+    use usecase::order::{
+        pay_order::{PayOrder, PayOrderHandlerError},
+        scenarios::pay_order_handler::PayOrderHandler,
+    };
+    use usecase_test_fixtures::{
         order_not_ready_for_pay, order_ready_for_pay, MockShopOrderExtractor,
         MockShopOrderPersister,
     };
-
     #[test]
     fn successfully_payed() {
         let order = order_ready_for_pay();

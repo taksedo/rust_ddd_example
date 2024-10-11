@@ -99,7 +99,8 @@ pub fn get_order_by_id_endpoint_config<ShOExtractor: ShopOrderExtractor + 'stati
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
-    use domain::{order::shop_order::OrderState, test_fixtures::rnd_order_id};
+    use domain::order::shop_order::OrderState;
+    use domain_test_fixtures::rnd_order_id;
     use dotenvy::dotenv;
 
     use super::*;

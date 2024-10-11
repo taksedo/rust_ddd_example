@@ -39,10 +39,12 @@ impl ShopOrderRestorer {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::domain_entity::DomainEntityTrait;
+    use std::collections::HashSet;
 
-    use super::*;
-    use crate::test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item};
+    use common::types::base::domain_entity::Version;
+    use domain::order::{shop_order::*, shop_order_restorer::ShopOrderRestorer};
+    use domain_test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item};
+    use time::OffsetDateTime;
 
     #[test]
     fn restore_user_success() {
@@ -65,18 +67,18 @@ mod tests {
             version,
         );
 
-        assert_eq!(order.entity_params.id, id);
-        assert_eq!(order.created, created);
-        assert_eq!(order.for_customer, customer_id);
-        assert_eq!(order.address, address);
-        assert_eq!(order.order_items.len(), 1);
-        let order_item = order.order_items.iter().next().unwrap().clone();
+        assert_eq!(order.id(), &id);
+        assert_eq!(order.created(), &created);
+        assert_eq!(order.for_customer(), &customer_id);
+        assert_eq!(order.address(), &address);
+        assert_eq!(order.order_items().len(), 1);
+        let order_item = order.order_items().iter().next().unwrap().clone();
         assert_eq!(order_item.price, item.price);
         assert_eq!(order_item.meal_id, item.meal_id);
         assert_eq!(order_item.count, item.count);
 
-        assert_eq!(order.state, state);
-        assert_eq!(order.entity_params.version, version);
-        assert!(order.entity_params.pop_events().is_empty());
+        assert_eq!(order.state(), &state);
+        assert_eq!(order.version(), &version);
+        assert!(order.pop_events().is_empty());
     }
 }

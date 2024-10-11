@@ -49,10 +49,12 @@ where
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use domain::test_fixtures::{rnd_cart, rnd_meal_id};
-
-    use super::*;
-    use crate::test_fixtures::{MockCartExtractor, MockCartPersister};
+    use domain_test_fixtures::{rnd_cart, rnd_meal_id};
+    use usecase::cart::{
+        remove_meal_from_cart::{RemoveMealFromCart, RemoveMealFromCartUseCaseError},
+        scenarios::remove_meal_from_cart_use_case::RemoveMealFromCartUseCase,
+    };
+    use usecase_test_fixtures::{MockCartExtractor, MockCartPersister};
 
     #[test]
     fn successfully_removed() {

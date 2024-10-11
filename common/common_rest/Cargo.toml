@@ -7,9 +7,7 @@ edition = "2021"
 
 [dependencies]
 actix-web.workspace = true
-derive_more.workspace = true
 serde.workspace = true
 lazy_static.workspace = true
 derive-new.workspace = true
 utoipa.workspace = true
-utoipa-swagger-ui.workspace = true
