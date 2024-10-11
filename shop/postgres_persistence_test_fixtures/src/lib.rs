@@ -3,18 +3,16 @@ use std::sync::{atomic::AtomicU32, Arc, Mutex};
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
-use domain::{
-    menu::{
-        meal::Meal,
-        meal_events::MealEventEnum,
-        value_objects::{
-            meal_id::{MealId, MealIdGenerator},
-            meal_name::MealName,
-        },
+use domain::menu::{
+    meal::Meal,
+    meal_events::MealEventEnum,
+    value_objects::{
+        meal_id::{MealId, MealIdGenerator},
+        meal_name::MealName,
     },
-    test_fixtures::{
-        rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
-    },
+};
+use domain_test_fixtures::{
+    rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
 };
 use log::warn;
 use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage, ImageExt};

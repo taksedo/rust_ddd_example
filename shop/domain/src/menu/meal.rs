@@ -110,10 +110,19 @@ impl BusinessError for MealError {}
 #[allow(non_snake_case)]
 #[cfg(test)]
 mod tests {
-    use std::sync::atomic::AtomicI64;
+    use std::sync::{atomic::AtomicI64, Arc, Mutex};
 
-    use super::*;
-    use crate::test_fixtures::{
+    use derive_new::new;
+    use domain::menu::{
+        meal::{Meal, MealError},
+        meal_already_exists::MealAlreadyExists,
+        meal_events::{MealAddedToMenuDomainEvent, MealEventEnum, MealRemovedFromMenuDomainEvent},
+        value_objects::{
+            meal_id::{MealId, MealIdGenerator},
+            meal_name::MealName,
+        },
+    };
+    use domain_test_fixtures::{
         print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
         rnd_removed_meal,
     };

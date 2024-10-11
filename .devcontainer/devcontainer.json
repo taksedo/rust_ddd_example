@@ -35,7 +35,9 @@
         "ZhangYue.rust-mod-generator",
         "cweijan.vscode-database-client2",
         "mhutchie.git-graph",
-        "k--kato.intellij-idea-keybindings"
+        "k--kato.intellij-idea-keybindings",
+        "fill-labs.dependi",
+        "usernamehw.errorlens"
       ],
       "settings": {
         "lldb.executable": "/usr/bin/lldb",

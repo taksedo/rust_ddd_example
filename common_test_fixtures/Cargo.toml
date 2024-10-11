@@ -1,0 +1,9 @@
+[package]
+name = "rust_ddd_example_common_test_fixtures"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+
+common={ path = "../common", package = "rust_ddd_example_common"}

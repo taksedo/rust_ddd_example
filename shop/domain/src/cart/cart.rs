@@ -34,7 +34,7 @@ pub struct Cart {
     pub(crate) for_customer: CustomerId,
     #[default(_code = "OffsetDateTime::now_utc()")]
     pub(crate) created: OffsetDateTime,
-    pub(crate) meals: HashMap<MealId, Count>,
+    pub meals: HashMap<MealId, Count>,
 }
 
 impl Cart {
@@ -108,12 +108,22 @@ pub enum CartError {
 
 #[cfg(test)]
 mod tests {
-    use std::mem::discriminant;
+    use std::{
+        collections::HashMap,
+        mem::discriminant,
+        sync::{Arc, Mutex},
+    };
 
-    use common::types::test_fixtures::rnd_count;
-
-    use super::*;
-    use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
+    use common::types::common::count::Count;
+    use common_test_fixtures::types::rnd_count;
+    use domain::cart::{
+        cart::Cart,
+        cart_events::{CartCreatedDomainEvent, CartEventEnum, MealAddedToCartDomainEvent},
+        value_objects::cart_id::{CartId, CartIdGenerator},
+    };
+    use domain_test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
+    use smart_default::SmartDefault;
+    use time::OffsetDateTime;
 
     #[test]
     fn create_cart_success() {

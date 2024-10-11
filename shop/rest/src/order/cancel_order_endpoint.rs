@@ -99,7 +99,7 @@ mod tests {
     use common::common_rest::rest_responses::{
         error_type_url, not_found_type_url, GenericErrorResponse,
     };
-    use domain::test_fixtures::rnd_order_id;
+    use domain_test_fixtures::rnd_order_id;
     use dotenvy::dotenv;
 
     use super::*;

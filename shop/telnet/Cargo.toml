@@ -6,10 +6,11 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-usecase.workspace = true
 tokio.workspace = true
 prettytable-rs.workspace = true
 actix-web.workspace = true
 nectar.workspace = true
 tokio-util.workspace = true
 futures-util.workspace = true
+
+usecase.workspace = true

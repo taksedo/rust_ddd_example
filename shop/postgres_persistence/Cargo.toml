@@ -9,15 +9,15 @@ edition.workspace = true
 derive-new.workspace = true
 derivative.workspace = true
 diesel.workspace = true
-diesel_logger.workspace = true
 diesel_migrations.workspace = true
 serde.workspace = true
 dotenvy.workspace = true
 bigdecimal.workspace = true
-log.workspace = true
-url.workspace = true
-testcontainers.workspace = true
 
 common.workspace = true
 usecase.workspace = true
 domain.workspace = true
+
+[dev-dependencies]
+postgres_persistence_test_fixtures.workspace = true
+domain_test_fixtures.workspace = true

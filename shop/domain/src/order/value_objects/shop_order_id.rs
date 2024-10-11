@@ -34,9 +34,8 @@ pub trait ShopOrderIdGenerator: Debug + Send {
 
 #[cfg(test)]
 mod tests {
+    use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
     use rand::{thread_rng, Rng};
-
-    use super::*;
 
     #[test]
     fn check_equality() {

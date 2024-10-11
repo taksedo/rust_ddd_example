@@ -37,7 +37,8 @@ pub enum CustomerIdError {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use domain::cart::value_objects::customer_id::CustomerId;
+    use uuid::Uuid;
 
     #[test]
     fn check_equality() {

@@ -44,13 +44,11 @@ impl CartRemover for InMemoryCartRepository {
 
 #[cfg(test)]
 mod tests {
-    use domain::{
-        cart::cart_events::MealAddedToCartDomainEvent,
-        test_fixtures::{rnd_cart, rnd_cart_with_customer_id, rnd_customer_id},
-    };
+    use domain::cart::cart_events::MealAddedToCartDomainEvent;
+    use domain_test_fixtures::{rnd_cart, rnd_cart_with_customer_id, rnd_customer_id};
+    use in_memory_persistence_test_fixtures::{cart_with_events, TestEventPublisher};
 
     use super::*;
-    use crate::test_fixtures::{cart_with_events, TestEventPublisher};
 
     #[test]
     fn saving_cart_cart_doesnt_exist() {

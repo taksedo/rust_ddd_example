@@ -61,11 +61,12 @@ where
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use domain::test_fixtures::{rnd_cart, rnd_customer_id, rnd_order_id, rnd_price};
+    use common::events::domain_event_listener::DomainEventListener;
+    use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
+    use domain_test_fixtures::{rnd_cart, rnd_customer_id, rnd_order_id, rnd_price};
     use tracing_test::traced_test;
-
-    use super::*;
-    use crate::test_fixtures::{MockCartExtractor, MockCartRemover};
+    use usecase::cart::rules::remove_cart_after_checkout_rule::RemoveCartAfterCheckoutRule;
+    use usecase_test_fixtures::{MockCartExtractor, MockCartRemover};
 
     #[test]
     fn successfully_removed() {

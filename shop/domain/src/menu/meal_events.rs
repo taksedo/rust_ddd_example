@@ -1,13 +1,13 @@
 use common::types::base::domain_event::EventId;
 use derive_new::new;
+#[cfg(test)]
+use domain_test_fixtures::TestEvent;
 use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
 use crate::menu::value_objects::meal_id::MealId;
-#[cfg(test)]
-use crate::test_fixtures::TestEvent;
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, SmartDefault)]
 pub struct MealAddedToMenuDomainEvent {

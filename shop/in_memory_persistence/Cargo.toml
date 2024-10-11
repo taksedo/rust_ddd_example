@@ -13,3 +13,7 @@ common.workspace = true
 domain.workspace = true
 usecase.workspace = true
 
+[dev-dependencies]
+usecase.workspace = true
+domain_test_fixtures.workspace = true
+in_memory_persistence_test_fixtures.workspace = true

@@ -7,23 +7,17 @@ use common::types::{
         domain_event::DomainEventTrait,
     },
     common::{address::Address, count::Count},
-    test_fixtures::rnd_count,
 };
+use common_test_fixtures::types::rnd_count;
 use derive_new::new;
-use fake::{
-    faker::{address::en::StreetName, name::raw::*},
-    locales::*,
-    Fake,
-};
-use rand::{thread_rng, Rng};
-use serde::{Deserialize, Serialize};
-use time::OffsetDateTime;
-
-use crate::{
+use domain::{
     cart::{
         cart::Cart,
         cart_restorer::CartRestorer,
-        value_objects::{cart_id::CartId, customer_id::CustomerId},
+        value_objects::{
+            cart_id::{self, CartId},
+            customer_id::CustomerId,
+        },
     },
     menu::{
         meal::Meal,
@@ -38,6 +32,14 @@ use crate::{
         value_objects::shop_order_id::ShopOrderId,
     },
 };
+use fake::{
+    faker::{address::en::StreetName, name::raw::*},
+    locales::*,
+    Fake,
+};
+use rand::{thread_rng, Rng};
+use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 
 pub fn rnd_address() -> Address {
     Address::try_from((
@@ -107,7 +109,7 @@ pub fn rnd_customer_id() -> CustomerId {
     CustomerId::new()
 }
 
-pub fn rnd_cart_id() -> CartId {
+pub fn rnd_cart_id() -> cart_id::CartId {
     CartId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
 }
 

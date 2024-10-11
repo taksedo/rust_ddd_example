@@ -1,0 +1,14 @@
+[package]
+name = "usecase_test_fixtures"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+
+[dependencies]
+derive-new.workspace = true
+
+common.workspace=true
+domain.workspace = true
+usecase.workspace = true
+domain_test_fixtures.workspace = true
