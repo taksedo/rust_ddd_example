@@ -100,11 +100,13 @@ mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
     use domain::order::shop_order::OrderState;
-    use domain_test_fixtures::rnd_order_id;
     use dotenvy::dotenv;
 
     use super::*;
-    use crate::test_fixtures::{rnd_order_details, MockGetOrderById};
+    use crate::{
+        domain_test_fixtures::rnd_order_id,
+        test_fixtures::{rnd_order_details, MockGetOrderById},
+    };
 
     #[actix_web::test]
     async fn order_not_found() {

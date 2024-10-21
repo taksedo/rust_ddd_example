@@ -23,13 +23,13 @@ pub struct GetMealPriceUsingExtractor {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
     use assert_panic::assert_panic;
-    use domain::order::get_meal_price::GetMealPrice;
-    use domain_test_fixtures::{rnd_meal, rnd_meal_id};
-    use usecase::order::providers::get_meal_price_using_extractor::GetMealPriceUsingExtractor;
-    use usecase_test_fixtures::MockMealExtractor;
+
+    use super::*;
+    use crate::{
+        domain_test_fixtures::{rnd_meal, rnd_meal_id},
+        test_fixtures::MockMealExtractor,
+    };
 
     #[test]
     fn price_has_been_provided() {

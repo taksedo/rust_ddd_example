@@ -32,14 +32,11 @@ impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
-    use domain_test_fixtures::{rnd_meal, rnd_meal_id};
-    use usecase::menu::{
-        remove_meal_from_menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError},
-        scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
+    use super::*;
+    use crate::{
+        domain_test_fixtures::{rnd_meal, rnd_meal_id},
+        test_fixtures::{MockMealExtractor, MockMealPersister},
     };
-    use usecase_test_fixtures::{MockMealExtractor, MockMealPersister};
 
     #[test]
     fn successfully_removed() {

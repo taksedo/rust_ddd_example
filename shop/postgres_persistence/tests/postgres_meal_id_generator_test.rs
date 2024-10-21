@@ -9,7 +9,13 @@ use domain_test_fixtures::rnd_meal_id;
 use postgres_persistence::{
     database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator,
 };
-use postgres_persistence_test_fixtures::TestDb;
+
+use crate::test_fixtures::TestDb;
+
+#[path = "../../../test_fixtures/domain.rs"]
+mod domain_test_fixtures;
+
+mod test_fixtures;
 
 #[test]
 fn generate_id_integration_test() {

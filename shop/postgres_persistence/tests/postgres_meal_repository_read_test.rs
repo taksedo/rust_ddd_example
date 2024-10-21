@@ -7,8 +7,13 @@ use domain_test_fixtures::{rnd_meal_id, rnd_meal_name};
 use postgres_persistence::{
     database_start::MIGRATIONS, postgres_meal_repository::PostgresMealRepository,
 };
-use postgres_persistence_test_fixtures::{rnd_new_meal_with_meal_id, MockEventPublisher, TestDb};
 use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
+
+use crate::test_fixtures::{rnd_new_meal_with_meal_id, MockEventPublisher, TestDb};
+
+#[path = "../../../test_fixtures/domain.rs"]
+mod domain_test_fixtures;
+mod test_fixtures;
 
 #[test]
 fn get_by_id__not_found() {

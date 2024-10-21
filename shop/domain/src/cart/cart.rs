@@ -34,7 +34,7 @@ pub struct Cart {
     pub(crate) for_customer: CustomerId,
     #[default(_code = "OffsetDateTime::now_utc()")]
     pub(crate) created: OffsetDateTime,
-    pub meals: HashMap<MealId, Count>,
+    pub(crate) meals: HashMap<MealId, Count>,
 }
 
 impl Cart {
@@ -49,15 +49,13 @@ impl Cart {
             created: OffsetDateTime::now_utc(),
             meals: HashMap::new(),
         };
-        cart.entity_params
-            .add_event(CartCreatedDomainEvent::new(*cart.id()).into());
+        cart.add_event(CartCreatedDomainEvent::new(*cart.id()).into());
         cart
     }
 
     pub fn create_new_meal(&mut self, meal_id: &MealId) {
         self.meals.insert(*meal_id, Count::one());
-        self.entity_params
-            .add_event(MealAddedToCartDomainEvent::new(self.entity_params.id, *meal_id).into());
+        self.add_event(MealAddedToCartDomainEvent::new(*self.id(), *meal_id).into());
     }
 
     pub fn update_existing_meal(&mut self, meal_id: &MealId, count: Count) {
@@ -82,9 +80,7 @@ impl Cart {
 
     pub fn remove_meals(&mut self, meal_id: &MealId) {
         if self.meals.remove(meal_id).is_some() {
-            self.entity_params.add_event(
-                MealRemovedFromCartDomainEvent::new(self.entity_params.id, *meal_id).into(),
-            )
+            self.add_event(MealRemovedFromCartDomainEvent::new(*self.id(), *meal_id).into())
         }
     }
 
@@ -94,6 +90,10 @@ impl Cart {
 
     pub fn version(&self) -> &Version {
         self.entity_params.version()
+    }
+
+    pub(self) fn add_event(&mut self, event: CartEventEnum) {
+        self.entity_params.add_event(event)
     }
 
     pub fn pop_events(&mut self) -> Vec<CartEventEnum> {
@@ -106,24 +106,15 @@ pub enum CartError {
     IdGenerationError,
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "domain"))]
 mod tests {
-    use std::{
-        collections::HashMap,
-        mem::discriminant,
-        sync::{Arc, Mutex},
-    };
+    use std::mem::discriminant;
 
-    use common::types::common::count::Count;
-    use common_test_fixtures::types::rnd_count;
-    use domain::cart::{
-        cart::Cart,
-        cart_events::{CartCreatedDomainEvent, CartEventEnum, MealAddedToCartDomainEvent},
-        value_objects::cart_id::{CartId, CartIdGenerator},
+    use super::*;
+    use crate::{
+        common_test_fixtures::rnd_count,
+        test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal},
     };
-    use domain_test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
-    use smart_default::SmartDefault;
-    use time::OffsetDateTime;
 
     #[test]
     fn create_cart_success() {

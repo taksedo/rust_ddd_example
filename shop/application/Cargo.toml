@@ -25,12 +25,13 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 tokio.workspace = true
 futures-lite.workspace = true
+testcontainers.workspace = true
+rdkafka.workspace = true
 kafka.workspace = true
+testcontainers-modules.workspace = true
 utoipa.workspace = true
 utoipa-swagger-ui.workspace = true
-nectar.workspace = true
-tokio-util.workspace = true
-futures-util.workspace = true
+
 
 common.workspace = true
 domain.workspace = true
@@ -39,8 +40,9 @@ postgres_persistence.workspace = true
 usecase.workspace = true
 rest.workspace = true
 telnet.workspace = true
+nectar.workspace = true
+tokio-util.workspace = true
+futures-util.workspace = true
 
-[dev-dependencies]
-testcontainers.workspace = true
-testcontainers-modules.workspace = true
-domain_test_fixtures.workspace = true
+[features]
+testing = []

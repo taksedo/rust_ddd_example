@@ -17,7 +17,7 @@ impl MealIdGenerator for InMemoryIncrementalMealIdGenerator {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "in_memory_persistence"))]
 mod tests {
     use super::*;
 

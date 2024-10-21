@@ -1,4 +1,8 @@
+#![allow(unexpected_cfgs)]
 use std::collections::{HashMap, HashSet};
+
+#[path = "./common.rs"]
+mod common_test_fixtures;
 
 use bigdecimal::{BigDecimal, FromPrimitive};
 use common::types::{
@@ -8,16 +12,14 @@ use common::types::{
     },
     common::{address::Address, count::Count},
 };
-use common_test_fixtures::types::rnd_count;
+use common_test_fixtures::rnd_count;
 use derive_new::new;
+#[cfg(not(feature = "domain"))]
 use domain::{
     cart::{
         cart::Cart,
         cart_restorer::CartRestorer,
-        value_objects::{
-            cart_id::{self, CartId},
-            customer_id::CustomerId,
-        },
+        value_objects::{cart_id::CartId, customer_id::CustomerId},
     },
     menu::{
         meal::Meal,
@@ -40,6 +42,27 @@ use fake::{
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
+
+#[cfg(feature = "domain")]
+use crate::{
+    cart::{
+        cart::Cart,
+        cart_restorer::CartRestorer,
+        value_objects::{cart_id::CartId, customer_id::CustomerId},
+    },
+    menu::{
+        meal::Meal,
+        meal_already_exists::MealAlreadyExists,
+        meal_restorer::MealRestorer,
+        value_objects::{
+            meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
+        },
+    },
+    order::{
+        shop_order::{OrderItem, OrderState, ShopOrder},
+        value_objects::shop_order_id::ShopOrderId,
+    },
+};
 
 pub fn rnd_address() -> Address {
     Address::try_from((
@@ -109,7 +132,7 @@ pub fn rnd_customer_id() -> CustomerId {
     CustomerId::new()
 }
 
-pub fn rnd_cart_id() -> cart_id::CartId {
+pub fn rnd_cart_id() -> CartId {
     CartId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
 }
 

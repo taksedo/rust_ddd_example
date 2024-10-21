@@ -123,11 +123,13 @@ pub fn get_orders_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::common_rest::rest_responses::{bad_request_type_url, GenericErrorResponse};
-    use domain_test_fixtures::rnd_order_id;
     use dotenvy::dotenv;
 
     use super::*;
-    use crate::test_fixtures::{rnd_order_details, MockGetOrders};
+    use crate::{
+        domain_test_fixtures::rnd_order_id,
+        test_fixtures::{rnd_order_details, MockGetOrders},
+    };
 
     #[actix_web::test]
     async fn limit_reached() {

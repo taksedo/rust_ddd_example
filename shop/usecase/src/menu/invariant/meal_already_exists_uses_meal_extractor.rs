@@ -20,12 +20,11 @@ impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
-    use domain::menu::meal_already_exists::MealAlreadyExists;
-    use domain_test_fixtures::{rnd_meal, rnd_meal_name};
-    use usecase::menu::invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor;
-    use usecase_test_fixtures::{removed_meal, MockMealExtractor};
+    use super::*;
+    use crate::{
+        domain_test_fixtures::{rnd_meal, rnd_meal_name},
+        test_fixtures::{removed_meal, MockMealExtractor},
+    };
 
     #[test]
     fn meal_already_exists() {
@@ -40,13 +39,12 @@ mod tests {
 
         assert!(result);
 
-        //FIXME: downcast
-        // rule.extractor
-        //     .lock()
-        //     .unwrap()
-        //     .downcast_ref::<MockMealExtractor>()
-        //     .unwrap()
-        //     .verify_invoked_get_by_name(&meal.name());
+        rule.extractor
+            .lock()
+            .unwrap()
+            .downcast_ref::<MockMealExtractor>()
+            .unwrap()
+            .verify_invoked_get_by_name(&meal.name());
     }
 
     #[test]
@@ -61,14 +59,12 @@ mod tests {
         let result = rule.invoke(&meal.name());
 
         assert!(!result);
-
-        //FIXME: downcast
-        // rule.extractor
-        //     .lock()
-        //     .unwrap()
-        //     .downcast_ref::<MockMealExtractor>()
-        //     .unwrap()
-        //     .verify_invoked_get_by_name(&meal.name());
+        rule.extractor
+            .lock()
+            .unwrap()
+            .downcast_ref::<MockMealExtractor>()
+            .unwrap()
+            .verify_invoked_get_by_name(&meal.name());
     }
 
     #[test]
@@ -80,12 +76,11 @@ mod tests {
         let result = rule.invoke(&meal_name);
 
         assert!(!result);
-        //FIXME: downcast
-        // rule.extractor
-        //     .lock()
-        //     .unwrap()
-        //     .downcast_ref::<MockMealExtractor>()
-        //     .unwrap()
-        //     .verify_invoked_get_by_name(&meal_name);
+        rule.extractor
+            .lock()
+            .unwrap()
+            .downcast_ref::<MockMealExtractor>()
+            .unwrap()
+            .verify_invoked_get_by_name(&meal_name);
     }
 }

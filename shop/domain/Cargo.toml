@@ -18,13 +18,13 @@ derive_more.workspace = true
 derive-getters.workspace = true
 
 common.workspace = true
-common_test_fixtures.workspace = true
 
 [dev-dependencies]
-mockall.workspace = true
+domain.workspace = true
 fake.workspace = true
 rand.workspace = true
 rstest.workspace = true
+mockall.workspace = true
 
-domain = { path = "." }
-domain_test_fixtures.workspace = true
+[features]
+domain = []

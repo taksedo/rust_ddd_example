@@ -109,28 +109,21 @@ mod tests {
 
     use actix_web::http::Uri;
     use common::types::common::address::Address;
-    use common_test_fixtures::types::rnd_count;
-    use derive_new::new;
     use domain::{
         cart::value_objects::customer_id::CustomerId,
         menu::value_objects::{meal_id::MealId, price::Price},
-        order::{
-            get_meal_price::GetMealPrice,
-            value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator},
-        },
-    };
-    use domain_test_fixtures::{
-        rnd_address, rnd_cart, rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal,
-        rnd_order_id, rnd_price,
+        order::value_objects::shop_order_id::ShopOrderId,
     };
     use smart_default::SmartDefault;
-    use usecase::order::{
-        checkout::{Checkout, CheckoutRequest, CheckoutUseCaseError},
-        providers::payment_url_provider::PaymentUrlProvider,
-        scenarios::checkout_use_case::CheckoutUseCase,
-    };
-    use usecase_test_fixtures::{
-        MockCartExtractor, MockCustomerHasActiveOrder, MockShopOrderPersister,
+
+    use super::*;
+    use crate::{
+        common_test_fixtures::rnd_count,
+        domain_test_fixtures::{
+            rnd_address, rnd_cart, rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal,
+            rnd_order_id, rnd_price,
+        },
+        test_fixtures::{MockCartExtractor, MockCustomerHasActiveOrder, MockShopOrderPersister},
     };
 
     #[test]

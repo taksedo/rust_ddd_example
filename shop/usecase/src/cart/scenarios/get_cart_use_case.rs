@@ -50,20 +50,19 @@ where
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "usecase"))]
 mod tests {
     use std::{
         collections::HashMap,
         sync::{Arc, Mutex},
     };
 
-    use common_test_fixtures::types::rnd_count;
-    use domain_test_fixtures::{rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal};
-    use usecase::cart::{
-        get_cart::{CartItem, GetCart, GetCartUseCaseError},
-        scenarios::get_cart_use_case::GetCartUseCase,
+    use super::*;
+    use crate::{
+        common_test_fixtures::rnd_count,
+        domain_test_fixtures::{rnd_cart_with_customer_id_and_meals, rnd_customer_id, rnd_meal},
+        test_fixtures::{MockCartExtractor, MockMealExtractor},
     };
-    use usecase_test_fixtures::{MockCartExtractor, MockMealExtractor};
 
     #[test]
     fn cart_successfully_extracted() {

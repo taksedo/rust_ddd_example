@@ -75,7 +75,7 @@ impl ShopOrder {
                 Default::default(),
             );
             let total_price = shop_order.total_price();
-            shop_order.entity_params.add_event(
+            shop_order.add_event(
                 ShopOrderCreatedDomainEvent::new(id, *cart.for_customer(), total_price).into(),
             );
             Ok(shop_order)
@@ -87,28 +87,28 @@ impl ShopOrder {
     pub fn confirm(&mut self) -> Result<(), InvalidState> {
         self.change_state(
             OrderState::new_confirmed(),
-            ShopOrderConfirmedDomainEvent::new(self.entity_params.id).into(),
+            ShopOrderConfirmedDomainEvent::new(*self.id()).into(),
         )
     }
 
     pub fn pay(&mut self) -> Result<(), InvalidState> {
         self.change_state(
             OrderState::new_paid(),
-            ShopOrderPaidDomainEvent::new(self.entity_params.id).into(),
+            ShopOrderPaidDomainEvent::new(*self.id()).into(),
         )
     }
 
     pub fn complete(&mut self) -> Result<(), InvalidState> {
         self.change_state(
             OrderState::new_completed(),
-            ShopOrderCompletedDomainEvent::new(self.entity_params.id).into(),
+            ShopOrderCompletedDomainEvent::new(*self.id()).into(),
         )
     }
 
     pub fn cancel(&mut self) -> Result<(), InvalidState> {
         self.change_state(
             OrderState::new_cancelled(),
-            ShopOrderCancelledDomainEvent::new(self.entity_params.id).into(),
+            ShopOrderCancelledDomainEvent::new(*self.id()).into(),
         )
     }
 
@@ -121,7 +121,7 @@ impl ShopOrder {
             Ok(())
         } else if self.state.can_change_to(&new_state) {
             self.state = new_state;
-            self.entity_params.add_event(event);
+            self.add_event(event);
             Ok(())
         } else {
             Err(InvalidState)
@@ -154,6 +154,10 @@ impl ShopOrder {
 
     pub fn version(&self) -> &Version {
         self.entity_params.version()
+    }
+
+    pub(self) fn add_event(&mut self, event: ShopOrderEventEnum) {
+        self.entity_params.add_event(event)
     }
 
     pub fn pop_events(&mut self) -> Vec<ShopOrderEventEnum> {
@@ -226,36 +230,21 @@ pub enum ShopOrderError {
     IdGenerationError,
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "domain"))]
 mod tests {
-    use std::{
-        collections::{HashMap, HashSet},
-        str::FromStr,
-        sync::{Arc, Mutex},
-    };
+    use std::collections::HashMap;
 
     use bigdecimal::{num_bigint::BigInt, BigDecimal};
-    use common::types::common::count::Count;
-    use common_test_fixtures::types::rnd_count;
-    use derive_new::new;
-    use domain::{
-        cart::value_objects::customer_id::CustomerId,
-        menu::value_objects::{meal_id::MealId, price::Price},
-        order::{
-            customer_has_active_order::CustomerHasActiveOrder,
-            customer_order_events::{
-                ShopOrderCancelledDomainEvent, ShopOrderConfirmedDomainEvent,
-                ShopOrderCreatedDomainEvent, ShopOrderPaidDomainEvent,
-            },
-            get_meal_price::GetMealPrice,
-            shop_order::{CheckoutError, InvalidState, OrderItem, OrderState, ShopOrder},
-            value_objects::shop_order_id::{ShopOrderId, ShopOrderIdGenerator},
+    use derive_more::FromStr;
+
+    use super::*;
+    use crate::{
+        common_test_fixtures::rnd_count,
+        test_fixtures::{
+            order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id,
+            rnd_price,
         },
     };
-    use domain_test_fixtures::{
-        order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_price,
-    };
-    use smart_default::SmartDefault;
 
     #[test]
     fn checkout_success() {
@@ -292,7 +281,7 @@ mod tests {
         );
         assert_eq!(order.id(), &id);
         assert_eq!(order.address(), &address);
-        assert!(matches!(order.state(), OrderState::WaitingForPayment(_)));
+        assert!(matches!(order.state(), WaitingForPayment(_)));
         let events: Vec<ShopOrderCreatedDomainEvent> = order
             .pop_events()
             .iter()
@@ -383,7 +372,7 @@ mod tests {
     fn complete_order_success() {
         let mut order = order_with_state(OrderState::new_waiting_for_payment());
         assert!(order.pay().is_ok());
-        assert!(matches!(order.state(), OrderState::Paid(_)));
+        assert!(matches!(order.state(), Paid(_)));
         let event: Vec<ShopOrderPaidDomainEvent> = order
             .pop_events()
             .iter()
@@ -397,7 +386,7 @@ mod tests {
     fn complete_order_already() {
         let mut order = order_with_state(OrderState::new_completed());
         assert!(order.complete().is_ok());
-        assert!(matches!(order.state(), OrderState::Completed(_)));
+        assert!(matches!(order.state(), Completed(_)));
         assert!(order.pop_events().is_empty());
     }
 
@@ -421,7 +410,7 @@ mod tests {
     fn pay_order_success() {
         let mut order = order_with_state(OrderState::new_waiting_for_payment());
         assert!(order.pay().is_ok());
-        assert!(matches!(order.state(), OrderState::Paid(_)));
+        assert!(matches!(order.state(), Paid(_)));
         let event: Vec<ShopOrderPaidDomainEvent> = order
             .pop_events()
             .iter()
@@ -435,7 +424,7 @@ mod tests {
     fn pay_order_already() {
         let mut order = order_with_state(OrderState::new_paid());
         assert!(order.pay().is_ok());
-        assert!(matches!(order.state(), OrderState::Paid(_)));
+        assert!(matches!(order.state(), Paid(_)));
         assert!(order.pop_events().is_empty());
     }
 
@@ -480,7 +469,7 @@ mod tests {
     fn cancel_order_success() {
         let mut order = order_with_state(OrderState::new_paid());
         assert!(order.cancel().is_ok());
-        assert!(matches!(order.state(), OrderState::Cancelled(_)));
+        assert!(matches!(order.state(), Cancelled(_)));
         let event: Vec<ShopOrderCancelledDomainEvent> = order
             .pop_events()
             .iter()
@@ -494,7 +483,7 @@ mod tests {
     fn cancel_order_already() {
         let mut order = order_with_state(OrderState::new_cancelled());
         assert!(order.cancel().is_ok());
-        assert!(matches!(order.state(), OrderState::Cancelled(_)));
+        assert!(matches!(order.state(), Cancelled(_)));
         assert!(order.pop_events().is_empty());
     }
 
@@ -518,7 +507,7 @@ mod tests {
     fn confirm_order_success() {
         let mut order = order_with_state(OrderState::new_paid());
         assert!(order.confirm().is_ok());
-        assert!(matches!(order.state(), OrderState::Confirmed(_)));
+        assert!(matches!(order.state(), Confirmed(_)));
         let event: Vec<ShopOrderConfirmedDomainEvent> = order
             .pop_events()
             .iter()
@@ -532,7 +521,7 @@ mod tests {
     fn confirm_order_already() {
         let mut order = order_with_state(OrderState::new_confirmed());
         assert!(order.confirm().is_ok());
-        assert!(matches!(order.state(), OrderState::Confirmed(_)));
+        assert!(matches!(order.state(), Confirmed(_)));
         assert!(order.pop_events().is_empty());
     }
 

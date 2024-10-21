@@ -1,5 +1,11 @@
 use std::{any::type_name, fmt::Debug};
 
+#[path = "./domain.rs"]
+mod domain_test_fixtures;
+
+#[path = "./usecase.rs"]
+mod usecase_test_fixtures;
+
 use common::events::domain_event_publisher::DomainEventPublisher;
 use derive_new::new;
 use domain::{cart::cart::Cart, menu::meal::Meal, order::shop_order::ShopOrder};

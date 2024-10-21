@@ -11,17 +11,21 @@ actix-web.workspace = true
 thiserror.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
-tracing-test.workspace = true
 smart-default.workspace = true
 serde.workspace = true
 
-domain.workspace = true
 common.workspace = true
+domain.workspace = true
 
 [dev-dependencies]
-usecase = { path = "." }
+rand.workspace = true
+fake.workspace = true
+bigdecimal.workspace = true
+time.workspace = true
 assert-panic.workspace = true
-common_test_fixtures.workspace = true
-domain.workspace = true
-domain_test_fixtures.workspace = true
-usecase_test_fixtures.workspace = true
+tracing-test.workspace = true
+
+usecase.workspace = true
+
+[features]
+usecase = []
