@@ -1,4 +1,5 @@
 #![allow(unexpected_cfgs)]
+#![allow(dead_code)]
 use std::collections::{HashMap, HashSet};
 
 #[path = "./common.rs"]
@@ -69,7 +70,7 @@ pub fn rnd_address() -> Address {
         &*StreetName().fake::<String>(),
         thread_rng().gen_range(0..i16::MAX),
     ))
-    .expect("Address should be right")
+        .expect("Address should be right")
 }
 
 pub fn print_type_of<T>(_: &T) -> &str {

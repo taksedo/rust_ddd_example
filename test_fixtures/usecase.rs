@@ -1,4 +1,5 @@
 #![allow(unexpected_cfgs)]
+#![allow(dead_code)]
 use std::{any::Any, collections::HashMap, mem::discriminant};
 
 use common::types::common::{address::Address, count::Count};
