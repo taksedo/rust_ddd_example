@@ -10,7 +10,6 @@ serde.workspace = true
 serde_derive.workspace = true
 derive-new.workspace = true
 bigdecimal.workspace = true
-mockall.workspace = true
 time.workspace = true
 enum_dispatch.workspace = true
 smart-default.workspace = true
@@ -25,6 +24,7 @@ domain.workspace = true
 fake.workspace = true
 rand.workspace = true
 rstest.workspace = true
+mockall.workspace = true
 
 [features]
 domain = []

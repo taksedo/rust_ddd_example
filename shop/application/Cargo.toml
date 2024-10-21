@@ -27,6 +27,7 @@ tokio.workspace = true
 futures-lite.workspace = true
 testcontainers.workspace = true
 rdkafka.workspace = true
+kafka.workspace = true
 testcontainers-modules.workspace = true
 utoipa.workspace = true
 utoipa-swagger-ui.workspace = true

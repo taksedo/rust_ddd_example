@@ -1,6 +1,3 @@
-use crate::domain_test_fixtures::{
-    order_with_state, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
-};
 use domain::{
     menu::value_objects::{
         meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
@@ -23,6 +20,10 @@ use usecase::{
         get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
         get_orders::{GetOrders, GetOrdersUseCaseError},
     },
+};
+
+use crate::domain_test_fixtures::{
+    order_with_state, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
 };
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";

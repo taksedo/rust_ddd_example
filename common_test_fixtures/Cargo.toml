@@ -6,4 +6,4 @@ edition = "2021"
 [dependencies]
 rand = "0.8.5"
 
-common={ path = "../common", package = "rust_ddd_example_common"}
+common = { path = "../common", package = "rust_ddd_example_common" }

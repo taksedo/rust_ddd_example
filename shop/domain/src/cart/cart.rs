@@ -49,15 +49,13 @@ impl Cart {
             created: OffsetDateTime::now_utc(),
             meals: HashMap::new(),
         };
-        cart.entity_params
-            .add_event(CartCreatedDomainEvent::new(*cart.id()).into());
+        cart.add_event(CartCreatedDomainEvent::new(*cart.id()).into());
         cart
     }
 
     pub fn create_new_meal(&mut self, meal_id: &MealId) {
         self.meals.insert(*meal_id, Count::one());
-        self.entity_params
-            .add_event(MealAddedToCartDomainEvent::new(self.entity_params.id, *meal_id).into());
+        self.add_event(MealAddedToCartDomainEvent::new(*self.id(), *meal_id).into());
     }
 
     pub fn update_existing_meal(&mut self, meal_id: &MealId, count: Count) {
@@ -82,9 +80,7 @@ impl Cart {
 
     pub fn remove_meals(&mut self, meal_id: &MealId) {
         if self.meals.remove(meal_id).is_some() {
-            self.entity_params.add_event(
-                MealRemovedFromCartDomainEvent::new(self.entity_params.id, *meal_id).into(),
-            )
+            self.add_event(MealRemovedFromCartDomainEvent::new(*self.id(), *meal_id).into())
         }
     }
 
@@ -94,6 +90,10 @@ impl Cart {
 
     pub fn version(&self) -> &Version {
         self.entity_params.version()
+    }
+
+    pub(self) fn add_event(&mut self, event: CartEventEnum) {
+        self.entity_params.add_event(event)
     }
 
     pub fn pop_events(&mut self) -> Vec<CartEventEnum> {

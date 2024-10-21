@@ -39,12 +39,8 @@ impl ShopOrderRestorer {
 
 #[cfg(all(test, feature = "domain"))]
 mod tests {
-    use std::collections::HashSet;
-
-    use common::types::base::domain_entity::Version;
-    use domain::order::{shop_order::*, shop_order_restorer::ShopOrderRestorer};
-    use domain_test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item};
-    use time::OffsetDateTime;
+    use super::*;
+    use crate::test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item};
 
     #[test]
     fn restore_user_success() {

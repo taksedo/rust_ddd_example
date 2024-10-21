@@ -25,10 +25,8 @@ use domain::{
         value_objects::shop_order_id::ShopOrderId,
     },
 };
-
-use crate::domain_test_fixtures::{order_with_state, rnd_meal};
-#[cfg(feature = "usecase")]
-use crate::{
+#[cfg(not(feature = "usecase"))]
+use usecase::{
     cart::access::{
         cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
     },
@@ -40,8 +38,10 @@ use crate::{
         providers::order_exporter::OrderExporter,
     },
 };
-#[cfg(not(feature = "usecase"))]
-use usecase::{
+
+use crate::domain_test_fixtures::{order_with_state, rnd_meal};
+#[cfg(feature = "usecase")]
+use crate::{
     cart::access::{
         cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
     },

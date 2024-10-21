@@ -328,7 +328,7 @@ mod tests {
     }
 
     impl PaymentUrlProvider for TestPaymentUrlProvider {
-        fn provide_url(&self, order_id: &ShopOrderId, price: Price) -> Uri {
+        fn provide_url(&self, _order_id: &ShopOrderId, _price: Price) -> Uri {
             self.payment_url.as_str().parse::<Uri>().unwrap()
         }
     }

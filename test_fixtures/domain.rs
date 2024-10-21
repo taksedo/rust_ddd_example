@@ -12,32 +12,14 @@ use common::types::{
     },
     common::{address::Address, count::Count},
 };
-<<<<<<<< HEAD:shop/domain_test_fixtures/src/lib.rs
-use common_test_fixtures::types::rnd_count;
-use derive_new::new;
-use domain::{
-========
 use common_test_fixtures::rnd_count;
 use derive_new::new;
-use fake::{
-    faker::{address::en::StreetName, name::raw::*},
-    locales::*,
-    Fake,
-};
-use rand::{thread_rng, Rng};
-use serde::{Deserialize, Serialize};
-use time::OffsetDateTime;
-
-#[cfg(feature = "domain")]
-use crate::{
->>>>>>>> ab93ecf (Move test fixtures to separate files):test_fixtures/domain.rs
+#[cfg(not(feature = "domain"))]
+use domain::{
     cart::{
         cart::Cart,
         cart_restorer::CartRestorer,
-        value_objects::{
-            cart_id::{self, CartId},
-            customer_id::CustomerId,
-        },
+        value_objects::{cart_id::CartId, customer_id::CustomerId},
     },
     menu::{
         meal::Meal,
@@ -61,8 +43,8 @@ use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-#[cfg(not(feature = "domain"))]
-use domain::{
+#[cfg(feature = "domain")]
+use crate::{
     cart::{
         cart::Cart,
         cart_restorer::CartRestorer,
@@ -87,7 +69,7 @@ pub fn rnd_address() -> Address {
         &*StreetName().fake::<String>(),
         thread_rng().gen_range(0..i16::MAX),
     ))
-        .expect("Address should be right")
+    .expect("Address should be right")
 }
 
 pub fn print_type_of<T>(_: &T) -> &str {
@@ -150,7 +132,7 @@ pub fn rnd_customer_id() -> CustomerId {
     CustomerId::new()
 }
 
-pub fn rnd_cart_id() -> cart_id::CartId {
+pub fn rnd_cart_id() -> CartId {
     CartId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
 }
 
