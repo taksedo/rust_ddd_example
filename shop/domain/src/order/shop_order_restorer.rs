@@ -37,7 +37,7 @@ impl ShopOrderRestorer {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "domain"))]
 mod tests {
     use std::collections::HashSet;
 

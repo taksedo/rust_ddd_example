@@ -37,14 +37,13 @@ impl CartRestorer {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "domain"))]
 mod tests {
-    use std::collections::HashMap;
-
-    use common_test_fixtures::types::rnd_count;
-    use domain::cart::cart_restorer::CartRestorer;
-    use domain_test_fixtures::{rnd_cart_id, rnd_customer_id, rnd_meal_id, version};
-    use time::OffsetDateTime;
+    use super::*;
+    use crate::{
+        common_test_fixtures::rnd_count,
+        test_fixtures::{rnd_cart_id, rnd_customer_id, rnd_meal_id, version},
+    };
 
     #[test]
     fn restore_cart_success() {

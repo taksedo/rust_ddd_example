@@ -73,18 +73,17 @@ where
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "usecase"))]
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use derive_new::new;
-    use domain::cart::value_objects::cart_id::{CartId, CartIdGenerator};
-    use domain_test_fixtures::{rnd_cart_with_customer_id, rnd_customer_id, rnd_meal};
-    use usecase::cart::{
-        add_meal_to_cart::{AddMealToCart, AddMealToCartUseCaseError},
-        scenarios::add_meal_to_cart_use_case::AddMealToCartUseCase,
+    use domain::cart::value_objects::cart_id::CartId;
+
+    use super::*;
+    use crate::{
+        domain_test_fixtures::{rnd_cart_with_customer_id, rnd_customer_id, rnd_meal},
+        test_fixtures::{MockCartExtractor, MockCartPersister, MockMealExtractor},
     };
-    use usecase_test_fixtures::{MockCartExtractor, MockCartPersister, MockMealExtractor};
 
     #[test]
     fn cart_doesnt_exist_successfully_added() {

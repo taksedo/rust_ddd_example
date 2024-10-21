@@ -1,3 +1,4 @@
+#![allow(unexpected_cfgs)]
 use std::{any::Any, collections::HashMap, mem::discriminant};
 
 use common::types::common::{address::Address, count::Count};
@@ -24,7 +25,22 @@ use domain::{
         value_objects::shop_order_id::ShopOrderId,
     },
 };
-use domain_test_fixtures::{order_with_state, rnd_meal};
+
+use crate::domain_test_fixtures::{order_with_state, rnd_meal};
+#[cfg(feature = "usecase")]
+use crate::{
+    cart::access::{
+        cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
+    },
+    menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister},
+    order::{
+        access::{
+            shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister,
+        },
+        providers::order_exporter::OrderExporter,
+    },
+};
+#[cfg(not(feature = "usecase"))]
 use usecase::{
     cart::access::{
         cart_extractor::CartExtractor, cart_persister::CartPersister, cart_remover::CartRemover,
@@ -205,18 +221,6 @@ impl MockMealExtractor {
         assert!(&self.name.is_none());
     }
 }
-
-// impl dyn MealExtractor + 'static {
-//     pub fn downcast_ref<T: MealExtractor + 'static>(&self) -> Option<&T> {
-//         unsafe { Some(&*(self as *const dyn MealExtractor as *const T)) }
-//     }
-// }
-
-// impl dyn MealPersister + 'static {
-//     pub fn downcast_ref<T: MealPersister + 'static>(&self) -> Option<&T> {
-//         unsafe { Some(&*(self as *const dyn MealPersister as *const T)) }
-//     }
-// }
 
 #[derive(new, Debug, Clone, Default)]
 pub struct MockCartPersister {
@@ -405,7 +409,6 @@ impl MockShopOrderPersister {
     }
     pub fn verify_events_after_cancellation(&self, id: &ShopOrderId) {
         let events = self.order.clone().unwrap().pop_events();
-        dbg!(&events.first());
         let first_event = events.first().unwrap().clone();
         let etalon_event = ShopOrderCancelledDomainEvent::new(*id);
         assert_eq!(events.len(), 1);

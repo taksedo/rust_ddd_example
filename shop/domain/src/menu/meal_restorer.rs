@@ -28,7 +28,7 @@ impl MealRestorer {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "domain"))]
 mod tests {
     use domain::menu::{meal::Meal, meal_restorer::MealRestorer};
     use domain_test_fixtures::{

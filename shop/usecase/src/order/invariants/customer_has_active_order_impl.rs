@@ -26,12 +26,11 @@ impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
-    use domain::order::customer_has_active_order::CustomerHasActiveOrder;
-    use domain_test_fixtures::rnd_customer_id;
-    use usecase::order::invariants::customer_has_active_order_impl::CustomerHasActiveOrderImpl;
-    use usecase_test_fixtures::{active_order, non_active_order, MockShopOrderExtractor};
+    use super::*;
+    use crate::{
+        domain_test_fixtures::rnd_customer_id,
+        test_fixtures::{active_order, non_active_order, MockShopOrderExtractor},
+    };
 
     #[test]
     fn active_order_exists() {

@@ -5,6 +5,8 @@ edition = "2021"
 
 [workspace]
 members = ["events", "common_rest", "common_telnet", "types"]
+resolver = "2"
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
@@ -12,9 +14,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
-derive-new = "0.6.0"
-derive_more = { version = "1.0.0-beta.6", features = ["full"] }
-time = { version = "0.3.21", features = ["default", "serde-well-known"] }
+derive-new = "0.7.0"
+derive_more = { version = "1.0.0", features = ["full"] }
+time = { version = "0.3.36", features = ["default", "serde-well-known"] }
 serde = { version = "1", features = ["derive", "rc", "alloc"] }
 serde_derive = "1"
 erased-serde = "0"
@@ -30,7 +32,7 @@ fake = { version = "2.9.1", features = ["derive"] }
 utoipa = "4"
 utoipa-swagger-ui = "7"
 uuid = { version = "1.8.0", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
-derive-getters = "0.4.0"
+derive-getters = "0.5.0"
 
 types = { path = "types" }
 

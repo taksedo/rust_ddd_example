@@ -16,10 +16,16 @@ smart-default.workspace = true
 bigdecimal.workspace = true
 dotenvy.workspace = true
 utoipa.workspace = true
+utoipa-swagger-ui.workspace = true
 
 domain.workspace = true
 usecase.workspace = true
 common.workspace = true
 
 [dev-dependencies]
-domain_test_fixtures.workspace = true
+#domain.workspace = true
+fake.workspace = true
+rand.workspace = true
+rstest.workspace = true
+bigdecimal.workspace = true
+time.workspace = true

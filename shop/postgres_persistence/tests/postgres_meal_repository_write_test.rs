@@ -8,10 +8,16 @@ use postgres_persistence::{
     database_start::MIGRATIONS, meal_db_dto::MealDbDto,
     postgres_meal_repository::PostgresMealRepository,
 };
-use postgres_persistence_test_fixtures::{
+use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
+
+use crate::test_fixtures::{
     rnd_new_meal_with_meal_id, rnd_new_meal_with_name, MockEventPublisher, TestDb,
 };
-use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
+
+#[path = "../../../test_fixtures/domain.rs"]
+mod domain_test_fixtures;
+
+mod test_fixtures;
 
 #[test]
 fn save_new_instance() {

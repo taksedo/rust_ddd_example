@@ -53,14 +53,16 @@ impl MealExtractor for InMemoryMealRepository {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "in_memory_persistence"))]
 #[allow(non_snake_case)]
 mod tests {
     use domain::menu::meal_events::MealRemovedFromMenuDomainEvent;
-    use domain_test_fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name, rnd_removed_meal};
-    use in_memory_persistence_test_fixtures::{meal_with_events, type_of, TestEventPublisher};
 
     use super::*;
+    use crate::{
+        domain_test_fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name, rnd_removed_meal},
+        test_fixtures::{meal_with_events, type_of, TestEventPublisher},
+    };
 
     #[test]
     fn saving_meal__meal_doesnt_exist() {

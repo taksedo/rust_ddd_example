@@ -40,14 +40,13 @@ where
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use domain_test_fixtures::rnd_order_id;
-    use usecase::order::{
-        cancel_order::{CancelOrder, CancelOrderUseCaseError},
-        scenarios::cancel_order_use_case::CancelOrderUseCase,
-    };
-    use usecase_test_fixtures::{
-        order_not_ready_for_cancel, order_ready_for_cancel, MockShopOrderExtractor,
-        MockShopOrderPersister,
+    use super::*;
+    use crate::{
+        domain_test_fixtures::rnd_order_id,
+        test_fixtures::{
+            order_not_ready_for_cancel, order_ready_for_cancel, MockShopOrderExtractor,
+            MockShopOrderPersister,
+        },
     };
 
     #[test]

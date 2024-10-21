@@ -28,15 +28,11 @@ impl GetMealById for GetMealByIdUseCase {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
-    use domain_test_fixtures::{rnd_meal, rnd_meal_id};
-    use usecase::menu::{
-        dto::meal_info::MealInfo,
-        get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
-        scenario::get_meal_by_id_use_case::GetMealByIdUseCase,
+    use super::*;
+    use crate::{
+        domain_test_fixtures::{rnd_meal, rnd_meal_id},
+        test_fixtures::{removed_meal, MockMealExtractor},
     };
-    use usecase_test_fixtures::{removed_meal, MockMealExtractor};
 
     #[test]
     fn meal_not_found() {
@@ -47,14 +43,13 @@ mod tests {
         let result = use_case.execute(meal_id);
 
         assert_eq!(result, Err(GetMealByIdUseCaseError::MealNotFound));
-        //FIXME: downcast
-        // use_case
-        //     .meal_extractor
-        //     .lock()
-        //     .unwrap()
-        //     .downcast_ref::<MockMealExtractor>()
-        //     .unwrap()
-        //     .verify_invoked_get_by_id(&meal_id);
+        use_case
+            .meal_extractor
+            .lock()
+            .unwrap()
+            .downcast_ref::<MockMealExtractor>()
+            .unwrap()
+            .verify_invoked_get_by_id(&meal_id);
     }
 
     #[test]
@@ -69,14 +64,13 @@ mod tests {
         let result = use_case.execute(meal.id());
 
         assert_eq!(result, Err(GetMealByIdUseCaseError::MealNotFound));
-        //FIXME: downcast
-        //     use_case
-        //         .meal_extractor
-        //         .lock()
-        //         .unwrap()
-        //         .downcast_ref::<MockMealExtractor>()
-        //         .unwrap()
-        //         .verify_invoked_get_by_id(meal.id());
+        use_case
+            .meal_extractor
+            .lock()
+            .unwrap()
+            .downcast_ref::<MockMealExtractor>()
+            .unwrap()
+            .verify_invoked_get_by_id(meal.id());
     }
 
     #[test]
@@ -101,13 +95,12 @@ mod tests {
                 version: *meal.version(),
             }
         );
-        //FIXME: downcast
-        // use_case
-        //     .meal_extractor
-        //     .lock()
-        //     .unwrap()
-        //     .downcast_ref::<MockMealExtractor>()
-        //     .unwrap()
-        //     .verify_invoked_get_by_id(&meal.id());
+        use_case
+            .meal_extractor
+            .lock()
+            .unwrap()
+            .downcast_ref::<MockMealExtractor>()
+            .unwrap()
+            .verify_invoked_get_by_id(&meal.id());
     }
 }

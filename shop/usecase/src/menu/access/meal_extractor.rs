@@ -12,3 +12,9 @@ pub trait MealExtractor: Debug + Send {
 
     fn get_all(&mut self) -> Vec<Meal>;
 }
+
+impl dyn MealExtractor + 'static {
+    pub fn downcast_ref<T: MealExtractor + 'static>(&self) -> Option<&T> {
+        unsafe { Some(&*(self as *const dyn MealExtractor as *const T)) }
+    }
+}

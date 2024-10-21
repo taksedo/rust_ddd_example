@@ -1,16 +1,12 @@
 [workspace]
 members = [
     "domain",
-    "domain_test_fixtures",
     "usecase",
-    "usecase_test_fixtures",
-    "application",
+    #    "application",
     "in_memory_persistence",
-    "in_memory_persistence_test_fixtures",
     "rest",
     "telnet",
-    "postgres_persistence",
-    "postgres_persistence_test_fixtures",
+    "postgres_persistence"
 ]
 
 [workspace.package]
@@ -62,55 +58,47 @@ smart-default = "0"
 const_format = "0"
 cargo-watch = "8"
 lazy_static = "1"
-diesel = { version = "= 2.1", features = [
-    "postgres",
-    "chrono",
-    "numeric",
-] } # no backend features need to be enabled
+diesel = { version = "= 2.1", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
 diesel_migrations = "= 2.1"
 diesel_logger = "= 0.3.0"
 lapin = "2"
 async-trait = "0"
 futures-lite = "2"
 testcontainers = { version = "= 0.21.1", features = ["blocking"] }
-testcontainers-modules = { version = "= 0.9.0", features = [
-    "kafka",
-    "postgres",
-    "rabbitmq",
-] }
+testcontainers-modules = { version = "= 0.9.0", features = ["kafka", "postgres", "rabbitmq"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0"
 tracing-subscriber = "0"
 tracing-test = "0"
 url = "2"
-kafka = "0"
+rdkafka = { version = "0", features = ["cmake-build"] }
 uuid = { version = "1", features = ["v4"] }
 thiserror = "1"
 assert-panic = "1"
 prettytable-rs = "0"
 nectar = "0"
 tokio-util = { version = "0", default-features = false, features = ["codec"] }
-futures-util = { version = "0", default-features = false, features = ["sink"] }
+futures-util = { version = "0", default-features = false, features = [
+    "sink",
+] }
 utoipa-swagger-ui = { version = "7", features = ["actix-web"] }
 utoipa = { version = "4", features = ["actix_extras", "chrono"] }
 derive-getters = "0"
 
 common = { path = "../common", package = "rust_ddd_example_common" }
-common_test_fixtures ={ path = "../common_test_fixtures", package = "rust_ddd_example_common_test_fixtures"}
-domain = { path = "domain" }
-domain_test_fixtures = { path = "domain_test_fixtures" }
-usecase = { path = "usecase" }
-usecase_test_fixtures = { path = "usecase_test_fixtures" }
-postgres_persistence = { path = "postgres_persistence" }
-postgres_persistence_test_fixtures = { path = "postgres_persistence_test_fixtures" }
-in_memory_persistence = { path = "in_memory_persistence" }
-in_memory_persistence_test_fixtures = { path = "in_memory_persistence_test_fixtures" }
+domain = { path = "domain", features = ["domain"] }
+usecase = { path = "usecase", features = ["usecase"] }
+postgres_persistence = { path = "postgres_persistence", features = ["postgres_persistence"] }
+in_memory_persistence = { path = "in_memory_persistence", features = ["in_memory_persistence"] }
 rest = { path = "rest" }
-application = { path = "application" }
+#application = { path = "application" }
 telnet = { path = "telnet" }
+
 
 [dependencies]
 application = { path = "application" }
 
+[dev-dependencies]
+
 [build-dependencies]
-# winresource = "0.1.15"
+winresource = "0.1.15"

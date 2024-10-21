@@ -108,7 +108,7 @@ pub enum MealError {
 impl BusinessError for MealError {}
 
 #[allow(non_snake_case)]
-#[cfg(test)]
+#[cfg(all(test, feature = "domain"))]
 mod tests {
     use std::sync::{atomic::AtomicI64, Arc, Mutex};
 

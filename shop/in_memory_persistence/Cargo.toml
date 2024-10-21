@@ -14,6 +14,13 @@ domain.workspace = true
 usecase.workspace = true
 
 [dev-dependencies]
-usecase.workspace = true
-domain_test_fixtures.workspace = true
-in_memory_persistence_test_fixtures.workspace = true
+rand.workspace = true
+fake.workspace = true
+bigdecimal.workspace = true
+serde.workspace = true
+time.workspace = true
+
+in_memory_persistence.workspace = true
+
+[features]
+in_memory_persistence = []
