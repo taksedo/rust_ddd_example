@@ -67,7 +67,6 @@ pub(crate) fn web_api_backend_startup() -> JoinHandle<()> {
                 rest::order::get_order_by_id_endpoint::get_order_by_id_endpoint,
                 rest::order::cancel_order_endpoint::cancel_order_endpoint,
                 rest::order::confirm_order_endpoint::confirm_order_endpoint,
-
             ),
             components(
                 schemas(

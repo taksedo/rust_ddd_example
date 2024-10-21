@@ -6,7 +6,7 @@ use std::{
 use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
 use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, rest_business_error,
-    to_invalid_param_bad_request,
+    to_invalid_param_bad_request, GenericErrorResponse,
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{

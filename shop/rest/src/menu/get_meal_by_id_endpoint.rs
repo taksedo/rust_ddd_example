@@ -6,6 +6,7 @@ use std::{
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use common::common_rest::rest_responses::{
     get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
+    GenericErrorResponse,
 };
 use domain::menu::value_objects::meal_id::MealId;
 use usecase::menu::{
