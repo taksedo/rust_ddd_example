@@ -53,7 +53,7 @@ impl MealExtractor for InMemoryMealRepository {
     }
 }
 
-#[cfg(all(test, feature = "in_memory_persistence"))]
+#[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
     use domain::menu::meal_events::MealRemovedFromMenuDomainEvent;

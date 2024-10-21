@@ -27,6 +27,3 @@ rand.workspace = true
 fake.workspace = true
 bigdecimal.workspace = true
 time.workspace = true
-
-[features]
-postgres_persistence = []
