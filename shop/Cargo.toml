@@ -86,8 +86,8 @@ derive-getters = "0"
 common = { path = "../common", package = "rust_ddd_example_common" }
 domain = { path = "domain", features = ["domain"] }
 usecase = { path = "usecase", features = ["usecase"] }
-postgres_persistence = { path = "postgres_persistence", features = ["postgres_persistence"] }
-in_memory_persistence = { path = "in_memory_persistence", features = ["in_memory_persistence"] }
+postgres_persistence = { path = "postgres_persistence" }
+in_memory_persistence = { path = "in_memory_persistence" }
 rest = { path = "rest" }
 application = { path = "application" }
 telnet = { path = "telnet" }

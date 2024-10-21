@@ -42,7 +42,7 @@ impl CartRemover for InMemoryCartRepository {
     }
 }
 
-#[cfg(all(test, feature = "in_memory_persistence"))]
+#[cfg(test)]
 mod tests {
     use domain::cart::cart_events::MealAddedToCartDomainEvent;
 

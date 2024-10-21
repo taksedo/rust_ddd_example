@@ -21,6 +21,3 @@ serde.workspace = true
 time.workspace = true
 
 in_memory_persistence.workspace = true
-
-[features]
-in_memory_persistence = []

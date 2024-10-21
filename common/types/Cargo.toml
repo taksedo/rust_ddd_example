@@ -23,4 +23,4 @@ rstest.workspace = true
 rand.workspace = true
 fake.workspace = true
 
-common = { path = "../../common", package = "rust_ddd_example_common" }
+common = { path = "..", package = "rust_ddd_example_common" }

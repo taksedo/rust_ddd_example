@@ -61,7 +61,7 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
     }
 }
 
-#[cfg(all(test, feature = "in_memory_persistence"))]
+#[cfg(test)]
 mod tests {
     use domain::order::customer_order_events::ShopOrderCompletedDomainEvent;
 

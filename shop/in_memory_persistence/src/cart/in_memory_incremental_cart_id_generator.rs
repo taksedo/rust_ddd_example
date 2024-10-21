@@ -17,7 +17,7 @@ impl CartIdGenerator for InMemoryIncrementalCartIdGenerator {
     }
 }
 
-#[cfg(all(test, feature = "in_memory_persistence"))]
+#[cfg(test)]
 mod tests {
     use super::*;
 
