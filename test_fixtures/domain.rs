@@ -1,4 +1,5 @@
 #![allow(unexpected_cfgs)]
+#![allow(dead_code)]
 use std::collections::{HashMap, HashSet};
 
 #[path = "./common.rs"]

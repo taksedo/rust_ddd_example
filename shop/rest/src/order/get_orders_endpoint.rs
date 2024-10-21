@@ -6,7 +6,7 @@ use std::{
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
 use common::common_rest::{
     cursor_paged_model::CursorPagedModel,
-    rest_responses::{to_invalid_param_bad_request, ValidationError},
+    rest_responses::{to_invalid_param_bad_request, GenericErrorResponse, ValidationError},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{

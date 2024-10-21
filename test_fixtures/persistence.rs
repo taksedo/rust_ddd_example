@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::{any::type_name, fmt::Debug};
 
 #[path = "./domain.rs"]

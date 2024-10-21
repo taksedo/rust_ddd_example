@@ -44,34 +44,33 @@ env_logger = "0"
 derivative = "2"
 erased-serde = "0"
 serde_derive = "1.0"
-serde = { version = "1.0", features = ["derive", "rc", "alloc"] }
+serde = { version = "1", features = ["derive", "rc", "alloc"] }
 serde_json = "1.0"
 bigdecimal = { version = "0", features = ["serde"] }
 mockall = "0"
 fake = { version = "2", features = ["derive", "bigdecimal"] }
 rand = "0"
 rstest = "0"
-time = { version = "0.3", features = ["default", "serde-well-known"] }
+time = { version = "0", features = ["default", "serde-well-known"] }
 enum_access = "0"
 enum_dispatch = "0"
 smart-default = "0"
 const_format = "0"
 cargo-watch = "8"
 lazy_static = "1"
-diesel = { version = "= 2.1", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
-diesel_migrations = "= 2.1"
-diesel_logger = "= 0.3.0"
+diesel = { version = "=2.1", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
+diesel_migrations = "=2.1"
+diesel_logger = "=0.3.0"
 lapin = "2"
 async-trait = "0"
 futures-lite = "2"
-testcontainers = { version = "= 0.21.1", features = ["blocking"] }
-testcontainers-modules = { version = "= 0.9.0", features = ["kafka", "postgres", "rabbitmq"] }
+testcontainers = { version = "0.23.1", features = ["blocking"] }
+testcontainers-modules = { version = "0.11.3", features = ["kafka", "postgres", "rabbitmq"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0"
 tracing-subscriber = "0"
 tracing-test = "0"
 url = "2"
-kafka = "0"
 rdkafka = { version = "0", features = ["cmake-build"] }
 uuid = { version = "1", features = ["v4"] }
 thiserror = "1"
@@ -80,8 +79,8 @@ prettytable-rs = "0"
 nectar = "0"
 tokio-util = { version = "0", default-features = false, features = ["codec"] }
 futures-util = { version = "0", default-features = false, features = ["sink"] }
-utoipa-swagger-ui = { version = "7", features = ["actix-web"] }
-utoipa = { version = "4", features = ["actix_extras", "chrono"] }
+utoipa-swagger-ui = { version = "8", features = ["actix-web"] }
+utoipa = { version = "5", features = ["actix_extras", "chrono"] }
 derive-getters = "0"
 
 common = { path = "../common", package = "rust_ddd_example_common" }

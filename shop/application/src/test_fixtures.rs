@@ -1,15 +1,9 @@
 use std::sync::{atomic::AtomicU32, OnceLock};
 
 use lapin::{Connection, ConnectionProperties};
-use testcontainers::{
-    core::{CmdWaitFor, ExecCommand, WaitFor},
-    runners::AsyncRunner,
-    ContainerAsync, GenericImage, ImageExt,
-};
+use testcontainers::{core::WaitFor, runners::AsyncRunner, ContainerAsync, GenericImage, ImageExt};
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
-
-use crate::event::kafka_event_publisher_impl::MEAL_TOPIC_NAME;
 
 #[derive(Debug)]
 pub struct TestRabbitMq {
@@ -81,22 +75,10 @@ impl TestKafka {
         let node = Kafka::default().start().await.unwrap();
 
         let port = &node.get_host_port_ipv4(9093).await.unwrap();
-        let test_container_kafka_url = format!("localhost:{port}");
+        let test_container_kafka_url = format!("127.0.0.1:{port}");
 
         KAFKA_ADDRESS.get_or_init(|| test_container_kafka_url.clone());
         debug!(?KAFKA_ADDRESS);
-
-        let cmd = vec![
-            "kafka-topics",
-            "--bootstrap-server",
-            "localhost:9092",
-            "--create",
-            "--topic",
-            MEAL_TOPIC_NAME,
-        ];
-        node.exec(ExecCommand::new(cmd).with_cmd_ready_condition(CmdWaitFor::seconds(2)))
-            .await
-            .unwrap();
 
         Self { container: node }
     }

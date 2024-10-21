@@ -13,25 +13,25 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
-derive-new = "0.7.0"
-derive_more = { version = "1.0.0", features = ["full"] }
-time = { version = "0.3.36", features = ["default", "serde-well-known"] }
+derive-new = "0"
+derive_more = { version = "1", features = ["full"] }
+time = { version = "0", features = ["default", "serde-well-known"] }
 serde = { version = "1", features = ["derive", "rc", "alloc"] }
 serde_derive = "1"
 erased-serde = "0"
-derivative = "2.2.0"
-enum_dispatch = "0.3.12"
-enum_access = "0.4.0"
+derivative = "2"
+enum_dispatch = "0"
+enum_access = "0"
 rstest = "0"
-rand = "0.8.5"
-actix-web = "4.3.1"
-lazy_static = "1.4.0"
-smart-default = "0.7.1"
-fake = { version = "2.9.1", features = ["derive"] }
-utoipa = "4"
-utoipa-swagger-ui = "7"
-uuid = { version = "1.8.0", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
-derive-getters = "0.5.0"
+rand = "0"
+actix-web = "4.9.0"
+lazy_static = "1"
+smart-default = "0"
+fake = { version = "2", features = ["derive"] }
+utoipa = "5"
+utoipa-swagger-ui = "8"
+uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
+derive-getters = "0"
 
 types = { path = "types" }
 

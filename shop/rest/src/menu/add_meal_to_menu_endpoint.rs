@@ -7,7 +7,7 @@ use std::{
 use actix_web::{http, web, HttpResponse};
 use bigdecimal::BigDecimal;
 use common::common_rest::rest_responses::{
-    created, rest_business_error, to_invalid_param_bad_request,
+    created, rest_business_error, to_invalid_param_bad_request, GenericErrorResponse,
 };
 use derive_new::new;
 use domain::menu::value_objects::{
@@ -141,9 +141,7 @@ mod tests {
         web::{Data, Json},
     };
     use bigdecimal::{num_bigint::BigInt, ToPrimitive};
-    use common::common_rest::rest_responses::{
-        bad_request_type_url, error_type_url, GenericErrorResponse,
-    };
+    use common::common_rest::rest_responses::{bad_request_type_url, error_type_url};
     use dotenvy::dotenv;
 
     use super::*;

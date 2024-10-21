@@ -26,8 +26,6 @@ tracing-subscriber.workspace = true
 tokio.workspace = true
 futures-lite.workspace = true
 testcontainers.workspace = true
-rdkafka.workspace = true
-kafka.workspace = true
 testcontainers-modules.workspace = true
 utoipa.workspace = true
 utoipa-swagger-ui.workspace = true
@@ -43,6 +41,11 @@ telnet.workspace = true
 nectar.workspace = true
 tokio-util.workspace = true
 futures-util.workspace = true
+rdkafka.workspace = true
 
-[features]
-testing = []
+[dev-dependencies]
+fake.workspace = true
+rand.workspace = true
+rstest.workspace = true
+bigdecimal.workspace = true
+time.workspace = true
