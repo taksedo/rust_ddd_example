@@ -44,7 +44,9 @@ fn save_new_instance() {
 }
 
 #[test]
-#[should_panic]
+#[should_panic(
+    expected = "Error saving new meal: DatabaseError(UniqueViolation, \"duplicate key value violates unique constraint \\\"meal_pkey\\\"\")"
+)]
 fn save_new_instance_but_already_exists_with_the_same_id() {
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -64,7 +66,9 @@ fn save_new_instance_but_already_exists_with_the_same_id() {
 }
 
 #[test]
-#[should_panic]
+#[should_panic(
+    expected = "Error saving new meal: DatabaseError(UniqueViolation, \"duplicate key value violates unique constraint \\\"meal_name_key\\\"\")"
+)]
 fn save_new_instance_but_already_exists_with_the_same_name() {
     let db = TestDb::new();
     let mut conn = db.conn();
@@ -136,8 +140,10 @@ fn save_again_without_changes() {
         )]);
 }
 
-#[should_panic]
 #[test]
+#[should_panic(
+    expected = "Error saving new meal: DatabaseError(UniqueViolation, \"duplicate key value violates unique constraint \\\"meal_pkey\\\"\")"
+)]
 fn saving_failed_if_version_outdated() {
     let db = TestDb::new();
     let mut conn = db.conn();
