@@ -29,6 +29,8 @@ impl BusinessError for CreateMealDescriptionError {}
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
+    use std::any::type_name;
+
     use mockall::Any;
     use rstest::rstest;
 
@@ -39,11 +41,8 @@ mod tests {
         let value = "Some string";
         let result = MealDescription::try_from(value).unwrap();
 
-        let type_name = result.type_name();
-        assert_eq!(
-            type_name,
-            "domain::menu::value_objects::meal_description::MealDescription"
-        );
+        let meal_type_name = result.type_name();
+        assert_eq!(meal_type_name, type_name::<MealDescription>());
         let description = result;
         assert_eq!(description.to_string(), value);
     }

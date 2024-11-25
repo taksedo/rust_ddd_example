@@ -60,12 +60,12 @@ mod tests {
         meal_extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&meal.id());
+            .verify_invoked_get_by_id(meal.id());
 
         meal_persister
             .lock()
             .unwrap()
-            .verify_events_after_deletion(&meal.id());
+            .verify_events_after_deletion(meal.id());
     }
 
     #[test]

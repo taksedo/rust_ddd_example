@@ -145,7 +145,7 @@ mod tests {
     async fn returned_successfully_order_is_ready_for_confirm_or_cancel() {
         let details = rnd_order_details(OrderState::new_paid());
         assert_eq!(details.items.len(), 1);
-        let item_details = details.items.get(0).unwrap();
+        let item_details = details.items.first().unwrap();
 
         let mock_get_order_by_id = Arc::new(Mutex::new(MockGetOrderById {
             id: rnd_order_id(),
@@ -179,11 +179,11 @@ mod tests {
         assert_eq!(response_dto.total_price, details.total.to_string_value());
         assert_eq!(response_dto.items.len(), 1);
         assert_eq!(
-            response_dto.items.get(0).unwrap().meal_id,
+            response_dto.items.first().unwrap().meal_id,
             item_details.meal_id.to_i64()
         );
         assert_eq!(
-            response_dto.items.get(0).unwrap().count,
+            response_dto.items.first().unwrap().count,
             item_details.count.to_i32()
         );
         assert_eq!(response_dto.version, details.version.to_i64());
@@ -197,7 +197,7 @@ mod tests {
     async fn returned_successfully_order_isnt_ready_for_confirm_or_cancel() {
         let details = rnd_order_details(OrderState::new_cancelled());
         assert_eq!(details.items.len(), 1);
-        let item_details = details.items.get(0).unwrap();
+        let item_details = details.items.first().unwrap();
 
         let mock_get_order_by_id = Arc::new(Mutex::new(MockGetOrderById {
             id: rnd_order_id(),
@@ -231,11 +231,11 @@ mod tests {
         assert_eq!(response_dto.total_price, details.total.to_string_value());
         assert_eq!(response_dto.items.len(), 1);
         assert_eq!(
-            response_dto.items.get(0).unwrap().meal_id,
+            response_dto.items.first().unwrap().meal_id,
             item_details.meal_id.to_i64()
         );
         assert_eq!(
-            response_dto.items.get(0).unwrap().count,
+            response_dto.items.first().unwrap().count,
             item_details.count.to_i32()
         );
         assert_eq!(response_dto.version, details.version.to_i64());

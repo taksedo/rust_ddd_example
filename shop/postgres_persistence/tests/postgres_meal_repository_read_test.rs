@@ -113,7 +113,7 @@ fn get_all__table_is_not_empty() {
     let result = repository.get_all();
 
     assert!(!result.is_empty());
-    assert_eq!(result.get(0).unwrap(), &meal);
+    assert_eq!(result.first().unwrap(), &meal);
 }
 
 #[test]

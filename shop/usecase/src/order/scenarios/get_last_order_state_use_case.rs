@@ -80,7 +80,7 @@ mod tests {
         extractor.lock().unwrap().order = Some(order.clone());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
-        let result = use_case.execute(&order.id());
+        let result = use_case.execute(order.id());
         assert!(result.is_ok());
         let details = result.unwrap();
 
@@ -105,6 +105,6 @@ mod tests {
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&order.id());
+            .verify_invoked_get_by_id(order.id());
     }
 }

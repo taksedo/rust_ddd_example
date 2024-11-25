@@ -49,7 +49,7 @@ mod tests {
             .unwrap()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
-            .verify_invoked_get_by_id(&meal_id);
+            .verify_invoked_get_by_id(meal_id);
     }
 
     #[test]
@@ -101,6 +101,6 @@ mod tests {
             .unwrap()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
-            .verify_invoked_get_by_id(&meal.id());
+            .verify_invoked_get_by_id(meal.id());
     }
 }

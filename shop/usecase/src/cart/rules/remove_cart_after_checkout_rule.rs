@@ -81,7 +81,7 @@ mod tests {
             RemoveCartAfterCheckoutRule::new(cart_extractor.clone(), cart_remover.clone());
         let event: ShopOrderEventEnum = ShopOrderCreatedDomainEvent::new(
             rnd_order_id(),
-            cart.clone().for_customer().clone(),
+            *cart.clone().for_customer(),
             rnd_price(),
         )
         .into();
@@ -91,7 +91,7 @@ mod tests {
         cart_extractor
             .lock()
             .unwrap()
-            .verify_invoked(&cart.for_customer());
+            .verify_invoked(cart.for_customer());
         cart_remover.lock().unwrap().verify_invoked(cart.id());
     }
 

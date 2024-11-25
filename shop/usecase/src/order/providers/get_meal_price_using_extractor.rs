@@ -44,7 +44,7 @@ mod tests {
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&meal.id());
+            .verify_invoked_get_by_id(meal.id());
         assert_eq!(result, meal.price().to_owned());
     }
 

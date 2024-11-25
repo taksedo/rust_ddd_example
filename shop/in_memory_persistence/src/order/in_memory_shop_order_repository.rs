@@ -81,7 +81,7 @@ mod tests {
 
         repository.save(order.clone());
 
-        let stored_order = repository.storage.get(&order.id()).unwrap();
+        let stored_order = repository.storage.get(order.id()).unwrap();
         assert_eq!(stored_order, &order);
         assert_eq!(event_publisher.lock().unwrap().storage.len(), 1);
 
@@ -129,7 +129,7 @@ mod tests {
 
         repository.storage.insert(*id, existing_order.clone());
 
-        let order = repository.get_by_id(&id);
+        let order = repository.get_by_id(id);
         assert_eq!(order.unwrap(), existing_order);
     }
 

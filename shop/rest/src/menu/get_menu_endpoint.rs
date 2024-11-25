@@ -68,23 +68,23 @@ mod tests {
 
         assert_eq!(list_of_meal_model_from_resp.len(), 1);
         assert_eq!(
-            list_of_meal_model_from_resp.get(0).unwrap().id,
+            list_of_meal_model_from_resp.first().unwrap().id,
             meal_info.id.to_i64()
         );
         assert_eq!(
-            list_of_meal_model_from_resp.get(0).unwrap().name,
+            list_of_meal_model_from_resp.first().unwrap().name,
             meal_info.name.to_string()
         );
         assert_eq!(
-            list_of_meal_model_from_resp.get(0).unwrap().description,
+            list_of_meal_model_from_resp.first().unwrap().description,
             meal_info.description.to_string()
         );
         assert_eq!(
-            list_of_meal_model_from_resp.get(0).unwrap().price,
+            list_of_meal_model_from_resp.first().unwrap().price,
             meal_info.price.to_bigdecimal()
         );
         assert_eq!(
-            list_of_meal_model_from_resp.get(0).unwrap().version,
+            list_of_meal_model_from_resp.first().unwrap().version,
             meal_info.version.to_i64()
         );
     }

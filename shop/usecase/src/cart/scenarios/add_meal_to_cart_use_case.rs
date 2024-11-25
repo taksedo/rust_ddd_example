@@ -107,7 +107,7 @@ mod tests {
         meal_extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&meal.id());
+            .verify_invoked_get_by_id(meal.id());
         cart_persister.lock().unwrap().verify_invoked(
             None,
             Some(&id_generator.lock().unwrap().id),
@@ -144,7 +144,7 @@ mod tests {
         meal_extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&meal.id());
+            .verify_invoked_get_by_id(meal.id());
 
         let existing_cart = cart_persister.lock().unwrap().cart.clone().unwrap();
 
@@ -153,7 +153,7 @@ mod tests {
         cart_persister.lock().unwrap().verify_invoked(
             Some(&existing_cart),
             None,
-            Some(&meal.id()),
+            Some(meal.id()),
             None,
         );
         cart_extractor.lock().unwrap().verify_invoked(&customer_id);
@@ -179,7 +179,7 @@ mod tests {
         meal_extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&meal.id());
+            .verify_invoked_get_by_id(meal.id());
         cart_persister.lock().unwrap().verify_empty();
         cart_extractor.lock().unwrap().verify_empty();
         assert_eq!(result.unwrap_err(), AddMealToCartUseCaseError::MealNotFound);

@@ -35,28 +35,22 @@ derive-new = "0"
 derive_more = { version = "1", features = ["full"] }
 actix-web = "4"
 actix-cors = "0"
-actix-service = "2"
-structmap = "0"
-structmap-derive = "0"
 dotenvy = "0"
 log = "0"
 env_logger = "0"
 derivative = "2"
-erased-serde = "0"
 serde_derive = "1.0"
 serde = { version = "1", features = ["derive", "rc", "alloc"] }
 serde_json = "1.0"
 bigdecimal = { version = "0", features = ["serde"] }
 mockall = "0"
-fake = { version = "2", features = ["derive", "bigdecimal"] }
+fake = { version = "3", features = ["derive", "bigdecimal"] }
 rand = "0"
 rstest = "0"
 time = { version = "0", features = ["default", "serde-well-known"] }
-enum_access = "0"
 enum_dispatch = "0"
 smart-default = "0"
 const_format = "0"
-cargo-watch = "8"
 lazy_static = "1"
 diesel = { version = "=2.1", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
 diesel_migrations = "=2.1"
@@ -73,7 +67,7 @@ tracing-test = "0"
 url = "2"
 rdkafka = { version = "0", features = ["cmake-build"] }
 uuid = { version = "1", features = ["v4"] }
-thiserror = "1"
+thiserror = "2"
 assert-panic = "1"
 prettytable-rs = "0"
 nectar = "0"

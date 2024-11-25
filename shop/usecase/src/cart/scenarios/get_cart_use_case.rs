@@ -91,7 +91,7 @@ mod tests {
         meal_extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&meal.id());
+            .verify_invoked_get_by_id(meal.id());
         let extracted_cart = result.unwrap();
         assert_eq!(extracted_cart.for_customer, customer_id);
         assert_eq!(

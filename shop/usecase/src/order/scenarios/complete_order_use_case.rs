@@ -51,7 +51,7 @@ mod tests {
         let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
         let use_case = CompleteOrderUseCase::new(extractor.clone(), persister.clone());
-        let result = use_case.execute(&order.id());
+        let result = use_case.execute(order.id());
 
         assert!(result.is_ok());
 
@@ -60,11 +60,11 @@ mod tests {
         persister
             .lock()
             .unwrap()
-            .verify_events_after_completion(&order.id());
+            .verify_events_after_completion(order.id());
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&order.id());
+            .verify_invoked_get_by_id(order.id());
     }
 
     #[test]
@@ -75,7 +75,7 @@ mod tests {
         let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
         let use_case = CompleteOrderUseCase::new(extractor.clone(), persister.clone());
-        let result = use_case.execute(&order.id());
+        let result = use_case.execute(order.id());
 
         assert!(result.is_err());
         assert_eq!(
@@ -87,7 +87,7 @@ mod tests {
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&order.id());
+            .verify_invoked_get_by_id(order.id());
     }
 
     #[test]
