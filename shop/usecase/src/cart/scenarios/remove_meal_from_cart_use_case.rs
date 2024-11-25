@@ -68,7 +68,7 @@ mod tests {
         cart_extractor
             .lock()
             .unwrap()
-            .verify_invoked(&cart.for_customer());
+            .verify_invoked(cart.for_customer());
         cart_persister
             .lock()
             .unwrap()
@@ -89,7 +89,7 @@ mod tests {
         cart_extractor
             .lock()
             .unwrap()
-            .verify_invoked(&cart.clone().for_customer());
+            .verify_invoked(cart.clone().for_customer());
         cart_persister.lock().unwrap().verify_empty();
         assert_eq!(
             result.unwrap_err(),

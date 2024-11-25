@@ -187,7 +187,7 @@ mod tests {
         assert!(cart.pop_events().is_empty());
         assert!(cart.meals().iter().all(|item| {
             let (item_meal_id, &item_count) = item;
-            meals.get_key_value(&item_meal_id).unwrap() == (&item_meal_id, &item_count)
+            meals.get_key_value(item_meal_id).unwrap() == (item_meal_id, &item_count)
         }));
     }
 

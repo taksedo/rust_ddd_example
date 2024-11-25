@@ -123,7 +123,7 @@ impl MockEventPublisher {
         assert_eq!(matching, &0_usize)
     }
 
-    pub fn verify_event_is_empty(&self) {
+    pub fn _verify_event_is_empty(&self) {
         assert!(&self.events.is_empty())
     }
 }

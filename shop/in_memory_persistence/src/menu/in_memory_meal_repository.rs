@@ -56,12 +56,14 @@ impl MealExtractor for InMemoryMealRepository {
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
+    use std::any::{type_name, type_name_of_val};
+
     use domain::menu::meal_events::MealRemovedFromMenuDomainEvent;
 
     use super::*;
     use crate::{
         domain_test_fixtures::{rnd_meal, rnd_meal_id, rnd_meal_name, rnd_removed_meal},
-        test_fixtures::{meal_with_events, type_of, TestEventPublisher},
+        test_fixtures::{meal_with_events, TestEventPublisher},
     };
 
     #[test]
@@ -73,14 +75,14 @@ mod tests {
 
         meal_repository.save(meal.clone());
 
-        let stored_meal = meal_repository.storage.get(&meal.id()).unwrap();
+        let stored_meal = meal_repository.storage.get(meal.id()).unwrap();
         assert_eq!(&meal, stored_meal);
 
         let storage = &storage_binding.lock().unwrap().storage;
         assert_eq!(storage.len(), 1);
 
         let event: MealRemovedFromMenuDomainEvent =
-            storage.get(0).unwrap().to_owned().try_into().unwrap();
+            storage.first().unwrap().to_owned().try_into().unwrap();
         assert_eq!(event.meal_id, *meal.id());
     }
 
@@ -99,11 +101,11 @@ mod tests {
         meal_repository.save(updated_meal.clone());
 
         let storage = &storage_binding.lock().unwrap().storage;
-        let event = storage.get(0).unwrap().to_owned();
+        let event = storage.first().unwrap().to_owned();
         let event: MealRemovedFromMenuDomainEvent = event.try_into().unwrap();
         assert_eq!(
-            type_of(&event),
-            "&domain::menu::meal_events::MealRemovedFromMenuDomainEvent"
+            type_name_of_val(&event),
+            type_name::<MealRemovedFromMenuDomainEvent>()
         );
         assert_eq!(event.meal_id, *updated_meal.id());
     }
@@ -119,7 +121,7 @@ mod tests {
             .insert(*existing_meal.id(), existing_meal.clone());
 
         let meal = meal_repository.get_by_id(existing_meal.id()).unwrap();
-        assert_eq!(type_of(meal), type_of(existing_meal));
+        assert_eq!(type_name_of_val(&meal), type_name_of_val(&existing_meal));
     }
 
     #[test]
@@ -146,7 +148,7 @@ mod tests {
         repository.save(stored_meal.clone());
 
         let meal = repository.get_by_name(stored_meal.clone().name()).unwrap();
-        assert_eq!(type_of(meal), type_of(stored_meal));
+        assert_eq!(type_name_of_val(&meal), type_name_of_val(&stored_meal));
     }
 
     #[test]
@@ -167,7 +169,7 @@ mod tests {
             .insert(*stored_meal.id(), stored_meal.clone());
 
         let meals = repository.get_all();
-        assert_eq!(meals.get(0).unwrap(), &stored_meal);
+        assert_eq!(meals.first().unwrap(), &stored_meal);
     }
 
     #[test]

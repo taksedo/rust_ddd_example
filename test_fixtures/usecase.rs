@@ -1,5 +1,6 @@
 #![allow(unexpected_cfgs)]
 #![allow(dead_code)]
+#![allow(clippy::duplicate_mod)]
 use std::{any::Any, collections::HashMap, mem::discriminant};
 
 use common::types::common::{address::Address, count::Count};

@@ -166,7 +166,7 @@ mod tests {
         );
         assert_eq!(&response_dto.response_title, "Bad request");
         assert_eq!(
-            &response_dto.invalid_params.get(0).unwrap().message,
+            &response_dto.invalid_params.first().unwrap().message,
             "Max limit is 10"
         );
         mock_get_orders

@@ -74,7 +74,7 @@ mod tests {
         extractor.lock().unwrap().order = Some(order.clone());
 
         let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
-        let result = use_case.execute(&order_id, limit());
+        let result = use_case.execute(order_id, limit());
         let list = result.unwrap();
 
         extractor.lock().unwrap().verify_invoked_get_all();

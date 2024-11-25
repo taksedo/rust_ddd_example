@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::{any::type_name, fmt::Debug};
+use std::fmt::Debug;
 
 #[path = "./domain.rs"]
 mod domain_test_fixtures;
@@ -42,8 +42,4 @@ impl<Event: Debug + Send + Clone> DomainEventPublisher<Event> for TestEventPubli
     fn publish(&mut self, events: &Vec<Event>) {
         events.iter().for_each(|it| self.storage.push(it.clone()))
     }
-}
-
-pub fn type_of<T>(_: T) -> &'static str {
-    type_name::<T>()
 }

@@ -46,6 +46,5 @@ rdkafka.workspace = true
 [dev-dependencies]
 fake.workspace = true
 rand.workspace = true
-rstest.workspace = true
 bigdecimal.workspace = true
 time.workspace = true

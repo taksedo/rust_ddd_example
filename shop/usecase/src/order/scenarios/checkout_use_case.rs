@@ -164,11 +164,11 @@ mod tests {
         active_order_rule
             .lock()
             .unwrap()
-            .verify_invoked(&cart.for_customer());
+            .verify_invoked(cart.for_customer());
         cart_extractor
             .lock()
             .unwrap()
-            .verify_invoked(&cart.for_customer());
+            .verify_invoked(cart.for_customer());
         order_persister.lock().unwrap().verify_invoked(
             &order_id,
             &address,

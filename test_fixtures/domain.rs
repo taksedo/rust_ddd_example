@@ -1,5 +1,6 @@
 #![allow(unexpected_cfgs)]
 #![allow(dead_code)]
+#![allow(clippy::duplicate_mod)]
 use std::collections::{HashMap, HashSet};
 
 #[path = "./common.rs"]
@@ -71,10 +72,6 @@ pub fn rnd_address() -> Address {
         thread_rng().gen_range(0..i16::MAX),
     ))
     .expect("Address should be right")
-}
-
-pub fn print_type_of<T>(_: &T) -> &str {
-    std::any::type_name::<T>()
 }
 
 pub fn rnd_meal_id() -> MealId {

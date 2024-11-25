@@ -58,7 +58,7 @@ mod tests {
         extractor.lock().unwrap().order = Some(order.clone());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
-        let result = use_case.execute(&order.id());
+        let result = use_case.execute(order.id());
 
         assert!(result.is_ok());
 
@@ -67,11 +67,11 @@ mod tests {
         persister
             .lock()
             .unwrap()
-            .verify_events_after_cancellation(&order.id());
+            .verify_events_after_cancellation(order.id());
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&order.id());
+            .verify_invoked_get_by_id(order.id());
     }
 
     #[test]
@@ -83,13 +83,13 @@ mod tests {
         extractor.lock().unwrap().order = Some(order.clone());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
-        let result = use_case.execute(&order.id());
+        let result = use_case.execute(order.id());
 
         persister.lock().unwrap().verify_empty();
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&order.id());
+            .verify_invoked_get_by_id(order.id());
         assert!(result.is_err());
         assert_eq!(result, Err(CancelOrderUseCaseError::InvalidOrderState));
     }

@@ -48,7 +48,7 @@ mod tests {
         let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
-        let result = handler.execute(&order.id());
+        let result = handler.execute(order.id());
 
         assert!(result.is_ok());
 
@@ -58,11 +58,11 @@ mod tests {
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&order.id());
+            .verify_invoked_get_by_id(order.id());
         persister
             .lock()
             .unwrap()
-            .verify_events_after_payment(&order.id());
+            .verify_events_after_payment(order.id());
     }
 
     #[test]
@@ -73,7 +73,7 @@ mod tests {
         let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
-        let result = handler.execute(&order.id());
+        let result = handler.execute(order.id());
 
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), PayOrderHandlerError::InvalidOrderState);
@@ -82,7 +82,7 @@ mod tests {
         extractor
             .lock()
             .unwrap()
-            .verify_invoked_get_by_id(&order.id());
+            .verify_invoked_get_by_id(order.id());
     }
 
     #[test]

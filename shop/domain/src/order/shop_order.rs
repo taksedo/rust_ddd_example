@@ -349,7 +349,7 @@ mod tests {
 
     #[test]
     fn active_true() {
-        let states = vec![
+        let states = [
             OrderState::new_waiting_for_payment(),
             OrderState::new_confirmed(),
             OrderState::new_paid(),
@@ -363,7 +363,7 @@ mod tests {
 
     #[test]
     fn active_false() {
-        let states = vec![OrderState::new_completed(), OrderState::new_cancelled()];
+        let states = [OrderState::new_completed(), OrderState::new_cancelled()];
 
         states.iter().for_each(|it| assert!(!it.is_active()));
     }
@@ -392,7 +392,7 @@ mod tests {
 
     #[test]
     fn complete_order_invalid_state() {
-        let states = vec![
+        let states = [
             OrderState::new_waiting_for_payment(),
             OrderState::new_paid(),
             OrderState::new_cancelled(),
@@ -430,7 +430,7 @@ mod tests {
 
     #[test]
     fn pay_order_invalid_state() {
-        let states = vec![
+        let states = [
             OrderState::new_confirmed(),
             OrderState::new_completed(),
             OrderState::new_cancelled(),
@@ -452,7 +452,7 @@ mod tests {
 
     #[test]
     fn order_cannot_be_cancelled() {
-        let states = vec![
+        let states = [
             OrderState::new_confirmed(),
             OrderState::new_completed(),
             OrderState::new_waiting_for_payment(),
@@ -489,7 +489,7 @@ mod tests {
 
     #[test]
     fn cancel_order_invalid_state() {
-        let states = vec![
+        let states = [
             OrderState::new_confirmed(),
             OrderState::new_completed(),
             OrderState::new_waiting_for_payment(),
@@ -527,7 +527,7 @@ mod tests {
 
     #[test]
     fn confirm_order_invalid_state() {
-        let states = vec![
+        let states = [
             OrderState::new_cancelled(),
             OrderState::new_completed(),
             OrderState::new_waiting_for_payment(),

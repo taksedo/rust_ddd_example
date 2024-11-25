@@ -110,12 +110,11 @@ impl BusinessError for MealError {}
 #[allow(non_snake_case)]
 #[cfg(all(test, feature = "domain"))]
 mod tests {
-    use std::sync::atomic::AtomicI64;
+    use std::{any::type_name_of_val, sync::atomic::AtomicI64};
 
     use super::*;
     use crate::test_fixtures::{
-        print_type_of, rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price,
-        rnd_removed_meal,
+        rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, rnd_removed_meal,
     };
 
     #[derive(Debug, new, Default)]
@@ -167,11 +166,14 @@ mod tests {
         assert!(test_meal.visible());
 
         let popped_events = test_meal.pop_events();
-        let popped_events = popped_events.first().unwrap();
+        let popped_event = popped_events.first().unwrap();
 
         let expected_event: &MealEventEnum =
             &MealAddedToMenuDomainEvent::new(id_generator.lock().unwrap().meal_id).into();
-        assert_eq!(print_type_of(popped_events), print_type_of(expected_event));
+        assert_eq!(
+            type_name_of_val(popped_event),
+            type_name_of_val(expected_event)
+        );
     }
 
     #[test]
@@ -197,14 +199,14 @@ mod tests {
         assert!(!test_meal.visible());
 
         let popped_events = test_meal.pop_events();
-        let popped_events = popped_events.get(0).unwrap();
+        let popped_events = popped_events.first().unwrap();
 
         let expected_event = &MealEventEnum::MealRemovedFromMenuDomainEvent(
             MealRemovedFromMenuDomainEvent::new(*test_meal.id()),
         );
         assert_eq!(
-            print_type_of(&popped_events),
-            print_type_of(&expected_event)
+            type_name_of_val(&popped_events),
+            type_name_of_val(&expected_event)
         );
     }
 
