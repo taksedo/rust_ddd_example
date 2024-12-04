@@ -4,5 +4,5 @@ pub mod cart;
 pub mod menu;
 pub mod order;
 
-#[cfg(feature = "testing")]
+#[cfg(all(test, feature = "testing"))]
 pub mod test_fixtures;
