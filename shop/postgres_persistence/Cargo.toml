@@ -16,11 +16,10 @@ dotenvy.workspace = true
 bigdecimal.workspace = true
 log.workspace = true
 url.workspace = true
-testcontainers.workspace = true
 
 common.workspace = true
 usecase.workspace = true
 domain.workspace = true
 
 [dev-dependencies]
-bigdecimal.workspace = true
+testcontainers.workspace = true
