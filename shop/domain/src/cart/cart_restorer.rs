@@ -37,13 +37,12 @@ impl CartRestorer {
     }
 }
 
-#[cfg(all(test, feature = "domain"))]
+#[cfg(test)]
 mod tests {
+    use common::test_fixtures::rnd_count;
+
     use super::*;
-    use crate::{
-        common_test_fixtures::rnd_count,
-        test_fixtures::{rnd_cart_id, rnd_customer_id, rnd_meal_id, version},
-    };
+    use crate::test_fixtures::{rnd_cart_id, rnd_customer_id, rnd_meal_id, version};
 
     #[test]
     fn restore_cart_success() {

@@ -78,9 +78,12 @@ impl Default for KafkaEventPublisherImpl {
 mod test {
     use std::{error::Error, time::Duration};
 
-    use domain::menu::{
-        meal_events::MealAddedToMenuDomainEvent,
-        value_objects::meal_id::{MealId, MealIdGenerator},
+    use domain::{
+        menu::{
+            meal_events::MealAddedToMenuDomainEvent,
+            value_objects::meal_id::{MealId, MealIdGenerator},
+        },
+        test_fixtures::*,
     };
     use futures_lite::StreamExt;
     use rdkafka::{
@@ -90,10 +93,7 @@ mod test {
     use tracing::{debug, info};
 
     use super::*;
-    use crate::{
-        domain_test_fixtures::rnd_meal_id,
-        test_fixtures::{TestKafka, KAFKA_ADDRESS},
-    };
+    use crate::test_fixtures::{TestKafka, KAFKA_ADDRESS};
 
     #[tokio::test]
     async fn publish_events() {

@@ -101,10 +101,11 @@ mod tests {
     use common::common_rest::rest_responses::{
         error_type_url, not_found_type_url, GenericErrorResponse,
     };
+    use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
     use super::*;
-    use crate::{domain_test_fixtures::rnd_order_id, test_fixtures::MockConfirmOrder};
+    use crate::test_fixtures::MockConfirmOrder;
 
     #[actix_web::test]
     async fn order_not_found() {

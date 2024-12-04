@@ -23,7 +23,4 @@ usecase.workspace = true
 domain.workspace = true
 
 [dev-dependencies]
-rand.workspace = true
-fake.workspace = true
 bigdecimal.workspace = true
-time.workspace = true

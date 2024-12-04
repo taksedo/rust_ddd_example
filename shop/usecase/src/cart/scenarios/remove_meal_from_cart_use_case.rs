@@ -45,16 +45,14 @@ where
     }
 }
 
-#[cfg(all(test, feature = "usecase"))]
+#[cfg(test)]
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use super::*;
-    use crate::{
-        domain_test_fixtures::{rnd_cart, rnd_meal_id},
-        test_fixtures::{MockCartExtractor, MockCartPersister},
-    };
+    use domain::test_fixtures::*;
 
+    use super::*;
+    use crate::test_fixtures::{MockCartExtractor, MockCartPersister};
     #[test]
     fn successfully_removed() {
         let cart = rnd_cart();

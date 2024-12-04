@@ -57,17 +57,15 @@ where
     }
 }
 
-#[cfg(all(test, feature = "usecase"))]
+#[cfg(test)]
 mod tests {
     use std::sync::{Arc, Mutex};
 
+    use domain::test_fixtures::*;
     use tracing_test::traced_test;
 
     use super::*;
-    use crate::{
-        domain_test_fixtures::{rnd_cart, rnd_customer_id, rnd_order_id, rnd_price},
-        test_fixtures::{MockCartExtractor, MockCartRemover},
-    };
+    use crate::test_fixtures::{MockCartExtractor, MockCartRemover};
 
     #[test]
     fn successfully_removed() {

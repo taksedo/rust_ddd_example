@@ -9,6 +9,16 @@ members = [
     "postgres_persistence"
 ]
 
+default-members = [
+    "domain",
+    "usecase",
+    "application",
+    "in_memory_persistence",
+    "rest",
+    "telnet",
+    "postgres_persistence"
+]
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
@@ -27,7 +37,7 @@ edition.workspace = true
 [package.metadata.winresource]
 ProductVersion = "0.1.0"
 ProductName = "Rust DDD Sample Project"
-LegalCopyright = "Taksedo (C) 2023"
+LegalCopyright = "Taksedo (C) 2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
@@ -78,8 +88,8 @@ utoipa = { version = "5", features = ["actix_extras", "chrono"] }
 derive-getters = "0"
 
 common = { path = "../common", package = "rust_ddd_example_common" }
-domain = { path = "domain", features = ["domain"] }
-usecase = { path = "usecase", features = ["usecase"] }
+domain = { path = "domain" }
+usecase = { path = "usecase" }
 postgres_persistence = { path = "postgres_persistence" }
 in_memory_persistence = { path = "in_memory_persistence" }
 rest = { path = "rest" }

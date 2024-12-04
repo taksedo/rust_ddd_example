@@ -31,13 +31,12 @@ impl PayOrder for PayOrderHandler {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::*;
+
     use super::*;
-    use crate::{
-        domain_test_fixtures::rnd_order_id,
-        test_fixtures::{
-            order_not_ready_for_pay, order_ready_for_pay, MockShopOrderExtractor,
-            MockShopOrderPersister,
-        },
+    use crate::test_fixtures::{
+        order_not_ready_for_pay, order_ready_for_pay, MockShopOrderExtractor,
+        MockShopOrderPersister,
     };
 
     #[test]

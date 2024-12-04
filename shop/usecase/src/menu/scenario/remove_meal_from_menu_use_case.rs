@@ -32,11 +32,10 @@ impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::*;
+
     use super::*;
-    use crate::{
-        domain_test_fixtures::{rnd_meal, rnd_meal_id},
-        test_fixtures::{MockMealExtractor, MockMealPersister},
-    };
+    use crate::test_fixtures::{MockMealExtractor, MockMealPersister};
 
     #[test]
     fn successfully_removed() {

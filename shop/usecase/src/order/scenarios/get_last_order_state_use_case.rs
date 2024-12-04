@@ -30,9 +30,10 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::*;
+
     use super::*;
     use crate::{
-        domain_test_fixtures::{rnd_order, rnd_order_id},
         order::{
             get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
             scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,

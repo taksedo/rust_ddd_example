@@ -230,20 +230,17 @@ pub enum ShopOrderError {
     IdGenerationError,
 }
 
-#[cfg(all(test, feature = "domain"))]
+#[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
     use bigdecimal::{num_bigint::BigInt, BigDecimal};
+    use common::test_fixtures::rnd_count;
     use derive_more::FromStr;
 
     use super::*;
-    use crate::{
-        common_test_fixtures::rnd_count,
-        test_fixtures::{
-            order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id,
-            rnd_price,
-        },
+    use crate::test_fixtures::{
+        order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_price,
     };
 
     #[test]

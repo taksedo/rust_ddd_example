@@ -26,11 +26,10 @@ impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::*;
+
     use super::*;
-    use crate::{
-        domain_test_fixtures::rnd_customer_id,
-        test_fixtures::{active_order, non_active_order, MockShopOrderExtractor},
-    };
+    use crate::test_fixtures::{active_order, non_active_order, MockShopOrderExtractor};
 
     #[test]
     fn active_order_exists() {

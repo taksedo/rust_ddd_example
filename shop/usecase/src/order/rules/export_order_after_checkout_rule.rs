@@ -39,11 +39,10 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
 mod tests {
     use std::sync::{Arc, Mutex};
 
+    use domain::test_fixtures::*;
+
     use super::*;
-    use crate::{
-        domain_test_fixtures::{rnd_customer_id, rnd_order_id, rnd_price},
-        test_fixtures::MockOrderExporter,
-    };
+    use crate::test_fixtures::MockOrderExporter;
 
     #[test]
     fn order_has_been_exported() {

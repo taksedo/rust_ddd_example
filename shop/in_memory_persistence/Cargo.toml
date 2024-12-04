@@ -14,10 +14,7 @@ domain.workspace = true
 usecase.workspace = true
 
 [dev-dependencies]
-rand.workspace = true
-fake.workspace = true
-bigdecimal.workspace = true
-serde.workspace = true
-time.workspace = true
+in_memory_persistence = { path = ".", features = ["testing"] }
 
-in_memory_persistence.workspace = true
+[features]
+testing = ["common/testing", "domain/testing", "usecase/testing"]

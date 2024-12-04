@@ -2,8 +2,10 @@ use std::sync::{Arc, Mutex};
 
 use diesel::{sql_query, RunQueryDsl};
 use diesel_migrations::MigrationHarness;
-use domain::menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum};
-use domain_test_fixtures::{rnd_meal_id, rnd_meal_name};
+use domain::{
+    menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum},
+    test_fixtures::*,
+};
 use postgres_persistence::{
     database_start::MIGRATIONS, meal_db_dto::MealDbDto,
     postgres_meal_repository::PostgresMealRepository,
@@ -13,9 +15,6 @@ use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealP
 use crate::test_fixtures::{
     rnd_new_meal_with_meal_id, rnd_new_meal_with_name, MockEventPublisher, TestDb,
 };
-
-#[path = "../../../test_fixtures/domain.rs"]
-mod domain_test_fixtures;
 
 mod test_fixtures;
 

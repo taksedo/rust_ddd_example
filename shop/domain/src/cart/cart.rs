@@ -106,15 +106,14 @@ pub enum CartError {
     IdGenerationError,
 }
 
-#[cfg(all(test, feature = "domain"))]
+#[cfg(test)]
 mod tests {
     use std::mem::discriminant;
 
+    use common::test_fixtures::rnd_count;
+
     use super::*;
-    use crate::{
-        common_test_fixtures::rnd_count,
-        test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal},
-    };
+    use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
 
     #[test]
     fn create_cart_success() {

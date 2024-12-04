@@ -18,14 +18,10 @@ common.workspace = true
 domain.workspace = true
 
 [dev-dependencies]
-rand.workspace = true
-fake.workspace = true
-bigdecimal.workspace = true
-time.workspace = true
+usecase = { path = ".", features = ["testing"] }
+
 assert-panic.workspace = true
 tracing-test.workspace = true
 
-usecase.workspace = true
-
 [features]
-usecase = []
+testing = ["common/testing", "domain/testing"]

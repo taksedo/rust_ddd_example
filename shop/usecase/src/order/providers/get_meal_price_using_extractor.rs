@@ -24,12 +24,10 @@ pub struct GetMealPriceUsingExtractor {
 #[cfg(test)]
 mod tests {
     use assert_panic::assert_panic;
+    use domain::test_fixtures::*;
 
     use super::*;
-    use crate::{
-        domain_test_fixtures::{rnd_meal, rnd_meal_id},
-        test_fixtures::MockMealExtractor,
-    };
+    use crate::test_fixtures::MockMealExtractor;
 
     #[test]
     fn price_has_been_provided() {

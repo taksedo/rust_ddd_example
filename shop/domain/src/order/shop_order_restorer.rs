@@ -37,7 +37,7 @@ impl ShopOrderRestorer {
     }
 }
 
-#[cfg(all(test, feature = "domain"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::test_fixtures::{rnd_address, rnd_customer_id, rnd_order_id, rnd_order_item};
