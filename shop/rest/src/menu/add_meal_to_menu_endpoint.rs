@@ -142,13 +142,11 @@ mod tests {
     };
     use bigdecimal::{num_bigint::BigInt, ToPrimitive};
     use common::common_rest::rest_responses::{bad_request_type_url, error_type_url};
+    use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
     use super::*;
-    use crate::{
-        domain_test_fixtures::{rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price},
-        test_fixtures::{MockAddMealToMenu, StringMethodsForRestTestExt},
-    };
+    use crate::test_fixtures::{MockAddMealToMenu, StringMethodsForRestTestExt};
 
     #[actix_web::test]
     async fn created_successfully() {

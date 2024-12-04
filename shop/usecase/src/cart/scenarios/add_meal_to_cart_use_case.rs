@@ -73,17 +73,14 @@ where
     }
 }
 
-#[cfg(all(test, feature = "usecase"))]
+#[cfg(test)]
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use domain::cart::value_objects::cart_id::CartId;
+    use domain::{cart::value_objects::cart_id::CartId, test_fixtures::*};
 
     use super::*;
-    use crate::{
-        domain_test_fixtures::{rnd_cart_with_customer_id, rnd_customer_id, rnd_meal},
-        test_fixtures::{MockCartExtractor, MockCartPersister, MockMealExtractor},
-    };
+    use crate::test_fixtures::{MockCartExtractor, MockCartPersister, MockMealExtractor};
 
     #[test]
     fn cart_doesnt_exist_successfully_added() {

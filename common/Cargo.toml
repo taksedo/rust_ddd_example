@@ -5,6 +5,7 @@ edition = "2021"
 
 [workspace]
 members = ["events", "common_rest", "common_telnet", "types"]
+default-members = ["events", "common_rest", "common_telnet", "types"]
 
 [workspace.package]
 version = "0.1.0"
@@ -24,7 +25,7 @@ rand = "0"
 actix-web = "4.9.0"
 lazy_static = "1"
 smart-default = "0"
-fake = { version = "2", features = ["derive"] }
+fake = { version = "3", features = ["derive"] }
 utoipa = "5"
 uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
 derive-getters = "0"
@@ -32,7 +33,19 @@ derive-getters = "0"
 types = { path = "types" }
 
 [dependencies]
+rand.workspace = true
+
 events = { path = "events" }
 common_rest = { path = "common_rest" }
 types = { path = "types" }
 common_telnet = { path = "common_telnet" }
+
+
+
+[features]
+testing = []
+
+[dev-dependencies]
+rust_ddd_example_common = { path = ".", features = ["testing"] }
+
+

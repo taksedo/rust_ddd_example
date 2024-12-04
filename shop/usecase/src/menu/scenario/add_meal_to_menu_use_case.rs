@@ -5,17 +5,14 @@ use std::{
 
 use common::types::{base::domain_event::DomainEventTrait, errors::error::ToError};
 use derive_new::new;
-use domain::{
-    self,
-    menu::{
-        meal::{Meal, MealError},
-        meal_already_exists::MealAlreadyExists,
-        value_objects::{
-            meal_description::MealDescription,
-            meal_id::{MealId, MealIdGenerator},
-            meal_name::MealName,
-            price::Price,
-        },
+use domain::menu::{
+    meal::{Meal, MealError},
+    meal_already_exists::MealAlreadyExists,
+    value_objects::{
+        meal_description::MealDescription,
+        meal_id::{MealId, MealIdGenerator},
+        meal_name::MealName,
+        price::Price,
     },
 };
 
@@ -70,13 +67,10 @@ impl DomainEventTrait for AddMealToMenuUseCase {}
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::*;
+
     use super::*;
-    use crate::{
-        domain_test_fixtures::{
-            rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, TestMealAlreadyExists,
-        },
-        test_fixtures::MockMealPersister,
-    };
+    use crate::test_fixtures::MockMealPersister;
 
     #[test]
     fn successfully_added() {

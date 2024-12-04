@@ -92,14 +92,12 @@ pub fn get_meal_by_id_endpoint_config(cfg: &mut web::ServiceConfig) {
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
+    use domain::test_fixtures::*;
     use dotenvy::dotenv;
     use usecase::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
 
     use super::*;
-    use crate::{
-        domain_test_fixtures::rnd_meal_id,
-        test_fixtures::{rnd_meal_info, MockGetMealById},
-    };
+    use crate::test_fixtures::{rnd_meal_info, MockGetMealById};
 
     #[actix_web::test]
     async fn returned_successfully() {

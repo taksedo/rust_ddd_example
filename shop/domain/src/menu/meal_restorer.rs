@@ -28,7 +28,7 @@ impl MealRestorer {
     }
 }
 
-#[cfg(all(test, feature = "domain"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::test_fixtures::{

@@ -34,13 +34,12 @@ impl CompleteOrder for CompleteOrderUseCase {
 
 #[cfg(test)]
 mod tests {
+    use domain::test_fixtures::*;
+
     use super::*;
-    use crate::{
-        domain_test_fixtures::rnd_order_id,
-        test_fixtures::{
-            order_not_ready_for_complete, order_ready_for_complete, MockShopOrderExtractor,
-            MockShopOrderPersister,
-        },
+    use crate::test_fixtures::{
+        order_not_ready_for_complete, order_ready_for_complete, MockShopOrderExtractor,
+        MockShopOrderPersister,
     };
 
     #[test]

@@ -4,16 +4,15 @@ use diesel::{
     RunQueryDsl,
 };
 use diesel_migrations::MigrationHarness;
-use domain::menu::value_objects::meal_id::{MealId, MealIdGenerator};
-use domain_test_fixtures::rnd_meal_id;
+use domain::{
+    menu::value_objects::meal_id::{MealId, MealIdGenerator},
+    test_fixtures::*,
+};
 use postgres_persistence::{
     database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator,
 };
 
 use crate::test_fixtures::TestDb;
-
-#[path = "../../../test_fixtures/domain.rs"]
-mod domain_test_fixtures;
 
 mod test_fixtures;
 
