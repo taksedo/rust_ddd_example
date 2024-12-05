@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+apt update && \
+apt install cmake -y && \
 git config --global --add safe.directory /workspaces
 rustup install nightly && \
 rustup component add rustfmt --toolchain nightly-x86_64-unknown-linux-gnu && \
