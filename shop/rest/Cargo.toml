@@ -20,6 +20,3 @@ utoipa.workspace = true
 domain.workspace = true
 usecase.workspace = true
 common.workspace = true
-
-[dev-dependencies]
-bigdecimal.workspace = true
