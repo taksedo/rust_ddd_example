@@ -9,11 +9,7 @@ use common::common_rest::rest_responses::{
     GenericErrorResponse,
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::order::{
-    access::shop_order_extractor::ShopOrderExtractor,
-    get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
-    scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,
-};
+use usecase::order::{GetOrderById, GetOrderByIdUseCaseError};
 
 use crate::{
     endpoint_url::API_V1_ORDER_GET_BY_ID,
@@ -60,10 +56,13 @@ use crate::{
         ("id" = i64, description = "id"),
     )
 )]
-pub async fn get_order_by_id_endpoint<T: GetOrderById + Send + Debug>(
+pub async fn get_order_by_id_endpoint<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
-) -> HttpResponse {
+) -> HttpResponse
+where
+    T: GetOrderById + Send + Debug,
+{
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
     let error_list = Arc::new(Mutex::new(vec![]));
@@ -87,12 +86,13 @@ impl ToRestError for GetOrderByIdUseCaseError {
     }
 }
 
-pub fn get_order_by_id_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
-    cfg: &mut web::ServiceConfig,
-) {
+pub fn get_order_by_id_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: GetOrderById + 'static,
+{
     cfg.route(
         API_V1_ORDER_GET_BY_ID,
-        web::get().to(get_order_by_id_endpoint::<GetOrderByIdUseCase<ShOExtractor>>),
+        web::get().to(get_order_by_id_endpoint::<T>),
     );
 }
 

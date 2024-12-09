@@ -9,11 +9,7 @@ use common::common_rest::{
     rest_responses::{to_invalid_param_bad_request, GenericErrorResponse, ValidationError},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::order::{
-    access::shop_order_extractor::ShopOrderExtractor,
-    get_orders::{GetOrders, GetOrdersUseCaseError},
-    scenarios::get_orders_use_case::GetOrdersUseCase,
-};
+use usecase::order::{GetOrders, GetOrdersUseCaseError};
 
 use super::{
     order_model::{OrderModel, ToModel},
@@ -110,12 +106,13 @@ impl ToRestError for GetOrdersUseCaseError {
     }
 }
 
-pub fn get_orders_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
-    cfg: &mut web::ServiceConfig,
-) {
+pub fn get_orders_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: GetOrders + 'static,
+{
     cfg.route(
         API_V1_ORDER_GET_ALL,
-        web::get().to(get_orders_endpoint::<GetOrdersUseCase<ShOExtractor>>),
+        web::get().to(get_orders_endpoint::<T>),
     );
 }
 

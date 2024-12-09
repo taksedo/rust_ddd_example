@@ -4,7 +4,7 @@ use std::{
 };
 
 use actix_web::{http::header::ContentType, web, HttpResponse};
-use usecase::menu::{get_menu::GetMenu, scenario::get_menu_use_case::GetMenuUseCase};
+use usecase::menu::GetMenu;
 
 use crate::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
 
@@ -38,11 +38,8 @@ pub async fn get_menu_endpoint<T: GetMenu + Send + Debug>(
         .body(serde_json::to_string(&meal_model_list).unwrap())
 }
 
-pub fn get_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
-    cfg.route(
-        API_V1_MENU_GET_ALL,
-        web::get().to(get_menu_endpoint::<GetMenuUseCase>),
-    );
+pub fn get_menu_endpoint_config<T: GetMenu + Send + Debug + 'static>(cfg: &mut web::ServiceConfig) {
+    cfg.route(API_V1_MENU_GET_ALL, web::get().to(get_menu_endpoint::<T>));
 }
 
 #[cfg(test)]

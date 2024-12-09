@@ -7,14 +7,11 @@ use usecase::{
     menu::{
         invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor,
         scenario::{
-            add_meal_to_menu_use_case::AddMealToMenuUseCase,
-            get_meal_by_id_use_case::GetMealByIdUseCase, get_menu_use_case::GetMenuUseCase,
-            remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
+            AddMealToMenuUseCase, GetMealByIdUseCase, GetMenuUseCase, RemoveMealFromMenuUseCase,
         },
     },
     order::scenarios::{
-        cancel_order_use_case::CancelOrderUseCase, confirm_order_use_case::ConfirmOrderUseCase,
-        get_order_by_id_use_case::GetOrderByIdUseCase, get_orders_use_case::GetOrdersUseCase,
+        CancelOrderUseCase, ConfirmOrderUseCase, GetOrderByIdUseCase, GetOrdersUseCase,
     },
 };
 

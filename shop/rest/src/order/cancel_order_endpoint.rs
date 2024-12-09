@@ -1,7 +1,4 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
 use common::common_rest::rest_responses::{
@@ -9,11 +6,7 @@ use common::common_rest::rest_responses::{
     to_invalid_param_bad_request, GenericErrorResponse,
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::order::{
-    access::{shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister},
-    cancel_order::{CancelOrder, CancelOrderUseCaseError},
-    scenarios::cancel_order_use_case::CancelOrderUseCase,
-};
+use usecase::order::{CancelOrder, CancelOrderUseCaseError};
 
 use crate::{endpoint_url::API_V1_ORDER_CANCEL_BY_ID, to_error::ToRestError, validated::Validated};
 
@@ -54,7 +47,7 @@ use crate::{endpoint_url::API_V1_ORDER_CANCEL_BY_ID, to_error::ToRestError, vali
         ("id" = i64, description = "id"),
     )
 )]
-pub async fn cancel_order_endpoint<T: CancelOrder + Send + Debug>(
+pub async fn cancel_order_endpoint<T: CancelOrder>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
 ) -> HttpResponse {
@@ -82,14 +75,10 @@ impl ToRestError for CancelOrderUseCaseError {
     }
 }
 
-pub fn cancel_order_endpoint_config<ShOExtractor, ShOPersister>(cfg: &mut web::ServiceConfig)
-where
-    ShOExtractor: ShopOrderExtractor + 'static,
-    ShOPersister: ShopOrderPersister + 'static,
-{
+pub fn cancel_order_endpoint_config<T: CancelOrder + 'static>(cfg: &mut web::ServiceConfig) {
     cfg.route(
         API_V1_ORDER_CANCEL_BY_ID,
-        web::put().to(cancel_order_endpoint::<CancelOrderUseCase<ShOExtractor, ShOPersister>>),
+        web::put().to(cancel_order_endpoint::<T>),
     );
 }
 

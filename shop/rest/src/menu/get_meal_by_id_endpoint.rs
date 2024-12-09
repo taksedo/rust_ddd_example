@@ -9,10 +9,7 @@ use common::common_rest::rest_responses::{
     GenericErrorResponse,
 };
 use domain::menu::value_objects::meal_id::MealId;
-use usecase::menu::{
-    get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
-    scenario::get_meal_by_id_use_case::GetMealByIdUseCase,
-};
+use usecase::menu::{scenario::GetMealByIdUseCase, GetMealById, GetMealByIdUseCaseError};
 
 use crate::{
     endpoint_url::API_V1_MENU_GET_BY_ID, menu::meal_model::MealModel, to_error::ToRestError,
@@ -56,10 +53,13 @@ use crate::{
         ),
     )
 )]
-pub async fn get_meal_by_id_endpoint<T: GetMealById + Send + Debug>(
+pub async fn get_meal_by_id_endpoint<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
-) -> HttpResponse {
+) -> HttpResponse
+where
+    T: GetMealById + Send + Debug,
+{
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
     let error_list = Arc::new(Mutex::new(vec![]));
@@ -81,7 +81,10 @@ impl ToRestError for GetMealByIdUseCaseError {
     }
 }
 
-pub fn get_meal_by_id_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn get_meal_by_id_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: GetMealById + Send + Debug + 'static,
+{
     cfg.route(
         API_V1_MENU_GET_BY_ID,
         web::get().to(get_meal_by_id_endpoint::<GetMealByIdUseCase>),
@@ -94,7 +97,7 @@ mod tests {
     use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
-    use usecase::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
+    use usecase::menu::GetMealByIdUseCaseError::MealNotFound;
 
     use super::*;
     use crate::test_fixtures::{rnd_meal_info, MockGetMealById};

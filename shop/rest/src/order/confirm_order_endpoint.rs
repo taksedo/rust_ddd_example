@@ -9,11 +9,7 @@ use common::common_rest::rest_responses::{
     to_invalid_param_bad_request, GenericErrorResponse,
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::order::{
-    access::{shop_order_extractor::ShopOrderExtractor, shop_order_persister::ShopOrderPersister},
-    confirm_order::{ConfirmOrder, ConfirmOrderUseCaseError},
-    scenarios::confirm_order_use_case::ConfirmOrderUseCase,
-};
+use usecase::order::{ConfirmOrder, ConfirmOrderUseCaseError};
 
 use crate::{
     endpoint_url::API_V1_ORDER_CONFIRM_BY_ID, to_error::ToRestError, validated::Validated,
@@ -56,10 +52,13 @@ use crate::{
         ("id" = i64, description = "id"),
     )
 )]
-pub async fn confirm_order_endpoint<T: ConfirmOrder + Send + Debug>(
+pub async fn confirm_order_endpoint<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
-) -> HttpResponse {
+) -> HttpResponse
+where
+    T: ConfirmOrder + Send + Debug,
+{
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
     let error_list = Arc::new(Mutex::new(vec![]));
@@ -84,14 +83,13 @@ impl ToRestError for ConfirmOrderUseCaseError {
     }
 }
 
-pub fn confirm_order_endpoint_config<ShOExtractor, ShOPersister>(cfg: &mut web::ServiceConfig)
+pub fn confirm_order_endpoint_config<T>(cfg: &mut web::ServiceConfig)
 where
-    ShOExtractor: ShopOrderExtractor + 'static,
-    ShOPersister: ShopOrderPersister + 'static,
+    T: ConfirmOrder + 'static,
 {
     cfg.route(
         API_V1_ORDER_CONFIRM_BY_ID,
-        web::put().to(confirm_order_endpoint::<ConfirmOrderUseCase<ShOExtractor, ShOPersister>>),
+        web::put().to(confirm_order_endpoint::<T>),
     );
 }
 
