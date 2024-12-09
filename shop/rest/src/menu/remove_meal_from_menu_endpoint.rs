@@ -9,10 +9,7 @@ use common::common_rest::rest_responses::{
     GenericErrorResponse,
 };
 use domain::menu::value_objects::meal_id::MealId;
-use usecase::menu::{
-    remove_meal_from_menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError},
-    scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
-};
+use usecase::menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError};
 
 use crate::{endpoint_url::API_V1_MENU_DELETE_BY_ID, to_error::ToRestError, validated::Validated};
 
@@ -52,10 +49,13 @@ use crate::{endpoint_url::API_V1_MENU_DELETE_BY_ID, to_error::ToRestError, valid
             example = json!(&(get_json_from_http_response(resource_not_found())))
         )
     ))]
-pub async fn remove_meal_from_menu_endpoint<T: RemoveMealFromMenu + Send + Debug>(
+pub async fn remove_meal_from_menu_endpoint<T>(
     shared_state: web::Data<Arc<Mutex<T>>>,
     req: HttpRequest,
-) -> HttpResponse {
+) -> HttpResponse
+where
+    T: RemoveMealFromMenu + Send + Debug,
+{
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
     let error_list = Arc::new(Mutex::new(vec![]));
@@ -75,10 +75,13 @@ impl ToRestError for RemoveMealFromMenuUseCaseError {
     }
 }
 
-pub fn remove_meal_from_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn remove_meal_from_menu_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: RemoveMealFromMenu + Send + Debug + 'static,
+{
     cfg.route(
         API_V1_MENU_DELETE_BY_ID,
-        web::delete().to(remove_meal_from_menu_endpoint::<RemoveMealFromMenuUseCase>),
+        web::delete().to(remove_meal_from_menu_endpoint::<T>),
     );
 }
 

@@ -15,10 +15,7 @@ use domain::menu::value_objects::{
 };
 use http::Uri;
 use serde::{Deserialize, Serialize};
-use usecase::menu::{
-    add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
-    scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase,
-};
+use usecase::menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 use utoipa::ToSchema;
 
 use crate::{
@@ -126,10 +123,13 @@ impl ToRestError for AddMealToMenuUseCaseError {
     }
 }
 
-pub fn add_meal_to_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn add_meal_to_menu_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: AddMealToMenu + Send + Debug + 'static,
+{
     cfg.route(
         API_V1_MENU_ADD_TO_MENU,
-        web::post().to(add_meal_to_menu_endpoint::<AddMealToMenuUseCase>),
+        web::post().to(add_meal_to_menu_endpoint::<T>),
     );
 }
 

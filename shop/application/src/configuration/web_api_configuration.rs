@@ -27,6 +27,14 @@ use rest::{
 };
 use serde::{Deserialize, Serialize};
 use tokio::{task, task::JoinHandle};
+use usecase::{
+    menu::scenario::{
+        AddMealToMenuUseCase, GetMealByIdUseCase, GetMenuUseCase, RemoveMealFromMenuUseCase,
+    },
+    order::scenarios::{
+        CancelOrderUseCase, ConfirmOrderUseCase, GetOrderByIdUseCase, GetOrdersUseCase,
+    },
+};
 use utoipa::{OpenApi, ToSchema};
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -97,14 +105,18 @@ pub(crate) fn web_api_backend_startup() -> JoinHandle<()> {
                         .url("/api-docs/openapi.json", openapi.clone()),
                 )
                 .configure(get_health_status_config)
-                .configure(add_meal_to_menu_endpoint_config)
-                .configure(get_meal_by_id_endpoint_config)
-                .configure(get_menu_endpoint_config)
-                .configure(remove_meal_from_menu_endpoint_config)
-                .configure(cancel_order_endpoint_config::<ORepository, ORepository>)
-                .configure(confirm_order_endpoint_config::<ORepository, ORepository>)
-                .configure(get_order_by_id_endpoint_config::<ORepository>)
-                .configure(get_orders_endpoint_config::<ORepository>)
+                .configure(add_meal_to_menu_endpoint_config::<AddMealToMenuUseCase>)
+                .configure(get_meal_by_id_endpoint_config::<GetMealByIdUseCase>)
+                .configure(get_menu_endpoint_config::<GetMenuUseCase>)
+                .configure(remove_meal_from_menu_endpoint_config::<RemoveMealFromMenuUseCase>)
+                .configure(
+                    cancel_order_endpoint_config::<CancelOrderUseCase<ORepository, ORepository>>,
+                )
+                .configure(
+                    confirm_order_endpoint_config::<ConfirmOrderUseCase<ORepository, ORepository>>,
+                )
+                .configure(get_order_by_id_endpoint_config::<GetOrderByIdUseCase<ORepository>>)
+                .configure(get_orders_endpoint_config::<GetOrdersUseCase<ORepository>>)
                 .app_data(ADD_MEAL_TO_MENU_USE_CASE.clone())
                 .app_data(GET_MEAL_BY_ID_USE_CASE.clone())
                 .app_data(GET_MENU_USE_CASE.clone())
