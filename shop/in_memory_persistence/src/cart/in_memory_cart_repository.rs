@@ -1,9 +1,6 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::collections::HashMap;
 
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use domain::cart::{
@@ -15,7 +12,7 @@ use usecase::cart::access::{
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryCartRepository {
-    event_publisher: Arc<Mutex<dyn DomainEventPublisher<CartEventEnum>>>,
+    event_publisher: AM<dyn DomainEventPublisher<CartEventEnum>>,
     #[new(value = "HashMap::new()")]
     pub storage: HashMap<CustomerId, Cart>,
 }
@@ -44,6 +41,7 @@ impl CartRemover for InMemoryCartRepository {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::{cart::cart_events::MealAddedToCartDomainEvent, test_fixtures::*};
 
     use super::*;
@@ -51,7 +49,7 @@ mod tests {
 
     #[test]
     fn saving_cart_cart_doesnt_exist() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryCartRepository::new(event_publisher.clone());
         let cart = cart_with_events();
 
@@ -72,7 +70,7 @@ mod tests {
         let customer_id = rnd_customer_id();
         let existing_cart = rnd_cart_with_customer_id(customer_id);
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryCartRepository::new(event_publisher.clone());
         repository.storage.insert(customer_id, existing_cart);
 
@@ -92,7 +90,7 @@ mod tests {
         let customer_id = rnd_customer_id();
         let existing_cart = rnd_cart_with_customer_id(customer_id);
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryCartRepository::new(event_publisher.clone());
         repository
             .storage
@@ -112,7 +110,7 @@ mod tests {
 
     #[test]
     fn get_by_id_cart_doesnt_exist() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryCartRepository::new(event_publisher.clone());
         let cart = repository.get_cart(&rnd_customer_id());
 
@@ -122,7 +120,7 @@ mod tests {
     #[test]
     fn delete_cart_cart_exists() {
         let existing_cart = rnd_cart();
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryCartRepository::new(event_publisher.clone());
         repository
             .storage

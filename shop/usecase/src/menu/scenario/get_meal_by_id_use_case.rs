@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 use domain::menu::value_objects::meal_id::MealId;
 
@@ -11,7 +10,7 @@ use crate::menu::{
 
 #[derive(new, Debug)]
 pub struct GetMealByIdUseCase {
-    pub meal_extractor: Arc<Mutex<dyn MealExtractor>>,
+    pub meal_extractor: AM<dyn MealExtractor>,
 }
 
 impl GetMealById for GetMealByIdUseCase {
@@ -28,6 +27,7 @@ impl GetMealById for GetMealByIdUseCase {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -35,7 +35,7 @@ mod tests {
 
     #[test]
     fn meal_not_found() {
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let meal_extractor = AMW::new(MockMealExtractor::new());
         let mut use_case = GetMealByIdUseCase::new(meal_extractor);
 
         let meal_id = &rnd_meal_id();
@@ -54,10 +54,10 @@ mod tests {
     #[test]
     fn meal_removed() {
         let meal = removed_meal();
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor {
+        let meal_extractor = AMW::new(MockMealExtractor {
             meal: Option::from(meal.to_owned()),
             ..MockMealExtractor::default()
-        }));
+        });
 
         let mut use_case = GetMealByIdUseCase::new(meal_extractor);
         let result = use_case.execute(meal.id());
@@ -75,10 +75,10 @@ mod tests {
     #[test]
     fn meal_extracted_successfully() {
         let meal = rnd_meal();
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor {
+        let meal_extractor = AMW::new(MockMealExtractor {
             meal: Option::from(meal.to_owned()),
             ..MockMealExtractor::default()
-        }));
+        });
         let mut use_case = GetMealByIdUseCase::new(meal_extractor);
 
         let result = use_case.execute(meal.id());

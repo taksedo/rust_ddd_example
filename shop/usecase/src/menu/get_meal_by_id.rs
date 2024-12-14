@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use domain::menu::value_objects::meal_id::MealId;
 
 use crate::menu::dto::meal_info::MealInfo;

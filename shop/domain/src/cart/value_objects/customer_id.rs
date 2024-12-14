@@ -1,4 +1,4 @@
-use common::types::base::value_object::ValueObject;
+use common::types::base::ValueObject;
 use derive_more::Display;
 use derive_new::new;
 use serde_derive::{Deserialize, Serialize};

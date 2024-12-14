@@ -1,5 +1,5 @@
 use bigdecimal::BigDecimal;
-use common::types::base::domain_entity::{DomainEntity, Version};
+use common::types::base::{DomainEntity, Version};
 use diesel::prelude::*;
 use domain::menu::{
     meal::Meal,

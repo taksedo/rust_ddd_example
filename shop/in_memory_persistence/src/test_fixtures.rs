@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 use std::fmt::Debug;
 
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::events::DomainEventPublisher;
 use derive_new::new;
 use domain::{cart::cart::Cart, menu::meal::Meal, order::shop_order::ShopOrder, test_fixtures::*};
 use usecase::test_fixtures::order_ready_for_complete;

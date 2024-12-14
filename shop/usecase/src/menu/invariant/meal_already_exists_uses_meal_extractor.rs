@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 use domain::menu::{meal_already_exists::MealAlreadyExists, value_objects::meal_name::MealName};
 
@@ -7,7 +6,7 @@ use crate::menu::access::meal_extractor::MealExtractor;
 
 #[derive(new, Debug, Clone)]
 pub struct MealAlreadyExistsUsesMealExtractor {
-    pub extractor: Arc<Mutex<dyn MealExtractor>>,
+    pub extractor: AM<dyn MealExtractor>,
 }
 
 impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
@@ -20,6 +19,7 @@ impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::{rnd_meal, rnd_meal_name};
 
     use super::*;
@@ -28,10 +28,10 @@ mod tests {
     #[test]
     fn meal_already_exists() {
         let meal = rnd_meal();
-        let extractor = Arc::new(Mutex::new(MockMealExtractor {
+        let extractor = AMW::new(MockMealExtractor {
             meal: Some(meal.to_owned()),
             ..MockMealExtractor::default()
-        }));
+        });
         let mut rule = MealAlreadyExistsUsesMealExtractor::new(extractor);
 
         let result = rule.invoke(meal.name());
@@ -49,10 +49,10 @@ mod tests {
     #[test]
     fn meal_already_exists_but_removed() {
         let meal = removed_meal();
-        let extractor = Arc::new(Mutex::new(MockMealExtractor {
+        let extractor = AMW::new(MockMealExtractor {
             meal: Some(meal.to_owned()),
             ..MockMealExtractor::default()
-        }));
+        });
         let mut rule = MealAlreadyExistsUsesMealExtractor::new(extractor);
 
         let result = rule.invoke(meal.name());
@@ -68,7 +68,7 @@ mod tests {
 
     #[test]
     fn meal_already_exists_doesnt_exist() {
-        let extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let extractor = AMW::new(MockMealExtractor::new());
         let mut rule = MealAlreadyExistsUsesMealExtractor::new(extractor);
 
         let meal_name = rnd_meal_name();

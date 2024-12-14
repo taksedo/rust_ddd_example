@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 use domain::{cart::value_objects::customer_id::CustomerId, order::shop_order::OrderState};
 
@@ -10,7 +9,7 @@ use crate::order::{
 
 #[derive(new, Debug)]
 pub struct GetLastOrderStateUseCase {
-    shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
+    shop_order_extractor: AM<dyn ShopOrderExtractor>,
 }
 
 impl GetLastOrderState for GetLastOrderStateUseCase {
@@ -30,6 +29,7 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -44,7 +44,7 @@ mod tests {
     #[test]
     fn status_successfully_received() {
         let order = rnd_order(Default::default());
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         extractor.lock().unwrap().order = Some(order.clone());
 
         let use_case = GetLastOrderStateUseCase::new(extractor.clone());
@@ -60,7 +60,7 @@ mod tests {
 
     #[test]
     fn order_not_found() {
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
         let order_id = rnd_order_id();
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn order_expected_successfully() {
         let order = rnd_order(Default::default());
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         extractor.lock().unwrap().order = Some(order.clone());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 

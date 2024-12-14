@@ -1,4 +1,4 @@
-use common::types::base::generic_types::AM;
+use common::types::base::AM;
 use derive_new::new;
 use domain::{
     cart::{
@@ -75,8 +75,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
+    use common::types::base::AMW;
     use domain::{cart::value_objects::cart_id::CartId, test_fixtures::*};
 
     use super::*;
@@ -85,11 +84,11 @@ mod tests {
     #[test]
     fn cart_doesnt_exist_successfully_added() {
         let meal = rnd_meal();
-        let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let cart_persister = AMW::new(MockCartPersister::default());
+        let cart_extractor = AMW::new(MockCartExtractor::default());
+        let meal_extractor = AMW::new(MockMealExtractor::new());
         meal_extractor.lock().unwrap().meal = Some(meal.clone());
-        let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
+        let id_generator = AMW::new(TestCartIdGenerator::default());
 
         let mut use_case = AddMealToCartUseCase::new(
             cart_extractor.clone(),
@@ -120,13 +119,13 @@ mod tests {
         let customer_id = rnd_customer_id();
         let existing_cart = rnd_cart_with_customer_id(customer_id);
 
-        let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
+        let cart_persister = AMW::new(MockCartPersister::default());
+        let meal_extractor = AMW::new(MockMealExtractor::default());
         meal_extractor.lock().unwrap().meal = Some(meal.clone());
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
         cart_extractor.lock().unwrap().cart = Some(existing_cart.to_owned());
 
-        let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
+        let id_generator = AMW::new(TestCartIdGenerator::default());
 
         let mut use_case = AddMealToCartUseCase::new(
             cart_extractor.clone(),
@@ -159,10 +158,10 @@ mod tests {
     #[test]
     fn mel_not_found() {
         let meal = rnd_meal();
-        let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
-        let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
+        let cart_persister = AMW::new(MockCartPersister::default());
+        let cart_extractor = AMW::new(MockCartExtractor::default());
+        let meal_extractor = AMW::new(MockMealExtractor::default());
+        let id_generator = AMW::new(TestCartIdGenerator::default());
 
         let mut use_case = AddMealToCartUseCase::new(
             cart_extractor.clone(),

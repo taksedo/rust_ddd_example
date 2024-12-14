@@ -1,19 +1,15 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::rest_responses::{
-    get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
-    GenericErrorResponse,
+use common::{
+    common_rest::{
+        get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
+        GenericErrorResponse,
+    },
+    types::base::{AM, AMW},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::order::{
-    access::shop_order_extractor::ShopOrderExtractor,
-    get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
-    scenarios::get_order_by_id_use_case::GetOrderByIdUseCase,
-};
+use usecase::order::{GetOrderById, GetOrderByIdUseCaseError};
 
 use crate::{
     endpoint_url::API_V1_ORDER_GET_BY_ID,
@@ -60,13 +56,16 @@ use crate::{
         ("id" = i64, description = "id"),
     )
 )]
-pub async fn get_order_by_id_endpoint<T: GetOrderById + Send + Debug>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+pub async fn get_order_by_id_endpoint<T>(
+    shared_state: web::Data<AM<T>>,
     req: HttpRequest,
-) -> HttpResponse {
+) -> HttpResponse
+where
+    T: GetOrderById + Send + Debug,
+{
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = Arc::new(Mutex::new(vec![]));
+    let error_list = AMW::new(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
         Ok(order_id) => match shared_state.lock().unwrap().execute(&order_id) {
@@ -87,19 +86,23 @@ impl ToRestError for GetOrderByIdUseCaseError {
     }
 }
 
-pub fn get_order_by_id_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
-    cfg: &mut web::ServiceConfig,
-) {
+pub fn get_order_by_id_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: GetOrderById + 'static,
+{
     cfg.route(
         API_V1_ORDER_GET_BY_ID,
-        web::get().to(get_order_by_id_endpoint::<GetOrderByIdUseCase<ShOExtractor>>),
+        web::get().to(get_order_by_id_endpoint::<T>),
     );
 }
 
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
+    use common::{
+        common_rest::{not_found_type_url, GenericErrorResponse},
+        types::base::AMW,
+    };
     use domain::{order::shop_order::OrderState, test_fixtures::*};
     use dotenvy::dotenv;
 
@@ -110,10 +113,10 @@ mod tests {
     async fn order_not_found() {
         dotenv().ok();
         let order_id = rnd_order_id();
-        let mock_get_order_by_id = Arc::new(Mutex::new(MockGetOrderById {
+        let mock_get_order_by_id = AMW::new(MockGetOrderById {
             id: rnd_order_id(),
             response: Err(GetOrderByIdUseCaseError::OrderNotFound),
-        }));
+        });
 
         let mock_shared_state = Data::new(mock_get_order_by_id.clone());
 
@@ -144,10 +147,10 @@ mod tests {
         assert_eq!(details.items.len(), 1);
         let item_details = details.items.first().unwrap();
 
-        let mock_get_order_by_id = Arc::new(Mutex::new(MockGetOrderById {
+        let mock_get_order_by_id = AMW::new(MockGetOrderById {
             id: rnd_order_id(),
             response: Ok(details.clone()),
-        }));
+        });
 
         let mock_shared_state = Data::new(mock_get_order_by_id.clone());
 
@@ -196,10 +199,10 @@ mod tests {
         assert_eq!(details.items.len(), 1);
         let item_details = details.items.first().unwrap();
 
-        let mock_get_order_by_id = Arc::new(Mutex::new(MockGetOrderById {
+        let mock_get_order_by_id = AMW::new(MockGetOrderById {
             id: rnd_order_id(),
             response: Ok(details.clone()),
-        }));
+        });
 
         let mock_shared_state = Data::new(mock_get_order_by_id.clone());
 

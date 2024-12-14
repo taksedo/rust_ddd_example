@@ -1,18 +1,15 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::rest_responses::{
-    get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
-    GenericErrorResponse,
+use common::{
+    common_rest::{
+        get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
+        GenericErrorResponse,
+    },
+    types::base::{AM, AMW},
 };
 use domain::menu::value_objects::meal_id::MealId;
-use usecase::menu::{
-    get_meal_by_id::{GetMealById, GetMealByIdUseCaseError},
-    scenario::get_meal_by_id_use_case::GetMealByIdUseCase,
-};
+use usecase::menu::{scenario::GetMealByIdUseCase, GetMealById, GetMealByIdUseCaseError};
 
 use crate::{
     endpoint_url::API_V1_MENU_GET_BY_ID, menu::meal_model::MealModel, to_error::ToRestError,
@@ -56,13 +53,16 @@ use crate::{
         ),
     )
 )]
-pub async fn get_meal_by_id_endpoint<T: GetMealById + Send + Debug>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+pub async fn get_meal_by_id_endpoint<T>(
+    shared_state: web::Data<AM<T>>,
     req: HttpRequest,
-) -> HttpResponse {
+) -> HttpResponse
+where
+    T: GetMealById + Send + Debug,
+{
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = Arc::new(Mutex::new(vec![]));
+    let error_list = AMW::new(vec![]);
 
     match MealId::validated(id, error_list.clone()) {
         Ok(meal_id) => match shared_state.lock().unwrap().execute(&meal_id) {
@@ -81,7 +81,10 @@ impl ToRestError for GetMealByIdUseCaseError {
     }
 }
 
-pub fn get_meal_by_id_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn get_meal_by_id_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: GetMealById + Send + Debug + 'static,
+{
     cfg.route(
         API_V1_MENU_GET_BY_ID,
         web::get().to(get_meal_by_id_endpoint::<GetMealByIdUseCase>),
@@ -91,10 +94,13 @@ pub fn get_meal_by_id_endpoint_config(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
+    use common::{
+        common_rest::{not_found_type_url, GenericErrorResponse},
+        types::base::AM,
+    };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
-    use usecase::menu::get_meal_by_id::GetMealByIdUseCaseError::MealNotFound;
+    use usecase::menu::GetMealByIdUseCaseError::MealNotFound;
 
     use super::*;
     use crate::test_fixtures::{rnd_meal_info, MockGetMealById};
@@ -158,13 +164,11 @@ mod tests {
         assert_eq!(&response_dto.response_title, "Resource not found");
     }
 
-    fn mock_get_meal_by_id() -> Arc<Mutex<MockGetMealById>> {
-        Arc::new(Mutex::new(MockGetMealById::default()))
+    fn mock_get_meal_by_id() -> AM<MockGetMealById> {
+        AMW::new(MockGetMealById::default())
     }
 
-    fn mock_shared_state(
-        mock_get_meal_by_id: &Arc<Mutex<MockGetMealById>>,
-    ) -> Data<Arc<Mutex<MockGetMealById>>> {
-        Data::new(Arc::clone(mock_get_meal_by_id))
+    fn mock_shared_state(mock_get_meal_by_id: &AM<MockGetMealById>) -> Data<AM<MockGetMealById>> {
+        Data::new(mock_get_meal_by_id.clone())
     }
 }

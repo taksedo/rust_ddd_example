@@ -1,9 +1,6 @@
-use std::{
-    collections::BTreeMap,
-    sync::{Arc, Mutex},
-};
+use std::collections::BTreeMap;
 
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use domain::{
@@ -19,7 +16,7 @@ use usecase::order::access::{
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryShopOrderRepository {
-    event_publisher: Arc<Mutex<dyn DomainEventPublisher<ShopOrderEventEnum>>>,
+    event_publisher: AM<dyn DomainEventPublisher<ShopOrderEventEnum>>,
     #[new(value = "BTreeMap::new()")]
     pub storage: BTreeMap<ShopOrderId, ShopOrder>,
 }
@@ -63,6 +60,7 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::{order::customer_order_events::ShopOrderCompletedDomainEvent, test_fixtures::*};
 
     use super::*;
@@ -70,7 +68,7 @@ mod tests {
 
     #[test]
     fn saving_order_order_doesnt_exist() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = order_with_events();
 
@@ -95,7 +93,7 @@ mod tests {
 
         let existing_order = rnd_order_with_id(*id);
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         repository
@@ -117,7 +115,7 @@ mod tests {
     fn get_by_id_order_exist() {
         let existing_order = rnd_order(Default::default());
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         let id = existing_order.id();
@@ -130,7 +128,7 @@ mod tests {
 
     #[test]
     fn get_by_id_order_doesnt_exist() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_by_id(&rnd_order_id());
         assert!(order.is_none());
@@ -138,7 +136,7 @@ mod tests {
 
     #[test]
     fn get_last_doesnt_exist() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_last_order(&rnd_customer_id());
         assert!(order.is_none());
@@ -151,7 +149,7 @@ mod tests {
         let last_order = rnd_order_with_customer_id(customer_id);
         let one_more_order = rnd_order_with_customer_id(rnd_customer_id());
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         repository.save(first_order);
@@ -165,7 +163,7 @@ mod tests {
     #[test]
     fn get_all_storage_is_empty() {
         let order_id = rnd_order_id();
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_all(&order_id, 100);
         assert!(order.is_empty());
@@ -176,7 +174,7 @@ mod tests {
         let limit = 10;
         let collection_size = 20;
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         for i in 0..collection_size {
@@ -196,7 +194,7 @@ mod tests {
         let limit = 10;
         let collection_size = 5;
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         for i in 0..collection_size {

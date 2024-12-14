@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 use domain::menu::value_objects::meal_id::MealId;
 
@@ -10,8 +9,8 @@ use crate::menu::{
 
 #[derive(Debug, new)]
 pub struct RemoveMealFromMenuUseCase {
-    pub meal_extractor: Arc<Mutex<dyn MealExtractor>>,
-    pub meal_persister: Arc<Mutex<dyn MealPersister>>,
+    pub meal_extractor: AM<dyn MealExtractor>,
+    pub meal_persister: AM<dyn MealPersister>,
 }
 
 impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
@@ -32,6 +31,7 @@ impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -41,8 +41,8 @@ mod tests {
     fn successfully_removed() {
         let meal = rnd_meal();
 
-        let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let meal_persister = AMW::new(MockMealPersister::new());
+        let meal_extractor = AMW::new(MockMealExtractor::new());
         meal_extractor.lock().unwrap().meal = Some(meal.clone());
 
         let mut use_case =
@@ -69,8 +69,8 @@ mod tests {
 
     #[test]
     fn meal_not_found() {
-        let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let meal_persister = AMW::new(MockMealPersister::new());
+        let meal_extractor = AMW::new(MockMealExtractor::new());
         let mut use_case =
             RemoveMealFromMenuUseCase::new(meal_extractor.clone(), meal_persister.clone());
 

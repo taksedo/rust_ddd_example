@@ -1,13 +1,12 @@
-use std::{
-    fmt::Debug,
-    str::FromStr,
-    sync::{Arc, Mutex},
-};
+use std::{fmt::Debug, str::FromStr};
 
 use actix_web::{http, web, HttpResponse};
 use bigdecimal::BigDecimal;
-use common::common_rest::rest_responses::{
-    created, rest_business_error, to_invalid_param_bad_request, GenericErrorResponse,
+use common::{
+    common_rest::{
+        created, rest_business_error, to_invalid_param_bad_request, GenericErrorResponse,
+    },
+    types::base::{AM, AMW},
 };
 use derive_new::new;
 use domain::menu::value_objects::{
@@ -15,10 +14,7 @@ use domain::menu::value_objects::{
 };
 use http::Uri;
 use serde::{Deserialize, Serialize};
-use usecase::menu::{
-    add_meal_to_menu::{AddMealToMenu, AddMealToMenuUseCaseError},
-    scenario::add_meal_to_menu_use_case::AddMealToMenuUseCase,
-};
+use usecase::menu::{AddMealToMenu, AddMealToMenuUseCaseError};
 use utoipa::ToSchema;
 
 use crate::{
@@ -82,7 +78,7 @@ pub struct AddMealToMenuRestRequest {
         ),
     ))]
 pub async fn add_meal_to_menu_endpoint<T>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+    shared_state: web::Data<AM<T>>,
     request: web::Json<AddMealToMenuRestRequest>,
 ) -> HttpResponse
 where
@@ -90,7 +86,7 @@ where
 {
     println!("Request {request:?} to add meal to menu received");
 
-    let error_list = Arc::new(Mutex::new(vec![]));
+    let error_list = AMW::new(vec![]);
 
     match (
         MealName::validated(&request.name, error_list.clone()),
@@ -126,10 +122,13 @@ impl ToRestError for AddMealToMenuUseCaseError {
     }
 }
 
-pub fn add_meal_to_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn add_meal_to_menu_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: AddMealToMenu + Send + Debug + 'static,
+{
     cfg.route(
         API_V1_MENU_ADD_TO_MENU,
-        web::post().to(add_meal_to_menu_endpoint::<AddMealToMenuUseCase>),
+        web::post().to(add_meal_to_menu_endpoint::<T>),
     );
 }
 
@@ -141,7 +140,10 @@ mod tests {
         web::{Data, Json},
     };
     use bigdecimal::{num_bigint::BigInt, ToPrimitive};
-    use common::common_rest::rest_responses::{bad_request_type_url, error_type_url};
+    use common::{
+        common_rest::{bad_request_type_url, error_type_url},
+        types::base::AM,
+    };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -257,12 +259,12 @@ mod tests {
     }
 
     fn mock_shared_state(
-        mock_add_meal_to_menu: &Arc<Mutex<MockAddMealToMenu>>,
-    ) -> Data<Arc<Mutex<MockAddMealToMenu>>> {
-        Data::new(Arc::clone(mock_add_meal_to_menu))
+        mock_add_meal_to_menu: &AM<MockAddMealToMenu>,
+    ) -> Data<AM<MockAddMealToMenu>> {
+        Data::new(mock_add_meal_to_menu.clone())
     }
 
-    fn mock_add_meal_to_menu() -> Arc<Mutex<MockAddMealToMenu>> {
-        Arc::new(Mutex::new(MockAddMealToMenu::default()))
+    fn mock_add_meal_to_menu() -> AM<MockAddMealToMenu> {
+        AMW::new(MockAddMealToMenu::default())
     }
 }

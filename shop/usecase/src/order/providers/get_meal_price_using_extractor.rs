@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 use domain::{
     menu::value_objects::{meal_id::MealId, price::Price},
@@ -18,12 +17,13 @@ impl GetMealPrice for GetMealPriceUsingExtractor {
 
 #[derive(new, Debug)]
 pub struct GetMealPriceUsingExtractor {
-    pub extractor: Arc<Mutex<dyn MealExtractor>>,
+    pub extractor: AM<dyn MealExtractor>,
 }
 
 #[cfg(test)]
 mod tests {
     use assert_panic::assert_panic;
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -33,7 +33,7 @@ mod tests {
     fn price_has_been_provided() {
         let meal = rnd_meal();
 
-        let extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let extractor = AMW::new(MockMealExtractor::new());
         extractor.lock().unwrap().meal = Some(meal.clone());
 
         let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
@@ -48,7 +48,7 @@ mod tests {
 
     #[test]
     fn meal_not_found() {
-        let extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let extractor = AMW::new(MockMealExtractor::new());
         let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
 
         let meal_id = rnd_meal_id();

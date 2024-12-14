@@ -1,6 +1,6 @@
 use common::types::{
-    base::domain_entity::Version,
-    common::{address::Address, count::Count},
+    base::Version,
+    common::{Address, Count},
 };
 use derive_new::new;
 use domain::{

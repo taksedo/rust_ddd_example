@@ -1,5 +1,5 @@
 use actix_web::{http::header::ContentType, HttpResponse};
-use common::types::common::address::Address;
+use common::types::common::Address;
 use derive_new::new;
 use serde::Serialize;
 use serde_derive::Deserialize;

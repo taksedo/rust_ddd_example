@@ -4,9 +4,7 @@ use std::{
 };
 
 use bigdecimal::*;
-use common::types::{
-    base::value_object::ValueObject, common::count::Count, errors::error::BusinessError,
-};
+use common::types::{base::ValueObject, common::Count, errors::BusinessError};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, Default)]

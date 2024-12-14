@@ -1,11 +1,6 @@
-use std::sync::{Arc, Mutex};
-
-use common::common_rest::rest_responses::ValidationError;
+use common::{common_rest::ValidationError, types::base::AM};
 
 pub trait Validated<Entity, ValueType> {
     #[allow(clippy::result_unit_err)]
-    fn validated(
-        val: ValueType,
-        error_list: Arc<Mutex<Vec<ValidationError>>>,
-    ) -> Result<Entity, ()>;
+    fn validated(val: ValueType, error_list: AM<Vec<ValidationError>>) -> Result<Entity, ()>;
 }

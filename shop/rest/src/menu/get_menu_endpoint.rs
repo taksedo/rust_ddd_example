@@ -1,10 +1,8 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use actix_web::{http::header::ContentType, web, HttpResponse};
-use usecase::menu::{get_menu::GetMenu, scenario::get_menu_use_case::GetMenuUseCase};
+use common::types::base::AM;
+use usecase::menu::GetMenu;
 
 use crate::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
 
@@ -23,7 +21,7 @@ use crate::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
 )]
 
 pub async fn get_menu_endpoint<T: GetMenu + Send + Debug>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+    shared_state: web::Data<AM<T>>,
 ) -> HttpResponse {
     let meal_model_list: Vec<MealModel> = shared_state
         .lock()
@@ -38,16 +36,14 @@ pub async fn get_menu_endpoint<T: GetMenu + Send + Debug>(
         .body(serde_json::to_string(&meal_model_list).unwrap())
 }
 
-pub fn get_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
-    cfg.route(
-        API_V1_MENU_GET_ALL,
-        web::get().to(get_menu_endpoint::<GetMenuUseCase>),
-    );
+pub fn get_menu_endpoint_config<T: GetMenu + Send + Debug + 'static>(cfg: &mut web::ServiceConfig) {
+    cfg.route(API_V1_MENU_GET_ALL, web::get().to(get_menu_endpoint::<T>));
 }
 
 #[cfg(test)]
 mod tests {
     use actix_web::body::MessageBody;
+    use common::types::base::AMW;
 
     use super::*;
     use crate::test_fixtures::{rnd_meal_info, MockGetMenu};
@@ -55,7 +51,7 @@ mod tests {
     #[actix_web::test]
     async fn get_menu() {
         let meal_info = rnd_meal_info();
-        let mock_get_menu = Arc::new(Mutex::new(MockGetMenu::default()));
+        let mock_get_menu = AMW::new(MockGetMenu::default());
         mock_get_menu.lock().unwrap().meal_info = meal_info.clone();
         let mock_shared_state = web::Data::new(mock_get_menu.clone());
 

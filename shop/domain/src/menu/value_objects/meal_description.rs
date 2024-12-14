@@ -1,4 +1,4 @@
-use common::types::{base::value_object::ValueObject, errors::error::BusinessError};
+use common::types::{base::ValueObject, errors::BusinessError};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 

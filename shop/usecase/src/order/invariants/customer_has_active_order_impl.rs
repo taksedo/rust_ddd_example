@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 use domain::{
     cart::value_objects::customer_id::CustomerId,
@@ -10,7 +9,7 @@ use crate::order::access::shop_order_extractor::ShopOrderExtractor;
 
 #[derive(new, Debug)]
 pub struct CustomerHasActiveOrderImpl {
-    shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
+    shop_order_extractor: AM<dyn ShopOrderExtractor>,
 }
 
 impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
@@ -26,6 +25,7 @@ impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -34,10 +34,10 @@ mod tests {
     #[test]
     fn active_order_exists() {
         let active_order = active_order();
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor {
+        let extractor = AMW::new(MockShopOrderExtractor {
             order: Some(active_order.clone()),
             ..Default::default()
-        }));
+        });
         let mut rule = CustomerHasActiveOrderImpl::new(extractor.clone());
 
         let has_active_order = rule.invoke(active_order.for_customer());
@@ -52,10 +52,10 @@ mod tests {
     #[test]
     fn order_exists_but_not_active() {
         let active_order = non_active_order();
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor {
+        let extractor = AMW::new(MockShopOrderExtractor {
             order: Some(active_order.clone()),
             ..Default::default()
-        }));
+        });
         let mut rule = CustomerHasActiveOrderImpl::new(extractor.clone());
 
         let has_active_order = rule.invoke(active_order.for_customer());
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn order_doesnt_exist() {
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         let mut rule = CustomerHasActiveOrderImpl::new(extractor.clone());
 
         let customer_id = rnd_customer_id();

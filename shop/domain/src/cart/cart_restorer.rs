@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use common::types::{
-    base::domain_entity::{DomainEntity, Version},
-    common::count::Count,
+    base::{DomainEntity, Version},
+    common::Count,
 };
 use time::OffsetDateTime;
 

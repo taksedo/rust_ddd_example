@@ -1,4 +1,4 @@
-use common::types::base::domain_event::DomainEvent;
+use common::types::base::DomainEvent;
 use derive_new::new;
 use enum_dispatch::enum_dispatch;
 use serde_derive::{Deserialize, Serialize};

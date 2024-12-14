@@ -3,7 +3,7 @@ use std::{
     fmt::{Debug, Formatter},
 };
 
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::events::DomainEventPublisher;
 use derive_new::new;
 use domain::{menu::meal_events::MealEventEnum, order::customer_order_events::ShopOrderEventEnum};
 use rdkafka::{

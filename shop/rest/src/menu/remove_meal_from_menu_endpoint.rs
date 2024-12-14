@@ -1,18 +1,15 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
-use common::common_rest::rest_responses::{
-    get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
-    GenericErrorResponse,
+use common::{
+    common_rest::{
+        get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
+        GenericErrorResponse,
+    },
+    types::base::{AM, AMW},
 };
 use domain::menu::value_objects::meal_id::MealId;
-use usecase::menu::{
-    remove_meal_from_menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError},
-    scenario::remove_meal_from_menu_use_case::RemoveMealFromMenuUseCase,
-};
+use usecase::menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError};
 
 use crate::{endpoint_url::API_V1_MENU_DELETE_BY_ID, to_error::ToRestError, validated::Validated};
 
@@ -52,13 +49,16 @@ use crate::{endpoint_url::API_V1_MENU_DELETE_BY_ID, to_error::ToRestError, valid
             example = json!(&(get_json_from_http_response(resource_not_found())))
         )
     ))]
-pub async fn remove_meal_from_menu_endpoint<T: RemoveMealFromMenu + Send + Debug>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+pub async fn remove_meal_from_menu_endpoint<T>(
+    shared_state: web::Data<AM<T>>,
     req: HttpRequest,
-) -> HttpResponse {
+) -> HttpResponse
+where
+    T: RemoveMealFromMenu + Send + Debug,
+{
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = Arc::new(Mutex::new(vec![]));
+    let error_list = AMW::new(vec![]);
 
     match MealId::validated(id, error_list.clone()) {
         Ok(meal_id) => match shared_state.lock().unwrap().execute(&meal_id) {
@@ -75,17 +75,20 @@ impl ToRestError for RemoveMealFromMenuUseCaseError {
     }
 }
 
-pub fn remove_meal_from_menu_endpoint_config(cfg: &mut web::ServiceConfig) {
+pub fn remove_meal_from_menu_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: RemoveMealFromMenu + Send + Debug + 'static,
+{
     cfg.route(
         API_V1_MENU_DELETE_BY_ID,
-        web::delete().to(remove_meal_from_menu_endpoint::<RemoveMealFromMenuUseCase>),
+        web::delete().to(remove_meal_from_menu_endpoint::<T>),
     );
 }
 
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, test::TestRequest, web::Data};
-    use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
+    use common::common_rest::{not_found_type_url, GenericErrorResponse};
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -95,7 +98,7 @@ mod tests {
     async fn meal_not_found() {
         dotenv().ok();
         let meal_id = rnd_meal_id();
-        let mock_remove_meal_from_menu = Arc::new(Mutex::new(MockRemoveMealFromMenu::default()));
+        let mock_remove_meal_from_menu = AMW::new(MockRemoveMealFromMenu::default());
         mock_remove_meal_from_menu.lock().unwrap().response =
             Err(RemoveMealFromMenuUseCaseError::MealNotFound);
         let mock_shared_state = Data::new(mock_remove_meal_from_menu.clone());
@@ -125,7 +128,7 @@ mod tests {
     async fn removed_successfully() {
         let meal_id = rnd_meal_id();
 
-        let mock_remove_meal_from_menu = Arc::new(Mutex::new(MockRemoveMealFromMenu::default()));
+        let mock_remove_meal_from_menu = AMW::new(MockRemoveMealFromMenu::default());
         let mock_shared_state = Data::new(mock_remove_meal_from_menu.clone());
 
         let req = TestRequest::default()

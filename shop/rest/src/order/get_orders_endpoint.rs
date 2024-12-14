@@ -1,19 +1,14 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::{
-    cursor_paged_model::CursorPagedModel,
-    rest_responses::{to_invalid_param_bad_request, GenericErrorResponse, ValidationError},
+use common::{
+    common_rest::{
+        to_invalid_param_bad_request, CursorPagedModel, GenericErrorResponse, ValidationError,
+    },
+    types::base::{AM, AMW},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
-use usecase::order::{
-    access::shop_order_extractor::ShopOrderExtractor,
-    get_orders::{GetOrders, GetOrdersUseCaseError},
-    scenarios::get_orders_use_case::GetOrdersUseCase,
-};
+use usecase::order::{GetOrders, GetOrdersUseCaseError};
 
 use super::{
     order_model::{OrderModel, ToModel},
@@ -56,10 +51,10 @@ use crate::{endpoint_url::API_V1_ORDER_GET_ALL, to_error::ToRestError, validated
     )
 )]
 pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+    shared_state: web::Data<AM<T>>,
     req: HttpRequest,
 ) -> HttpResponse {
-    let error_list = Arc::new(Mutex::new(vec![]));
+    let error_list = AMW::new(vec![]);
 
     match (
         match validate_query_string::<i64>(req.clone(), "startId", error_list.clone()) {
@@ -96,7 +91,7 @@ impl ToRestError for GetOrdersUseCaseError {
     fn to_rest_error(self) -> HttpResponse {
         match self {
             GetOrdersUseCaseError::LimitExceed(max_size) => {
-                let error_list = Arc::new(Mutex::new(vec![]));
+                let error_list = AMW::new(vec![]);
                 error_list
                     .lock()
                     .unwrap()
@@ -110,19 +105,20 @@ impl ToRestError for GetOrdersUseCaseError {
     }
 }
 
-pub fn get_orders_endpoint_config<ShOExtractor: ShopOrderExtractor + 'static>(
-    cfg: &mut web::ServiceConfig,
-) {
+pub fn get_orders_endpoint_config<T>(cfg: &mut web::ServiceConfig)
+where
+    T: GetOrders + 'static,
+{
     cfg.route(
         API_V1_ORDER_GET_ALL,
-        web::get().to(get_orders_endpoint::<GetOrdersUseCase<ShOExtractor>>),
+        web::get().to(get_orders_endpoint::<T>),
     );
 }
 
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::common_rest::rest_responses::{bad_request_type_url, GenericErrorResponse};
+    use common::common_rest::{bad_request_type_url, GenericErrorResponse};
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -135,11 +131,11 @@ mod tests {
         let start_id = rnd_order_id();
         let limit = 10;
 
-        let mock_get_orders = Arc::new(Mutex::new(MockGetOrders {
+        let mock_get_orders = AMW::new(MockGetOrders {
             response: Err(GetOrdersUseCaseError::new_limit_exceed(limit + 1)),
             start_id,
             limit,
-        }));
+        });
 
         let mock_shared_state = Data::new(mock_get_orders.clone());
         let req = TestRequest::default()
@@ -181,11 +177,11 @@ mod tests {
         let single = rnd_order_details(Default::default());
         let first_item = single.clone().items[0];
 
-        let mock_get_orders = Arc::new(Mutex::new(MockGetOrders {
+        let mock_get_orders = AMW::new(MockGetOrders {
             response: Ok(vec![single.clone()]),
             start_id: single.id,
             limit,
-        }));
+        });
 
         let mock_shared_state = Data::new(mock_get_orders.clone());
         let req = TestRequest::default()
@@ -241,11 +237,11 @@ mod tests {
         let first_item = first.clone().items[0];
         let second = rnd_order_details(Default::default());
 
-        let mock_get_orders = Arc::new(Mutex::new(MockGetOrders {
+        let mock_get_orders = AMW::new(MockGetOrders {
             response: Ok(vec![first.clone(), second]),
             start_id: first.id,
             limit,
-        }));
+        });
 
         let mock_shared_state = Data::new(mock_get_orders.clone());
         let req = TestRequest::default()

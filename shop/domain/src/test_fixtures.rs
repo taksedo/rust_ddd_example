@@ -4,11 +4,8 @@ use bigdecimal::{BigDecimal, FromPrimitive};
 use common::{
     test_fixtures::rnd_count,
     types::{
-        base::{
-            domain_entity::{DomainEntity, Version},
-            domain_event::DomainEventTrait,
-        },
-        common::{address::Address, count::Count},
+        base::{DomainEntity, DomainEventTrait, Version},
+        common::{Address, Count},
     },
 };
 use derive_new::new;
