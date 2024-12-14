@@ -46,39 +46,39 @@ fn add_meal_to_menu_use_case() -> AM<AddMealToMenuUseCase> {
         MEAL_ID_GENERATOR.clone(),
         AMW::new(rule),
     );
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }
 
 fn get_meal_by_id_use_case() -> AM<GetMealByIdUseCase> {
     let usecase = GetMealByIdUseCase::new(MEAL_REPOSITORY.clone());
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }
 
 fn get_menu_use_case() -> AM<GetMenuUseCase> {
     let usecase = GetMenuUseCase::new(MEAL_REPOSITORY.clone());
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }
 
 fn remove_meal_from_menu_usecase() -> AM<RemoveMealFromMenuUseCase> {
     let usecase = RemoveMealFromMenuUseCase::new(MEAL_REPOSITORY.clone(), MEAL_REPOSITORY.clone());
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }
 
 fn cancel_order_usecase() -> AM<CancelOrderUseCase<ORepository, ORepository>> {
     let usecase = CancelOrderUseCase::new(ORDER_REPOSITORY.clone(), ORDER_REPOSITORY.clone());
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }
 fn confirm_order_usecase() -> AM<ConfirmOrderUseCase<ORepository, ORepository>> {
     let usecase = ConfirmOrderUseCase::new(ORDER_REPOSITORY.clone(), ORDER_REPOSITORY.clone());
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }
 
 fn get_order_by_id_usecase() -> AM<GetOrderByIdUseCase<ORepository>> {
     let usecase = GetOrderByIdUseCase::new(ORDER_REPOSITORY.clone());
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }
 
 fn get_orders_usecase() -> AM<GetOrdersUseCase<ORepository>> {
     let usecase = GetOrdersUseCase::new(ORDER_REPOSITORY.clone(), || GET_ORDERS_MAX_SIZE + 1);
-    AMW::new(usecase).into()
+    AMW::new(usecase)
 }

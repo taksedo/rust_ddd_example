@@ -9,6 +9,7 @@ use crate::event::kafka_event_publisher_impl::KafkaEventPublisherImpl;
 // }
 
 lazy_static! {
+    /// `EventPublisher` dependency injection
     pub(super) static ref EVENT_PUBLISHER: AM<KafkaEventPublisherImpl> =
         AMW::new(KafkaEventPublisherImpl::default());
 }

@@ -19,7 +19,9 @@ type MealRepository = PostgresMealRepository;
 
 lazy_static! {
     pub(super) static ref MEAL_ID_GENERATOR: AM<MealIdGenerator> = meal_id_generator();
+    /// `MealRepository` dependency injection
     pub(super) static ref MEAL_REPOSITORY: AM<MealRepository> = meal_repository();
+
     pub(super) static ref ORDER_ID_GENERATOR: AM<OrderIdGenerator> = order_id_generator();
     pub(super) static ref ORDER_REPOSITORY: AM<OrderRepository> = order_repository();
 }
