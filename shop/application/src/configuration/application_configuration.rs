@@ -1,5 +1,6 @@
+use std::sync::LazyLock;
+
 use common::types::base::{AM, AMW};
-use lazy_static::lazy_static;
 
 use crate::event::kafka_event_publisher_impl::KafkaEventPublisherImpl;
 
@@ -8,7 +9,6 @@ use crate::event::kafka_event_publisher_impl::KafkaEventPublisherImpl;
 //         AMW::new(EventPublisherImpl::default()));
 // }
 
-lazy_static! {
-    pub(super) static ref EVENT_PUBLISHER: AM<KafkaEventPublisherImpl> =
-        AMW::new(KafkaEventPublisherImpl::default());
-}
+/// `EventPublisher` dependency injection
+pub(super) static EVENT_PUBLISHER: LazyLock<AM<KafkaEventPublisherImpl>> =
+    LazyLock::new(|| AMW::new(KafkaEventPublisherImpl::default()));

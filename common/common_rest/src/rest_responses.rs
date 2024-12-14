@@ -1,6 +1,6 @@
 use std::{
     env,
-    sync::{Arc, Mutex, OnceLock},
+    sync::{Arc, LazyLock, Mutex},
 };
 
 use actix_web::{
@@ -9,17 +9,14 @@ use actix_web::{
     HttpResponse,
 };
 use derive_new::new;
-use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use utoipa::{ToResponse, ToSchema};
 
-lazy_static! {
-    pub static ref BASE_URL: String = {
-        let lock: OnceLock<String> = OnceLock::new();
-        lock.get_or_init(|| env::var("HTTP_HOST_URL").expect("Variable 'HTTP_HOST_URL' not found"))
-            .to_string()
-    };
-}
+pub static BASE_URL: LazyLock<String> = LazyLock::new(|| {
+    env::var("HTTP_HOST_URL")
+        .expect("Variable 'HTTP_HOST_URL' not found")
+        .to_string()
+});
 
 pub fn error_type_url(suffix: &str) -> String {
     (BASE_URL.clone() + "/" + suffix)

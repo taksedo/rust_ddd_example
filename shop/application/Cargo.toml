@@ -13,7 +13,6 @@ actix-cors.workspace = true
 derive-new.workspace = true
 enum_dispatch.workspace = true
 smart-default.workspace = true
-lazy_static.workspace = true
 log.workspace = true
 env_logger.workspace = true
 dotenvy.workspace = true

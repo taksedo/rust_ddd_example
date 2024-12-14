@@ -1,4 +1,7 @@
-use std::sync::{atomic::AtomicU32, OnceLock};
+use std::{
+    clone::Clone,
+    sync::{atomic::AtomicU32, LazyLock, OnceLock},
+};
 
 use lapin::{Connection, ConnectionProperties};
 use testcontainers::{core::WaitFor, runners::AsyncRunner, ContainerAsync, GenericImage, ImageExt};
@@ -31,33 +34,31 @@ impl TestRabbitMq {
             .with_env_var("RABBITMQ_DEFAULT_PASS", "guest");
         let node = rabbitmq_container.start().await.unwrap();
         let port = &node.get_host_port_ipv4(5672).await.unwrap();
-        RABBITMQ_QUEUE_NAME.get_or_init(|| {
-            format!(
-                "test_queue_{}_{}",
-                std::process::id(),
-                TEST_RABBITMQ_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
-            )
-        });
         let test_container_rabbitmq_url = format!("amqp://guest:guest@localhost:{port}");
 
-        RABBITMQ_ADDRESS.get_or_init(|| test_container_rabbitmq_url.clone());
+        RABBITMQ_ADDRESS_LOCK.get_or_init(|| test_container_rabbitmq_url.clone());
         debug!(?RABBITMQ_ADDRESS);
 
         Self { container: node }
     }
 
     pub async fn conn(&self) -> lapin::Result<Connection> {
-        Connection::connect(
-            RABBITMQ_ADDRESS.get().unwrap(),
-            ConnectionProperties::default(),
-        )
-        .await
+        Connection::connect(&RABBITMQ_ADDRESS, ConnectionProperties::default()).await
     }
 }
 
 static TEST_RABBITMQ_COUNTER: AtomicU32 = AtomicU32::new(0);
-pub(crate) static RABBITMQ_ADDRESS: OnceLock<String> = OnceLock::new();
-pub(crate) static RABBITMQ_QUEUE_NAME: OnceLock<String> = OnceLock::new();
+
+static RABBITMQ_ADDRESS_LOCK: OnceLock<String> = OnceLock::new();
+pub(crate) static RABBITMQ_ADDRESS: LazyLock<String> =
+    LazyLock::new(|| RABBITMQ_ADDRESS_LOCK.get().unwrap().clone());
+pub(crate) static RABBITMQ_QUEUE_NAME: LazyLock<String> = LazyLock::new(|| {
+    format!(
+        "test_queue_{}_{}",
+        std::process::id(),
+        TEST_RABBITMQ_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+    )
+});
 
 pub struct TestKafka {
     #[allow(dead_code)]
