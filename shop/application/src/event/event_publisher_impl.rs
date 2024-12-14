@@ -4,14 +4,11 @@ use std::{
     fmt::Debug,
     hash::Hash,
     mem::{discriminant, Discriminant},
-    sync::{Arc, Mutex},
 };
 
 use common::{
-    events::{
-        domain_event_listener::DomainEventListener, domain_event_publisher::DomainEventPublisher,
-    },
-    types::base::generic_types::AM,
+    events::{DomainEventListener, DomainEventPublisher},
+    types::base::{AM, AMW},
 };
 use derive_new::new;
 
@@ -29,7 +26,7 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
         let event_type = listener.event_type();
         self.listener_map.entry(event_type).or_insert_with(|| {
             let vector: Vec<AM<(dyn DomainEventListener<Event> + 'static)>> =
-                vec![Arc::new(Mutex::new(listener))];
+                vec![AMW::new(listener)];
             vector
         });
     }
@@ -108,7 +105,7 @@ mod test {
 
     impl DomainEventListener<DomainEventEnum> for TestEventListener {
         fn event_type(&self) -> Discriminant<DomainEventEnum> {
-            let event: DomainEventEnum = (TestEvent::default()).into();
+            let event: DomainEventEnum = TestEvent::default().into();
             discriminant(&event)
         }
 
@@ -128,7 +125,7 @@ mod test {
 
     impl DomainEventListener<DomainEventEnum> for AnotherTestEventListener {
         fn event_type(&self) -> Discriminant<DomainEventEnum> {
-            let event: DomainEventEnum = (AnotherTestEvent::default()).into();
+            let event: DomainEventEnum = AnotherTestEvent::default().into();
             discriminant(&event)
         }
 
@@ -167,7 +164,7 @@ mod test {
     impl DomainEventTrait for AnotherTestEvent {}
 
     impl<Event: Debug> EventPublisherImpl<Event> {
-        fn get_listener(&self, event_type: Event) -> &Arc<Mutex<dyn DomainEventListener<Event>>> {
+        fn get_listener(&self, event_type: Event) -> &AM<dyn DomainEventListener<Event>> {
             let result = self.listener_map.get(&discriminant(&event_type)).unwrap();
             result.first().unwrap()
         }

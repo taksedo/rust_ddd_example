@@ -1,8 +1,8 @@
 use serde_derive::{Deserialize, Serialize};
 
 use crate::{
-    base::value_object::ValueObject,
-    common::address::CreateAddressError::{EmptyString, NonPositiveBuilding},
+    base::ValueObject,
+    common::CreateAddressError::{EmptyString, NonPositiveBuilding},
 };
 
 /// `Address` Value Object

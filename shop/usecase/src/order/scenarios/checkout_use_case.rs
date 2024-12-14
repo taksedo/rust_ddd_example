@@ -1,4 +1,4 @@
-use common::types::{base::generic_types::AM, errors::error::ToError};
+use common::types::{base::AM, errors::ToError};
 use derive_new::new;
 use domain::order::{
     customer_has_active_order::CustomerHasActiveOrder,
@@ -102,13 +102,13 @@ impl ToError<CheckoutUseCaseError> for CheckoutError {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        collections::HashMap,
-        sync::{Arc, Mutex},
-    };
+    use std::collections::HashMap;
 
     use actix_web::http::Uri;
-    use common::{test_fixtures::*, types::common::address::Address};
+    use common::{
+        test_fixtures::*,
+        types::{base::AMW, common::Address},
+    };
     use domain::{
         cart::value_objects::customer_id::CustomerId,
         menu::value_objects::{meal_id::MealId, price::Price},
@@ -131,17 +131,17 @@ mod tests {
         let cart =
             rnd_cart_with_customer_id_and_meals(customer_id, HashMap::from([(*meal.id(), count)]));
 
-        let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
+        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
 
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
         cart_extractor.lock().unwrap().cart = Some(cart.clone());
 
-        let active_order_rule = Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false)));
-        let order_persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(false));
+        let order_persister = AMW::new(MockShopOrderPersister::default());
 
         let price = rnd_price();
-        let get_meal_price = Arc::new(Mutex::new(MockGetMealPrice::new(price.clone())));
-        let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
+        let get_meal_price = AMW::new(MockGetMealPrice::new(price.clone()));
+        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),
@@ -185,14 +185,14 @@ mod tests {
 
     #[test]
     fn cart_not_found() {
-        let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
-        let active_order_rule = Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false)));
+        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
+        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(false));
 
-        let order_persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let order_persister = AMW::new(MockShopOrderPersister::default());
+        let cart_extractor = AMW::new(MockCartExtractor::default());
 
-        let get_meal_price = Arc::new(Mutex::new(MockGetMealPrice::default()));
-        let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
+        let get_meal_price = AMW::new(MockGetMealPrice::default());
+        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),
@@ -222,17 +222,17 @@ mod tests {
         let cart = rnd_cart();
         let customer_id = cart.for_customer();
 
-        let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
+        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
 
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
         cart_extractor.lock().unwrap().cart = Some(cart.clone());
 
-        let active_order_rule = Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false)));
-        let order_persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(false));
+        let order_persister = AMW::new(MockShopOrderPersister::default());
 
         let price = rnd_price();
-        let get_meal_price = Arc::new(Mutex::new(MockGetMealPrice::new(price.clone())));
-        let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
+        let get_meal_price = AMW::new(MockGetMealPrice::new(price.clone()));
+        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),
@@ -263,16 +263,16 @@ mod tests {
     fn already_has_active_order() {
         let cart = rnd_cart();
 
-        let id_generator = Arc::new(Mutex::new(TestShopOrderIdGenerator::default()));
+        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
 
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
         cart_extractor.lock().unwrap().cart = Some(cart.clone());
 
-        let active_order_rule = Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(true)));
-        let order_persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(true));
+        let order_persister = AMW::new(MockShopOrderPersister::default());
 
-        let get_meal_price = Arc::new(Mutex::new(MockGetMealPrice::default()));
-        let payment_url_provider = Arc::new(Mutex::new(TestPaymentUrlProvider::new()));
+        let get_meal_price = AMW::new(MockGetMealPrice::default());
+        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),

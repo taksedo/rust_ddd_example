@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::base::generic_types::AM;
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -40,8 +40,7 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtract
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -52,7 +51,7 @@ mod tests {
         let order_id = rnd_order_id();
         let limit: fn() -> usize = || 10;
 
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
 
         let result = use_case.execute(&order_id, limit());
@@ -69,7 +68,7 @@ mod tests {
         let order = rnd_order(Default::default());
         let order_id = order.id();
 
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         extractor.lock().unwrap().order = Some(order.clone());
 
         let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
@@ -85,7 +84,7 @@ mod tests {
         let limit: fn() -> usize = || 10;
         let order_id = rnd_order_id();
 
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
 
         let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
         let result = use_case.execute(&order_id, limit() + 1);

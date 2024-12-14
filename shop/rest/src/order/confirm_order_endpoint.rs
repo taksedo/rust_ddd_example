@@ -1,12 +1,12 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
-use common::common_rest::rest_responses::{
-    get_json_from_http_response, resource_not_found, rest_business_error,
-    to_invalid_param_bad_request, GenericErrorResponse,
+use common::{
+    common_rest::{
+        get_json_from_http_response, resource_not_found, rest_business_error,
+        to_invalid_param_bad_request, GenericErrorResponse,
+    },
+    types::base::{AM, AMW},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{ConfirmOrder, ConfirmOrderUseCaseError};
@@ -53,7 +53,7 @@ use crate::{
     )
 )]
 pub async fn confirm_order_endpoint<T>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+    shared_state: web::Data<AM<T>>,
     req: HttpRequest,
 ) -> HttpResponse
 where
@@ -61,7 +61,7 @@ where
 {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = Arc::new(Mutex::new(vec![]));
+    let error_list = AMW::new(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
         Ok(order_id) => match shared_state.lock().unwrap().execute(&order_id) {
@@ -96,8 +96,9 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, test::TestRequest, web::Data};
-    use common::common_rest::rest_responses::{
-        error_type_url, not_found_type_url, GenericErrorResponse,
+    use common::{
+        common_rest::{error_type_url, not_found_type_url, GenericErrorResponse},
+        types::base::AMW,
     };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
@@ -109,7 +110,7 @@ mod tests {
     async fn order_not_found() {
         dotenv().ok();
         let order_id = rnd_order_id();
-        let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
+        let mock_confirm_order = AMW::new(MockConfirmOrder::default());
         mock_confirm_order.lock().unwrap().response = Err(ConfirmOrderUseCaseError::OrderNotFound);
 
         let mock_shared_state = Data::new(mock_confirm_order.clone());
@@ -118,7 +119,7 @@ mod tests {
             .param("id", order_id.to_i64().to_string())
             .to_http_request();
 
-        let resp: actix_web::HttpResponse = confirm_order_endpoint(mock_shared_state, req).await;
+        let resp: HttpResponse = confirm_order_endpoint(mock_shared_state, req).await;
 
         assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 
@@ -141,7 +142,7 @@ mod tests {
     async fn invalid_order_state() {
         dotenv().ok();
         let order_id = rnd_order_id();
-        let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
+        let mock_confirm_order = AMW::new(MockConfirmOrder::default());
         mock_confirm_order.lock().unwrap().response =
             Err(ConfirmOrderUseCaseError::InvalidOrderState);
 
@@ -177,7 +178,7 @@ mod tests {
     async fn successfully_cancelled() {
         dotenv().ok();
         let order_id = rnd_order_id();
-        let mock_confirm_order = Arc::new(Mutex::new(MockConfirmOrder::default()));
+        let mock_confirm_order = AMW::new(MockConfirmOrder::default());
         mock_confirm_order.lock().unwrap().response = Ok(());
 
         let mock_shared_state = Data::new(mock_confirm_order.clone());

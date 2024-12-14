@@ -1,4 +1,4 @@
-use common::types::base::generic_types::AM;
+use common::types::base::AM;
 use derive_new::new;
 use domain::cart::value_objects::customer_id::CustomerId;
 
@@ -52,12 +52,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        collections::HashMap,
-        sync::{Arc, Mutex},
-    };
+    use std::collections::HashMap;
 
-    use common::test_fixtures::*;
+    use common::{test_fixtures::*, types::base::AMW};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -74,10 +71,10 @@ mod tests {
         let cart =
             rnd_cart_with_customer_id_and_meals(customer_id, HashMap::from([(*meal.id(), count)]));
 
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
         cart_extractor.lock().unwrap().cart = Some(cart.clone());
 
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::new()));
+        let meal_extractor = AMW::new(MockMealExtractor::new());
         meal_extractor.lock().unwrap().meal = Some(meal.clone());
 
         let use_case = GetCartUseCase::new(meal_extractor.clone(), cart_extractor.clone());
@@ -101,8 +98,8 @@ mod tests {
 
     #[test]
     fn cart_not_found() {
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
-        let meal_extractor = Arc::new(Mutex::new(MockMealExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
+        let meal_extractor = AMW::new(MockMealExtractor::default());
         let use_case = GetCartUseCase::new(meal_extractor.clone(), cart_extractor.clone());
         let customer_id = rnd_customer_id();
 

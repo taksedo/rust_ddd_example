@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::common::count::Count;
+use common::types::common::Count;
 use derive_new::new;
 use domain::{
     cart::value_objects::customer_id::CustomerId,

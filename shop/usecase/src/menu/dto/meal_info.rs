@@ -1,4 +1,4 @@
-use common::types::base::domain_entity::Version;
+use common::types::base::Version;
 use domain::menu::{
     meal::Meal,
     value_objects::{

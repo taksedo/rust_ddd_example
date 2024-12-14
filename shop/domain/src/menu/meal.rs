@@ -1,11 +1,8 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use common::types::{
-    base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
-    errors::error::BusinessError,
+    base::{DomainEntity, DomainEntityTrait, Version, AM},
+    errors::BusinessError,
 };
 use derive_getters::Getters;
 use derive_new::new;
@@ -50,8 +47,8 @@ impl Meal {
         }
     }
     pub fn add_meal_to_menu(
-        id_generator: Arc<Mutex<dyn MealIdGenerator>>,
-        meal_exists: Arc<Mutex<dyn MealAlreadyExists>>,
+        id_generator: AM<dyn MealIdGenerator>,
+        meal_exists: AM<dyn MealAlreadyExists>,
         name: MealName,
         description: MealDescription,
         price: Price,
@@ -112,6 +109,8 @@ impl BusinessError for MealError {}
 mod tests {
     use std::{any::type_name_of_val, sync::atomic::AtomicI64};
 
+    use common::types::base::AMW;
+
     use super::*;
     use crate::test_fixtures::{
         rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, rnd_removed_meal,
@@ -145,8 +144,8 @@ mod tests {
 
     #[test]
     fn add_meal__success() {
-        let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
-        let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: false }));
+        let id_generator = AMW::new(TestMealIdGenerator::new());
+        let meal_exists = AMW::new(TestMealAlreadyExists { value: false });
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();
@@ -178,8 +177,8 @@ mod tests {
 
     #[test]
     fn add_meal_to_menu__already_exists_with_the_same_name() {
-        let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
-        let meal_exists = Arc::new(Mutex::new(TestMealAlreadyExists { value: true }));
+        let id_generator = AMW::new(TestMealIdGenerator::new());
+        let meal_exists = AMW::new(TestMealAlreadyExists { value: true });
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();

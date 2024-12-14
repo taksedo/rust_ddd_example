@@ -1,4 +1,4 @@
-use common::types::base::generic_types::AM;
+use common::types::base::AM;
 use derive_new::new;
 use domain::{cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId};
 
@@ -47,8 +47,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -56,8 +55,8 @@ mod tests {
     #[test]
     fn successfully_removed() {
         let cart = rnd_cart();
-        let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::new(Some(cart.clone()), None)));
+        let cart_persister = AMW::new(MockCartPersister::default());
+        let cart_extractor = AMW::new(MockCartExtractor::new(Some(cart.clone()), None));
 
         let use_case =
             RemoveMealFromCartUseCase::new(cart_extractor.clone(), cart_persister.clone());
@@ -77,8 +76,8 @@ mod tests {
     #[test]
     fn cart_not_found() {
         let cart = rnd_cart();
-        let cart_persister = Arc::new(Mutex::new(MockCartPersister::default()));
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_persister = AMW::new(MockCartPersister::default());
+        let cart_extractor = AMW::new(MockCartExtractor::default());
 
         let use_case =
             RemoveMealFromCartUseCase::new(cart_extractor.clone(), cart_persister.clone());

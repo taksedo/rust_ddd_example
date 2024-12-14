@@ -1,4 +1,4 @@
-use common::types::base::generic_types::AM;
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 

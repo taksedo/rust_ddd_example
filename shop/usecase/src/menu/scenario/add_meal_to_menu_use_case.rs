@@ -1,9 +1,9 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
-use common::types::{base::domain_event::DomainEventTrait, errors::error::ToError};
+use common::types::{
+    base::{DomainEventTrait, AM},
+    errors::ToError,
+};
 use derive_new::new;
 use domain::menu::{
     meal::{Meal, MealError},
@@ -23,9 +23,9 @@ use crate::menu::{
 
 #[derive(new, Debug)]
 pub struct AddMealToMenuUseCase {
-    pub meal_persister: Arc<Mutex<dyn MealPersister>>,
-    pub id_generator: Arc<Mutex<dyn MealIdGenerator>>,
-    pub meal_exists: Arc<Mutex<dyn MealAlreadyExists>>,
+    pub meal_persister: AM<dyn MealPersister>,
+    pub id_generator: AM<dyn MealIdGenerator>,
+    pub meal_exists: AM<dyn MealAlreadyExists>,
 }
 
 impl AddMealToMenu for AddMealToMenuUseCase {
@@ -67,6 +67,7 @@ impl DomainEventTrait for AddMealToMenuUseCase {}
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -77,13 +78,13 @@ mod tests {
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();
-        let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
-        let meal_persister = Arc::new(Mutex::new(MockMealPersister::new()));
+        let id_generator = AMW::new(TestMealIdGenerator::new());
+        let meal_persister = AMW::new(MockMealPersister::new());
 
         let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
             meal_persister.clone(),
             id_generator.clone(),
-            Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
+            AMW::new(TestMealAlreadyExists { value: false }),
         );
         let result = add_to_menu_use_case.execute(&name, &description, &price);
 
@@ -105,13 +106,13 @@ mod tests {
         let description = rnd_meal_description();
         let price = rnd_price();
 
-        let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new()));
-        let persister = Arc::new(Mutex::new(MockMealPersister::new()));
+        let id_generator = AMW::new(TestMealIdGenerator::new());
+        let persister = AMW::new(MockMealPersister::new());
 
         let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
             persister,
             id_generator,
-            Arc::new(Mutex::new(TestMealAlreadyExists { value: true })),
+            AMW::new(TestMealAlreadyExists { value: true }),
         );
         let result = add_to_menu_use_case.execute(&name, &description, &price);
 

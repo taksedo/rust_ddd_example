@@ -1,6 +1,6 @@
-use std::sync::{atomic::AtomicU32, Arc, Mutex};
+use std::sync::atomic::AtomicU32;
 
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::{events::DomainEventPublisher, types::base::AMW};
 use derive_new::new;
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
 use domain::{
@@ -146,11 +146,11 @@ pub fn rnd_new_meal_with_meal_id(meal_id: MealId) -> Meal {
     let meal_name = rnd_meal_name();
     let meal_description = rnd_meal_description();
     let meal_price = rnd_price();
-    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new(meal_id)));
+    let id_generator = AMW::new(TestMealIdGenerator::new(meal_id));
 
     Meal::add_meal_to_menu(
         id_generator.clone(),
-        Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
+        AMW::new(TestMealAlreadyExists { value: false }),
         meal_name,
         meal_description,
         meal_price,
@@ -163,11 +163,11 @@ pub fn rnd_new_meal_with_name(meal_name: &MealName) -> Meal {
     let meal_name = meal_name.clone();
     let meal_description = rnd_meal_description();
     let meal_price = rnd_price();
-    let id_generator = Arc::new(Mutex::new(TestMealIdGenerator::new(meal_id)));
+    let id_generator = AMW::new(TestMealIdGenerator::new(meal_id));
 
     Meal::add_meal_to_menu(
         id_generator.clone(),
-        Arc::new(Mutex::new(TestMealAlreadyExists { value: false })),
+        AMW::new(TestMealAlreadyExists { value: false }),
         meal_name,
         meal_description,
         meal_price,

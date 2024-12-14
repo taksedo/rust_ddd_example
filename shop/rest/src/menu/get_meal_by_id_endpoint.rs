@@ -1,12 +1,12 @@
-use std::{
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::fmt::Debug;
 
 use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
-use common::common_rest::rest_responses::{
-    get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
-    GenericErrorResponse,
+use common::{
+    common_rest::{
+        get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
+        GenericErrorResponse,
+    },
+    types::base::{AM, AMW},
 };
 use domain::menu::value_objects::meal_id::MealId;
 use usecase::menu::{scenario::GetMealByIdUseCase, GetMealById, GetMealByIdUseCaseError};
@@ -54,7 +54,7 @@ use crate::{
     )
 )]
 pub async fn get_meal_by_id_endpoint<T>(
-    shared_state: web::Data<Arc<Mutex<T>>>,
+    shared_state: web::Data<AM<T>>,
     req: HttpRequest,
 ) -> HttpResponse
 where
@@ -62,7 +62,7 @@ where
 {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = Arc::new(Mutex::new(vec![]));
+    let error_list = AMW::new(vec![]);
 
     match MealId::validated(id, error_list.clone()) {
         Ok(meal_id) => match shared_state.lock().unwrap().execute(&meal_id) {
@@ -94,7 +94,10 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::common_rest::rest_responses::{not_found_type_url, GenericErrorResponse};
+    use common::{
+        common_rest::{not_found_type_url, GenericErrorResponse},
+        types::base::AM,
+    };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
     use usecase::menu::GetMealByIdUseCaseError::MealNotFound;
@@ -161,13 +164,11 @@ mod tests {
         assert_eq!(&response_dto.response_title, "Resource not found");
     }
 
-    fn mock_get_meal_by_id() -> Arc<Mutex<MockGetMealById>> {
-        Arc::new(Mutex::new(MockGetMealById::default()))
+    fn mock_get_meal_by_id() -> AM<MockGetMealById> {
+        AMW::new(MockGetMealById::default())
     }
 
-    fn mock_shared_state(
-        mock_get_meal_by_id: &Arc<Mutex<MockGetMealById>>,
-    ) -> Data<Arc<Mutex<MockGetMealById>>> {
-        Data::new(Arc::clone(mock_get_meal_by_id))
+    fn mock_shared_state(mock_get_meal_by_id: &AM<MockGetMealById>) -> Data<AM<MockGetMealById>> {
+        Data::new(mock_get_meal_by_id.clone())
     }
 }

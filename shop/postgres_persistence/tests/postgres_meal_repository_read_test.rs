@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AMW;
 use diesel_migrations::MigrationHarness;
 use domain::test_fixtures::*;
 use postgres_persistence::{
@@ -20,8 +19,7 @@ fn get_by_id__not_found() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let mut repository =
-        PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
+    let mut repository = PostgresMealRepository::new(conn, AMW::new(MockEventPublisher::default()));
 
     let result = repository.get_by_id(&rnd_meal_id());
 
@@ -36,8 +34,7 @@ fn get_by_id__successfully_returned() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let mut repository =
-        PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
+    let mut repository = PostgresMealRepository::new(conn, AMW::new(MockEventPublisher::default()));
     repository.save(meal.clone());
 
     let meal_id = *meal.id();
@@ -54,8 +51,7 @@ fn get_by_name__not_found() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let mut repository =
-        PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
+    let mut repository = PostgresMealRepository::new(conn, AMW::new(MockEventPublisher::default()));
 
     let result = repository.get_by_name(&rnd_meal_name());
 
@@ -70,8 +66,7 @@ fn get_by_name__successfully_returned() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let mut repository =
-        PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
+    let mut repository = PostgresMealRepository::new(conn, AMW::new(MockEventPublisher::default()));
     repository.save(meal.clone());
 
     let meal_name = meal.name();
@@ -88,8 +83,7 @@ fn get_all__table_is_empty() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let mut repository =
-        PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
+    let mut repository = PostgresMealRepository::new(conn, AMW::new(MockEventPublisher::default()));
 
     let result = repository.get_all();
 
@@ -104,8 +98,7 @@ fn get_all__table_is_not_empty() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let mut repository =
-        PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
+    let mut repository = PostgresMealRepository::new(conn, AMW::new(MockEventPublisher::default()));
     repository.save(meal.clone());
 
     let result = repository.get_all();
@@ -123,8 +116,7 @@ fn get_all__table_is_not_empty_but_removed() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let mut repository =
-        PostgresMealRepository::new(conn, Arc::new(Mutex::new(MockEventPublisher::default())));
+    let mut repository = PostgresMealRepository::new(conn, AMW::new(MockEventPublisher::default()));
     repository.save(meal.clone());
 
     let result = repository.get_all();

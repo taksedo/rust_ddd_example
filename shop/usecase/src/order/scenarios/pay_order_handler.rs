@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -10,8 +9,8 @@ use crate::order::{
 
 #[derive(new, Debug)]
 pub struct PayOrderHandler {
-    shop_order_extractor: Arc<Mutex<dyn ShopOrderExtractor>>,
-    shop_order_persister: Arc<Mutex<dyn ShopOrderPersister>>,
+    shop_order_extractor: AM<dyn ShopOrderExtractor>,
+    shop_order_persister: AM<dyn ShopOrderPersister>,
 }
 
 impl PayOrder for PayOrderHandler {
@@ -31,6 +30,7 @@ impl PayOrder for PayOrderHandler {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -42,9 +42,9 @@ mod tests {
     #[test]
     fn successfully_payed() {
         let order = order_ready_for_pay();
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         extractor.lock().unwrap().order = Some(order.clone());
-        let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let persister = AMW::new(MockShopOrderPersister::default());
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
         let result = handler.execute(order.id());
@@ -67,9 +67,9 @@ mod tests {
     #[test]
     fn invalid_state() {
         let order = order_not_ready_for_pay();
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
         extractor.lock().unwrap().order = Some(order.clone());
-        let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let persister = AMW::new(MockShopOrderPersister::default());
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
         let result = handler.execute(order.id());
@@ -86,8 +86,8 @@ mod tests {
 
     #[test]
     fn order_not_found() {
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
-        let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let persister = AMW::new(MockShopOrderPersister::default());
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
         let order_id = rnd_order_id();

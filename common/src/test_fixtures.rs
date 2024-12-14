@@ -1,5 +1,5 @@
 use rand::{thread_rng, Rng};
-use types::common::count::Count;
+use types::common::Count;
 
 pub fn rnd_count() -> Count {
     let value = thread_rng().gen_range(2..5000);

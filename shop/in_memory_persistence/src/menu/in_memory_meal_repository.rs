@@ -1,10 +1,6 @@
-use std::{
-    collections::HashMap,
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, fmt::Debug};
 
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use domain::menu::{
@@ -16,7 +12,7 @@ use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealP
 
 #[derive(new, Clone, Derivative, Debug)]
 pub struct InMemoryMealRepository {
-    pub event_publisher: Arc<Mutex<dyn DomainEventPublisher<MealEventEnum>>>,
+    pub event_publisher: AM<dyn DomainEventPublisher<MealEventEnum>>,
     #[new(value = "HashMap::new()")]
     pub storage: HashMap<MealId, Meal>,
 }
@@ -58,6 +54,7 @@ impl MealExtractor for InMemoryMealRepository {
 mod tests {
     use std::any::{type_name, type_name_of_val};
 
+    use common::types::base::AMW;
     use domain::{menu::meal_events::MealRemovedFromMenuDomainEvent, test_fixtures::*};
 
     use super::*;
@@ -65,7 +62,7 @@ mod tests {
 
     #[test]
     fn saving_meal__meal_doesnt_exist() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let storage_binding = event_publisher.clone();
         let mut meal_repository = InMemoryMealRepository::new(event_publisher);
         let meal = meal_with_events();
@@ -87,7 +84,7 @@ mod tests {
     fn saving_meal__meal_exists() {
         let existing_meal = rnd_meal();
 
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let storage_binding = event_publisher.clone();
         let mut meal_repository = InMemoryMealRepository::new(event_publisher);
         meal_repository
@@ -110,7 +107,7 @@ mod tests {
     #[test]
     fn get_by_id__meal_exists() {
         let existing_meal = rnd_meal();
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
 
         let mut meal_repository = InMemoryMealRepository::new(event_publisher);
         meal_repository
@@ -123,7 +120,7 @@ mod tests {
 
     #[test]
     fn get_by_id__meal_doesnt_exist() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let meal = repository.get_by_id(&rnd_meal_id());
         assert!(meal.is_none());
@@ -131,7 +128,7 @@ mod tests {
 
     #[test]
     fn get_by_name__repository_is_empty() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let meal = repository.get_by_name(&rnd_meal_name());
         assert!(meal.is_none());
@@ -140,7 +137,7 @@ mod tests {
     #[test]
     fn get_meal_by_name__success() {
         let stored_meal = rnd_meal();
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         repository.save(stored_meal.clone());
 
@@ -150,7 +147,7 @@ mod tests {
 
     #[test]
     fn get_all_meals__repository_is_empty() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let meals = repository.get_all();
         assert!(meals.is_empty());
@@ -158,7 +155,7 @@ mod tests {
 
     #[test]
     fn get_all_meals__success() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let stored_meal = rnd_meal();
         repository
@@ -171,7 +168,7 @@ mod tests {
 
     #[test]
     fn get_all_meals__removed_is_not_returned() {
-        let event_publisher = Arc::new(Mutex::new(TestEventPublisher::new()));
+        let event_publisher = AMW::new(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let stored_meal = rnd_removed_meal();
         repository.storage.insert(*stored_meal.id(), stored_meal);

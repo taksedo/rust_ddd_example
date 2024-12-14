@@ -1,5 +1,4 @@
-use std::sync::{Arc, Mutex};
-
+use common::types::base::AM;
 use derive_new::new;
 
 use crate::menu::{
@@ -8,7 +7,7 @@ use crate::menu::{
 
 #[derive(Debug, new)]
 pub struct GetMenuUseCase {
-    pub(crate) meal_extractor: Arc<Mutex<dyn MealExtractor>>,
+    pub(crate) meal_extractor: AM<dyn MealExtractor>,
 }
 
 impl GetMenu for GetMenuUseCase {
@@ -25,6 +24,7 @@ impl GetMenu for GetMenuUseCase {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -34,7 +34,7 @@ mod tests {
     #[allow(non_snake_case)]
     fn get_menu__menu_is_empty() {
         let meal_extractor = MockMealExtractor::new();
-        let use_case = GetMenuUseCase::new(Arc::new(Mutex::new(meal_extractor)));
+        let use_case = GetMenuUseCase::new(AMW::new(meal_extractor));
         let menu = use_case.execute();
 
         assert!(menu.is_empty());
@@ -54,7 +54,7 @@ mod tests {
             meal: Option::from(meal.to_owned()),
             ..MockMealExtractor::default()
         };
-        let use_case = GetMenuUseCase::new(Arc::new(Mutex::new(meal_extractor)));
+        let use_case = GetMenuUseCase::new(AMW::new(meal_extractor));
         let menu = use_case.execute();
 
         assert_eq!(

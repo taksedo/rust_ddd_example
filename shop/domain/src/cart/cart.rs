@@ -1,11 +1,8 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::collections::HashMap;
 
 use common::types::{
-    base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
-    common::count::Count,
+    base::{DomainEntity, DomainEntityTrait, Version, AM},
+    common::Count,
 };
 use derive_getters::Getters;
 use serde_derive::{Deserialize, Serialize};
@@ -38,7 +35,7 @@ pub struct Cart {
 }
 
 impl Cart {
-    pub fn create(id_generator: Arc<Mutex<dyn CartIdGenerator>>, for_customer: CustomerId) -> Self {
+    pub fn create(id_generator: AM<dyn CartIdGenerator>, for_customer: CustomerId) -> Self {
         let mut cart = Self {
             entity_params: DomainEntity {
                 id: id_generator.lock().unwrap().generate(),
@@ -110,7 +107,7 @@ pub enum CartError {
 mod tests {
     use std::mem::discriminant;
 
-    use common::test_fixtures::rnd_count;
+    use common::{test_fixtures::rnd_count, types::base::AMW};
 
     use super::*;
     use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
@@ -118,7 +115,7 @@ mod tests {
     #[test]
     fn create_cart_success() {
         let customer_id = rnd_customer_id();
-        let id_generator = Arc::new(Mutex::new(TestCartIdGenerator::default()));
+        let id_generator = AMW::new(TestCartIdGenerator::default());
         let mut cart = Cart::create(id_generator.clone(), customer_id);
 
         let id = id_generator.lock().unwrap().id;

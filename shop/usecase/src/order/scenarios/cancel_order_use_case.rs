@@ -1,4 +1,4 @@
-use common::types::base::generic_types::AM;
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -38,8 +38,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -52,8 +51,8 @@ mod tests {
     fn successfully_confirmed() {
         let order = order_ready_for_cancel();
 
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
-        let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let persister = AMW::new(MockShopOrderPersister::default());
         extractor.lock().unwrap().order = Some(order.clone());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
@@ -77,8 +76,8 @@ mod tests {
     fn invalid_state() {
         let order = order_not_ready_for_cancel();
 
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
-        let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let persister = AMW::new(MockShopOrderPersister::default());
         extractor.lock().unwrap().order = Some(order.clone());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
@@ -95,8 +94,8 @@ mod tests {
 
     #[test]
     fn order_not_found() {
-        let extractor = Arc::new(Mutex::new(MockShopOrderExtractor::default()));
-        let persister = Arc::new(Mutex::new(MockShopOrderPersister::default()));
+        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let persister = AMW::new(MockShopOrderPersister::default());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
 

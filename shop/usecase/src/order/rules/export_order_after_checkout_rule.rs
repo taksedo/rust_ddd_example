@@ -1,6 +1,6 @@
 use std::mem::{discriminant, Discriminant};
 
-use common::{events::domain_event_listener::DomainEventListener, types::base::generic_types::AM};
+use common::{events::DomainEventListener, types::base::AM};
 use derive_new::new;
 use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 
@@ -37,8 +37,7 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
 
     use super::*;
@@ -50,7 +49,7 @@ mod tests {
         let customer_id = rnd_customer_id();
         let total_price = rnd_price();
 
-        let exporter = Arc::new(Mutex::new(MockOrderExporter::default()));
+        let exporter = AMW::new(MockOrderExporter::default());
         let mut rule = ExportOrderAfterCheckoutRule::new(exporter.clone());
 
         let event: ShopOrderEventEnum =

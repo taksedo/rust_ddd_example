@@ -1,6 +1,6 @@
 use std::mem::{discriminant, Discriminant};
 
-use common::{events::domain_event_listener::DomainEventListener, types::base::generic_types::AM};
+use common::{events::DomainEventListener, types::base::AM};
 use derive_new::new;
 use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 use tracing::info;
@@ -59,8 +59,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
+    use common::types::base::AMW;
     use domain::test_fixtures::*;
     use tracing_test::traced_test;
 
@@ -69,10 +68,10 @@ mod tests {
 
     #[test]
     fn successfully_removed() {
-        let cart_remover = Arc::new(Mutex::new(MockCartRemover::default()));
+        let cart_remover = AMW::new(MockCartRemover::default());
         let cart = rnd_cart();
 
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
         cart_extractor.lock().unwrap().cart = Some(cart.clone());
 
         let mut rule =
@@ -96,9 +95,9 @@ mod tests {
     #[test]
     #[traced_test]
     fn cart_not_found() {
-        let cart_remover = Arc::new(Mutex::new(MockCartRemover::default()));
+        let cart_remover = AMW::new(MockCartRemover::default());
 
-        let cart_extractor = Arc::new(Mutex::new(MockCartExtractor::default()));
+        let cart_extractor = AMW::new(MockCartExtractor::default());
 
         let mut rule =
             RemoveCartAfterCheckoutRule::new(cart_extractor.clone(), cart_remover.clone());

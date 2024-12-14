@@ -1,12 +1,11 @@
 use std::{
     collections::{hash_map::DefaultHasher, HashSet},
     hash::{Hash, Hasher},
-    sync::{Arc, Mutex},
 };
 
 use common::types::{
-    base::domain_entity::{DomainEntity, DomainEntityTrait, Version},
-    common::{address::Address, count::Count},
+    base::{DomainEntity, DomainEntityTrait, Version, AM},
+    common::{Address, Count},
 };
 use derive_getters::Getters;
 use derive_new::new;
@@ -45,10 +44,10 @@ pub struct ShopOrder {
 impl ShopOrder {
     pub fn checkout(
         cart: Cart,
-        id_generator: Arc<Mutex<dyn ShopOrderIdGenerator>>,
-        customer_has_active_order: Arc<Mutex<dyn CustomerHasActiveOrder>>,
+        id_generator: AM<dyn ShopOrderIdGenerator>,
+        customer_has_active_order: AM<dyn CustomerHasActiveOrder>,
         address: Address,
-        get_meal_price: Arc<Mutex<dyn GetMealPrice>>,
+        get_meal_price: AM<dyn GetMealPrice>,
     ) -> Result<ShopOrder, CheckoutError> {
         if customer_has_active_order
             .lock()
@@ -235,7 +234,7 @@ mod tests {
     use std::collections::HashMap;
 
     use bigdecimal::{num_bigint::BigInt, BigDecimal};
-    use common::test_fixtures::rnd_count;
+    use common::{test_fixtures::rnd_count, types::base::AMW};
     use derive_more::FromStr;
 
     use super::*;
@@ -245,14 +244,14 @@ mod tests {
 
     #[test]
     fn checkout_success() {
-        let id_generator = Arc::new(Mutex::new(MockOrderIdGenerator::default()));
+        let id_generator = AMW::new(MockOrderIdGenerator::default());
         let id = id_generator.lock().unwrap().id;
         let meal_id = rnd_meal_id();
         let count = rnd_count();
         let price = rnd_price();
         let address = rnd_address();
 
-        let get_meal_price = Arc::new(Mutex::new(HashMapStoragePriceProvider::default()));
+        let get_meal_price = AMW::new(HashMapStoragePriceProvider::default());
         get_meal_price
             .lock()
             .unwrap()
@@ -264,7 +263,7 @@ mod tests {
         let result = ShopOrder::checkout(
             cart.clone(),
             id_generator.clone(),
-            Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false))),
+            AMW::new(MockCustomerHasActiveOrder::new(false)),
             address.clone(),
             get_meal_price.clone(),
         );
@@ -293,14 +292,13 @@ mod tests {
 
     #[test]
     fn checkout_already_has_active_user() {
-        let id_generator = Arc::new(Mutex::new(MockOrderIdGenerator::default()));
+        let id_generator = AMW::new(MockOrderIdGenerator::default());
         let meal_id = rnd_meal_id();
         let count = rnd_count();
         let price = rnd_price();
         let address = rnd_address();
 
-        let meal_price_only_for_special_meal =
-            Arc::new(Mutex::new(HashMapStoragePriceProvider::default()));
+        let meal_price_only_for_special_meal = AMW::new(HashMapStoragePriceProvider::default());
         meal_price_only_for_special_meal
             .lock()
             .unwrap()
@@ -313,7 +311,7 @@ mod tests {
         let result = ShopOrder::checkout(
             cart.clone(),
             id_generator.clone(),
-            Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(true))),
+            AMW::new(MockCustomerHasActiveOrder::new(true)),
             address.clone(),
             meal_price_only_for_special_meal.clone(),
         );
@@ -324,9 +322,9 @@ mod tests {
 
     #[test]
     fn checkout_empty_cart() {
-        let id_generator = Arc::new(Mutex::new(MockOrderIdGenerator::default()));
+        let id_generator = AMW::new(MockOrderIdGenerator::default());
         let cart = rnd_cart();
-        let get_meal_price = Arc::new(Mutex::new(HashMapStoragePriceProvider::default()));
+        let get_meal_price = AMW::new(HashMapStoragePriceProvider::default());
         get_meal_price
             .lock()
             .unwrap()
@@ -335,7 +333,7 @@ mod tests {
         let result = ShopOrder::checkout(
             cart.clone(),
             id_generator.clone(),
-            Arc::new(Mutex::new(MockCustomerHasActiveOrder::new(false))),
+            AMW::new(MockCustomerHasActiveOrder::new(false)),
             rnd_address(),
             get_meal_price.clone(),
         );

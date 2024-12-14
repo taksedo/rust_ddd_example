@@ -1,6 +1,4 @@
-use std::sync::{Arc, Mutex};
-
-use common::types::base::generic_types::AM;
+use common::types::base::{AM, AMW};
 use in_memory_persistence::order::{
     in_memory_incremental_shop_order_id_generator::InMemoryIncrementalShopOrderIdGenerator,
     in_memory_shop_order_repository::InMemoryShopOrderRepository,
@@ -27,20 +25,20 @@ lazy_static! {
 }
 
 fn meal_id_generator() -> AM<MealIdGenerator> {
-    Arc::new(Mutex::new(MealIdGenerator::new(establish_connection())))
+    AMW::new(MealIdGenerator::new(establish_connection()))
 }
 
 fn meal_repository() -> AM<MealRepository> {
-    Arc::new(Mutex::new(MealRepository::new(
+    AMW::new(MealRepository::new(
         establish_connection(),
         EVENT_PUBLISHER.clone(),
-    )))
+    ))
 }
 
 fn order_id_generator() -> AM<OrderIdGenerator> {
-    Arc::new(Mutex::new(OrderIdGenerator::new()))
+    AMW::new(OrderIdGenerator::new())
 }
 
 pub fn order_repository() -> AM<ORepository> {
-    Arc::new(Mutex::new(ORepository::new(EVENT_PUBLISHER.clone())))
+    AMW::new(ORepository::new(EVENT_PUBLISHER.clone()))
 }

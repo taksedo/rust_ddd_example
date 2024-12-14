@@ -1,18 +1,13 @@
-use std::{
-    collections::HashMap,
-    fmt::Display,
-    str::FromStr,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, fmt::Display, str::FromStr};
 
 use actix_web::{web::Query, HttpRequest};
-use common::common_rest::rest_responses::ValidationError;
+use common::{common_rest::ValidationError, types::base::AM};
 use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
 
 use crate::validated::Validated;
 
 impl Validated<ShopOrderId, i64> for ShopOrderId {
-    fn validated(val: i64, error_list: Arc<Mutex<Vec<ValidationError>>>) -> Result<Self, ()> {
+    fn validated(val: i64, error_list: AM<Vec<ValidationError>>) -> Result<Self, ()> {
         Self::try_from(val).map_err(|e| match e {
             ShopOrderError::IdGenerationError => error_list
                 .lock()
@@ -26,7 +21,7 @@ impl Validated<ShopOrderId, i64> for ShopOrderId {
 pub fn validate_query_string<T>(
     req: HttpRequest,
     param_name: &str,
-    error_list: Arc<Mutex<Vec<ValidationError>>>,
+    error_list: AM<Vec<ValidationError>>,
 ) -> Result<T, ()>
 where
     T: FromStr,

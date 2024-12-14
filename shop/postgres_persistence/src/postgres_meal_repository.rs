@@ -1,6 +1,4 @@
-use std::sync::{Arc, Mutex};
-
-use common::events::domain_event_publisher::DomainEventPublisher;
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
@@ -18,7 +16,7 @@ use crate::{meal_db_dto::MealDbDto, schema::shop::meal::dsl::*};
 pub struct PostgresMealRepository {
     #[derivative(Debug = "ignore")]
     pub connection: PgConnection,
-    pub event_publisher: Arc<Mutex<dyn DomainEventPublisher<MealEventEnum>>>,
+    pub event_publisher: AM<dyn DomainEventPublisher<MealEventEnum>>,
 }
 
 impl PostgresMealRepository {
