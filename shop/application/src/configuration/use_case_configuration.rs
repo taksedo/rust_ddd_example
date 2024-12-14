@@ -1,6 +1,7 @@
+use std::sync::LazyLock;
+
 use actix_web::web::Data;
 use common::types::base::{AM, AMW};
-use lazy_static::lazy_static;
 use usecase::{
     menu::{
         invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor,
@@ -19,24 +20,24 @@ use crate::configuration::persistence_configuration::{
 
 const GET_ORDERS_MAX_SIZE: usize = 10;
 
-lazy_static! {
-    pub(super) static ref ADD_MEAL_TO_MENU_USE_CASE: Data<AM<AddMealToMenuUseCase>> =
-        Data::new(add_meal_to_menu_use_case()).clone();
-    pub(super) static ref GET_MEAL_BY_ID_USE_CASE: Data<AM<GetMealByIdUseCase>> =
-        Data::new(get_meal_by_id_use_case().clone());
-    pub(super) static ref GET_MENU_USE_CASE: Data<AM<GetMenuUseCase>> =
-        Data::new(get_menu_use_case()).clone();
-    pub(super) static ref REMOVE_MEAL_FROM_MENU_USECASE: Data<AM<RemoveMealFromMenuUseCase>> =
-        Data::new(remove_meal_from_menu_usecase()).clone();
-    pub(super) static ref CANCEL_ORDER_USECASE: Data<AM<CancelOrderUseCase<ORepository, ORepository>>> =
-        Data::new(cancel_order_usecase().clone());
-    pub(super) static ref CONFIRM_ORDER_USECASE: Data<AM<ConfirmOrderUseCase<ORepository, ORepository>>> =
-        Data::new(confirm_order_usecase().clone());
-    pub(super) static ref GET_ORDER_BY_ID: Data<AM<GetOrderByIdUseCase<ORepository>>> =
-        Data::new(get_order_by_id_usecase().clone());
-    pub(super) static ref GET_ORDERS_USECASE: Data<AM<GetOrdersUseCase<ORepository>>> =
-        Data::new(get_orders_usecase().clone());
-}
+pub(super) static ADD_MEAL_TO_MENU_USE_CASE: LazyLock<Data<AM<AddMealToMenuUseCase>>> =
+    LazyLock::new(|| Data::new(add_meal_to_menu_use_case()).clone());
+pub(super) static GET_MEAL_BY_ID_USE_CASE: LazyLock<Data<AM<GetMealByIdUseCase>>> =
+    LazyLock::new(|| Data::new(get_meal_by_id_use_case().clone()));
+pub(super) static GET_MENU_USE_CASE: LazyLock<Data<AM<GetMenuUseCase>>> =
+    LazyLock::new(|| Data::new(get_menu_use_case()).clone());
+pub(super) static REMOVE_MEAL_FROM_MENU_USECASE: LazyLock<Data<AM<RemoveMealFromMenuUseCase>>> =
+    LazyLock::new(|| Data::new(remove_meal_from_menu_usecase()).clone());
+pub(super) static CANCEL_ORDER_USECASE: LazyLock<
+    Data<AM<CancelOrderUseCase<ORepository, ORepository>>>,
+> = LazyLock::new(|| Data::new(cancel_order_usecase().clone()));
+pub(super) static CONFIRM_ORDER_USECASE: LazyLock<
+    Data<AM<ConfirmOrderUseCase<ORepository, ORepository>>>,
+> = LazyLock::new(|| Data::new(confirm_order_usecase().clone()));
+pub(super) static GET_ORDER_BY_ID: LazyLock<Data<AM<GetOrderByIdUseCase<ORepository>>>> =
+    LazyLock::new(|| Data::new(get_order_by_id_usecase().clone()));
+pub(super) static GET_ORDERS_USECASE: LazyLock<Data<AM<GetOrdersUseCase<ORepository>>>> =
+    LazyLock::new(|| Data::new(get_orders_usecase().clone()));
 
 fn add_meal_to_menu_use_case() -> AM<AddMealToMenuUseCase> {
     let rule = MealAlreadyExistsUsesMealExtractor::new(MEAL_REPOSITORY.clone());

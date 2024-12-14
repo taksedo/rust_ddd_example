@@ -62,7 +62,6 @@ time = { version = "0", features = ["default", "serde-well-known"] }
 enum_dispatch = "0"
 smart-default = "0"
 const_format = "0"
-lazy_static = "1"
 diesel = { version = "=2.1", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
 diesel_migrations = "=2.1"
 diesel_logger = "=0.3.0"

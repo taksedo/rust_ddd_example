@@ -22,14 +22,13 @@ pub(crate) struct RabbitMessagePublisher;
 #[async_trait]
 impl IntegrationMessagePublisher for RabbitMessagePublisher {
     async fn send(&self, message: impl Serialize + Send + Sync) -> Result<(), Box<dyn Error>> {
-        let addr = RABBITMQ_ADDRESS.get().unwrap().as_str();
-        let queue_name = RABBITMQ_QUEUE_NAME.get().unwrap().as_str();
-        let conn = Connection::connect(addr, ConnectionProperties::default()).await?;
+        let conn = Connection::connect(&RABBITMQ_ADDRESS, ConnectionProperties::default()).await?;
         info!("Publisher connected");
 
         let channel = conn.create_channel().await?;
         info!(state=?conn.status().state());
 
+        let queue_name: &String = &RABBITMQ_QUEUE_NAME;
         let queue = channel
             .queue_declare(
                 queue_name,
@@ -101,12 +100,9 @@ mod test {
 
     impl MockReceiver {
         async fn receive(&self) -> Result<SimpleDto, Box<dyn Error>> {
-            let queue_name = RABBITMQ_QUEUE_NAME.get().unwrap().as_str();
-            let conn = Connection::connect(
-                RABBITMQ_ADDRESS.get().unwrap(),
-                ConnectionProperties::default(),
-            )
-            .await?;
+            let queue_name: &String = &RABBITMQ_QUEUE_NAME;
+            let conn =
+                Connection::connect(&RABBITMQ_ADDRESS, ConnectionProperties::default()).await?;
             let channel = conn.create_channel().await?;
             info!("Consumer connected");
 

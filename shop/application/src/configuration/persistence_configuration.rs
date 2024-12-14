@@ -1,9 +1,10 @@
+use std::sync::LazyLock;
+
 use common::types::base::{AM, AMW};
 use in_memory_persistence::order::{
     in_memory_incremental_shop_order_id_generator::InMemoryIncrementalShopOrderIdGenerator,
     in_memory_shop_order_repository::InMemoryShopOrderRepository,
 };
-use lazy_static::lazy_static;
 use postgres_persistence::{
     database_start::establish_connection, postgres_meal_id_generator::PostgresMealIdGenerator,
     postgres_meal_repository::PostgresMealRepository,
@@ -17,14 +18,14 @@ type OrderIdGenerator = InMemoryIncrementalShopOrderIdGenerator;
 type MealIdGenerator = PostgresMealIdGenerator;
 type MealRepository = PostgresMealRepository;
 
-lazy_static! {
-    pub(super) static ref MEAL_ID_GENERATOR: AM<MealIdGenerator> = meal_id_generator();
-    /// `MealRepository` dependency injection
-    pub(super) static ref MEAL_REPOSITORY: AM<MealRepository> = meal_repository();
+pub(super) static MEAL_ID_GENERATOR: LazyLock<AM<MealIdGenerator>> =
+    LazyLock::new(meal_id_generator);
+/// `MealRepository` dependency injection
+pub(super) static MEAL_REPOSITORY: LazyLock<AM<MealRepository>> = LazyLock::new(meal_repository);
 
-    pub(super) static ref ORDER_ID_GENERATOR: AM<OrderIdGenerator> = order_id_generator();
-    pub(super) static ref ORDER_REPOSITORY: AM<OrderRepository> = order_repository();
-}
+pub(super) static ORDER_ID_GENERATOR: LazyLock<AM<OrderIdGenerator>> =
+    LazyLock::new(order_id_generator);
+pub(super) static ORDER_REPOSITORY: LazyLock<AM<OrderRepository>> = LazyLock::new(order_repository);
 
 fn meal_id_generator() -> AM<MealIdGenerator> {
     AMW::new(MealIdGenerator::new(establish_connection()))
