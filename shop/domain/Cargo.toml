@@ -19,13 +19,13 @@ derive-getters.workspace = true
 
 common.workspace = true
 
-fake.workspace = true
-rand.workspace = true
-rstest.workspace = true
-mockall.workspace = true
+fake = { workspace = true, optional = true }
+rand = { workspace = true, optional = true }
+rstest = { workspace = true, optional = true }
+mockall = { workspace = true, optional = true }
 
 [dev-dependencies]
 domain = { path = ".", features = ["testing"] }
 
 [features]
-testing = ["common/testing"]
+testing = ["common/testing", "fake", "rand", "rstest", "mockall"]
