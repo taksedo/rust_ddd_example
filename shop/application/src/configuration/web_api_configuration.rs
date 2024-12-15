@@ -6,15 +6,13 @@ use actix_web::{
     middleware::Logger,
     App, HttpServer,
 };
-use common::common_rest::{GenericErrorResponse, ValidationError};
 use log::info;
 use rest::{
     menu::{
-        add_meal_to_menu_endpoint::{add_meal_to_menu_endpoint_config, AddMealToMenuRestRequest},
+        add_meal_to_menu_endpoint::add_meal_to_menu_endpoint_config,
         get_health_status::get_health_status_config,
         get_meal_by_id_endpoint::get_meal_by_id_endpoint_config,
         get_menu_endpoint::get_menu_endpoint_config,
-        meal_model::MealModel,
         remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint_config,
     },
     order::{
@@ -22,7 +20,6 @@ use rest::{
         confirm_order_endpoint::confirm_order_endpoint_config,
         get_order_by_id_endpoint::get_order_by_id_endpoint_config,
         get_orders_endpoint::get_orders_endpoint_config,
-        order_model::{AddressModel, OrderItemModel, OrderModel},
     },
 };
 use serde::{Deserialize, Serialize};
@@ -40,6 +37,7 @@ use utoipa_swagger_ui::SwaggerUi;
 
 use crate::configuration::{
     persistence_configuration::ORepository,
+    swagger_configuration::ApiDoc,
     use_case_configuration::{
         ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
         GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDERS_USECASE, GET_ORDER_BY_ID,
@@ -61,40 +59,6 @@ pub(crate) fn web_api_backend_startup() -> JoinHandle<()> {
         let host_url = http_host_url.parse::<Uri>().unwrap();
         let host_address = host_url.host().unwrap();
         let host_port = host_url.port().unwrap();
-
-        #[derive(OpenApi)]
-        #[openapi(
-            info(title = "Rust DDD Example", description = "API Documentation"),
-            paths(
-                rest::menu::get_health_status::get_health_status,
-                rest::menu::add_meal_to_menu_endpoint::add_meal_to_menu_endpoint,
-                rest::menu::get_meal_by_id_endpoint::get_meal_by_id_endpoint,
-                rest::menu::get_menu_endpoint::get_menu_endpoint,
-                rest::menu::remove_meal_from_menu_endpoint::remove_meal_from_menu_endpoint,
-                rest::order::get_orders_endpoint::get_orders_endpoint,
-                rest::order::get_order_by_id_endpoint::get_order_by_id_endpoint,
-                rest::order::cancel_order_endpoint::cancel_order_endpoint,
-                rest::order::confirm_order_endpoint::confirm_order_endpoint,
-            ),
-            components(
-                schemas(
-                    AddMealToMenuRestRequest,
-                    MealModel,
-                    GenericErrorResponse,
-                    ValidationError,
-                    OrderModel,
-                    OrderItemModel,
-                    AddressModel
-                ),
-                responses(MealModel, GenericErrorResponse, OrderModel)
-            ),
-            tags(
-                (name = "Health", description = "Health check"),
-                (name = "Meal", description = "All about Meal"),
-                (name = "Order", description = "Operations with Order")
-            )
-        )]
-        struct ApiDoc;
 
         let openapi = ApiDoc::openapi();
 
