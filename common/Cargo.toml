@@ -5,7 +5,7 @@ edition = "2021"
 
 [workspace]
 members = ["events", "common_rest", "common_telnet", "types"]
-default-members = ["events", "common_rest", "common_telnet", "types"]
+default-members = [".", "events", "common_rest", "common_telnet", "types"]
 
 [workspace.package]
 version = "0.1.0"
@@ -26,10 +26,14 @@ utoipa = "5"
 uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
 derive-getters = "0"
 
+rstest = "0"
+fake = "3"
+rand = "0"
+
 types = { path = "types" }
 
 [dependencies]
-rand = { version = "0", optional = true }
+rand = { workspace = true, optional = true }
 
 events = { path = "events" }
 common_rest = { path = "common_rest" }
