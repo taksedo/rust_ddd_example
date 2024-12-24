@@ -1,12 +1,11 @@
-use common::types::base::EventId;
+use common::types::base::{DomainEventTrait, EventId};
 use derive_new::new;
-use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
 use crate::menu::value_objects::meal_id::MealId;
-#[cfg(test)]
+// #[cfg(test)]
 use crate::test_fixtures::TestEvent;
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, SmartDefault)]
@@ -33,20 +32,12 @@ pub struct MealRemovedFromMenuDomainEvent {
     pub created: OffsetDateTime,
 }
 
-impl MealEventTrait for MealAddedToMenuDomainEvent {}
-
-impl MealEventTrait for MealRemovedFromMenuDomainEvent {}
-
-#[enum_dispatch(MealEventTrait)]
+#[enum_delegate::implement(DomainEventTrait)]
 #[derive(PartialEq, Debug, Clone, SmartDefault, Serialize, Deserialize, Hash, Eq)]
 pub enum MealEventEnum {
     #[default]
-    MealRemovedFromMenuDomainEvent,
-    MealAddedToMenuDomainEvent,
-    #[cfg(test)]
-    TestEvent,
+    MealRemovedFromMenuDomainEvent(MealRemovedFromMenuDomainEvent),
+    MealAddedToMenuDomainEvent(MealAddedToMenuDomainEvent),
+    // #[cfg(test)]
+    TestEvent(TestEvent),
 }
-
-#[allow(dead_code)]
-#[enum_dispatch]
-trait MealEventTrait {}

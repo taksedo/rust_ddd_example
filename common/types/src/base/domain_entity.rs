@@ -164,6 +164,11 @@ mod domain_entity_test {
     struct TestEvent {}
 
     impl DomainEventTrait for TestEvent {}
+
+    #[enum_delegate::implement(DomainEventTrait)]
+    enum TestEventEnum {
+        TestEvent(TestEvent),
+    }
 }
 
 #[cfg(test)]

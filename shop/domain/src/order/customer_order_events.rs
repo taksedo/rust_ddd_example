@@ -1,6 +1,5 @@
-use common::types::base::DomainEvent;
+use common::types::base::{DomainEvent, DomainEventTrait};
 use derive_new::new;
-use enum_dispatch::enum_dispatch;
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -45,27 +44,13 @@ pub struct ShopOrderPaidDomainEvent {
     pub order_id: ShopOrderId,
 }
 
-impl ShopOrderEventTrait for ShopOrderCreatedDomainEvent {}
-
-impl ShopOrderEventTrait for ShopOrderCompletedDomainEvent {}
-
-impl ShopOrderEventTrait for ShopOrderConfirmedDomainEvent {}
-
-impl ShopOrderEventTrait for ShopOrderCancelledDomainEvent {}
-
-impl ShopOrderEventTrait for ShopOrderPaidDomainEvent {}
-
-#[enum_dispatch(ShopOrderEventTrait)]
+#[enum_delegate::implement(DomainEventTrait)]
 #[derive(PartialEq, Debug, Clone, Serialize, Deserialize, Hash, Eq, SmartDefault)]
 pub enum ShopOrderEventEnum {
     #[default]
-    ShopOrderCreatedDomainEvent,
-    ShopOrderCompletedDomainEvent,
-    ShopOrderConfirmedDomainEvent,
-    ShopOrderCancelledDomainEvent,
-    ShopOrderPaidDomainEvent,
+    ShopOrderCreatedDomainEvent(ShopOrderCreatedDomainEvent),
+    ShopOrderCompletedDomainEvent(ShopOrderCompletedDomainEvent),
+    ShopOrderConfirmedDomainEvent(ShopOrderConfirmedDomainEvent),
+    ShopOrderCancelledDomainEvent(ShopOrderCancelledDomainEvent),
+    ShopOrderPaidDomainEvent(ShopOrderPaidDomainEvent),
 }
-
-#[allow(dead_code)]
-#[enum_dispatch]
-trait ShopOrderEventTrait {}

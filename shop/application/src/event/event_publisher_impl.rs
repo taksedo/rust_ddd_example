@@ -8,7 +8,7 @@ use std::{
 
 use common::{
     events::{DomainEventListener, DomainEventPublisher},
-    types::base::{AM, AMW},
+    types::base::{DomainEventTrait, AM, AMW},
 };
 use derive_new::new;
 
@@ -40,7 +40,7 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
 
 impl<Event> DomainEventPublisher<Event> for EventPublisherImpl<Event>
 where
-    Event: Debug + Clone + 'static + Hash + Eq + Default,
+    Event: Debug + Clone + 'static + Hash + Eq + Default + DomainEventTrait,
 {
     fn publish(&mut self, events: &Vec<Event>) {
         events.iter().for_each(|e| {
@@ -58,7 +58,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use enum_dispatch::enum_dispatch;
+    use common::types::base::DomainEventTrait;
     use smart_default::SmartDefault;
 
     use super::*;
@@ -137,7 +137,7 @@ mod test {
         }
     }
 
-    #[enum_dispatch(DomainEventTrait)]
+    #[enum_delegate::implement(DomainEventTrait)]
     #[derive(Debug, Clone, PartialEq, Hash, Eq, SmartDefault)]
     enum DomainEventEnum {
         #[default]
@@ -145,23 +145,15 @@ mod test {
         AnotherTestEvent(AnotherTestEvent),
     }
 
-    #[allow(dead_code)]
-    #[enum_dispatch]
-    trait DomainEventTrait {}
-
     #[derive(new, Debug, Clone, Default, PartialEq, Hash, Eq)]
     struct TestEvent {
         name: String,
     }
 
-    impl DomainEventTrait for TestEvent {}
-
     #[derive(new, Debug, Clone, Default, PartialEq, Hash, Eq)]
     struct AnotherTestEvent {
         name: String,
     }
-
-    impl DomainEventTrait for AnotherTestEvent {}
 
     impl<Event: Debug> EventPublisherImpl<Event> {
         fn get_listener(&self, event_type: Event) -> &AM<dyn DomainEventListener<Event>> {

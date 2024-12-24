@@ -1,6 +1,8 @@
 use std::fmt::Debug;
 
-pub trait DomainEventPublisher<Event>: Debug + Send {
+use types::base::DomainEventTrait;
+
+pub trait DomainEventPublisher<Event: DomainEventTrait>: Debug + Send {
     #[allow(clippy::ptr_arg)]
     fn publish(&mut self, events: &Vec<Event>);
 }
