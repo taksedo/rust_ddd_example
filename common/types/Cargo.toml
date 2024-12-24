@@ -15,3 +15,8 @@ enum_dispatch.workspace = true
 smart-default.workspace = true
 uuid.workspace = true
 derive-getters.workspace = true
+
+[dev-dependencies]
+rand.workspace = true
+rstest.workspace = true
+fake.workspace = true
