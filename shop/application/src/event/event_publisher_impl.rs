@@ -8,7 +8,7 @@ use std::{
 
 use common::{
     events::{DomainEventListener, DomainEventPublisher},
-    types::base::{AM, AMW},
+    types::base::{DomainEventTrait, AM, AMW},
 };
 use derive_new::new;
 
@@ -40,7 +40,7 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
 
 impl<Event> DomainEventPublisher<Event> for EventPublisherImpl<Event>
 where
-    Event: Debug + Clone + 'static + Hash + Eq + Default,
+    Event: Debug + Clone + 'static + Hash + Eq + Default + DomainEventTrait,
 {
     fn publish(&mut self, events: &Vec<Event>) {
         events.iter().for_each(|e| {
