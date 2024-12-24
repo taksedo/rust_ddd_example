@@ -59,7 +59,7 @@ fake = { version = "3", features = ["derive", "bigdecimal"] }
 rand = "0"
 rstest = "0"
 time = { version = "0", features = ["default", "serde-well-known"] }
-enum_dispatch = "0"
+enum_delegate = "0"
 smart-default = "0"
 const_format = "0"
 diesel = { version = "=2.1", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled

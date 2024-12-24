@@ -1,6 +1,5 @@
-use common::types::base::DomainEvent;
+use common::types::base::{DomainEvent, DomainEventTrait};
 use derive_new::new;
-use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -28,21 +27,11 @@ pub struct MealRemovedFromCartDomainEvent {
     pub meal_id: MealId,
 }
 
-#[allow(dead_code)]
-#[enum_dispatch]
-trait CartEventTrait {}
-
-impl CartEventTrait for CartCreatedDomainEvent {}
-
-impl CartEventTrait for MealAddedToCartDomainEvent {}
-
-impl CartEventTrait for MealRemovedFromCartDomainEvent {}
-
-#[enum_dispatch(CartEventTrait)]
+#[enum_delegate::implement(DomainEventTrait)]
 #[derive(PartialEq, Debug, Clone, SmartDefault, Serialize, Deserialize, Hash, Eq)]
 pub enum CartEventEnum {
     #[default]
-    CartCreatedDomainEvent,
-    MealAddedToCartDomainEvent,
-    MealRemovedFromCartDomainEvent,
+    CartCreatedDomainEvent(CartCreatedDomainEvent),
+    MealAddedToCartDomainEvent(MealAddedToCartDomainEvent),
+    MealRemovedFromCartDomainEvent(MealRemovedFromCartDomainEvent),
 }

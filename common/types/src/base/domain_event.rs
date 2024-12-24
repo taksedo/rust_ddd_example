@@ -1,7 +1,6 @@
 use std::fmt::Debug;
 
 use derive_new::new;
-use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use time::OffsetDateTime;
@@ -26,8 +25,8 @@ pub struct EventId {
     pub(crate) value: Uuid,
 }
 
-#[enum_dispatch]
-pub trait DomainEventTrait: Debug {}
+#[enum_delegate::register]
+pub trait DomainEventTrait {}
 
 // todo возможно понадобится
 // serialize_trait_object!(DomainEventTrait<T>);
