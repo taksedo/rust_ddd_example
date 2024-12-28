@@ -1,10 +1,8 @@
-use common::types::{base::AM, errors::ToError};
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::{
-    customer_has_active_order::CustomerHasActiveOrder,
-    get_meal_price::GetMealPrice,
-    shop_order::{CheckoutError, ShopOrder},
-    value_objects::shop_order_id::ShopOrderIdGenerator,
+    customer_has_active_order::CustomerHasActiveOrder, get_meal_price::GetMealPrice,
+    shop_order::ShopOrder, value_objects::shop_order_id::ShopOrderIdGenerator,
 };
 
 use crate::{
@@ -64,14 +62,13 @@ where
             .unwrap()
             .get_cart(&request.for_customer)
             .map_or(Err(CheckoutUseCaseError::CartNotFound), |cart| {
-                ShopOrder::checkout(
+                Ok(ShopOrder::checkout(
                     cart,
                     self.id_generator.clone(),
                     self.active_order.clone(),
                     request.delivery_to.clone(),
                     self.get_meal_price.clone(),
-                )
-                .map_err(|err| err.to_error())
+                )?)
             })
             .map(|order| {
                 self.shop_order_persister
@@ -88,15 +85,6 @@ where
                         .provide_url(order.id(), order.total_price()),
                 }
             })
-    }
-}
-
-impl ToError<CheckoutUseCaseError> for CheckoutError {
-    fn to_error(self) -> CheckoutUseCaseError {
-        match self {
-            CheckoutError::AlreadyHasActiveOrder => CheckoutUseCaseError::AlreadyHasActiveOrder,
-            CheckoutError::EmptyCart => CheckoutUseCaseError::EmptyCart,
-        }
     }
 }
 

@@ -5,7 +5,7 @@ use derive_getters::Getters;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::base::value_object::ValueObject;
+use crate::base::{value_object::ValueObject, DomainEventTrait};
 
 /// Abstract class for all `Entities` and `Aggregates`.
 #[derive(new, Clone, Default, Derivative, Serialize, Deserialize, Ord, PartialOrd, Eq, Getters)]
@@ -35,7 +35,7 @@ pub trait DomainEntityTrait<Event> {
     fn pop_events(&mut self) -> Vec<Event>;
 }
 
-impl<Event: Clone, T> DomainEntityTrait<Event> for DomainEntity<T, Event> {
+impl<Event: Clone + DomainEventTrait, T> DomainEntityTrait<Event> for DomainEntity<T, Event> {
     /// Add `Event` to `DomainEntity` stack
     fn add_event(&mut self, event: Event) {
         if self.events.is_empty() {
@@ -99,7 +99,7 @@ mod domain_entity_test {
 
         assert_eq!(entity.domain_entity_field.id.clone(), id.clone());
         assert_eq!(entity.domain_entity_field.version, version.next());
-        let events = entity.pop_events();
+        let events = entity.domain_entity_field.pop_events();
         assert_eq!(&events.len(), &1);
 
         assert_eq!(
@@ -129,7 +129,7 @@ mod domain_entity_test {
 
         let mut entity = TestEntity::new(DomainEntity::new(id, version));
         entity.do_something();
-        entity.pop_events();
+        entity.domain_entity_field.pop_events();
         entity.do_something();
         assert_eq!(entity.domain_entity_field.version, version.next().next())
     }
@@ -141,22 +141,7 @@ mod domain_entity_test {
 
     impl TestEntity {
         pub fn do_something(&mut self) {
-            self.add_event(TestEvent::new())
-        }
-    }
-
-    impl DomainEntityTrait<TestEvent> for TestEntity {
-        fn add_event(&mut self, event: TestEvent) {
-            if self.domain_entity_field.events.is_empty() {
-                self.domain_entity_field.version = self.domain_entity_field.version.next();
-            }
-            self.domain_entity_field.events.push(event)
-        }
-
-        fn pop_events(&mut self) -> Vec<TestEvent> {
-            let res = self.domain_entity_field.events.clone();
-            self.domain_entity_field.events = Vec::new();
-            res
+            self.domain_entity_field.add_event(TestEvent::new())
         }
     }
 

@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter};
 
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -20,9 +20,12 @@ pub struct DomainEvent {
 #[derive(
     new, PartialEq, Eq, Debug, Clone, Default, Serialize, Deserialize, Hash, Ord, PartialOrd,
 )]
-pub struct EventId {
-    #[new(value = "Uuid::new_v4()")]
-    pub(crate) value: Uuid,
+pub struct EventId(#[new(value = "Uuid::new_v4()")] Uuid);
+
+impl Display for EventId {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
 }
 
 #[enum_delegate::register]
@@ -55,8 +58,8 @@ mod test {
             secondEvent.domain_events_params.id
         );
         assert_ne!(
-            firstEvent.domain_events_params.id.value,
-            secondEvent.domain_events_params.id.value
+            firstEvent.domain_events_params.id.to_string(),
+            secondEvent.domain_events_params.id.to_string()
         )
     }
 

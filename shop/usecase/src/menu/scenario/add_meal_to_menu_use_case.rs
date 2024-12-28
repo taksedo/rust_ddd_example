@@ -1,12 +1,9 @@
 use std::fmt::Debug;
 
-use common::types::{
-    base::{DomainEventTrait, AM},
-    errors::ToError,
-};
+use common::types::base::{DomainEventTrait, AM};
 use derive_new::new;
 use domain::menu::{
-    meal::{Meal, MealError},
+    meal::Meal,
     meal_already_exists::MealAlreadyExists,
     value_objects::{
         meal_description::MealDescription,
@@ -35,31 +32,18 @@ impl AddMealToMenu for AddMealToMenuUseCase {
         description: &MealDescription,
         price: &Price,
     ) -> Result<MealId, AddMealToMenuUseCaseError> {
-        Meal::add_meal_to_menu(
+        let new_meal_in_menu = Meal::add_meal_to_menu(
             self.id_generator.clone(),
             self.meal_exists.clone(),
             name.clone(),
             description.clone(),
             price.clone(),
-        )
-        .map_err(MealError::to_error)
-        .map(|new_meal_in_menu| {
-            self.meal_persister
-                .lock()
-                .unwrap()
-                .save(new_meal_in_menu.clone());
-            *new_meal_in_menu.id()
-        })
-    }
-}
-
-#[allow(unreachable_patterns)]
-impl ToError<AddMealToMenuUseCaseError> for MealError {
-    fn to_error(self) -> AddMealToMenuUseCaseError {
-        match self {
-            MealError::AlreadyExistsWithSameNameError => AddMealToMenuUseCaseError::AlreadyExists,
-            _ => AddMealToMenuUseCaseError::UnknownError,
-        }
+        )?;
+        self.meal_persister
+            .lock()
+            .unwrap()
+            .save(new_meal_in_menu.clone());
+        Ok(*new_meal_in_menu.id())
     }
 }
 

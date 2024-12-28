@@ -279,7 +279,7 @@ pub struct MockCartExtractor {
 impl CartExtractor for MockCartExtractor {
     fn get_cart(&mut self, for_customer: &CustomerId) -> Option<Cart> {
         self.for_customer = Some(*for_customer);
-        self.cart.as_ref().cloned()
+        self.cart.as_ref().map(ToOwned::to_owned)
     }
 }
 

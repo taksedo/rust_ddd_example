@@ -5,8 +5,6 @@ use smart_default::SmartDefault;
 use time::OffsetDateTime;
 
 use crate::menu::value_objects::meal_id::MealId;
-// #[cfg(test)]
-use crate::test_fixtures::TestEvent;
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, Hash, Eq, SmartDefault)]
 pub struct MealAddedToMenuDomainEvent {
@@ -38,6 +36,4 @@ pub enum MealEventEnum {
     #[default]
     MealRemovedFromMenuDomainEvent(MealRemovedFromMenuDomainEvent),
     MealAddedToMenuDomainEvent(MealAddedToMenuDomainEvent),
-    // #[cfg(test)]
-    TestEvent(TestEvent),
 }
