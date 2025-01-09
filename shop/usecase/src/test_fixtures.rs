@@ -1,4 +1,8 @@
-use std::{any::Any, collections::HashMap, mem::discriminant};
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
+    mem::discriminant,
+};
 
 use common::types::common::{Address, Count};
 use derive_new::new;
@@ -9,7 +13,7 @@ use domain::{
     },
     menu::{
         meal::Meal,
-        meal_events::{MealEventEnum, MealRemovedFromMenuDomainEvent},
+        meal_events::MealEventEnum,
         value_objects::{
             meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
         },
@@ -119,7 +123,6 @@ impl MockMealPersister {
     }
 
     pub fn verify_events_after_deletion(&mut self, id: &MealId) {
-        let event_enum: MealEventEnum = MealRemovedFromMenuDomainEvent::new(*id).into();
         let events = self
             .to_owned()
             .meal
@@ -128,7 +131,7 @@ impl MockMealPersister {
             .first()
             .unwrap()
             .clone();
-        assert_eq!(events.type_id(), event_enum.type_id());
+        assert_eq!(events.type_id(), TypeId::of::<MealEventEnum>());
     }
 
     pub fn verify_empty(&self) {
