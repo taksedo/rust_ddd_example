@@ -80,7 +80,10 @@ impl ValueObject for Version {}
 
 #[cfg(test)]
 mod domain_entity_test {
-    use std::{any::Any, fmt::Debug};
+    use std::{
+        any::{Any, TypeId},
+        fmt::Debug,
+    };
 
     use derive_new::new;
 
@@ -104,7 +107,7 @@ mod domain_entity_test {
 
         assert_eq!(
             events.first().unwrap().clone().type_id(),
-            TestEvent::new().type_id()
+            TypeId::of::<TestEvent>()
         );
     }
 
