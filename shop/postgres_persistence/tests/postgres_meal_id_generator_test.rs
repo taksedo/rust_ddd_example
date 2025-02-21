@@ -1,7 +1,6 @@
 use diesel::{
-    select, sql_function,
+    RunQueryDsl, select, sql_function,
     sql_types::{BigInt, VarChar},
-    RunQueryDsl,
 };
 use diesel_migrations::MigrationHarness;
 use domain::{

@@ -1,6 +1,9 @@
-use std::mem::{discriminant, Discriminant};
+use std::mem::{Discriminant, discriminant};
 
-use common::{events::DomainEventListener, types::base::AM};
+use common::{
+    events::DomainEventListener,
+    types::base::{AM, ArcMutexTrait},
+};
 use derive_new::new;
 use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 
@@ -23,7 +26,7 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
         let event_struct: ShopOrderCreatedDomainEvent =
             event.clone().try_into().expect("Wrong type of event");
 
-        self.order_exporter.lock().unwrap().export_order(
+        self.order_exporter.lock_un().export_order(
             event_struct.order_id,
             event_struct.for_customer,
             event_struct.total_price,
@@ -37,7 +40,7 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, ArcMutexTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -49,7 +52,7 @@ mod tests {
         let customer_id = rnd_customer_id();
         let total_price = rnd_price();
 
-        let exporter = AMW::new(MockOrderExporter::default());
+        let exporter = AM::new_am(MockOrderExporter::default());
         let mut rule = ExportOrderAfterCheckoutRule::new(exporter.clone());
 
         let event: ShopOrderEventEnum =

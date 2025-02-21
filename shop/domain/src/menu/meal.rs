@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use common::types::{
-    base::{DomainEntity, DomainEntityTrait, Version, AM},
+    base::{AM, DomainEntity, DomainEntityTrait, Version},
     errors::BusinessError,
 };
 use derive_getters::Getters;
@@ -109,7 +109,7 @@ impl BusinessError for MealError {}
 mod tests {
     use std::{any::type_name_of_val, sync::atomic::AtomicI64};
 
-    use common::types::base::AMW;
+    use common::types::base::{AM, ArcMutexTrait};
 
     use super::*;
     use crate::test_fixtures::{
@@ -144,8 +144,8 @@ mod tests {
 
     #[test]
     fn add_meal__success() {
-        let id_generator = AMW::new(TestMealIdGenerator::new());
-        let meal_exists = AMW::new(TestMealAlreadyExists { value: false });
+        let id_generator = AM::new_am(TestMealIdGenerator::new());
+        let meal_exists = AM::new_am(TestMealAlreadyExists { value: false });
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();
@@ -158,7 +158,7 @@ mod tests {
         );
 
         let mut test_meal = result.unwrap();
-        assert_eq!(test_meal.id(), &id_generator.lock().unwrap().meal_id);
+        assert_eq!(test_meal.id(), &id_generator.lock_un().meal_id);
         assert_eq!(*test_meal.name(), name);
         assert_eq!(*test_meal.description(), description);
         assert_eq!(*test_meal.price(), price);
@@ -168,7 +168,7 @@ mod tests {
         let popped_event = popped_events.first().unwrap();
 
         let expected_event: &MealEventEnum =
-            &MealAddedToMenuDomainEvent::new(id_generator.lock().unwrap().meal_id).into();
+            &MealAddedToMenuDomainEvent::new(id_generator.lock_un().meal_id).into();
         assert_eq!(
             type_name_of_val(popped_event),
             type_name_of_val(expected_event)
@@ -177,8 +177,8 @@ mod tests {
 
     #[test]
     fn add_meal_to_menu__already_exists_with_the_same_name() {
-        let id_generator = AMW::new(TestMealIdGenerator::new());
-        let meal_exists = AMW::new(TestMealAlreadyExists { value: true });
+        let id_generator = AM::new_am(TestMealIdGenerator::new());
+        let meal_exists = AM::new_am(TestMealAlreadyExists { value: true });
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();

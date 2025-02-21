@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use common::types::base::{AM, AMW};
+use common::types::base::{AM, ArcMutexTrait};
 use in_memory_persistence::order::{
     in_memory_incremental_shop_order_id_generator::InMemoryIncrementalShopOrderIdGenerator,
     in_memory_shop_order_repository::InMemoryShopOrderRepository,
@@ -28,20 +28,20 @@ pub(super) static ORDER_ID_GENERATOR: LazyLock<AM<OrderIdGenerator>> =
 pub(super) static ORDER_REPOSITORY: LazyLock<AM<OrderRepository>> = LazyLock::new(order_repository);
 
 fn meal_id_generator() -> AM<MealIdGenerator> {
-    AMW::new(MealIdGenerator::new(establish_connection()))
+    AM::new_am(MealIdGenerator::new(establish_connection()))
 }
 
 fn meal_repository() -> AM<MealRepository> {
-    AMW::new(MealRepository::new(
+    AM::new_am(MealRepository::new(
         establish_connection(),
         EVENT_PUBLISHER.clone(),
     ))
 }
 
 fn order_id_generator() -> AM<OrderIdGenerator> {
-    AMW::new(OrderIdGenerator::new())
+    AM::new_am(OrderIdGenerator::new())
 }
 
 pub fn order_repository() -> AM<ORepository> {
-    AMW::new(ORepository::new(EVENT_PUBLISHER.clone()))
+    AM::new_am(ORepository::new(EVENT_PUBLISHER.clone()))
 }

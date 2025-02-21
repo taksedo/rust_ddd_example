@@ -1,12 +1,12 @@
 use std::{fmt::Debug, str::FromStr};
 
-use actix_web::{http, web, HttpResponse};
+use actix_web::{HttpResponse, http, web};
 use bigdecimal::BigDecimal;
 use common::{
     common_rest::{
-        created, rest_business_error, to_invalid_param_bad_request, GenericErrorResponse,
+        GenericErrorResponse, created, rest_business_error, to_invalid_param_bad_request,
     },
-    types::base::{AM, AMW},
+    types::base::{AM, ArcMutexTrait},
 };
 use derive_new::new;
 use domain::menu::value_objects::{
@@ -86,7 +86,7 @@ where
 {
     println!("Request {request:?} to add meal to menu received");
 
-    let error_list = AMW::new(vec![]);
+    let error_list = AM::new_am(vec![]);
 
     match (
         MealName::validated(&request.name, error_list.clone()),
@@ -98,8 +98,7 @@ where
     ) {
         (Ok(meal_name), Ok(meal_description), Ok(price)) => {
             match shared_state
-                .lock()
-                .unwrap()
+                .lock_un()
                 .execute(&meal_name, &meal_description, &price)
             {
                 Ok(meal_id) => created(
@@ -136,10 +135,10 @@ where
 mod tests {
     use actix_web::{
         body::MessageBody,
-        http::{header, StatusCode},
+        http::{StatusCode, header},
         web::{Data, Json},
     };
-    use bigdecimal::{num_bigint::BigInt, ToPrimitive};
+    use bigdecimal::{ToPrimitive, num_bigint::BigInt};
     use common::{
         common_rest::{bad_request_type_url, error_type_url},
         types::base::AM,
@@ -159,7 +158,7 @@ mod tests {
         let price = rnd_price();
 
         let mock_add_meal_to_menu = mock_add_meal_to_menu();
-        mock_add_meal_to_menu.lock().unwrap().response = Ok(meal_id);
+        mock_add_meal_to_menu.lock_un().response = Ok(meal_id);
 
         let mock_shared_state = mock_shared_state(&mock_add_meal_to_menu);
 
@@ -226,8 +225,7 @@ mod tests {
         dotenv().ok();
         let mock_add_meal_to_menu = mock_add_meal_to_menu();
         let mock_shared_state = mock_shared_state(&mock_add_meal_to_menu);
-        mock_add_meal_to_menu.lock().unwrap().response =
-            Err(AddMealToMenuUseCaseError::AlreadyExists);
+        mock_add_meal_to_menu.lock_un().response = Err(AddMealToMenuUseCaseError::AlreadyExists);
         let meal = Json(AddMealToMenuRestRequest::new(
             rnd_meal_name().to_string(),
             rnd_meal_description().to_string(),
@@ -265,6 +263,6 @@ mod tests {
     }
 
     fn mock_add_meal_to_menu() -> AM<MockAddMealToMenu> {
-        AMW::new(MockAddMealToMenu::default())
+        AM::new_am(MockAddMealToMenu::default())
     }
 }

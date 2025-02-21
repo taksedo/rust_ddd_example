@@ -1,15 +1,15 @@
 use std::fmt::Debug;
 
-use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, http::header::ContentType, web};
 use common::{
     common_rest::{
-        get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
-        GenericErrorResponse,
+        GenericErrorResponse, get_json_from_http_response, resource_not_found,
+        to_invalid_param_bad_request,
     },
-    types::base::{AM, AMW},
+    types::base::{AM, ArcMutexTrait},
 };
 use domain::menu::value_objects::meal_id::MealId;
-use usecase::menu::{scenario::GetMealByIdUseCase, GetMealById, GetMealByIdUseCaseError};
+use usecase::menu::{GetMealById, GetMealByIdUseCaseError, scenario::GetMealByIdUseCase};
 
 use crate::{
     endpoint_url::API_V1_MENU_GET_BY_ID, menu::meal_model::MealModel, to_error::ToRestError,
@@ -62,10 +62,10 @@ where
 {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = AMW::new(vec![]);
+    let error_list = AM::new_am(vec![]);
 
     match MealId::validated(id, error_list.clone()) {
-        Ok(meal_id) => match shared_state.lock().unwrap().execute(&meal_id) {
+        Ok(meal_id) => match shared_state.lock_un().execute(&meal_id) {
             Ok(meal_info) => HttpResponse::Ok()
                 .content_type(ContentType::json())
                 .body(serde_json::to_string(&MealModel::from(meal_info)).unwrap()),
@@ -95,7 +95,7 @@ where
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::{
-        common_rest::{not_found_type_url, GenericErrorResponse},
+        common_rest::{GenericErrorResponse, not_found_type_url},
         types::base::AM,
     };
     use domain::test_fixtures::*;
@@ -103,7 +103,7 @@ mod tests {
     use usecase::menu::GetMealByIdUseCaseError::MealNotFound;
 
     use super::*;
-    use crate::test_fixtures::{rnd_meal_info, MockGetMealById};
+    use crate::test_fixtures::{MockGetMealById, rnd_meal_info};
 
     #[actix_web::test]
     async fn returned_successfully() {
@@ -112,7 +112,7 @@ mod tests {
         let mock_get_meal_by_id = mock_get_meal_by_id();
         let mock_shared_state = mock_shared_state(&mock_get_meal_by_id);
 
-        mock_get_meal_by_id.lock().unwrap().response = Ok(meal_info.clone());
+        mock_get_meal_by_id.lock_un().response = Ok(meal_info.clone());
 
         let req = TestRequest::default()
             .param("id", meal_info.id.to_i64().to_string())
@@ -128,8 +128,7 @@ mod tests {
         assert_eq!(body_json, &meal_info_json);
 
         mock_get_meal_by_id
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&MealId::try_from(meal_info.id).unwrap());
     }
 
@@ -139,7 +138,7 @@ mod tests {
         let mock_get_meal_by_id = mock_get_meal_by_id();
         let mock_shared_state = mock_shared_state(&mock_get_meal_by_id);
 
-        mock_get_meal_by_id.lock().unwrap().response = Err(MealNotFound);
+        mock_get_meal_by_id.lock_un().response = Err(MealNotFound);
 
         let meal_id = rnd_meal_id().to_i64();
 
@@ -165,7 +164,7 @@ mod tests {
     }
 
     fn mock_get_meal_by_id() -> AM<MockGetMealById> {
-        AMW::new(MockGetMealById::default())
+        AM::new_am(MockGetMealById::default())
     }
 
     fn mock_shared_state(mock_get_meal_by_id: &AM<MockGetMealById>) -> Data<AM<MockGetMealById>> {

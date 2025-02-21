@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use common::types::{
-    base::{DomainEntity, DomainEntityTrait, Version, AM},
+    base::{AM, DomainEntity, DomainEntityTrait, Version},
     common::Count,
 };
 use derive_getters::Getters;
@@ -107,7 +107,10 @@ pub enum CartError {
 mod tests {
     use std::mem::discriminant;
 
-    use common::{test_fixtures::rnd_count, types::base::AMW};
+    use common::{
+        test_fixtures::rnd_count,
+        types::base::{AM, ArcMutexTrait},
+    };
 
     use super::*;
     use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
@@ -115,10 +118,10 @@ mod tests {
     #[test]
     fn create_cart_success() {
         let customer_id = rnd_customer_id();
-        let id_generator = AMW::new(TestCartIdGenerator::default());
+        let id_generator = AM::new_am(TestCartIdGenerator::default());
         let mut cart = Cart::create(id_generator.clone(), customer_id);
 
-        let id = id_generator.lock().unwrap().id;
+        let id = id_generator.lock_un().id;
         assert_eq!(cart.id(), &id);
         assert_eq!(cart.for_customer(), &customer_id);
         assert!(cart.meals().is_empty());
@@ -133,10 +136,11 @@ mod tests {
         let meal = rnd_meal();
 
         cart.add_meal(meal.clone());
-        assert!(cart
-            .pop_events()
-            .iter()
-            .all(|event| { matches!(event, CartEventEnum::MealAddedToCartDomainEvent(_)) }));
+        assert!(
+            cart.pop_events()
+                .iter()
+                .all(|event| { matches!(event, CartEventEnum::MealAddedToCartDomainEvent(_)) })
+        );
         assert!(cart.meals().iter().all(|item| {
             let (&item_meal_id, &item_count) = item;
             (item_meal_id == *meal.id()) && (item_count == Count::one())

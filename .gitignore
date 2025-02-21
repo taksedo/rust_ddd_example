@@ -6,3 +6,5 @@ tests/performance/logs
 tests/performance/tank_errors.log
 /.vs
 /.vscode
+/.idea
+.idea

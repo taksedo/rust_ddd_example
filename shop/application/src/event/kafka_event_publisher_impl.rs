@@ -7,8 +7,8 @@ use common::events::DomainEventPublisher;
 use derive_new::new;
 use domain::{menu::meal_events::MealEventEnum, order::customer_order_events::ShopOrderEventEnum};
 use rdkafka::{
-    producer::{BaseProducer, BaseRecord},
     ClientConfig,
+    producer::{BaseProducer, BaseRecord},
 };
 
 #[derive(new)]
@@ -87,13 +87,13 @@ mod test {
     };
     use futures_lite::StreamExt;
     use rdkafka::{
-        consumer::{Consumer, StreamConsumer},
         Message,
+        consumer::{Consumer, StreamConsumer},
     };
     use tracing::{debug, info};
 
     use super::*;
-    use crate::test_fixtures::{TestKafka, KAFKA_ADDRESS};
+    use crate::test_fixtures::{KAFKA_ADDRESS, TestKafka};
 
     #[tokio::test]
     async fn publish_events() {

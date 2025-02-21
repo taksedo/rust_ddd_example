@@ -2,9 +2,9 @@ use std::{env, net::IpAddr};
 
 use actix_cors::Cors;
 use actix_web::{
-    http::{header, Uri},
-    middleware::Logger,
     App, HttpServer,
+    http::{Uri, header},
+    middleware::Logger,
 };
 use log::info;
 use rest::{
@@ -40,7 +40,7 @@ use crate::configuration::{
     swagger_configuration::ApiDoc,
     use_case_configuration::{
         ADD_MEAL_TO_MENU_USE_CASE, CANCEL_ORDER_USECASE, CONFIRM_ORDER_USECASE,
-        GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDERS_USECASE, GET_ORDER_BY_ID,
+        GET_MEAL_BY_ID_USE_CASE, GET_MENU_USE_CASE, GET_ORDER_BY_ID, GET_ORDERS_USECASE,
         REMOVE_MEAL_FROM_MENU_USECASE,
     },
 };

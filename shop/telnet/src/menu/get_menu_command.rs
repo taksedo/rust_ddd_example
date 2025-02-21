@@ -6,8 +6,8 @@ use std::{
 
 use actix_web::web::Data;
 use futures_util::SinkExt;
-use nectar::{event::TelnetEvent, TelnetCodec};
-use prettytable::{row, Table};
+use nectar::{TelnetCodec, event::TelnetEvent};
+use prettytable::{Table, row};
 use tokio::net::TcpStream;
 use tokio_util::codec::Framed;
 use usecase::menu::GetMenu;

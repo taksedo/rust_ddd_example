@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fmt::Display, str::FromStr};
 
-use actix_web::{web::Query, HttpRequest};
+use actix_web::{HttpRequest, web::Query};
 use common::{common_rest::ValidationError, types::base::AM};
 use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
 

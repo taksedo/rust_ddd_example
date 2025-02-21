@@ -25,16 +25,16 @@ impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, ArcMutexTrait};
     use domain::test_fixtures::*;
 
     use super::*;
-    use crate::test_fixtures::{active_order, non_active_order, MockShopOrderExtractor};
+    use crate::test_fixtures::{MockShopOrderExtractor, active_order, non_active_order};
 
     #[test]
     fn active_order_exists() {
         let active_order = active_order();
-        let extractor = AMW::new(MockShopOrderExtractor {
+        let extractor = AM::new_am(MockShopOrderExtractor {
             order: Some(active_order.clone()),
             ..Default::default()
         });
@@ -52,7 +52,7 @@ mod tests {
     #[test]
     fn order_exists_but_not_active() {
         let active_order = non_active_order();
-        let extractor = AMW::new(MockShopOrderExtractor {
+        let extractor = AM::new_am(MockShopOrderExtractor {
             order: Some(active_order.clone()),
             ..Default::default()
         });
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn order_doesnt_exist() {
-        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
         let mut rule = CustomerHasActiveOrderImpl::new(extractor.clone());
 
         let customer_id = rnd_customer_id();

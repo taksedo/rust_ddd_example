@@ -3,9 +3,9 @@ use std::error::Error;
 use async_trait::async_trait;
 use derive_new::new;
 use lapin::{
+    BasicProperties, Connection, ConnectionProperties,
     options::{BasicPublishOptions, QueueDeclareOptions},
     types::FieldTable,
-    BasicProperties, Connection, ConnectionProperties,
 };
 use serde::Serialize;
 use tracing::info;

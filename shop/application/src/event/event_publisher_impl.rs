@@ -3,21 +3,20 @@ use std::{
     collections::HashMap,
     fmt::Debug,
     hash::Hash,
-    mem::{discriminant, Discriminant},
+    mem::{Discriminant, discriminant},
 };
 
 use common::{
     events::{DomainEventListener, DomainEventPublisher},
-    types::base::{DomainEventTrait, AM, AMW},
+    types::base::{AM, ArcMutexTrait, DomainEventTrait},
 };
 use derive_new::new;
+use log::info;
 
 type VecOfDomainEventListenerType<Event> = Vec<AM<dyn DomainEventListener<Event>>>;
 
 #[derive(new, Debug, Default, Clone)]
 pub(crate) struct EventPublisherImpl<Event: Debug> {
-    logger: String,
-    //todo переделать logger
     pub(crate) listener_map: HashMap<Discriminant<Event>, VecOfDomainEventListenerType<Event>>,
 }
 
@@ -26,7 +25,7 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
         let event_type = listener.event_type();
         self.listener_map.entry(event_type).or_insert_with(|| {
             let vector: Vec<AM<(dyn DomainEventListener<Event> + 'static)>> =
-                vec![AMW::new(listener)];
+                vec![AM::new_am(listener)];
             vector
         });
     }
@@ -44,8 +43,7 @@ where
 {
     fn publish(&mut self, events: &Vec<Event>) {
         events.iter().for_each(|e| {
-            self.logger
-                .push_str(format!("Processing event: {:?} \r\n", &e).as_mut_str());
+            info!("Processing event: {:?}", &e);
             let listener_map = &self.listener_map;
             let e_type = discriminant(e);
             if listener_map.contains_key(&e_type) {
@@ -64,6 +62,12 @@ mod test {
     use super::*;
     #[test]
     fn publish_events() {
+        if std::env::var("RUST_LOG").is_err() {
+            unsafe {
+                std::env::set_var("RUST_LOG", "debug");
+            }
+        }
+        let _ = tracing_subscriber::fmt::try_init();
         let mut publisher = EventPublisherImpl::default();
 
         let test_event_listener = TestEventListener::default();

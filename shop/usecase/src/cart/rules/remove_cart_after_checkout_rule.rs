@@ -1,4 +1,4 @@
-use std::mem::{discriminant, Discriminant};
+use std::mem::{Discriminant, discriminant};
 
 use common::{events::DomainEventListener, types::base::AM};
 use derive_new::new;
@@ -59,7 +59,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, ArcMutexTrait};
     use domain::test_fixtures::*;
     use tracing_test::traced_test;
 
@@ -68,11 +68,11 @@ mod tests {
 
     #[test]
     fn successfully_removed() {
-        let cart_remover = AMW::new(MockCartRemover::default());
+        let cart_remover = AM::new_am(MockCartRemover::default());
         let cart = rnd_cart();
 
-        let cart_extractor = AMW::new(MockCartExtractor::default());
-        cart_extractor.lock().unwrap().cart = Some(cart.clone());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
+        cart_extractor.lock_un().cart = Some(cart.clone());
 
         let mut rule =
             RemoveCartAfterCheckoutRule::new(cart_extractor.clone(), cart_remover.clone());
@@ -89,15 +89,15 @@ mod tests {
             .lock()
             .unwrap()
             .verify_invoked(cart.for_customer());
-        cart_remover.lock().unwrap().verify_invoked(cart.id());
+        cart_remover.lock_un().verify_invoked(cart.id());
     }
 
     #[test]
     #[traced_test]
     fn cart_not_found() {
-        let cart_remover = AMW::new(MockCartRemover::default());
+        let cart_remover = AM::new_am(MockCartRemover::default());
 
-        let cart_extractor = AMW::new(MockCartExtractor::default());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
 
         let mut rule =
             RemoveCartAfterCheckoutRule::new(cart_extractor.clone(), cart_remover.clone());
@@ -107,8 +107,8 @@ mod tests {
 
         rule.handle(&event);
 
-        cart_extractor.lock().unwrap().verify_invoked(&customer_id);
-        cart_remover.lock().unwrap().verify_empty();
+        cart_extractor.lock_un().verify_invoked(&customer_id);
+        cart_remover.lock_un().verify_empty();
 
         assert!(logs_contain(&format!(
             "Cart for customer #{customer_id} is already removed"

@@ -3,7 +3,7 @@ use std::error::Error;
 use futures_lite::StreamExt;
 use futures_util::sink::SinkExt;
 use log::info;
-use nectar::{event::TelnetEvent, TelnetCodec};
+use nectar::{TelnetCodec, event::TelnetEvent};
 use telnet::menu::{get_health_command::get_health_command, get_menu_command::get_menu_command};
 use tokio::net::TcpStream;
 use tokio_util::codec::Framed;

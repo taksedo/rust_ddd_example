@@ -27,15 +27,15 @@ impl GetMealById for GetMealByIdUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, ArcMutexTrait};
     use domain::test_fixtures::*;
 
     use super::*;
-    use crate::test_fixtures::{removed_meal, MockMealExtractor};
+    use crate::test_fixtures::{MockMealExtractor, removed_meal};
 
     #[test]
     fn meal_not_found() {
-        let meal_extractor = AMW::new(MockMealExtractor::new());
+        let meal_extractor = AM::new_am(MockMealExtractor::new());
         let mut use_case = GetMealByIdUseCase::new(meal_extractor);
 
         let meal_id = &rnd_meal_id();
@@ -54,7 +54,7 @@ mod tests {
     #[test]
     fn meal_removed() {
         let meal = removed_meal();
-        let meal_extractor = AMW::new(MockMealExtractor {
+        let meal_extractor = AM::new_am(MockMealExtractor {
             meal: Option::from(meal.to_owned()),
             ..MockMealExtractor::default()
         });
@@ -75,7 +75,7 @@ mod tests {
     #[test]
     fn meal_extracted_successfully() {
         let meal = rnd_meal();
-        let meal_extractor = AMW::new(MockMealExtractor {
+        let meal_extractor = AM::new_am(MockMealExtractor {
             meal: Option::from(meal.to_owned()),
             ..MockMealExtractor::default()
         });

@@ -1,12 +1,12 @@
 use std::fmt::Debug;
 
-use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, http::header::ContentType, web};
 use common::{
     common_rest::{
-        get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
-        GenericErrorResponse,
+        GenericErrorResponse, get_json_from_http_response, resource_not_found,
+        to_invalid_param_bad_request,
     },
-    types::base::{AM, AMW},
+    types::base::{AM, ArcMutexTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{GetOrderById, GetOrderByIdUseCaseError};
@@ -65,10 +65,10 @@ where
 {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = AMW::new(vec![]);
+    let error_list = AM::new_am(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
-        Ok(order_id) => match shared_state.lock().unwrap().execute(&order_id) {
+        Ok(order_id) => match shared_state.lock_un().execute(&order_id) {
             Ok(it) => HttpResponse::Ok()
                 .content_type(ContentType::json())
                 .body(serde_json::to_string(&ToModel::<OrderModel>::to_model(it)).unwrap()),
@@ -99,21 +99,18 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::{
-        common_rest::{not_found_type_url, GenericErrorResponse},
-        types::base::AMW,
-    };
+    use common::common_rest::{GenericErrorResponse, not_found_type_url};
     use domain::{order::shop_order::OrderState, test_fixtures::*};
     use dotenvy::dotenv;
 
     use super::*;
-    use crate::test_fixtures::{rnd_order_details, MockGetOrderById};
+    use crate::test_fixtures::{MockGetOrderById, rnd_order_details};
 
     #[actix_web::test]
     async fn order_not_found() {
         dotenv().ok();
         let order_id = rnd_order_id();
-        let mock_get_order_by_id = AMW::new(MockGetOrderById {
+        let mock_get_order_by_id = AM::new_am(MockGetOrderById {
             id: rnd_order_id(),
             response: Err(GetOrderByIdUseCaseError::OrderNotFound),
         });
@@ -147,7 +144,7 @@ mod tests {
         assert_eq!(details.items.len(), 1);
         let item_details = details.items.first().unwrap();
 
-        let mock_get_order_by_id = AMW::new(MockGetOrderById {
+        let mock_get_order_by_id = AM::new_am(MockGetOrderById {
             id: rnd_order_id(),
             response: Ok(details.clone()),
         });
@@ -199,7 +196,7 @@ mod tests {
         assert_eq!(details.items.len(), 1);
         let item_details = details.items.first().unwrap();
 
-        let mock_get_order_by_id = AMW::new(MockGetOrderById {
+        let mock_get_order_by_id = AM::new_am(MockGetOrderById {
             id: rnd_order_id(),
             response: Ok(details.clone()),
         });

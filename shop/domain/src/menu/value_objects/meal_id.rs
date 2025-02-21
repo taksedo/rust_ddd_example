@@ -36,13 +36,13 @@ pub enum MealIdError {
 
 #[cfg(test)]
 mod tests {
-    use rand::{thread_rng, Rng};
+    use rand::{Rng, rng};
 
     use super::*;
 
     #[test]
     fn check_equality() {
-        let id: i64 = thread_rng().gen_range(0..i64::MAX);
+        let id: i64 = rng().random_range(0..i64::MAX);
 
         dbg!(&id);
         let meal_id1 = MealId::try_from(id).unwrap();
@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn wrong_id_value() {
-        let id = thread_rng().gen_range(i64::MIN..0);
+        let id = rng().random_range(i64::MIN..0);
 
         let meal_id = MealId::try_from(id);
 

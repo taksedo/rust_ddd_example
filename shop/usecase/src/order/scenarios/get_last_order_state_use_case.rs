@@ -29,7 +29,7 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, ArcMutexTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -44,8 +44,8 @@ mod tests {
     #[test]
     fn status_successfully_received() {
         let order = rnd_order(Default::default());
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        extractor.lock().unwrap().order = Some(order.clone());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        extractor.lock_un().order = Some(order.clone());
 
         let use_case = GetLastOrderStateUseCase::new(extractor.clone());
         let result = use_case.execute(order.for_customer());
@@ -60,7 +60,7 @@ mod tests {
 
     #[test]
     fn order_not_found() {
-        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
         let order_id = rnd_order_id();
@@ -77,8 +77,8 @@ mod tests {
     #[test]
     fn order_expected_successfully() {
         let order = rnd_order(Default::default());
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        extractor.lock().unwrap().order = Some(order.clone());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        extractor.lock_un().order = Some(order.clone());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
         let result = use_case.execute(order.id());

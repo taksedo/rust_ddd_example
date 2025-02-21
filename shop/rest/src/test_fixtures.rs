@@ -8,13 +8,13 @@ use domain::{
 use smart_default::SmartDefault;
 use usecase::{
     menu::{
-        dto::meal_info::MealInfo, AddMealToMenu, AddMealToMenuUseCaseError, GetMealById,
-        GetMealByIdUseCaseError, GetMenu, RemoveMealFromMenu, RemoveMealFromMenuUseCaseError,
+        AddMealToMenu, AddMealToMenuUseCaseError, GetMealById, GetMealByIdUseCaseError, GetMenu,
+        RemoveMealFromMenu, RemoveMealFromMenuUseCaseError, dto::meal_info::MealInfo,
     },
     order::{
-        dto::order_details::{OrderDetails, ToDetails},
         CancelOrder, CancelOrderUseCaseError, ConfirmOrder, ConfirmOrderUseCaseError, GetOrderById,
         GetOrderByIdUseCaseError, GetOrders, GetOrdersUseCaseError,
+        dto::order_details::{OrderDetails, ToDetails},
     },
 };
 

@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use futures_util::SinkExt;
-use nectar::{event::TelnetEvent, TelnetCodec};
+use nectar::{TelnetCodec, event::TelnetEvent};
 use tokio::net::TcpStream;
 use tokio_util::codec::Framed;
 
