@@ -24,8 +24,7 @@ where
 {
     fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
         self.shop_order_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_by_id(order_id)
             .map_or(Err(ConfirmOrderUseCaseError::OrderNotFound), |mut order| {
                 order
@@ -63,13 +62,9 @@ mod tests {
 
         persister.lock_un().verify_invoked_order(&order);
         persister
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_events_after_confirmation(order.id());
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
     }
 
     #[test]
@@ -89,10 +84,7 @@ mod tests {
         );
 
         persister.lock_un().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
     }
 
     #[test]
@@ -109,9 +101,6 @@ mod tests {
         assert_eq!(result.unwrap_err(), ConfirmOrderUseCaseError::OrderNotFound);
 
         persister.lock_un().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(&order_id);
+        extractor.lock_un().verify_invoked_get_by_id(&order_id);
     }
 }

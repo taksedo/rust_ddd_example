@@ -1,4 +1,8 @@
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::{
+    cell::RefCell,
+    rc::Rc,
+    sync::{Arc, Mutex, MutexGuard},
+};
 
 /// `Arc<Mutex<T>>` alias type
 pub type AM<T> = Arc<Mutex<T>>;
@@ -12,6 +16,19 @@ impl<T> ArcMutexTrait<T> for AM<T> {
     }
     fn lock_un(&self) -> MutexGuard<T> {
         self.lock().unwrap()
+    }
+}
+
+/// `Rc<RefCell<T>>` alias type
+pub type RCell<T> = Rc<RefCell<T>>;
+
+pub trait RcRefCellTrait<T> {
+    fn new_rc(t: T) -> RCell<T>;
+}
+
+impl<T> RcRefCellTrait<T> for RCell<T> {
+    fn new_rc(t: T) -> RCell<T> {
+        Rc::new(RefCell::new(t))
     }
 }
 

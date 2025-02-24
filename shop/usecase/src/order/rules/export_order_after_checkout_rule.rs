@@ -61,8 +61,7 @@ mod tests {
         rule.handle(&event);
 
         exporter
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(order_id, customer_id, total_price);
     }
 }

@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found, rest_business_error,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait},
+    types::base::{AM, ArcMutexTrait, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{ConfirmOrder, ConfirmOrderUseCaseError};
@@ -61,7 +61,7 @@ where
 {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = AM::new_am(vec![]);
+    let error_list = RCell::new_rc(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
         Ok(order_id) => match shared_state.lock_un().execute(&order_id) {

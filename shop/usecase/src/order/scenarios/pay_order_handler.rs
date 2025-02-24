@@ -54,14 +54,8 @@ mod tests {
         let order = persister.lock_un().order.clone().unwrap();
 
         persister.lock_un().verify_invoked_order(&order);
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
-        persister
-            .lock()
-            .unwrap()
-            .verify_events_after_payment(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
+        persister.lock_un().verify_events_after_payment(order.id());
     }
 
     #[test]
@@ -78,10 +72,7 @@ mod tests {
         assert_eq!(result.unwrap_err(), PayOrderHandlerError::InvalidOrderState);
 
         persister.lock_un().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
     }
 
     #[test]
@@ -97,9 +88,6 @@ mod tests {
         assert_eq!(result.unwrap_err(), PayOrderHandlerError::OrderNotFound);
 
         persister.lock_un().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(&order_id);
+        extractor.lock_un().verify_invoked_get_by_id(&order_id);
     }
 }

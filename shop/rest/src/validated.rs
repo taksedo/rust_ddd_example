@@ -1,6 +1,7 @@
-use common::{common_rest::ValidationError, types::base::AM};
+use common::{common_rest::ValidationError, types::base::RCell};
 
-pub trait Validated<Entity, ValueType> {
-    #[allow(clippy::result_unit_err)]
-    fn validated(val: ValueType, error_list: AM<Vec<ValidationError>>) -> Result<Entity, ()>;
+pub trait Validated<T> {
+    fn validated(val: T, error_list: RCell<Vec<ValidationError>>) -> Result<Self, ()>
+    where
+        Self: Sized;
 }

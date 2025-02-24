@@ -44,8 +44,7 @@ mod tests {
 
         assert!(has_active_order);
         extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked_get_last_order(active_order.for_customer());
     }
 
@@ -62,8 +61,7 @@ mod tests {
 
         assert!(!has_active_order);
         extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked_get_last_order(active_order.for_customer());
     }
 
@@ -77,8 +75,7 @@ mod tests {
 
         assert!(!has_active_order);
         extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked_get_last_order(&customer_id);
     }
 }

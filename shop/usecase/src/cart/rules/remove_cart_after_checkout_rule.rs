@@ -1,6 +1,9 @@
 use std::mem::{Discriminant, discriminant};
 
-use common::{events::DomainEventListener, types::base::AM};
+use common::{
+    events::DomainEventListener,
+    types::base::{AM, ArcMutexTrait},
+};
 use derive_new::new;
 use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 use tracing::info;
@@ -34,8 +37,7 @@ where
 
         let result = &self
             .cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_cart(&event_struct.for_customer);
 
         if result.is_none() {
@@ -46,8 +48,7 @@ where
             )
         } else {
             self.cart_remover
-                .lock()
-                .unwrap()
+                .lock_un()
                 .delete_cart(result.clone().unwrap())
         }
     }
@@ -85,10 +86,7 @@ mod tests {
 
         rule.handle(&event);
 
-        cart_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked(cart.for_customer());
+        cart_extractor.lock_un().verify_invoked(cart.for_customer());
         cart_remover.lock_un().verify_invoked(cart.id());
     }
 

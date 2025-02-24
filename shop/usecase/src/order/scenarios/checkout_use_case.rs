@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, ArcMutexTrait};
 use derive_new::new;
 use domain::order::{
     customer_has_active_order::CustomerHasActiveOrder, get_meal_price::GetMealPrice,
@@ -58,8 +58,7 @@ where
 {
     fn execute(&self, request: &CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError> {
         self.cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_cart(&request.for_customer)
             .map_or(Err(CheckoutUseCaseError::CartNotFound), |cart| {
                 Ok(ShopOrder::checkout(
@@ -71,17 +70,13 @@ where
                 )?)
             })
             .map(|order| {
-                self.shop_order_persister
-                    .lock()
-                    .unwrap()
-                    .save(order.clone());
+                self.shop_order_persister.lock_un().save(order.clone());
                 PaymentInfo {
                     order_id: *order.id(),
                     price: order.total_price(),
                     payment_url: self
                         .payment_url_provider
-                        .lock()
-                        .unwrap()
+                        .lock_un()
                         .provide_url(order.id(), order.total_price()),
                 }
             })
@@ -149,13 +144,9 @@ mod tests {
         let order_id = id_generator.lock_un().id;
 
         active_order_rule
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(cart.for_customer());
-        cart_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked(cart.for_customer());
+        cart_extractor.lock_un().verify_invoked(cart.for_customer());
         order_persister.lock_un().verify_invoked(
             &order_id,
             &address,
@@ -200,8 +191,7 @@ mod tests {
         order_persister.lock_un().verify_empty();
         active_order_rule.lock_un().verify_empty();
         cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&checkout_request.for_customer);
 
         assert!(result.is_err());
@@ -239,12 +229,10 @@ mod tests {
 
         order_persister.lock_un().verify_empty();
         active_order_rule
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&checkout_request.for_customer);
         cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&checkout_request.for_customer);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), CheckoutUseCaseError::EmptyCart);

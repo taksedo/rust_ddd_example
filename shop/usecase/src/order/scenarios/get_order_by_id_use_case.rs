@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, ArcMutexTrait};
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -16,8 +16,7 @@ pub struct GetOrderByIdUseCase<ShOExtractor: ShopOrderExtractor> {
 impl<ShOExtractor: ShopOrderExtractor> GetOrderById for GetOrderByIdUseCase<ShOExtractor> {
     fn execute(&mut self, id: &ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
         self.shop_order_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_by_id(id)
             .map_or(Err(GetOrderByIdUseCaseError::OrderNotFound), |order| {
                 Ok(order.to_details())

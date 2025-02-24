@@ -231,14 +231,13 @@ pub enum ShopOrderError {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::{collections::HashMap, str::FromStr};
 
     use bigdecimal::{BigDecimal, num_bigint::BigInt};
     use common::{
         test_fixtures::rnd_count,
         types::base::{AM, ArcMutexTrait},
     };
-    use derive_more::FromStr;
 
     use super::*;
     use crate::test_fixtures::{
@@ -256,8 +255,7 @@ mod tests {
 
         let get_meal_price = AM::new_am(HashMapStoragePriceProvider::default());
         get_meal_price
-            .lock()
-            .unwrap()
+            .lock_un()
             .storage
             .insert(meal_id, price.clone());
         let mut cart = rnd_cart();
@@ -303,8 +301,7 @@ mod tests {
 
         let meal_price_only_for_special_meal = AM::new_am(HashMapStoragePriceProvider::default());
         meal_price_only_for_special_meal
-            .lock()
-            .unwrap()
+            .lock_un()
             .storage
             .insert(meal_id, price);
 
@@ -329,8 +326,7 @@ mod tests {
         let cart = rnd_cart();
         let get_meal_price = AM::new_am(HashMapStoragePriceProvider::default());
         get_meal_price
-            .lock()
-            .unwrap()
+            .lock_un()
             .storage
             .insert(rnd_meal_id(), rnd_price());
         let result = ShopOrder::checkout(

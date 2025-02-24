@@ -1,17 +1,16 @@
 use std::{collections::HashMap, fmt::Display, str::FromStr};
 
 use actix_web::{HttpRequest, web::Query};
-use common::{common_rest::ValidationError, types::base::AM};
+use common::{common_rest::ValidationError, types::base::RCell};
 use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
 
 use crate::validated::Validated;
 
-impl Validated<ShopOrderId, i64> for ShopOrderId {
-    fn validated(val: i64, error_list: AM<Vec<ValidationError>>) -> Result<Self, ()> {
+impl Validated<i64> for ShopOrderId {
+    fn validated(val: i64, error_list: RCell<Vec<ValidationError>>) -> Result<Self, ()> {
         Self::try_from(val).map_err(|e| match e {
             ShopOrderError::IdGenerationError => error_list
-                .lock()
-                .unwrap()
+                .borrow_mut()
                 .push(ValidationError::new("Wrong Shop Order Id")),
         })
     }
@@ -21,7 +20,7 @@ impl Validated<ShopOrderId, i64> for ShopOrderId {
 pub fn validate_query_string<T>(
     req: HttpRequest,
     param_name: &str,
-    error_list: AM<Vec<ValidationError>>,
+    error_list: RCell<Vec<ValidationError>>,
 ) -> Result<T, ()>
 where
     T: FromStr,
@@ -32,20 +31,16 @@ where
         match val.parse::<T>() {
             Err(err) => {
                 error_list
-                    .lock()
-                    .unwrap()
+                    .borrow_mut()
                     .push(ValidationError::new(&err.to_string()));
                 Err(())
             }
             Ok(start_id) => Ok(start_id),
         }
     } else {
-        error_list
-            .lock()
-            .unwrap()
-            .push(ValidationError::new(&format!(
-                "Mandatory parameter '{param_name}' in query is absent"
-            )));
+        error_list.borrow_mut().push(ValidationError::new(&format!(
+            "Mandatory parameter '{param_name}' in query is absent"
+        )));
         Err(())
     }
 }

@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait},
+    types::base::{AM, ArcMutexTrait, RCell},
 };
 use domain::menu::value_objects::meal_id::MealId;
 use usecase::menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError};
@@ -58,7 +58,7 @@ where
 {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = AM::new_am(vec![]);
+    let error_list = RCell::new_rc(vec![]);
 
     match MealId::validated(id, error_list.clone()) {
         Ok(meal_id) => match shared_state.lock_un().execute(&meal_id) {

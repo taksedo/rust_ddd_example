@@ -39,10 +39,7 @@ mod tests {
         let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
         let result = get_meal_price.invoke(meal.id());
 
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(meal.id());
+        extractor.lock_un().verify_invoked_get_by_id(meal.id());
         assert_eq!(result, meal.price().to_owned());
     }
 

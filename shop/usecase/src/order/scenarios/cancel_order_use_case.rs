@@ -24,8 +24,7 @@ where
 {
     fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
         self.shop_order_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_by_id(order_id)
             .map_or(Err(CancelOrderUseCaseError::OrderNotFound), |mut order| {
                 order
@@ -63,13 +62,9 @@ mod tests {
         let order = &persister.lock_un().order.clone().unwrap();
         persister.lock_un().verify_invoked_order(order);
         persister
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_events_after_cancellation(order.id());
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
     }
 
     #[test]
@@ -84,10 +79,7 @@ mod tests {
         let result = use_case.execute(order.id());
 
         persister.lock_un().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
         assert!(result.is_err());
         assert_eq!(result, Err(CancelOrderUseCaseError::InvalidOrderState));
     }
@@ -104,10 +96,7 @@ mod tests {
         let result = use_case.execute(&order_id);
 
         persister.lock_un().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(&order_id);
+        extractor.lock_un().verify_invoked_get_by_id(&order_id);
         assert!(result.is_err());
         assert_eq!(result, Err(CancelOrderUseCaseError::OrderNotFound));
     }

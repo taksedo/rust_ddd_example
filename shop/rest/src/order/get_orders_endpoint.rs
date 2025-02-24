@@ -5,7 +5,7 @@ use common::{
     common_rest::{
         CursorPagedModel, GenericErrorResponse, ValidationError, to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait},
+    types::base::{AM, ArcMutexTrait, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{GetOrders, GetOrdersUseCaseError};
@@ -54,7 +54,7 @@ pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
     shared_state: web::Data<AM<T>>,
     req: HttpRequest,
 ) -> HttpResponse {
-    let error_list = AM::new_am(vec![]);
+    let error_list = RCell::new_rc(vec![]);
 
     match (
         match validate_query_string::<i64>(req.clone(), "startId", error_list.clone()) {
@@ -89,8 +89,8 @@ impl ToRestError for GetOrdersUseCaseError {
     fn to_rest_error(self) -> HttpResponse {
         match self {
             GetOrdersUseCaseError::LimitExceed(max_size) => {
-                let error_list = AM::new_am(vec![]);
-                error_list.lock_un().push(ValidationError::new(&format!(
+                let error_list = RCell::new_rc(vec![]);
+                error_list.borrow_mut().push(ValidationError::new(&format!(
                     "Max limit is {}",
                     max_size - 1
                 )));

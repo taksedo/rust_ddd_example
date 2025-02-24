@@ -6,7 +6,7 @@ use common::{
     common_rest::{
         GenericErrorResponse, created, rest_business_error, to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait},
+    types::base::{AM, ArcMutexTrait, RCell, RcRefCellTrait},
 };
 use derive_new::new;
 use domain::menu::value_objects::{
@@ -86,7 +86,7 @@ where
 {
     println!("Request {request:?} to add meal to menu received");
 
-    let error_list = AM::new_am(vec![]);
+    let error_list = RCell::new_rc(vec![]);
 
     match (
         MealName::validated(&request.name, error_list.clone()),
@@ -171,8 +171,7 @@ mod tests {
         let resp = add_meal_to_menu_endpoint(mock_shared_state, meal).await;
 
         mock_add_meal_to_menu
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&meal_name, &meal_description, &price);
 
         let header = resp

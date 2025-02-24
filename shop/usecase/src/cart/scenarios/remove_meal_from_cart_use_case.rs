@@ -57,13 +57,9 @@ mod tests {
             RemoveMealFromCartUseCase::new(cart_extractor.clone(), cart_persister.clone());
         let result = use_case.execute(cart.clone().for_customer(), &rnd_meal_id());
 
-        cart_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked(cart.for_customer());
+        cart_extractor.lock_un().verify_invoked(cart.for_customer());
         cart_persister
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(Some(&cart), None, None, None);
         assert!(result.is_ok());
     }
@@ -79,8 +75,7 @@ mod tests {
         let result = use_case.execute(cart.clone().for_customer(), &rnd_meal_id());
 
         cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(cart.clone().for_customer());
         cart_persister.lock_un().verify_empty();
         assert_eq!(

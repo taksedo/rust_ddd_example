@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use actix_web::{HttpResponse, http::header::ContentType, web};
-use common::types::base::AM;
+use common::types::base::{AM, ArcMutexTrait};
 use usecase::menu::GetMenu;
 
 use crate::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
@@ -24,8 +24,7 @@ pub async fn get_menu_endpoint<T: GetMenu + Send + Debug>(
     shared_state: web::Data<AM<T>>,
 ) -> HttpResponse {
     let meal_model_list: Vec<MealModel> = shared_state
-        .lock()
-        .unwrap()
+        .lock_un()
         .execute()
         .into_iter()
         .map(MealModel::from)

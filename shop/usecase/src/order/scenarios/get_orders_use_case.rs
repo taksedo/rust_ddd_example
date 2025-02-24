@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::base::AM;
+use common::types::base::{AM, ArcMutexTrait};
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -28,8 +28,7 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtract
         } else {
             Ok(self
                 .shop_order_extractor
-                .lock()
-                .unwrap()
+                .lock_un()
                 .get_all(start_id, max_size)
                 .iter()
                 .map(|order| order.to_details())
