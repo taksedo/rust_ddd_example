@@ -6,7 +6,7 @@ use common::{
     common_rest::{
         GenericErrorResponse, created, rest_business_error, to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait, RCell, RcRefCellTrait},
+    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
 };
 use derive_new::new;
 use domain::menu::value_objects::{

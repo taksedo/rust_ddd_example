@@ -8,7 +8,7 @@ use std::{
 
 use common::{
     events::{DomainEventListener, DomainEventPublisher},
-    types::base::{AM, ArcMutexTrait, DomainEventTrait},
+    types::base::{AM, AMTrait, DomainEventTrait},
 };
 use derive_new::new;
 use log::info;

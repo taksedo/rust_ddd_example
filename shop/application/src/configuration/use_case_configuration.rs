@@ -1,7 +1,7 @@
 use std::sync::LazyLock;
 
 use actix_web::web::Data;
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use usecase::{
     menu::{
         invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor,

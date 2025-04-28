@@ -54,7 +54,7 @@ impl MealExtractor for InMemoryMealRepository {
 mod tests {
     use std::any::{type_name, type_name_of_val};
 
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
     use domain::{menu::meal_events::MealRemovedFromMenuDomainEvent, test_fixtures::*};
 
     use super::*;

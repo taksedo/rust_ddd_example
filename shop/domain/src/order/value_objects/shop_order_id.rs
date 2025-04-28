@@ -35,11 +35,11 @@ pub trait ShopOrderIdGenerator: Debug + Send {
 #[cfg(test)]
 mod tests {
     use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::ShopOrderId};
-    use rand::{Rng, rng};
+    use rand::random_range;
 
     #[test]
     fn check_equality() {
-        let id: i64 = rng().random_range(0..i64::MAX);
+        let id: i64 = random_range(0..i64::MAX);
 
         dbg!(&id);
         let shop_order_id_1 = ShopOrderId::try_from(id).unwrap();
@@ -50,7 +50,7 @@ mod tests {
 
     #[test]
     fn wrong_id_value() {
-        let id = rng().random_range(i64::MIN..0);
+        let id = random_range(i64::MIN..0);
 
         let shop_order_id = ShopOrderId::try_from(id);
 

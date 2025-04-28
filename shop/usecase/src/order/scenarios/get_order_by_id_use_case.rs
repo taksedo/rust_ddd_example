@@ -1,4 +1,4 @@
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 

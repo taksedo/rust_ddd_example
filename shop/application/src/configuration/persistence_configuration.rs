@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use in_memory_persistence::order::{
     in_memory_incremental_shop_order_id_generator::InMemoryIncrementalShopOrderIdGenerator,
     in_memory_shop_order_repository::InMemoryShopOrderRepository,
@@ -14,6 +14,7 @@ use crate::configuration::application_configuration::EVENT_PUBLISHER;
 
 pub type ORepository = OrderRepository;
 type OrderRepository = InMemoryShopOrderRepository;
+#[allow(dead_code)]
 type OrderIdGenerator = InMemoryIncrementalShopOrderIdGenerator;
 type MealIdGenerator = PostgresMealIdGenerator;
 type MealRepository = PostgresMealRepository;
@@ -23,6 +24,7 @@ pub(super) static MEAL_ID_GENERATOR: LazyLock<AM<MealIdGenerator>> =
 /// `MealRepository` dependency injection
 pub(super) static MEAL_REPOSITORY: LazyLock<AM<MealRepository>> = LazyLock::new(meal_repository);
 
+#[allow(dead_code)]
 pub(super) static ORDER_ID_GENERATOR: LazyLock<AM<OrderIdGenerator>> =
     LazyLock::new(order_id_generator);
 pub(super) static ORDER_REPOSITORY: LazyLock<AM<OrderRepository>> = LazyLock::new(order_repository);

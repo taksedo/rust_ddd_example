@@ -5,7 +5,7 @@ use common::{
     common_rest::{
         CursorPagedModel, GenericErrorResponse, ValidationError, to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait, RCell, RcRefCellTrait},
+    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{GetOrders, GetOrdersUseCaseError};

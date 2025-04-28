@@ -24,7 +24,7 @@ services:
   application-db:
     user: root
     container_name: restapp_postgres_container
-    image: postgres:13
+    image: postgres:17.3-alpine
     command:
       - "postgres"
       - "-c"

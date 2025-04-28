@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use diesel_migrations::MigrationHarness;
 use domain::test_fixtures::*;
 use postgres_persistence::{

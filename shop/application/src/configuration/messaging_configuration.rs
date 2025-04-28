@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::{env, sync::LazyLock};
 
 use dotenvy::dotenv;

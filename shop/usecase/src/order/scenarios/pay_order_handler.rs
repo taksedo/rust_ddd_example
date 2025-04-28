@@ -30,7 +30,7 @@ impl PayOrder for PayOrderHandler {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

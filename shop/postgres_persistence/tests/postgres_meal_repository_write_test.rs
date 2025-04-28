@@ -1,4 +1,4 @@
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use diesel::{RunQueryDsl, sql_query};
 use diesel_migrations::MigrationHarness;
 use domain::{

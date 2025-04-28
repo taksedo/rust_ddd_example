@@ -236,7 +236,7 @@ mod tests {
     use bigdecimal::{BigDecimal, num_bigint::BigInt};
     use common::{
         test_fixtures::rnd_count,
-        types::base::{AM, ArcMutexTrait},
+        types::base::{AM, AMTrait},
     };
 
     use super::*;

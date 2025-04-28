@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait, RCell},
+    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
 };
 use domain::menu::value_objects::meal_id::MealId;
 use usecase::menu::{GetMealById, GetMealByIdUseCaseError, scenario::GetMealByIdUseCase};

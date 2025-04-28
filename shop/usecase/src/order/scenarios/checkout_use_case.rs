@@ -1,4 +1,4 @@
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::order::{
     customer_has_active_order::CustomerHasActiveOrder, get_meal_price::GetMealPrice,
@@ -91,7 +91,7 @@ mod tests {
     use common::{
         test_fixtures::*,
         types::{
-            base::{AM, ArcMutexTrait},
+            base::{AM, AMTrait},
             common::Address,
         },
     };

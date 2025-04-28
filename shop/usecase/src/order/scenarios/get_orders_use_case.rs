@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -39,7 +39,7 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtract
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

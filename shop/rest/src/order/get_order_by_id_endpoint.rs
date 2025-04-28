@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, ArcMutexTrait, RCell, RcRefCellTrait},
+    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{GetOrderById, GetOrderByIdUseCaseError};

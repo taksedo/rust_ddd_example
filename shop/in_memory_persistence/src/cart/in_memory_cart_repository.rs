@@ -41,7 +41,7 @@ impl CartRemover for InMemoryCartRepository {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
     use domain::{cart::cart_events::MealAddedToCartDomainEvent, test_fixtures::*};
 
     use super::*;

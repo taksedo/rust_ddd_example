@@ -60,7 +60,7 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
     use domain::{order::customer_order_events::ShopOrderCompletedDomainEvent, test_fixtures::*};
 
     use super::*;

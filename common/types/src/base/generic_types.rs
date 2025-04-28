@@ -6,11 +6,11 @@ use std::{
 
 /// `Arc<Mutex<T>>` alias type
 pub type AM<T> = Arc<Mutex<T>>;
-pub trait ArcMutexTrait<T> {
+pub trait AMTrait<T> {
     fn new_am(t: T) -> AM<T>;
     fn lock_un(&self) -> MutexGuard<T>;
 }
-impl<T> ArcMutexTrait<T> for AM<T> {
+impl<T> AMTrait<T> for AM<T> {
     fn new_am(t: T) -> AM<T> {
         Arc::new(Mutex::new(t))
     }

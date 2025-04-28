@@ -2,7 +2,7 @@ use std::mem::{Discriminant, discriminant};
 
 use common::{
     events::DomainEventListener,
-    types::base::{AM, ArcMutexTrait},
+    types::base::{AM, AMTrait},
 };
 use derive_new::new;
 use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
@@ -40,7 +40,7 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

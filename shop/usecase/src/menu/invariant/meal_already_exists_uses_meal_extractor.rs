@@ -19,7 +19,7 @@ impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::{rnd_meal, rnd_meal_name};
 
     use super::*;

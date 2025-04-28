@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use actix_web::{HttpResponse, http::header::ContentType, web};
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 use usecase::menu::GetMenu;
 
 use crate::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
@@ -42,7 +42,7 @@ pub fn get_menu_endpoint_config<T: GetMenu + Send + Debug + 'static>(cfg: &mut w
 #[cfg(test)]
 mod tests {
     use actix_web::body::MessageBody;
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
 
     use super::*;
     use crate::test_fixtures::{MockGetMenu, rnd_meal_info};

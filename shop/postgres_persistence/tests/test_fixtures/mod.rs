@@ -2,7 +2,7 @@ use std::sync::atomic::AtomicU32;
 
 use common::{
     events::DomainEventPublisher,
-    types::base::{AM, ArcMutexTrait},
+    types::base::{AM, AMTrait},
 };
 use derive_new::new;
 use diesel::{Connection, PgConnection, RunQueryDsl, sql_query};
@@ -37,7 +37,7 @@ impl TestDb {
     pub fn new() -> Self {
         let msg = WaitFor::message_on_stderr("database system is ready to accept connections");
 
-        let pg_container = GenericImage::new("postgres", "13")
+        let pg_container = GenericImage::new("postgres", "17.3-alpine")
             .with_wait_for(msg)
             .with_env_var("POSTGRES_DB", "postgres")
             .with_env_var("POSTGRES_USER", "root")

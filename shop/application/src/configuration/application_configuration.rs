@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use common::types::base::{AM, ArcMutexTrait};
+use common::types::base::{AM, AMTrait};
 
 use crate::event::kafka_event_publisher_impl::KafkaEventPublisherImpl;
 

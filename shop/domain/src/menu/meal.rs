@@ -109,7 +109,7 @@ impl BusinessError for MealError {}
 mod tests {
     use std::{any::type_name_of_val, sync::atomic::AtomicI64};
 
-    use common::types::base::{AM, ArcMutexTrait};
+    use common::types::base::{AM, AMTrait};
 
     use super::*;
     use crate::test_fixtures::{
