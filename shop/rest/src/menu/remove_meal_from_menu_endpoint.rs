@@ -1,12 +1,12 @@
 use std::fmt::Debug;
 
-use actix_web::{http::StatusCode, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, http::StatusCode, web};
 use common::{
     common_rest::{
-        get_json_from_http_response, resource_not_found, to_invalid_param_bad_request,
-        GenericErrorResponse,
+        GenericErrorResponse, get_json_from_http_response, resource_not_found,
+        to_invalid_param_bad_request,
     },
-    types::base::{AM, AMW},
+    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
 };
 use domain::menu::value_objects::meal_id::MealId;
 use usecase::menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError};
@@ -58,10 +58,10 @@ where
 {
     let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
 
-    let error_list = AMW::new(vec![]);
+    let error_list = RCell::new_rc(vec![]);
 
     match MealId::validated(id, error_list.clone()) {
-        Ok(meal_id) => match shared_state.lock().unwrap().execute(&meal_id) {
+        Ok(meal_id) => match shared_state.lock_un().execute(&meal_id) {
             Ok(_) => HttpResponse::new(StatusCode::NO_CONTENT),
             Err(e) => e.to_rest_error(),
         },
@@ -88,7 +88,7 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, test::TestRequest, web::Data};
-    use common::common_rest::{not_found_type_url, GenericErrorResponse};
+    use common::common_rest::{GenericErrorResponse, not_found_type_url};
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -98,8 +98,8 @@ mod tests {
     async fn meal_not_found() {
         dotenv().ok();
         let meal_id = rnd_meal_id();
-        let mock_remove_meal_from_menu = AMW::new(MockRemoveMealFromMenu::default());
-        mock_remove_meal_from_menu.lock().unwrap().response =
+        let mock_remove_meal_from_menu = AM::new_am(MockRemoveMealFromMenu::default());
+        mock_remove_meal_from_menu.lock_un().response =
             Err(RemoveMealFromMenuUseCaseError::MealNotFound);
         let mock_shared_state = Data::new(mock_remove_meal_from_menu.clone());
 
@@ -128,7 +128,7 @@ mod tests {
     async fn removed_successfully() {
         let meal_id = rnd_meal_id();
 
-        let mock_remove_meal_from_menu = AMW::new(MockRemoveMealFromMenu::default());
+        let mock_remove_meal_from_menu = AM::new_am(MockRemoveMealFromMenu::default());
         let mock_shared_state = Data::new(mock_remove_meal_from_menu.clone());
 
         let req = TestRequest::default()

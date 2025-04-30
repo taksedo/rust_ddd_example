@@ -60,15 +60,15 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::{order::customer_order_events::ShopOrderCompletedDomainEvent, test_fixtures::*};
 
     use super::*;
-    use crate::test_fixtures::{order_with_events, TestEventPublisher};
+    use crate::test_fixtures::{TestEventPublisher, order_with_events};
 
     #[test]
     fn saving_order_order_doesnt_exist() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = order_with_events();
 
@@ -76,9 +76,9 @@ mod tests {
 
         let stored_order = repository.storage.get(order.id()).unwrap();
         assert_eq!(stored_order, &order);
-        assert_eq!(event_publisher.lock().unwrap().storage.len(), 1);
+        assert_eq!(event_publisher.lock_un().storage.len(), 1);
 
-        let binding = event_publisher.lock().unwrap();
+        let binding = event_publisher.lock_un();
         let event: &ShopOrderEventEnum = binding.storage.first().unwrap();
         let event_struct = TryInto::<ShopOrderCompletedDomainEvent>::try_into(event.clone());
         assert!(event_struct.is_ok());
@@ -93,7 +93,7 @@ mod tests {
 
         let existing_order = rnd_order_with_id(*id);
 
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         repository
@@ -102,7 +102,7 @@ mod tests {
 
         repository.save(updated_order.clone());
 
-        let binding = event_publisher.lock().unwrap();
+        let binding = event_publisher.lock_un();
         let event: &ShopOrderEventEnum = binding.storage.first().unwrap();
         let event_struct = TryInto::<ShopOrderCompletedDomainEvent>::try_into(event.clone());
 
@@ -115,7 +115,7 @@ mod tests {
     fn get_by_id_order_exist() {
         let existing_order = rnd_order(Default::default());
 
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         let id = existing_order.id();
@@ -128,7 +128,7 @@ mod tests {
 
     #[test]
     fn get_by_id_order_doesnt_exist() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_by_id(&rnd_order_id());
         assert!(order.is_none());
@@ -136,7 +136,7 @@ mod tests {
 
     #[test]
     fn get_last_doesnt_exist() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_last_order(&rnd_customer_id());
         assert!(order.is_none());
@@ -149,7 +149,7 @@ mod tests {
         let last_order = rnd_order_with_customer_id(customer_id);
         let one_more_order = rnd_order_with_customer_id(rnd_customer_id());
 
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         repository.save(first_order);
@@ -163,7 +163,7 @@ mod tests {
     #[test]
     fn get_all_storage_is_empty() {
         let order_id = rnd_order_id();
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_all(&order_id, 100);
         assert!(order.is_empty());
@@ -174,7 +174,7 @@ mod tests {
         let limit = 10;
         let collection_size = 20;
 
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         for i in 0..collection_size {
@@ -194,7 +194,7 @@ mod tests {
         let limit = 10;
         let collection_size = 5;
 
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
         for i in 0..collection_size {

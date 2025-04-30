@@ -1,7 +1,7 @@
 use std::sync::LazyLock;
 
 use actix_web::web::Data;
-use common::types::base::{AM, AMW};
+use common::types::base::{AM, AMTrait};
 use usecase::{
     menu::{
         invariant::meal_already_exists_uses_meal_extractor::MealAlreadyExistsUsesMealExtractor,
@@ -15,7 +15,7 @@ use usecase::{
 };
 
 use crate::configuration::persistence_configuration::{
-    ORepository, MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY,
+    MEAL_ID_GENERATOR, MEAL_REPOSITORY, ORDER_REPOSITORY, ORepository,
 };
 
 const GET_ORDERS_MAX_SIZE: usize = 10;
@@ -45,41 +45,41 @@ fn add_meal_to_menu_use_case() -> AM<AddMealToMenuUseCase> {
     let usecase = AddMealToMenuUseCase::new(
         MEAL_REPOSITORY.clone(),
         MEAL_ID_GENERATOR.clone(),
-        AMW::new(rule),
+        AM::new_am(rule),
     );
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }
 
 fn get_meal_by_id_use_case() -> AM<GetMealByIdUseCase> {
     let usecase = GetMealByIdUseCase::new(MEAL_REPOSITORY.clone());
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }
 
 fn get_menu_use_case() -> AM<GetMenuUseCase> {
     let usecase = GetMenuUseCase::new(MEAL_REPOSITORY.clone());
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }
 
 fn remove_meal_from_menu_usecase() -> AM<RemoveMealFromMenuUseCase> {
     let usecase = RemoveMealFromMenuUseCase::new(MEAL_REPOSITORY.clone(), MEAL_REPOSITORY.clone());
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }
 
 fn cancel_order_usecase() -> AM<CancelOrderUseCase<ORepository, ORepository>> {
     let usecase = CancelOrderUseCase::new(ORDER_REPOSITORY.clone(), ORDER_REPOSITORY.clone());
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }
 fn confirm_order_usecase() -> AM<ConfirmOrderUseCase<ORepository, ORepository>> {
     let usecase = ConfirmOrderUseCase::new(ORDER_REPOSITORY.clone(), ORDER_REPOSITORY.clone());
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }
 
 fn get_order_by_id_usecase() -> AM<GetOrderByIdUseCase<ORepository>> {
     let usecase = GetOrderByIdUseCase::new(ORDER_REPOSITORY.clone());
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }
 
 fn get_orders_usecase() -> AM<GetOrdersUseCase<ORepository>> {
     let usecase = GetOrdersUseCase::new(ORDER_REPOSITORY.clone(), || GET_ORDERS_MAX_SIZE + 1);
-    AMW::new(usecase)
+    AM::new_am(usecase)
 }

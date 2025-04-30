@@ -10,11 +10,11 @@ use common::{
 };
 use derive_new::new;
 use fake::{
+    Fake,
     faker::{address::en::StreetName, name::raw::*},
     locales::*,
-    Fake,
 };
-use rand::{thread_rng, Rng};
+use rand::random_range;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
@@ -39,15 +39,12 @@ use crate::{
 };
 
 pub fn rnd_address() -> Address {
-    Address::try_from((
-        &*StreetName().fake::<String>(),
-        thread_rng().gen_range(0..i16::MAX),
-    ))
-    .expect("Address should be right")
+    Address::try_from((&*StreetName().fake::<String>(), random_range(0..i16::MAX)))
+        .expect("Address should be right")
 }
 
 pub fn rnd_meal_id() -> MealId {
-    let id: i64 = thread_rng().gen_range(0..i64::MAX);
+    let id: i64 = random_range(0..i64::MAX);
     MealId::try_from(id).unwrap()
 }
 
@@ -56,11 +53,12 @@ pub fn rnd_meal_name() -> MealName {
 }
 
 pub fn rnd_meal_description() -> MealDescription {
-    MealDescription::try_from(Name(EN).fake::<String>().as_str()).unwrap()
+    let val = Name(EN).fake::<String>();
+    MealDescription::try_from(val.as_str()).unwrap()
 }
 
 pub fn rnd_price() -> Price {
-    let random_price: u64 = thread_rng().gen_range(0..500000);
+    let random_price: u64 = random_range(0..500000);
     let price = Price::try_from(BigDecimal::from_u64(random_price).unwrap()).unwrap();
     Price::try_from(price.to_bigdecimal().with_scale(Price::SCALE)).unwrap()
 }
@@ -103,7 +101,7 @@ pub fn rnd_customer_id() -> CustomerId {
 }
 
 pub fn rnd_cart_id() -> CartId {
-    CartId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
+    CartId::try_from(random_range(0..i64::MAX)).unwrap()
 }
 
 pub fn rnd_cart() -> Cart {
@@ -140,7 +138,7 @@ pub fn rnd_cart_with_customer_id_and_meals(
 }
 
 pub fn rnd_order_id() -> ShopOrderId {
-    ShopOrderId::try_from(thread_rng().gen_range(0..i64::MAX)).unwrap()
+    ShopOrderId::try_from(random_range(0..i64::MAX)).unwrap()
 }
 
 pub fn rnd_order_item() -> OrderItem {

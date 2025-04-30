@@ -1,7 +1,4 @@
-use std::{
-    env,
-    sync::{Arc, LazyLock, Mutex},
-};
+use std::{cell::RefCell, env, rc::Rc, sync::LazyLock};
 
 use actix_web::{
     body::MessageBody,
@@ -92,7 +89,7 @@ impl ValidationError {
     }
 }
 
-pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>) -> HttpResponse {
+pub fn to_invalid_param_bad_request(error_list: Rc<RefCell<Vec<ValidationError>>>) -> HttpResponse {
     let mut error_response = GenericErrorResponse::new(
         (BASE_URL.clone() + "/bad_request")
             .parse::<Uri>()
@@ -103,8 +100,7 @@ pub fn to_invalid_param_bad_request(error_list: Arc<Mutex<Vec<ValidationError>>>
     );
 
     error_list
-        .lock()
-        .unwrap()
+        .borrow_mut()
         .iter()
         .for_each(|error| error_response.invalid_params.push(error.to_owned()));
     HttpResponse::BadRequest().json(error_response)

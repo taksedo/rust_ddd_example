@@ -43,7 +43,7 @@ impl MealExtractor for InMemoryMealRepository {
         let storage: &HashMap<MealId, Meal> = &self.storage;
         storage
             .iter()
-            .filter(|(&_k, v)| !v.to_owned().removed())
+            .filter(|&(&_k, ref v)| !v.to_owned().removed())
             .map(|(&_k, v)| v.to_owned())
             .collect()
     }
@@ -54,7 +54,7 @@ impl MealExtractor for InMemoryMealRepository {
 mod tests {
     use std::any::{type_name, type_name_of_val};
 
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::{menu::meal_events::MealRemovedFromMenuDomainEvent, test_fixtures::*};
 
     use super::*;
@@ -62,7 +62,7 @@ mod tests {
 
     #[test]
     fn saving_meal__meal_doesnt_exist() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let storage_binding = event_publisher.clone();
         let mut meal_repository = InMemoryMealRepository::new(event_publisher);
         let meal = meal_with_events();
@@ -72,7 +72,7 @@ mod tests {
         let stored_meal = meal_repository.storage.get(meal.id()).unwrap();
         assert_eq!(&meal, stored_meal);
 
-        let storage = &storage_binding.lock().unwrap().storage;
+        let storage = &storage_binding.lock_un().storage;
         assert_eq!(storage.len(), 1);
 
         let event: MealRemovedFromMenuDomainEvent =
@@ -84,7 +84,7 @@ mod tests {
     fn saving_meal__meal_exists() {
         let existing_meal = rnd_meal();
 
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let storage_binding = event_publisher.clone();
         let mut meal_repository = InMemoryMealRepository::new(event_publisher);
         meal_repository
@@ -94,7 +94,7 @@ mod tests {
         let updated_meal = meal_with_events();
         meal_repository.save(updated_meal.clone());
 
-        let storage = &storage_binding.lock().unwrap().storage;
+        let storage = &storage_binding.lock_un().storage;
         let event = storage.first().unwrap().to_owned();
         let event: MealRemovedFromMenuDomainEvent = event.try_into().unwrap();
         assert_eq!(
@@ -107,7 +107,7 @@ mod tests {
     #[test]
     fn get_by_id__meal_exists() {
         let existing_meal = rnd_meal();
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
 
         let mut meal_repository = InMemoryMealRepository::new(event_publisher);
         meal_repository
@@ -120,7 +120,7 @@ mod tests {
 
     #[test]
     fn get_by_id__meal_doesnt_exist() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let meal = repository.get_by_id(&rnd_meal_id());
         assert!(meal.is_none());
@@ -128,7 +128,7 @@ mod tests {
 
     #[test]
     fn get_by_name__repository_is_empty() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let meal = repository.get_by_name(&rnd_meal_name());
         assert!(meal.is_none());
@@ -137,7 +137,7 @@ mod tests {
     #[test]
     fn get_meal_by_name__success() {
         let stored_meal = rnd_meal();
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         repository.save(stored_meal.clone());
 
@@ -147,7 +147,7 @@ mod tests {
 
     #[test]
     fn get_all_meals__repository_is_empty() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let meals = repository.get_all();
         assert!(meals.is_empty());
@@ -155,7 +155,7 @@ mod tests {
 
     #[test]
     fn get_all_meals__success() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let stored_meal = rnd_meal();
         repository
@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn get_all_meals__removed_is_not_returned() {
-        let event_publisher = AMW::new(TestEventPublisher::new());
+        let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
         let stored_meal = rnd_removed_meal();
         repository.storage.insert(*stored_meal.id(), stored_meal);

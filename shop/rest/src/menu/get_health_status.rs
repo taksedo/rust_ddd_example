@@ -1,6 +1,6 @@
 use actix_web::{
-    web::{get, ServiceConfig},
     HttpResponse,
+    web::{ServiceConfig, get},
 };
 
 /// Check health status

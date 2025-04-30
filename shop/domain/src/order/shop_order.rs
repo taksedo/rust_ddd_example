@@ -1,10 +1,10 @@
 use std::{
-    collections::{hash_map::DefaultHasher, HashSet},
+    collections::{HashSet, hash_map::DefaultHasher},
     hash::{Hash, Hasher},
 };
 
 use common::types::{
-    base::{DomainEntity, DomainEntityTrait, Version, AM},
+    base::{AM, DomainEntity, DomainEntityTrait, Version},
     common::{Address, Count},
 };
 use derive_getters::Getters;
@@ -231,11 +231,13 @@ pub enum ShopOrderError {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::{collections::HashMap, str::FromStr};
 
-    use bigdecimal::{num_bigint::BigInt, BigDecimal};
-    use common::{test_fixtures::rnd_count, types::base::AMW};
-    use derive_more::FromStr;
+    use bigdecimal::{BigDecimal, num_bigint::BigInt};
+    use common::{
+        test_fixtures::rnd_count,
+        types::base::{AM, AMTrait},
+    };
 
     use super::*;
     use crate::test_fixtures::{
@@ -244,17 +246,16 @@ mod tests {
 
     #[test]
     fn checkout_success() {
-        let id_generator = AMW::new(MockOrderIdGenerator::default());
-        let id = id_generator.lock().unwrap().id;
+        let id_generator = AM::new_am(MockOrderIdGenerator::default());
+        let id = id_generator.lock_un().id;
         let meal_id = rnd_meal_id();
         let count = rnd_count();
         let price = rnd_price();
         let address = rnd_address();
 
-        let get_meal_price = AMW::new(HashMapStoragePriceProvider::default());
+        let get_meal_price = AM::new_am(HashMapStoragePriceProvider::default());
         get_meal_price
-            .lock()
-            .unwrap()
+            .lock_un()
             .storage
             .insert(meal_id, price.clone());
         let mut cart = rnd_cart();
@@ -263,7 +264,7 @@ mod tests {
         let result = ShopOrder::checkout(
             cart.clone(),
             id_generator.clone(),
-            AMW::new(MockCustomerHasActiveOrder::new(false)),
+            AM::new_am(MockCustomerHasActiveOrder::new(false)),
             address.clone(),
             get_meal_price.clone(),
         );
@@ -292,16 +293,15 @@ mod tests {
 
     #[test]
     fn checkout_already_has_active_user() {
-        let id_generator = AMW::new(MockOrderIdGenerator::default());
+        let id_generator = AM::new_am(MockOrderIdGenerator::default());
         let meal_id = rnd_meal_id();
         let count = rnd_count();
         let price = rnd_price();
         let address = rnd_address();
 
-        let meal_price_only_for_special_meal = AMW::new(HashMapStoragePriceProvider::default());
+        let meal_price_only_for_special_meal = AM::new_am(HashMapStoragePriceProvider::default());
         meal_price_only_for_special_meal
-            .lock()
-            .unwrap()
+            .lock_un()
             .storage
             .insert(meal_id, price);
 
@@ -311,7 +311,7 @@ mod tests {
         let result = ShopOrder::checkout(
             cart.clone(),
             id_generator.clone(),
-            AMW::new(MockCustomerHasActiveOrder::new(true)),
+            AM::new_am(MockCustomerHasActiveOrder::new(true)),
             address.clone(),
             meal_price_only_for_special_meal.clone(),
         );
@@ -322,18 +322,17 @@ mod tests {
 
     #[test]
     fn checkout_empty_cart() {
-        let id_generator = AMW::new(MockOrderIdGenerator::default());
+        let id_generator = AM::new_am(MockOrderIdGenerator::default());
         let cart = rnd_cart();
-        let get_meal_price = AMW::new(HashMapStoragePriceProvider::default());
+        let get_meal_price = AM::new_am(HashMapStoragePriceProvider::default());
         get_meal_price
-            .lock()
-            .unwrap()
+            .lock_un()
             .storage
             .insert(rnd_meal_id(), rnd_price());
         let result = ShopOrder::checkout(
             cart.clone(),
             id_generator.clone(),
-            AMW::new(MockCustomerHasActiveOrder::new(false)),
+            AM::new_am(MockCustomerHasActiveOrder::new(false)),
             rnd_address(),
             get_meal_price.clone(),
         );

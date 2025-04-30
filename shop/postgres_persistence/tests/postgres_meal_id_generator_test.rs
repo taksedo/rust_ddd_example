@@ -1,7 +1,6 @@
 use diesel::{
-    select, sql_function,
+    RunQueryDsl, define_sql_function, select,
     sql_types::{BigInt, VarChar},
-    RunQueryDsl,
 };
 use diesel_migrations::MigrationHarness;
 use domain::{
@@ -36,4 +35,4 @@ fn generate_id_integration_test() {
     assert_eq!(meal_id, MealId::try_from(rnd_id.to_i64() + 1).unwrap());
 }
 
-sql_function!(fn setval(x: VarChar, y: BigInt));
+define_sql_function!(fn setval(x: VarChar, y: BigInt));

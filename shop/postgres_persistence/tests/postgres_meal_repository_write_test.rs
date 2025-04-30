@@ -1,5 +1,5 @@
-use common::types::base::AMW;
-use diesel::{sql_query, RunQueryDsl};
+use common::types::base::{AM, AMTrait};
+use diesel::{RunQueryDsl, sql_query};
 use diesel_migrations::MigrationHarness;
 use domain::{
     menu::meal_events::{MealAddedToMenuDomainEvent, MealEventEnum},
@@ -12,7 +12,7 @@ use postgres_persistence::{
 use usecase::menu::access::{meal_extractor::MealExtractor, meal_persister::MealPersister};
 
 use crate::test_fixtures::{
-    rnd_new_meal_with_meal_id, rnd_new_meal_with_name, MockEventPublisher, TestDb,
+    MockEventPublisher, TestDb, rnd_new_meal_with_meal_id, rnd_new_meal_with_name,
 };
 
 mod test_fixtures;
@@ -26,14 +26,13 @@ fn save_new_instance() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let publisher = AMW::new(MockEventPublisher::default());
+    let publisher = AM::new_am(MockEventPublisher::default());
 
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
     repository.save(rnd_meal.clone());
 
     publisher
-        .lock()
-        .unwrap()
+        .lock_un()
         .verify_contains(vec![MealAddedToMenuDomainEvent::new(*rnd_meal.id()).into()]);
 
     let result = repository.get_all();
@@ -51,7 +50,7 @@ fn save_new_instance_but_already_exists_with_the_same_id() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let publisher = AMW::new(MockEventPublisher::default());
+    let publisher = AM::new_am(MockEventPublisher::default());
 
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
@@ -73,7 +72,7 @@ fn save_new_instance_but_already_exists_with_the_same_name() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let publisher = AMW::new(MockEventPublisher::default());
+    let publisher = AM::new_am(MockEventPublisher::default());
 
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
@@ -92,7 +91,7 @@ fn create_new_instance_and_then_update_it() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let publisher = AMW::new(MockEventPublisher::default());
+    let publisher = AM::new_am(MockEventPublisher::default());
 
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
@@ -119,7 +118,7 @@ fn save_again_without_changes() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let publisher = AMW::new(MockEventPublisher::default());
+    let publisher = AM::new_am(MockEventPublisher::default());
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let rnd_meal = rnd_new_meal_with_meal_id(rnd_meal_id());
@@ -131,8 +130,7 @@ fn save_again_without_changes() {
     repository.save(rnd_meal.clone());
 
     publisher
-        .lock()
-        .unwrap()
+        .lock_un()
         .verify_contains(vec![Into::<MealEventEnum>::into(
             MealAddedToMenuDomainEvent::new(*rnd_meal.id()),
         )]);
@@ -148,7 +146,7 @@ fn saving_failed_if_version_outdated() {
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();
 
-    let publisher = AMW::new(MockEventPublisher::default());
+    let publisher = AM::new_am(MockEventPublisher::default());
     let mut repository = PostgresMealRepository::new(conn, publisher.clone());
 
     let rnd_meal = rnd_new_meal_with_meal_id(rnd_meal_id());

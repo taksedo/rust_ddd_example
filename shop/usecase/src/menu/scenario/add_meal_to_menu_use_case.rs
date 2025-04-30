@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::base::{DomainEventTrait, AM};
+use common::types::base::{AM, DomainEventTrait};
 use derive_new::new;
 use domain::menu::{
     meal::Meal,
@@ -51,7 +51,7 @@ impl DomainEventTrait for AddMealToMenuUseCase {}
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -62,21 +62,21 @@ mod tests {
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();
-        let id_generator = AMW::new(TestMealIdGenerator::new());
-        let meal_persister = AMW::new(MockMealPersister::new());
+        let id_generator = AM::new_am(TestMealIdGenerator::new());
+        let meal_persister = AM::new_am(MockMealPersister::new());
 
         let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
             meal_persister.clone(),
             id_generator.clone(),
-            AMW::new(TestMealAlreadyExists { value: false }),
+            AM::new_am(TestMealAlreadyExists { value: false }),
         );
         let result = add_to_menu_use_case.execute(&name, &description, &price);
 
-        let id = id_generator.lock().unwrap().id;
+        let id = id_generator.lock_un().id;
 
         assert_eq!(result.unwrap(), id.to_owned());
 
-        meal_persister.lock().unwrap().verify_invoked(
+        meal_persister.lock_un().verify_invoked(
             Some(&id),
             Some(&name),
             Some(&description),
@@ -90,13 +90,13 @@ mod tests {
         let description = rnd_meal_description();
         let price = rnd_price();
 
-        let id_generator = AMW::new(TestMealIdGenerator::new());
-        let persister = AMW::new(MockMealPersister::new());
+        let id_generator = AM::new_am(TestMealIdGenerator::new());
+        let persister = AM::new_am(MockMealPersister::new());
 
         let mut add_to_menu_use_case = AddMealToMenuUseCase::new(
             persister,
             id_generator,
-            AMW::new(TestMealAlreadyExists { value: true }),
+            AM::new_am(TestMealAlreadyExists { value: true }),
         );
         let result = add_to_menu_use_case.execute(&name, &description, &price);
 

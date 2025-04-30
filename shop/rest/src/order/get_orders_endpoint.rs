@@ -1,11 +1,11 @@
 use std::fmt::Debug;
 
-use actix_web::{http::header::ContentType, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, http::header::ContentType, web};
 use common::{
     common_rest::{
-        to_invalid_param_bad_request, CursorPagedModel, GenericErrorResponse, ValidationError,
+        CursorPagedModel, GenericErrorResponse, ValidationError, to_invalid_param_bad_request,
     },
-    types::base::{AM, AMW},
+    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{GetOrders, GetOrdersUseCaseError};
@@ -54,7 +54,7 @@ pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
     shared_state: web::Data<AM<T>>,
     req: HttpRequest,
 ) -> HttpResponse {
-    let error_list = AMW::new(vec![]);
+    let error_list = RCell::new_rc(vec![]);
 
     match (
         match validate_query_string::<i64>(req.clone(), "startId", error_list.clone()) {
@@ -63,26 +63,24 @@ pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
         },
         validate_query_string::<usize>(req, "limit", error_list.clone()),
     ) {
-        (Ok(start_id), Ok(limit)) => {
-            match shared_state.lock().unwrap().execute(&start_id, limit + 1) {
-                Ok(order_details_list) => {
-                    let list: Vec<OrderModel> = order_details_list
-                        .into_iter()
-                        .map(|it| it.to_model())
-                        .collect();
-                    let model = if list.len() > limit {
-                        let next_id = list[limit].id;
-                        CursorPagedModel::new(list[..limit].to_vec(), Some(next_id))
-                    } else {
-                        CursorPagedModel::new(list, Option::<i64>::None)
-                    };
-                    HttpResponse::Ok()
-                        .content_type(ContentType::json())
-                        .body(serde_json::to_string(&model).unwrap())
-                }
-                Err(e) => e.to_rest_error(),
+        (Ok(start_id), Ok(limit)) => match shared_state.lock_un().execute(&start_id, limit + 1) {
+            Ok(order_details_list) => {
+                let list: Vec<OrderModel> = order_details_list
+                    .into_iter()
+                    .map(|it| it.to_model())
+                    .collect();
+                let model = if list.len() > limit {
+                    let next_id = list[limit].id;
+                    CursorPagedModel::new(list[..limit].to_vec(), Some(next_id))
+                } else {
+                    CursorPagedModel::new(list, Option::<i64>::None)
+                };
+                HttpResponse::Ok()
+                    .content_type(ContentType::json())
+                    .body(serde_json::to_string(&model).unwrap())
             }
-        }
+            Err(e) => e.to_rest_error(),
+        },
         (_, _) => to_invalid_param_bad_request(error_list),
     }
 }
@@ -91,14 +89,11 @@ impl ToRestError for GetOrdersUseCaseError {
     fn to_rest_error(self) -> HttpResponse {
         match self {
             GetOrdersUseCaseError::LimitExceed(max_size) => {
-                let error_list = AMW::new(vec![]);
-                error_list
-                    .lock()
-                    .unwrap()
-                    .push(ValidationError::new(&format!(
-                        "Max limit is {}",
-                        max_size - 1
-                    )));
+                let error_list = RCell::new_rc(vec![]);
+                error_list.borrow_mut().push(ValidationError::new(&format!(
+                    "Max limit is {}",
+                    max_size - 1
+                )));
                 to_invalid_param_bad_request(error_list)
             }
         }
@@ -118,12 +113,12 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::common_rest::{bad_request_type_url, GenericErrorResponse};
+    use common::common_rest::{GenericErrorResponse, bad_request_type_url};
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
     use super::*;
-    use crate::test_fixtures::{rnd_order_details, MockGetOrders};
+    use crate::test_fixtures::{MockGetOrders, rnd_order_details};
 
     #[actix_web::test]
     async fn limit_reached() {
@@ -131,7 +126,7 @@ mod tests {
         let start_id = rnd_order_id();
         let limit = 10;
 
-        let mock_get_orders = AMW::new(MockGetOrders {
+        let mock_get_orders = AM::new_am(MockGetOrders {
             response: Err(GetOrdersUseCaseError::new_limit_exceed(limit + 1)),
             start_id,
             limit,
@@ -164,8 +159,7 @@ mod tests {
             "Max limit is 10"
         );
         mock_get_orders
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&start_id, &(limit + 1));
     }
 
@@ -177,7 +171,7 @@ mod tests {
         let single = rnd_order_details(Default::default());
         let first_item = single.clone().items[0];
 
-        let mock_get_orders = AMW::new(MockGetOrders {
+        let mock_get_orders = AM::new_am(MockGetOrders {
             response: Ok(vec![single.clone()]),
             start_id: single.id,
             limit,
@@ -223,8 +217,7 @@ mod tests {
             first_item.count.to_i32()
         );
         mock_get_orders
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&single.id, &(limit + 1));
     }
 
@@ -237,7 +230,7 @@ mod tests {
         let first_item = first.clone().items[0];
         let second = rnd_order_details(Default::default());
 
-        let mock_get_orders = AMW::new(MockGetOrders {
+        let mock_get_orders = AM::new_am(MockGetOrders {
             response: Ok(vec![first.clone(), second]),
             start_id: first.id,
             limit,
@@ -285,8 +278,7 @@ mod tests {
             first_item.count.to_i32()
         );
         mock_get_orders
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&first.id, &(limit + 1));
     }
 }

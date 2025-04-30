@@ -31,7 +31,7 @@ impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -41,9 +41,9 @@ mod tests {
     fn successfully_removed() {
         let meal = rnd_meal();
 
-        let meal_persister = AMW::new(MockMealPersister::new());
-        let meal_extractor = AMW::new(MockMealExtractor::new());
-        meal_extractor.lock().unwrap().meal = Some(meal.clone());
+        let meal_persister = AM::new_am(MockMealPersister::new());
+        let meal_extractor = AM::new_am(MockMealExtractor::new());
+        meal_extractor.lock_un().meal = Some(meal.clone());
 
         let mut use_case =
             RemoveMealFromMenuUseCase::new(meal_extractor.clone(), meal_persister.clone());
@@ -51,26 +51,22 @@ mod tests {
 
         assert!(result.is_ok());
 
-        let meal = meal_persister.lock().unwrap().meal.clone().unwrap();
+        let meal = meal_persister.lock_un().meal.clone().unwrap();
         //todo: придумать более изящное тестирование meal
 
-        meal_persister.lock().unwrap().verify_invoked_meal(&meal);
+        meal_persister.lock_un().verify_invoked_meal(&meal);
 
-        meal_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(meal.id());
+        meal_extractor.lock_un().verify_invoked_get_by_id(meal.id());
 
         meal_persister
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_events_after_deletion(meal.id());
     }
 
     #[test]
     fn meal_not_found() {
-        let meal_persister = AMW::new(MockMealPersister::new());
-        let meal_extractor = AMW::new(MockMealExtractor::new());
+        let meal_persister = AM::new_am(MockMealPersister::new());
+        let meal_extractor = AM::new_am(MockMealExtractor::new());
         let mut use_case =
             RemoveMealFromMenuUseCase::new(meal_extractor.clone(), meal_persister.clone());
 
@@ -79,11 +75,8 @@ mod tests {
         let result = use_case.execute(&meal_id);
 
         assert_eq!(result, Err(RemoveMealFromMenuUseCaseError::MealNotFound));
-        meal_persister.lock().unwrap().verify_empty();
+        meal_persister.lock_un().verify_empty();
 
-        meal_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(&meal_id);
+        meal_extractor.lock_un().verify_invoked_get_by_id(&meal_id);
     }
 }

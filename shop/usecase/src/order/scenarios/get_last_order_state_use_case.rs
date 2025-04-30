@@ -29,7 +29,7 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -44,15 +44,14 @@ mod tests {
     #[test]
     fn status_successfully_received() {
         let order = rnd_order(Default::default());
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        extractor.lock().unwrap().order = Some(order.clone());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        extractor.lock_un().order = Some(order.clone());
 
         let use_case = GetLastOrderStateUseCase::new(extractor.clone());
         let result = use_case.execute(order.for_customer());
 
         extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked_get_last_order(order.for_customer());
         assert!(result.is_ok());
         assert_eq!(&result.unwrap(), order.state())
@@ -60,16 +59,13 @@ mod tests {
 
     #[test]
     fn order_not_found() {
-        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
         let order_id = rnd_order_id();
         let result = use_case.execute(&order_id);
 
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(&order_id);
+        extractor.lock_un().verify_invoked_get_by_id(&order_id);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), GetOrderByIdUseCaseError::OrderNotFound)
     }
@@ -77,8 +73,8 @@ mod tests {
     #[test]
     fn order_expected_successfully() {
         let order = rnd_order(Default::default());
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        extractor.lock().unwrap().order = Some(order.clone());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        extractor.lock_un().order = Some(order.clone());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
         let result = use_case.execute(order.id());
@@ -103,9 +99,6 @@ mod tests {
                 .collect();
             assert_eq!(src_item.len(), 1);
         });
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
     }
 }

@@ -42,3 +42,4 @@ telnet.workspace = true
 [dev-dependencies]
 testcontainers.workspace = true
 testcontainers-modules.workspace = true
+domain = { workspace = true, features = ["testing"] }

@@ -32,11 +32,11 @@ impl TryFrom<i64> for CartId {
 #[cfg(test)]
 mod tests {
     use domain::cart::{cart::CartError, value_objects::cart_id::CartId};
-    use rand::{thread_rng, Rng};
+    use rand::random_range;
 
     #[test]
     fn check_equality() {
-        let id = thread_rng().gen_range(0..i64::MAX);
+        let id = random_range(0..i64::MAX);
 
         let cart_id1 = CartId::try_from(id).unwrap();
         let cart_id2 = CartId::try_from(id).unwrap();
@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn wrong_id_value() {
-        let id = thread_rng().gen_range(i64::MIN..0);
+        let id = random_range(i64::MIN..0);
 
         let cart_id = CartId::try_from(id);
 

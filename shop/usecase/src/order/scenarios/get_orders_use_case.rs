@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -28,8 +28,7 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtract
         } else {
             Ok(self
                 .shop_order_extractor
-                .lock()
-                .unwrap()
+                .lock_un()
                 .get_all(start_id, max_size)
                 .iter()
                 .map(|order| order.to_details())
@@ -40,7 +39,7 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtract
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -51,14 +50,14 @@ mod tests {
         let order_id = rnd_order_id();
         let limit: fn() -> usize = || 10;
 
-        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
         let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
 
         let result = use_case.execute(&order_id, limit());
         let list = result.unwrap();
 
         assert!(list.is_empty());
-        extractor.lock().unwrap().verify_invoked_get_all();
+        extractor.lock_un().verify_invoked_get_all();
     }
 
     #[test]
@@ -68,14 +67,14 @@ mod tests {
         let order = rnd_order(Default::default());
         let order_id = order.id();
 
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        extractor.lock().unwrap().order = Some(order.clone());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        extractor.lock_un().order = Some(order.clone());
 
         let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
         let result = use_case.execute(order_id, limit());
         let list = result.unwrap();
 
-        extractor.lock().unwrap().verify_invoked_get_all();
+        extractor.lock_un().verify_invoked_get_all();
         assert_eq!(list, vec![order.to_details()]);
     }
 
@@ -84,7 +83,7 @@ mod tests {
         let limit: fn() -> usize = || 10;
         let order_id = rnd_order_id();
 
-        let extractor = AMW::new(MockShopOrderExtractor::default());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
 
         let mut use_case = GetOrdersUseCase::new(extractor.clone(), limit);
         let result = use_case.execute(&order_id, limit() + 1);
@@ -92,6 +91,6 @@ mod tests {
         assert!(result.is_err());
 
         assert_eq!(result.unwrap_err(), GetOrdersUseCaseError::LimitExceed(10));
-        extractor.lock().unwrap().verify_empty();
+        extractor.lock_un().verify_empty();
     }
 }

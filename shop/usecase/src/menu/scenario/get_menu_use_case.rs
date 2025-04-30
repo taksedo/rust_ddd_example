@@ -24,7 +24,7 @@ impl GetMenu for GetMenuUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -34,7 +34,7 @@ mod tests {
     #[allow(non_snake_case)]
     fn get_menu__menu_is_empty() {
         let meal_extractor = MockMealExtractor::new();
-        let use_case = GetMenuUseCase::new(AMW::new(meal_extractor));
+        let use_case = GetMenuUseCase::new(AM::new_am(meal_extractor));
         let menu = use_case.execute();
 
         assert!(menu.is_empty());
@@ -54,7 +54,7 @@ mod tests {
             meal: Option::from(meal.to_owned()),
             ..MockMealExtractor::default()
         };
-        let use_case = GetMenuUseCase::new(AMW::new(meal_extractor));
+        let use_case = GetMenuUseCase::new(AM::new_am(meal_extractor));
         let menu = use_case.execute();
 
         assert_eq!(

@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::{
     cart::{
@@ -44,15 +44,14 @@ where
         meal_id: &MealId,
     ) -> Result<(), AddMealToCartUseCaseError> {
         self.meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_by_id(meal_id)
             .map_or(Err(AddMealToCartUseCaseError::MealNotFound), |meal| {
                 let mut result = self.get_or_create_cart(for_customer);
                 result.add_meal(meal);
                 Ok(result)
             })
-            .map(|cart| self.cart_persister.lock().unwrap().save(cart))
+            .map(|cart| self.cart_persister.lock_un().save(cart))
     }
 }
 
@@ -65,17 +64,15 @@ where
     CPersister: CartPersister,
 {
     fn get_or_create_cart(&self, for_customer: CustomerId) -> Cart {
-        if let Some(result) = self.cart_extractor.lock().unwrap().get_cart(&for_customer) {
-            result
-        } else {
-            Cart::create(self.id_generator.clone(), for_customer)
+        match self.cart_extractor.lock_un().get_cart(&for_customer) {
+            Some(result) => result,
+            _ => Cart::create(self.id_generator.clone(), for_customer),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
     use domain::{cart::value_objects::cart_id::CartId, test_fixtures::*};
 
     use super::*;
@@ -84,11 +81,11 @@ mod tests {
     #[test]
     fn cart_doesnt_exist_successfully_added() {
         let meal = rnd_meal();
-        let cart_persister = AMW::new(MockCartPersister::default());
-        let cart_extractor = AMW::new(MockCartExtractor::default());
-        let meal_extractor = AMW::new(MockMealExtractor::new());
-        meal_extractor.lock().unwrap().meal = Some(meal.clone());
-        let id_generator = AMW::new(TestCartIdGenerator::default());
+        let cart_persister = AM::new_am(MockCartPersister::default());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
+        let meal_extractor = AM::new_am(MockMealExtractor::new());
+        meal_extractor.lock_un().meal = Some(meal.clone());
+        let id_generator = AM::new_am(TestCartIdGenerator::default());
 
         let mut use_case = AddMealToCartUseCase::new(
             cart_extractor.clone(),
@@ -100,13 +97,10 @@ mod tests {
         let customer_id = rnd_customer_id();
         let result = use_case.execute(customer_id, meal.id());
 
-        meal_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(meal.id());
-        cart_persister.lock().unwrap().verify_invoked(
+        meal_extractor.lock_un().verify_invoked_get_by_id(meal.id());
+        cart_persister.lock_un().verify_invoked(
             None,
-            Some(&id_generator.lock().unwrap().id),
+            Some(&id_generator.lock_un().id),
             Some(meal.id()),
             Some(&customer_id),
         );
@@ -119,13 +113,13 @@ mod tests {
         let customer_id = rnd_customer_id();
         let existing_cart = rnd_cart_with_customer_id(customer_id);
 
-        let cart_persister = AMW::new(MockCartPersister::default());
-        let meal_extractor = AMW::new(MockMealExtractor::default());
-        meal_extractor.lock().unwrap().meal = Some(meal.clone());
-        let cart_extractor = AMW::new(MockCartExtractor::default());
-        cart_extractor.lock().unwrap().cart = Some(existing_cart.to_owned());
+        let cart_persister = AM::new_am(MockCartPersister::default());
+        let meal_extractor = AM::new_am(MockMealExtractor::default());
+        meal_extractor.lock_un().meal = Some(meal.clone());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
+        cart_extractor.lock_un().cart = Some(existing_cart.to_owned());
 
-        let id_generator = AMW::new(TestCartIdGenerator::default());
+        let id_generator = AM::new_am(TestCartIdGenerator::default());
 
         let mut use_case = AddMealToCartUseCase::new(
             cart_extractor.clone(),
@@ -137,31 +131,25 @@ mod tests {
         let result = use_case.execute(customer_id, meal.clone().id());
         assert!(result.is_ok());
 
-        meal_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(meal.id());
+        meal_extractor.lock_un().verify_invoked_get_by_id(meal.id());
 
-        let existing_cart = cart_persister.lock().unwrap().cart.clone().unwrap();
+        let existing_cart = cart_persister.lock_un().cart.clone().unwrap();
 
-        cart_extractor.lock().unwrap().cart = Some(existing_cart.clone());
+        cart_extractor.lock_un().cart = Some(existing_cart.clone());
 
-        cart_persister.lock().unwrap().verify_invoked(
-            Some(&existing_cart),
-            None,
-            Some(meal.id()),
-            None,
-        );
-        cart_extractor.lock().unwrap().verify_invoked(&customer_id);
+        cart_persister
+            .lock_un()
+            .verify_invoked(Some(&existing_cart), None, Some(meal.id()), None);
+        cart_extractor.lock_un().verify_invoked(&customer_id);
     }
 
     #[test]
     fn mel_not_found() {
         let meal = rnd_meal();
-        let cart_persister = AMW::new(MockCartPersister::default());
-        let cart_extractor = AMW::new(MockCartExtractor::default());
-        let meal_extractor = AMW::new(MockMealExtractor::default());
-        let id_generator = AMW::new(TestCartIdGenerator::default());
+        let cart_persister = AM::new_am(MockCartPersister::default());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
+        let meal_extractor = AM::new_am(MockMealExtractor::default());
+        let id_generator = AM::new_am(TestCartIdGenerator::default());
 
         let mut use_case = AddMealToCartUseCase::new(
             cart_extractor.clone(),
@@ -172,12 +160,9 @@ mod tests {
 
         let result = use_case.execute(rnd_customer_id(), meal.id());
 
-        meal_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(meal.id());
-        cart_persister.lock().unwrap().verify_empty();
-        cart_extractor.lock().unwrap().verify_empty();
+        meal_extractor.lock_un().verify_invoked_get_by_id(meal.id());
+        cart_persister.lock_un().verify_empty();
+        cart_extractor.lock_un().verify_empty();
         assert_eq!(result.unwrap_err(), AddMealToCartUseCaseError::MealNotFound);
     }
 

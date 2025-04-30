@@ -1,10 +1,10 @@
 use std::{
     clone::Clone,
-    sync::{atomic::AtomicU32, LazyLock, OnceLock},
+    sync::{LazyLock, OnceLock, atomic::AtomicU32},
 };
 
 use lapin::{Connection, ConnectionProperties};
-use testcontainers::{core::WaitFor, runners::AsyncRunner, ContainerAsync, GenericImage, ImageExt};
+use testcontainers::{ContainerAsync, GenericImage, ImageExt, core::WaitFor, runners::AsyncRunner};
 use testcontainers_modules::kafka::Kafka;
 use tracing::debug;
 
@@ -17,7 +17,9 @@ pub struct TestRabbitMq {
 impl TestRabbitMq {
     pub async fn new() -> Self {
         if std::env::var("RUST_LOG").is_err() {
-            std::env::set_var("RUST_LOG", "debug");
+            unsafe {
+                std::env::set_var("RUST_LOG", "debug");
+            }
         }
 
         let _ = tracing_subscriber::fmt::try_init();
@@ -68,7 +70,9 @@ pub struct TestKafka {
 impl TestKafka {
     pub async fn new() -> Self {
         if std::env::var("RUST_LOG").is_err() {
-            std::env::set_var("RUST_LOG", "debug");
+            unsafe {
+                std::env::set_var("RUST_LOG", "debug");
+            }
         }
 
         let _ = tracing_subscriber::fmt::try_init();

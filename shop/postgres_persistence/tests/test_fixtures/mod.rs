@@ -1,8 +1,11 @@
 use std::sync::atomic::AtomicU32;
 
-use common::{events::DomainEventPublisher, types::base::AMW};
+use common::{
+    events::DomainEventPublisher,
+    types::base::{AM, AMTrait},
+};
 use derive_new::new;
-use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
+use diesel::{Connection, PgConnection, RunQueryDsl, sql_query};
 use domain::{
     menu::{
         meal::Meal,
@@ -15,7 +18,7 @@ use domain::{
     test_fixtures::*,
 };
 use log::warn;
-use testcontainers::{core::WaitFor, runners::SyncRunner, Container, GenericImage, ImageExt};
+use testcontainers::{Container, GenericImage, ImageExt, core::WaitFor, runners::SyncRunner};
 use url::Url;
 
 static TEST_DB_COUNTER: AtomicU32 = AtomicU32::new(0);
@@ -34,7 +37,7 @@ impl TestDb {
     pub fn new() -> Self {
         let msg = WaitFor::message_on_stderr("database system is ready to accept connections");
 
-        let pg_container = GenericImage::new("postgres", "13")
+        let pg_container = GenericImage::new("postgres", "17.3-alpine")
             .with_wait_for(msg)
             .with_env_var("POSTGRES_DB", "postgres")
             .with_env_var("POSTGRES_USER", "root")
@@ -146,11 +149,11 @@ pub fn rnd_new_meal_with_meal_id(meal_id: MealId) -> Meal {
     let meal_name = rnd_meal_name();
     let meal_description = rnd_meal_description();
     let meal_price = rnd_price();
-    let id_generator = AMW::new(TestMealIdGenerator::new(meal_id));
+    let id_generator = AM::new_am(TestMealIdGenerator::new(meal_id));
 
     Meal::add_meal_to_menu(
         id_generator.clone(),
-        AMW::new(TestMealAlreadyExists { value: false }),
+        AM::new_am(TestMealAlreadyExists { value: false }),
         meal_name,
         meal_description,
         meal_price,
@@ -163,11 +166,11 @@ pub fn rnd_new_meal_with_name(meal_name: &MealName) -> Meal {
     let meal_name = meal_name.clone();
     let meal_description = rnd_meal_description();
     let meal_price = rnd_price();
-    let id_generator = AMW::new(TestMealIdGenerator::new(meal_id));
+    let id_generator = AM::new_am(TestMealIdGenerator::new(meal_id));
 
     Meal::add_meal_to_menu(
         id_generator.clone(),
-        AMW::new(TestMealAlreadyExists { value: false }),
+        AM::new_am(TestMealAlreadyExists { value: false }),
         meal_name,
         meal_description,
         meal_price,

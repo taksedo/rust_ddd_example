@@ -19,16 +19,16 @@ impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::{rnd_meal, rnd_meal_name};
 
     use super::*;
-    use crate::test_fixtures::{removed_meal, MockMealExtractor};
+    use crate::test_fixtures::{MockMealExtractor, removed_meal};
 
     #[test]
     fn meal_already_exists() {
         let meal = rnd_meal();
-        let extractor = AMW::new(MockMealExtractor {
+        let extractor = AM::new_am(MockMealExtractor {
             meal: Some(meal.to_owned()),
             ..MockMealExtractor::default()
         });
@@ -49,7 +49,7 @@ mod tests {
     #[test]
     fn meal_already_exists_but_removed() {
         let meal = removed_meal();
-        let extractor = AMW::new(MockMealExtractor {
+        let extractor = AM::new_am(MockMealExtractor {
             meal: Some(meal.to_owned()),
             ..MockMealExtractor::default()
         });
@@ -68,7 +68,7 @@ mod tests {
 
     #[test]
     fn meal_already_exists_doesnt_exist() {
-        let extractor = AMW::new(MockMealExtractor::new());
+        let extractor = AM::new_am(MockMealExtractor::new());
         let mut rule = MealAlreadyExistsUsesMealExtractor::new(extractor);
 
         let meal_name = rnd_meal_name();

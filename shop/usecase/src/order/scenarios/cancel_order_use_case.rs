@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -24,13 +24,12 @@ where
 {
     fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
         self.shop_order_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_by_id(order_id)
             .map_or(Err(CancelOrderUseCaseError::OrderNotFound), |mut order| {
                 order
                     .cancel()
-                    .map(|()| self.shop_order_persister.lock().unwrap().save(order))
+                    .map(|()| self.shop_order_persister.lock_un().save(order))
                     .map_err(|_| CancelOrderUseCaseError::InvalidOrderState)
             })
     }
@@ -38,64 +37,57 @@ where
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::AMW;
+    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
     use crate::test_fixtures::{
-        order_not_ready_for_cancel, order_ready_for_cancel, MockShopOrderExtractor,
-        MockShopOrderPersister,
+        MockShopOrderExtractor, MockShopOrderPersister, order_not_ready_for_cancel,
+        order_ready_for_cancel,
     };
 
     #[test]
     fn successfully_confirmed() {
         let order = order_ready_for_cancel();
 
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        let persister = AMW::new(MockShopOrderPersister::default());
-        extractor.lock().unwrap().order = Some(order.clone());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        let persister = AM::new_am(MockShopOrderPersister::default());
+        extractor.lock_un().order = Some(order.clone());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
         let result = use_case.execute(order.id());
 
         assert!(result.is_ok());
 
-        let order = &persister.lock().unwrap().order.clone().unwrap();
-        persister.lock().unwrap().verify_invoked_order(order);
+        let order = &persister.lock_un().order.clone().unwrap();
+        persister.lock_un().verify_invoked_order(order);
         persister
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_events_after_cancellation(order.id());
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
     }
 
     #[test]
     fn invalid_state() {
         let order = order_not_ready_for_cancel();
 
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        let persister = AMW::new(MockShopOrderPersister::default());
-        extractor.lock().unwrap().order = Some(order.clone());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        let persister = AM::new_am(MockShopOrderPersister::default());
+        extractor.lock_un().order = Some(order.clone());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
         let result = use_case.execute(order.id());
 
-        persister.lock().unwrap().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(order.id());
+        persister.lock_un().verify_empty();
+        extractor.lock_un().verify_invoked_get_by_id(order.id());
         assert!(result.is_err());
         assert_eq!(result, Err(CancelOrderUseCaseError::InvalidOrderState));
     }
 
     #[test]
     fn order_not_found() {
-        let extractor = AMW::new(MockShopOrderExtractor::default());
-        let persister = AMW::new(MockShopOrderPersister::default());
+        let extractor = AM::new_am(MockShopOrderExtractor::default());
+        let persister = AM::new_am(MockShopOrderPersister::default());
 
         let mut use_case = CancelOrderUseCase::new(extractor.clone(), persister.clone());
 
@@ -103,11 +95,8 @@ mod tests {
 
         let result = use_case.execute(&order_id);
 
-        persister.lock().unwrap().verify_empty();
-        extractor
-            .lock()
-            .unwrap()
-            .verify_invoked_get_by_id(&order_id);
+        persister.lock_un().verify_empty();
+        extractor.lock_un().verify_invoked_get_by_id(&order_id);
         assert!(result.is_err());
         assert_eq!(result, Err(CancelOrderUseCaseError::OrderNotFound));
     }

@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use derivative::Derivative;
 use derive_new::new;
-use diesel::{select, sql_function, sql_types, PgConnection, RunQueryDsl};
+use diesel::{PgConnection, RunQueryDsl, define_sql_function, select, sql_types::Text};
 use domain::menu::value_objects::meal_id::{MealId, MealIdGenerator};
 
 #[derive(new, Derivative)]
@@ -23,4 +23,4 @@ impl MealIdGenerator for PostgresMealIdGenerator {
     }
 }
 
-sql_function!(fn nextval(a: sql_types::Text) -> sql_types::BigInt);
+define_sql_function!(fn nextval(a: Text) -> BigInt);

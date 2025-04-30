@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::order::{
     customer_has_active_order::CustomerHasActiveOrder, get_meal_price::GetMealPrice,
@@ -58,8 +58,7 @@ where
 {
     fn execute(&self, request: &CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError> {
         self.cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_cart(&request.for_customer)
             .map_or(Err(CheckoutUseCaseError::CartNotFound), |cart| {
                 Ok(ShopOrder::checkout(
@@ -71,17 +70,13 @@ where
                 )?)
             })
             .map(|order| {
-                self.shop_order_persister
-                    .lock()
-                    .unwrap()
-                    .save(order.clone());
+                self.shop_order_persister.lock_un().save(order.clone());
                 PaymentInfo {
                     order_id: *order.id(),
                     price: order.total_price(),
                     payment_url: self
                         .payment_url_provider
-                        .lock()
-                        .unwrap()
+                        .lock_un()
                         .provide_url(order.id(), order.total_price()),
                 }
             })
@@ -95,7 +90,10 @@ mod tests {
     use actix_web::http::Uri;
     use common::{
         test_fixtures::*,
-        types::{base::AMW, common::Address},
+        types::{
+            base::{AM, AMTrait},
+            common::Address,
+        },
     };
     use domain::{
         cart::value_objects::customer_id::CustomerId,
@@ -119,17 +117,17 @@ mod tests {
         let cart =
             rnd_cart_with_customer_id_and_meals(customer_id, HashMap::from([(*meal.id(), count)]));
 
-        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
+        let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
 
-        let cart_extractor = AMW::new(MockCartExtractor::default());
-        cart_extractor.lock().unwrap().cart = Some(cart.clone());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
+        cart_extractor.lock_un().cart = Some(cart.clone());
 
-        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(false));
-        let order_persister = AMW::new(MockShopOrderPersister::default());
+        let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(false));
+        let order_persister = AM::new_am(MockShopOrderPersister::default());
 
         let price = rnd_price();
-        let get_meal_price = AMW::new(MockGetMealPrice::new(price.clone()));
-        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
+        let get_meal_price = AM::new_am(MockGetMealPrice::new(price.clone()));
+        let payment_url_provider = AM::new_am(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),
@@ -143,17 +141,13 @@ mod tests {
         let checkout_request = checkout_request(address.clone(), customer_id);
         let result = use_case.execute(&checkout_request);
 
-        let order_id = id_generator.lock().unwrap().id;
+        let order_id = id_generator.lock_un().id;
 
         active_order_rule
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(cart.for_customer());
-        cart_extractor
-            .lock()
-            .unwrap()
-            .verify_invoked(cart.for_customer());
-        order_persister.lock().unwrap().verify_invoked(
+        cart_extractor.lock_un().verify_invoked(cart.for_customer());
+        order_persister.lock_un().verify_invoked(
             &order_id,
             &address,
             &customer_id,
@@ -166,21 +160,21 @@ mod tests {
         assert_eq!(result.order_id, order_id);
         assert_eq!(
             result.payment_url.to_string(),
-            payment_url_provider.lock().unwrap().payment_url
+            payment_url_provider.lock_un().payment_url
         );
-        order_persister.lock().unwrap().verify_price(&result.price);
+        order_persister.lock_un().verify_price(&result.price);
     }
 
     #[test]
     fn cart_not_found() {
-        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
-        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(false));
+        let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
+        let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(false));
 
-        let order_persister = AMW::new(MockShopOrderPersister::default());
-        let cart_extractor = AMW::new(MockCartExtractor::default());
+        let order_persister = AM::new_am(MockShopOrderPersister::default());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
 
-        let get_meal_price = AMW::new(MockGetMealPrice::default());
-        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
+        let get_meal_price = AM::new_am(MockGetMealPrice::default());
+        let payment_url_provider = AM::new_am(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),
@@ -194,11 +188,10 @@ mod tests {
         let checkout_request = checkout_request(rnd_address(), rnd_customer_id());
         let result = use_case.execute(&checkout_request);
 
-        order_persister.lock().unwrap().verify_empty();
-        active_order_rule.lock().unwrap().verify_empty();
+        order_persister.lock_un().verify_empty();
+        active_order_rule.lock_un().verify_empty();
         cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&checkout_request.for_customer);
 
         assert!(result.is_err());
@@ -210,17 +203,17 @@ mod tests {
         let cart = rnd_cart();
         let customer_id = cart.for_customer();
 
-        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
+        let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
 
-        let cart_extractor = AMW::new(MockCartExtractor::default());
-        cart_extractor.lock().unwrap().cart = Some(cart.clone());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
+        cart_extractor.lock_un().cart = Some(cart.clone());
 
-        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(false));
-        let order_persister = AMW::new(MockShopOrderPersister::default());
+        let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(false));
+        let order_persister = AM::new_am(MockShopOrderPersister::default());
 
         let price = rnd_price();
-        let get_meal_price = AMW::new(MockGetMealPrice::new(price.clone()));
-        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
+        let get_meal_price = AM::new_am(MockGetMealPrice::new(price.clone()));
+        let payment_url_provider = AM::new_am(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),
@@ -234,14 +227,12 @@ mod tests {
         let checkout_request = checkout_request(rnd_address(), *customer_id);
         let result = use_case.execute(&checkout_request);
 
-        order_persister.lock().unwrap().verify_empty();
+        order_persister.lock_un().verify_empty();
         active_order_rule
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&checkout_request.for_customer);
         cart_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .verify_invoked(&checkout_request.for_customer);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), CheckoutUseCaseError::EmptyCart);
@@ -251,16 +242,16 @@ mod tests {
     fn already_has_active_order() {
         let cart = rnd_cart();
 
-        let id_generator = AMW::new(TestShopOrderIdGenerator::default());
+        let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
 
-        let cart_extractor = AMW::new(MockCartExtractor::default());
-        cart_extractor.lock().unwrap().cart = Some(cart.clone());
+        let cart_extractor = AM::new_am(MockCartExtractor::default());
+        cart_extractor.lock_un().cart = Some(cart.clone());
 
-        let active_order_rule = AMW::new(MockCustomerHasActiveOrder::new(true));
-        let order_persister = AMW::new(MockShopOrderPersister::default());
+        let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(true));
+        let order_persister = AM::new_am(MockShopOrderPersister::default());
 
-        let get_meal_price = AMW::new(MockGetMealPrice::default());
-        let payment_url_provider = AMW::new(TestPaymentUrlProvider::new());
+        let get_meal_price = AM::new_am(MockGetMealPrice::default());
+        let payment_url_provider = AM::new_am(TestPaymentUrlProvider::new());
 
         let use_case = CheckoutUseCase::new(
             id_generator.clone(),
@@ -271,9 +262,9 @@ mod tests {
             order_persister.clone(),
         );
 
-        order_persister.lock().unwrap().verify_empty();
-        cart_extractor.lock().unwrap().verify_empty();
-        active_order_rule.lock().unwrap().verify_empty();
+        order_persister.lock_un().verify_empty();
+        cart_extractor.lock_un().verify_empty();
+        active_order_rule.lock_un().verify_empty();
         let result = use_case.execute(&checkout_request(rnd_address(), *cart.for_customer()));
         assert!(result.is_err());
         assert_eq!(
