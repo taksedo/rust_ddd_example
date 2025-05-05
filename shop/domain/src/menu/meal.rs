@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, AMTrait, DomainEntity, DomainEntityTrait, Version},
     errors::BusinessError,
 };
 use derive_getters::Getters;
@@ -53,10 +53,10 @@ impl Meal {
         description: MealDescription,
         price: Price,
     ) -> Result<Meal, MealError> {
-        if meal_exists.lock().unwrap().invoke(&name) {
+        if meal_exists.lock_un().invoke(&name) {
             Err(MealError::AlreadyExistsWithSameNameError)
         } else {
-            let id = id_generator.lock().unwrap().generate();
+            let id = id_generator.lock_un().generate();
 
             //     .map_err(|_e: Error| MealError::IdGenerationError)?;
             let mut meal = Meal::new(
@@ -108,8 +108,6 @@ impl BusinessError for MealError {}
 #[cfg(test)]
 mod tests {
     use std::{any::type_name_of_val, sync::atomic::AtomicI64};
-
-    use common::types::base::{AM, AMTrait};
 
     use super::*;
     use crate::test_fixtures::{

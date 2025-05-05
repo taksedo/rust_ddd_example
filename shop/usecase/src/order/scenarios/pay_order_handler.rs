@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -16,13 +16,12 @@ pub struct PayOrderHandler {
 impl PayOrder for PayOrderHandler {
     fn execute(&self, order_id: &ShopOrderId) -> Result<(), PayOrderHandlerError> {
         self.shop_order_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_by_id(order_id)
             .map_or(Err(PayOrderHandlerError::OrderNotFound), |mut order| {
                 order
                     .pay()
-                    .map(|_| self.shop_order_persister.lock().unwrap().save(order))
+                    .map(|_| self.shop_order_persister.lock_un().save(order))
                     .map_err(|_| PayOrderHandlerError::InvalidOrderState)
             })
     }
@@ -30,7 +29,6 @@ impl PayOrder for PayOrderHandler {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

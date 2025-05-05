@@ -1,4 +1,7 @@
-use common::{events::DomainEventPublisher, types::base::AM};
+use common::{
+    events::DomainEventPublisher,
+    types::base::{AM, AMTrait},
+};
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
@@ -67,7 +70,7 @@ impl MealPersister for PostgresMealRepository {
             if !flag {
                 self.update(meal_param);
             }
-            self.event_publisher.lock().unwrap().publish(&events);
+            self.event_publisher.lock_un().publish(&events);
         }
     }
 }

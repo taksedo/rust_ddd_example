@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 
 use crate::menu::{
@@ -13,8 +13,7 @@ pub struct GetMenuUseCase {
 impl GetMenu for GetMenuUseCase {
     fn execute(&self) -> Vec<MealInfo> {
         self.meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_all()
             .into_iter()
             .map(MealInfo::from)
@@ -24,7 +23,6 @@ impl GetMenu for GetMenuUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -40,8 +38,7 @@ mod tests {
         assert!(menu.is_empty());
         use_case
             .meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_all();
@@ -69,8 +66,7 @@ mod tests {
         );
         use_case
             .meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_all();

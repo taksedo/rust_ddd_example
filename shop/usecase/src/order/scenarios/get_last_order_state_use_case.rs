@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::{cart::value_objects::customer_id::CustomerId, order::shop_order::OrderState};
 
@@ -18,8 +18,7 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
         for_customer: &CustomerId,
     ) -> Result<OrderState, GetLastOrderStateUseCaseError> {
         self.shop_order_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_last_order(for_customer)
             .map_or(Err(GetLastOrderStateUseCaseError::OrderNotFound), |order| {
                 Ok(order.state().clone())
@@ -29,7 +28,6 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::menu::value_objects::meal_id::MealId;
 
@@ -15,7 +15,7 @@ pub struct GetMealByIdUseCase {
 
 impl GetMealById for GetMealByIdUseCase {
     fn execute(&mut self, id: &MealId) -> Result<MealInfo, GetMealByIdUseCaseError> {
-        match self.meal_extractor.lock().unwrap().get_by_id(id) {
+        match self.meal_extractor.lock_un().get_by_id(id) {
             res if res.is_some() && res.clone().unwrap().visible() => {
                 let res = res.unwrap();
                 Ok(MealInfo::from(res))
@@ -27,7 +27,6 @@ impl GetMealById for GetMealByIdUseCase {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;
@@ -44,8 +43,7 @@ mod tests {
         assert_eq!(result, Err(GetMealByIdUseCaseError::MealNotFound));
         use_case
             .meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_by_id(meal_id);
@@ -65,8 +63,7 @@ mod tests {
         assert_eq!(result, Err(GetMealByIdUseCaseError::MealNotFound));
         use_case
             .meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_by_id(meal.id());
@@ -96,8 +93,7 @@ mod tests {
         );
         use_case
             .meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_by_id(meal.id());

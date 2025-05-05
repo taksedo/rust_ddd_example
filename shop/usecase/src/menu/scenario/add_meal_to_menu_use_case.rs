@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use common::types::base::{AM, DomainEventTrait};
+use common::types::base::{AM, AMTrait, DomainEventTrait};
 use derive_new::new;
 use domain::menu::{
     meal::Meal,
@@ -39,10 +39,7 @@ impl AddMealToMenu for AddMealToMenuUseCase {
             description.clone(),
             price.clone(),
         )?;
-        self.meal_persister
-            .lock()
-            .unwrap()
-            .save(new_meal_in_menu.clone());
+        self.meal_persister.lock_un().save(new_meal_in_menu.clone());
         Ok(*new_meal_in_menu.id())
     }
 }
@@ -51,7 +48,6 @@ impl DomainEventTrait for AddMealToMenuUseCase {}
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

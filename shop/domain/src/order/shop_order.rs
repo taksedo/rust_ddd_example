@@ -4,7 +4,7 @@ use std::{
 };
 
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, AMTrait, DomainEntity, DomainEntityTrait, Version},
     common::{Address, Count},
 };
 use derive_getters::Getters;
@@ -50,8 +50,7 @@ impl ShopOrder {
         get_meal_price: AM<dyn GetMealPrice>,
     ) -> Result<ShopOrder, CheckoutError> {
         if customer_has_active_order
-            .lock()
-            .unwrap()
+            .lock_un()
             .invoke(cart.for_customer())
         {
             return Err(CheckoutError::AlreadyHasActiveOrder);
@@ -61,10 +60,10 @@ impl ShopOrder {
             let mut set = HashSet::new();
 
             for (meal_id, count) in meals.iter() {
-                let price = get_meal_price.lock().unwrap().invoke(meal_id);
+                let price = get_meal_price.lock_un().invoke(meal_id);
                 set.insert(OrderItem::new(*meal_id, price, *count));
             }
-            let id = id_generator.lock().unwrap().generate();
+            let id = id_generator.lock_un().generate();
             let mut shop_order = ShopOrder::new(
                 DomainEntity::new(id, Default::default()),
                 OffsetDateTime::now_utc(),
@@ -234,10 +233,7 @@ mod tests {
     use std::{collections::HashMap, str::FromStr};
 
     use bigdecimal::{BigDecimal, num_bigint::BigInt};
-    use common::{
-        test_fixtures::rnd_count,
-        types::base::{AM, AMTrait},
-    };
+    use common::test_fixtures::rnd_count;
 
     use super::*;
     use crate::test_fixtures::{

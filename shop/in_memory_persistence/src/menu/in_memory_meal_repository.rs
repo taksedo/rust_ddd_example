@@ -1,6 +1,9 @@
 use std::{collections::HashMap, fmt::Debug};
 
-use common::{events::DomainEventPublisher, types::base::AM};
+use common::{
+    events::DomainEventPublisher,
+    types::base::{AM, AMTrait},
+};
 use derivative::Derivative;
 use derive_new::new;
 use domain::menu::{
@@ -19,10 +22,7 @@ pub struct InMemoryMealRepository {
 
 impl MealPersister for InMemoryMealRepository {
     fn save(&mut self, mut meal: Meal) {
-        self.event_publisher
-            .lock()
-            .unwrap()
-            .publish(&meal.pop_events());
+        self.event_publisher.lock_un().publish(&meal.pop_events());
         self.storage.insert(*meal.id(), meal);
     }
 }
@@ -54,7 +54,6 @@ impl MealExtractor for InMemoryMealRepository {
 mod tests {
     use std::any::{type_name, type_name_of_val};
 
-    use common::types::base::{AM, AMTrait};
     use domain::{menu::meal_events::MealRemovedFromMenuDomainEvent, test_fixtures::*};
 
     use super::*;
