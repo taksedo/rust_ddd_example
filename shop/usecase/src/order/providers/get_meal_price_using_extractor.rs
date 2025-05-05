@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::{
     menu::value_objects::{meal_id::MealId, price::Price},
@@ -9,7 +9,7 @@ use crate::menu::access::meal_extractor::MealExtractor;
 
 impl GetMealPrice for GetMealPriceUsingExtractor {
     fn invoke(&self, for_meal_id: &MealId) -> Price {
-        let meal = &self.extractor.lock().unwrap().get_by_id(for_meal_id);
+        let meal = &self.extractor.lock_un().get_by_id(for_meal_id);
         assert!(meal.is_some(), "Meal #{:?} not found", for_meal_id);
         meal.clone().unwrap().price().clone()
     }
@@ -23,7 +23,6 @@ pub struct GetMealPriceUsingExtractor {
 #[cfg(test)]
 mod tests {
     use assert_panic::assert_panic;
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

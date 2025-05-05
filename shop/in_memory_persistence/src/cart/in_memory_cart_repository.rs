@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use common::{events::DomainEventPublisher, types::base::AM};
+use common::{
+    events::DomainEventPublisher,
+    types::base::{AM, AMTrait},
+};
 use derivative::Derivative;
 use derive_new::new;
 use domain::cart::{
@@ -28,7 +31,7 @@ impl CartPersister for InMemoryCartRepository {
         dbg!(&cart);
         let popped_events = cart.pop_events();
         dbg!(&popped_events);
-        self.event_publisher.lock().unwrap().publish(&popped_events);
+        self.event_publisher.lock_un().publish(&popped_events);
         self.storage.insert(*cart.for_customer(), cart);
     }
 }
@@ -41,7 +44,6 @@ impl CartRemover for InMemoryCartRepository {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::{cart::cart_events::MealAddedToCartDomainEvent, test_fixtures::*};
 
     use super::*;

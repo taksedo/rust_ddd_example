@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::{
     cart::value_objects::customer_id::CustomerId,
@@ -16,8 +16,7 @@ impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
     fn invoke(&mut self, for_customer: &CustomerId) -> bool {
         let last_order = self
             .shop_order_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_last_order(for_customer);
         last_order.is_some() && last_order.unwrap().is_active()
     }
@@ -25,7 +24,6 @@ impl CustomerHasActiveOrder for CustomerHasActiveOrderImpl {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

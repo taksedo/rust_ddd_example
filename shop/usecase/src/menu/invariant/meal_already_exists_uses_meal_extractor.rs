@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::menu::{meal_already_exists::MealAlreadyExists, value_objects::meal_name::MealName};
 
@@ -11,7 +11,7 @@ pub struct MealAlreadyExistsUsesMealExtractor {
 
 impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
     fn invoke(&mut self, name: &MealName) -> bool {
-        let meal_found_by_get = self.extractor.lock().unwrap().get_by_name(name);
+        let meal_found_by_get = self.extractor.lock_un().get_by_name(name);
         let meal_found_by_get_is_removed = *meal_found_by_get.clone().unwrap_or_default().removed();
         meal_found_by_get.is_some() & !meal_found_by_get_is_removed
     }
@@ -19,7 +19,6 @@ impl MealAlreadyExists for MealAlreadyExistsUsesMealExtractor {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::{rnd_meal, rnd_meal_name};
 
     use super::*;
@@ -39,8 +38,7 @@ mod tests {
         assert!(result);
 
         rule.extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_by_name(meal.name());
@@ -59,8 +57,7 @@ mod tests {
 
         assert!(!result);
         rule.extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_by_name(meal.name());
@@ -76,8 +73,7 @@ mod tests {
 
         assert!(!result);
         rule.extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_by_name(&meal_name);

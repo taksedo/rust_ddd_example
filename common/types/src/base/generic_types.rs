@@ -6,14 +6,21 @@ use std::{
 
 /// `Arc<Mutex<T>>` alias type
 pub type AM<T> = Arc<Mutex<T>>;
-pub trait AMTrait<T> {
-    fn new_am(t: T) -> AM<T>;
+pub trait AMTrait<T: ?Sized> {
+    fn new_am(t: T) -> AM<T>
+    where
+        T: Sized;
     fn lock_un(&self) -> MutexGuard<T>;
 }
-impl<T> AMTrait<T> for AM<T> {
-    fn new_am(t: T) -> AM<T> {
+
+impl<T: ?Sized> AMTrait<T> for AM<T> {
+    fn new_am(t: T) -> AM<T>
+    where
+        T: Sized,
+    {
         Arc::new(Mutex::new(t))
     }
+
     fn lock_un(&self) -> MutexGuard<T> {
         self.lock().unwrap()
     }

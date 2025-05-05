@@ -1,6 +1,9 @@
 use std::collections::BTreeMap;
 
-use common::{events::DomainEventPublisher, types::base::AM};
+use common::{
+    events::DomainEventPublisher,
+    types::base::{AM, AMTrait},
+};
 use derivative::Derivative;
 use derive_new::new;
 use domain::{
@@ -23,10 +26,7 @@ pub struct InMemoryShopOrderRepository {
 
 impl ShopOrderPersister for InMemoryShopOrderRepository {
     fn save(&mut self, mut order: ShopOrder) {
-        self.event_publisher
-            .lock()
-            .unwrap()
-            .publish(&order.pop_events());
+        self.event_publisher.lock_un().publish(&order.pop_events());
         self.storage.insert(*order.id(), order);
     }
 }
@@ -60,7 +60,6 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::{order::customer_order_events::ShopOrderCompletedDomainEvent, test_fixtures::*};
 
     use super::*;

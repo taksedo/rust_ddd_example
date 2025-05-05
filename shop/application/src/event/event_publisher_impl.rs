@@ -31,9 +31,7 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
     }
 
     fn send_events(&self, listeners: Vec<AM<dyn DomainEventListener<Event>>>, event: Event) {
-        listeners
-            .iter()
-            .for_each(|l| l.lock().unwrap().handle(&event))
+        listeners.iter().for_each(|l| l.lock_un().handle(&event))
     }
 }
 
@@ -85,15 +83,13 @@ mod test {
 
         let test_event_listener = &publisher
             .get_listener(DomainEventEnum::TestEvent(TestEvent::default()))
-            .lock()
-            .unwrap();
+            .lock_un();
 
         let another_test_event_listener = &publisher
             .get_listener(DomainEventEnum::AnotherTestEvent(
                 AnotherTestEvent::default(),
             ))
-            .lock()
-            .unwrap();
+            .lock_un();
 
         assert_eq!(test_event_listener.get_events(), &vec![test_event]);
         assert_eq!(

@@ -1,4 +1,4 @@
-use common::types::base::AM;
+use common::types::base::{AM, AMTrait};
 use derive_new::new;
 use domain::menu::value_objects::meal_id::MealId;
 
@@ -17,21 +17,19 @@ impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
     fn execute(&mut self, id: &MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
         let mut meal = self
             .meal_extractor
-            .lock()
-            .unwrap()
+            .lock_un()
             .get_by_id(id)
             .map_or(Err(RemoveMealFromMenuUseCaseError::MealNotFound), |meal| {
                 Ok(meal)
             })?;
         meal.remove_meal_from_menu();
-        self.meal_persister.lock().unwrap().save(meal);
+        self.meal_persister.lock_un().save(meal);
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
     use domain::test_fixtures::*;
 
     use super::*;

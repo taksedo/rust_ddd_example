@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, AMTrait, DomainEntity, DomainEntityTrait, Version},
     common::Count,
 };
 use derive_getters::Getters;
@@ -38,7 +38,7 @@ impl Cart {
     pub fn create(id_generator: AM<dyn CartIdGenerator>, for_customer: CustomerId) -> Self {
         let mut cart = Self {
             entity_params: DomainEntity {
-                id: id_generator.lock().unwrap().generate(),
+                id: id_generator.lock_un().generate(),
                 version: Version::default(),
                 events: vec![],
             },
@@ -107,10 +107,7 @@ pub enum CartError {
 mod tests {
     use std::mem::discriminant;
 
-    use common::{
-        test_fixtures::rnd_count,
-        types::base::{AM, AMTrait},
-    };
+    use common::test_fixtures::rnd_count;
 
     use super::*;
     use crate::test_fixtures::{rnd_cart, rnd_cart_id, rnd_customer_id, rnd_meal};
