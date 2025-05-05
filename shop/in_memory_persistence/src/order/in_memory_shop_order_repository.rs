@@ -33,10 +33,7 @@ impl ShopOrderPersister for InMemoryShopOrderRepository {
 
 impl ShopOrderExtractor for InMemoryShopOrderRepository {
     fn get_by_id(&mut self, order_id: &ShopOrderId) -> Option<ShopOrder> {
-        self.storage
-            .get(order_id)
-            .map(|order| order.to_owned())
-            .take()
+        self.storage.get(order_id).map(|order| order.to_owned())
     }
 
     fn get_last_order(&mut self, for_customer: &CustomerId) -> Option<ShopOrder> {
