@@ -122,7 +122,7 @@ impl MockMealPersister {
         assert_eq!(&self.meal.clone().unwrap(), meal)
     }
 
-    pub fn verify_events_after_deletion(&mut self, id: &MealId) {
+    pub fn verify_events_after_deletion(&mut self, _id: &MealId) {
         let events = self
             .to_owned()
             .meal

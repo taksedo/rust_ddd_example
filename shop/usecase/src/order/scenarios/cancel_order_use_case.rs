@@ -23,15 +23,22 @@ where
     ShOPersister: ShopOrderPersister,
 {
     fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
-        self.shop_order_extractor
+        // Get the order or return NotFound error
+        let mut order = self
+            .shop_order_extractor
             .lock_un()
             .get_by_id(order_id)
-            .map_or(Err(CancelOrderUseCaseError::OrderNotFound), |mut order| {
-                order
-                    .cancel()
-                    .map(|()| self.shop_order_persister.lock_un().save(order))
-                    .map_err(|_| CancelOrderUseCaseError::InvalidOrderState)
-            })
+            .ok_or(CancelOrderUseCaseError::OrderNotFound)?;
+
+        // Attempt to cancel the order
+        order
+            .cancel()
+            .map_err(|_| CancelOrderUseCaseError::InvalidOrderState)?;
+
+        // Persist the updated order state
+        self.shop_order_persister.lock_un().save(order);
+
+        Ok(())
     }
 }
 
