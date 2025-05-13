@@ -43,15 +43,23 @@ where
         for_customer: CustomerId,
         meal_id: &MealId,
     ) -> Result<(), AddMealToCartUseCaseError> {
-        self.meal_extractor
+        // Find meal or return error
+        let meal = self
+            .meal_extractor
             .lock_un()
             .get_by_id(meal_id)
-            .map_or(Err(AddMealToCartUseCaseError::MealNotFound), |meal| {
-                let mut result = self.get_or_create_cart(for_customer);
-                result.add_meal(meal);
-                Ok(result)
-            })
-            .map(|cart| self.cart_persister.lock_un().save(cart))
+            .ok_or(AddMealToCartUseCaseError::MealNotFound)?;
+
+        // Get or create cart
+        let mut cart = self.get_or_create_cart(for_customer);
+
+        // Add meal to cart
+        cart.add_meal(meal);
+
+        // Persist updated cart
+        self.cart_persister.lock_un().save(cart);
+
+        Ok(())
     }
 }
 

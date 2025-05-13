@@ -19,9 +19,7 @@ impl RemoveMealFromMenu for RemoveMealFromMenuUseCase {
             .meal_extractor
             .lock_un()
             .get_by_id(id)
-            .map_or(Err(RemoveMealFromMenuUseCaseError::MealNotFound), |meal| {
-                Ok(meal)
-            })?;
+            .ok_or(RemoveMealFromMenuUseCaseError::MealNotFound)?;
         meal.remove_meal_from_menu();
         self.meal_persister.lock_un().save(meal);
         Ok(())

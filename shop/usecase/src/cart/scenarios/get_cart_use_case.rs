@@ -26,27 +26,29 @@ where
     CExtractor: CartExtractor,
 {
     fn execute(&self, for_customer: CustomerId) -> Result<CartInfo, GetCartUseCaseError> {
-        let cart = &self.cart_extractor.lock_un().get_cart(&for_customer);
-        if let Some(option_value) = cart {
-            let cart_item_list = option_value
-                .meals()
-                .iter()
-                .map(|(meal_id, count)| {
-                    let meal = &self.meal_extractor.lock_un().get_by_id(meal_id);
-                    if meal.is_none() {
-                        panic!("Meal #{} not found", meal_id.to_i64())
-                    }
-                    CartItem {
-                        meal_id: *meal_id,
-                        count: *count,
-                        meal_name: meal.clone().unwrap().name().to_owned(),
-                    }
-                })
-                .collect();
-            Ok(CartInfo::new(for_customer, cart_item_list))
-        } else {
-            Err(GetCartUseCaseError::CartNotFound)
-        }
+        let cart = self.cart_extractor.lock_un().get_cart(&for_customer);
+        let cart = match cart {
+            Some(cart) => cart,
+            None => return Err(GetCartUseCaseError::CartNotFound),
+        };
+
+        let mut meal_extractor = self.meal_extractor.lock_un();
+        let cart_item_list: Vec<CartItem> = cart
+            .meals()
+            .iter()
+            .map(|(meal_id, count)| {
+                let meal = meal_extractor
+                    .get_by_id(meal_id)
+                    .unwrap_or_else(|| panic!("Meal #{} not found", meal_id.to_i64()));
+                CartItem {
+                    meal_id: *meal_id,
+                    count: *count,
+                    meal_name: meal.name().to_owned(),
+                }
+            })
+            .collect();
+
+        Ok(CartInfo::new(for_customer, cart_item_list))
     }
 }
 

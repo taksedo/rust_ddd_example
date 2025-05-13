@@ -20,9 +20,8 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
         self.shop_order_extractor
             .lock_un()
             .get_last_order(for_customer)
-            .map_or(Err(GetLastOrderStateUseCaseError::OrderNotFound), |order| {
-                Ok(order.state().clone())
-            })
+            .ok_or(GetLastOrderStateUseCaseError::OrderNotFound)
+            .map(|order| order.state().clone())
     }
 }
 

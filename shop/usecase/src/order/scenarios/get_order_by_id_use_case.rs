@@ -18,8 +18,7 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrderById for GetOrderByIdUseCase<ShOE
         self.shop_order_extractor
             .lock_un()
             .get_by_id(id)
-            .map_or(Err(GetOrderByIdUseCaseError::OrderNotFound), |order| {
-                Ok(order.to_details())
-            })
+            .ok_or(GetOrderByIdUseCaseError::OrderNotFound)
+            .map(|order| order.to_details())
     }
 }

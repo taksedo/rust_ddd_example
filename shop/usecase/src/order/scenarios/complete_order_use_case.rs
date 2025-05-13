@@ -15,18 +15,18 @@ pub struct CompleteOrderUseCase {
 
 impl CompleteOrder for CompleteOrderUseCase {
     fn execute(&self, order_id: &ShopOrderId) -> Result<(), CompleteOrderUseCaseError> {
-        self.shop_order_extractor
+        let mut order = self
+            .shop_order_extractor
             .lock_un()
             .get_by_id(order_id)
-            .map_or(
-                Err(CompleteOrderUseCaseError::OrderNotFound),
-                |mut order| {
-                    order
-                        .complete()
-                        .map(|_| self.shop_order_persister.lock_un().save(order))
-                        .map_err(|_| CompleteOrderUseCaseError::InvalidOrderState)
-                },
-            )
+            .ok_or(CompleteOrderUseCaseError::OrderNotFound)?;
+
+        order
+            .complete()
+            .map_err(|_| CompleteOrderUseCaseError::InvalidOrderState)?;
+
+        self.shop_order_persister.lock_un().save(order);
+        Ok(())
     }
 }
 

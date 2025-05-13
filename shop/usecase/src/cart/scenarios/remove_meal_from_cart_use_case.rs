@@ -28,16 +28,18 @@ where
         for_customer: &CustomerId,
         meal_id: &MealId,
     ) -> Result<(), RemoveMealFromCartUseCaseError> {
-        self.cart_extractor.lock_un().get_cart(for_customer).map_or(
-            Err(RemoveMealFromCartUseCaseError::CartNotFound),
-            |mut cart| {
-                {
-                    cart.remove_meals(meal_id);
-                    self.cart_persister.lock_un().save(cart)
-                };
-                Ok(())
-            },
-        )
+        // Get the cart or return error
+        let mut cart = self
+            .cart_extractor
+            .lock_un()
+            .get_cart(for_customer)
+            .ok_or(RemoveMealFromCartUseCaseError::CartNotFound)?;
+
+        // Remove meals and persist changes
+        cart.remove_meals(meal_id);
+        self.cart_persister.lock_un().save(cart);
+
+        Ok(())
     }
 }
 

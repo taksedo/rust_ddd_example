@@ -57,29 +57,34 @@ where
     ShOPersister: ShopOrderPersister,
 {
     fn execute(&self, request: &CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError> {
-        self.cart_extractor
+        // Fetch cart or return error
+        let cart = self
+            .cart_extractor
             .lock_un()
             .get_cart(&request.for_customer)
-            .map_or(Err(CheckoutUseCaseError::CartNotFound), |cart| {
-                Ok(ShopOrder::checkout(
-                    cart,
-                    self.id_generator.clone(),
-                    self.active_order.clone(),
-                    request.delivery_to.clone(),
-                    self.get_meal_price.clone(),
-                )?)
-            })
-            .map(|order| {
-                self.shop_order_persister.lock_un().save(order.clone());
-                PaymentInfo {
-                    order_id: *order.id(),
-                    price: order.total_price(),
-                    payment_url: self
-                        .payment_url_provider
-                        .lock_un()
-                        .provide_url(order.id(), order.total_price()),
-                }
-            })
+            .ok_or(CheckoutUseCaseError::CartNotFound)?;
+
+        // Create shop order
+        let order = ShopOrder::checkout(
+            cart,
+            self.id_generator.clone(),
+            self.active_order.clone(),
+            request.delivery_to.clone(),
+            self.get_meal_price.clone(),
+        )?;
+
+        // Persist the order
+        self.shop_order_persister.lock_un().save(order.clone());
+
+        // Generate payment info
+        Ok(PaymentInfo {
+            order_id: *order.id(),
+            price: order.total_price(),
+            payment_url: self
+                .payment_url_provider
+                .lock_un()
+                .provide_url(order.id(), order.total_price()),
+        })
     }
 }
 
