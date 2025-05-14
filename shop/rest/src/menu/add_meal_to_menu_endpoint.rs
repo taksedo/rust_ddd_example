@@ -1,4 +1,4 @@
-use std::{fmt::Debug, str::FromStr};
+use std::fmt::Debug;
 
 use actix_web::{HttpResponse, http, web};
 use bigdecimal::BigDecimal;
@@ -88,15 +88,17 @@ where
 
     let error_list = RCell::new_rc(vec![]);
 
-    match (
-        MealName::validated(&request.name, error_list.clone()),
-        MealDescription::validated(&request.description, error_list.clone()),
-        Price::validated(
-            BigDecimal::from_str(&request.price.to_string()).unwrap(),
-            error_list.clone(),
-        ),
-    ) {
-        (Ok(meal_name), Ok(meal_description), Ok(price)) => {
+    let meal_name = MealName::validated(&request.name, error_list.clone());
+    let meal_description = MealDescription::validated(&request.description, error_list.clone());
+    let price = request
+        .price
+        .to_string()
+        .parse::<BigDecimal>()
+        .ok()
+        .and_then(|p| Price::validated(p, error_list.clone()));
+
+    match (meal_name, meal_description, price) {
+        (Some(meal_name), Some(meal_description), Some(price)) => {
             match shared_state
                 .lock_un()
                 .execute(&meal_name, &meal_description, &price)
@@ -104,14 +106,13 @@ where
                 Ok(meal_id) => created(
                     API_V1_MENU_GET_BY_ID
                         .replace("{id}", &meal_id.to_i64().to_string())
-                        .as_str()
                         .parse::<Uri>()
                         .unwrap(),
                 ),
                 Err(e) => e.to_rest_error(),
             }
         }
-        (_, _, _) => to_invalid_param_bad_request(error_list),
+        _ => to_invalid_param_bad_request(error_list),
     }
 }
 

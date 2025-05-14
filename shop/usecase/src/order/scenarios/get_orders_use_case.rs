@@ -6,7 +6,7 @@ use domain::order::value_objects::shop_order_id::ShopOrderId;
 
 use crate::order::{
     access::shop_order_extractor::ShopOrderExtractor,
-    dto::order_details::{OrderDetails, ToDetails},
+    dto::order_details::{AsDetails, OrderDetails},
     get_orders::{GetOrders, GetOrdersUseCaseError},
 };
 
@@ -31,7 +31,7 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrders for GetOrdersUseCase<ShOExtract
                 .lock_un()
                 .get_all(start_id, max_size)
                 .iter()
-                .map(|order| order.to_details())
+                .map(|order| order.as_details())
                 .collect())
         }
     }
@@ -75,7 +75,7 @@ mod tests {
         let list = result.unwrap();
 
         extractor.lock_un().verify_invoked_get_all();
-        assert_eq!(list, vec![order.to_details()]);
+        assert_eq!(list, vec![order.as_details()]);
     }
 
     #[test]
