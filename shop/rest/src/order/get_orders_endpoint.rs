@@ -59,11 +59,11 @@ pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
     match (
         match validate_query_string::<i64>(req.clone(), "startId", error_list.clone()) {
             Ok(id) => ShopOrderId::validated(id, error_list.clone()),
-            Err(_) => Err(()),
+            Err(_) => None,
         },
         validate_query_string::<usize>(req, "limit", error_list.clone()),
     ) {
-        (Ok(start_id), Ok(limit)) => match shared_state.lock_un().execute(&start_id, limit + 1) {
+        (Some(start_id), Ok(limit)) => match shared_state.lock_un().execute(&start_id, limit + 1) {
             Ok(order_details_list) => {
                 let list: Vec<OrderModel> = order_details_list
                     .into_iter()

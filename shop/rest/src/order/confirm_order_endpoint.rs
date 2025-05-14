@@ -64,11 +64,11 @@ where
     let error_list = RCell::new_rc(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
-        Ok(order_id) => match shared_state.lock_un().execute(&order_id) {
+        Some(order_id) => match shared_state.lock_un().execute(&order_id) {
             Ok(_) => HttpResponse::new(StatusCode::NO_CONTENT),
             Err(e) => e.to_rest_error(),
         },
-        Err(_) => to_invalid_param_bad_request(error_list),
+        None => to_invalid_param_bad_request(error_list),
     }
 }
 

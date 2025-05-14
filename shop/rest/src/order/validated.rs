@@ -7,12 +7,16 @@ use domain::order::{shop_order::ShopOrderError, value_objects::shop_order_id::Sh
 use crate::validated::Validated;
 
 impl Validated<i64> for ShopOrderId {
-    fn validated(val: i64, error_list: RCell<Vec<ValidationError>>) -> Result<Self, ()> {
-        Self::try_from(val).map_err(|e| match e {
-            ShopOrderError::IdGenerationError => error_list
-                .borrow_mut()
-                .push(ValidationError::new("Wrong Shop Order Id")),
-        })
+    fn validated(val: i64, error_list: RCell<Vec<ValidationError>>) -> Option<Self> {
+        match Self::try_from(val) {
+            Ok(id) => Some(id),
+            Err(ShopOrderError::IdGenerationError) => {
+                error_list
+                    .borrow_mut()
+                    .push(ValidationError::new("Wrong Shop Order Id"));
+                None
+            }
+        }
     }
 }
 

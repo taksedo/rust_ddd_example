@@ -14,14 +14,14 @@ use usecase::{
     order::{
         CancelOrder, CancelOrderUseCaseError, ConfirmOrder, ConfirmOrderUseCaseError, GetOrderById,
         GetOrderByIdUseCaseError, GetOrders, GetOrdersUseCaseError,
-        dto::order_details::{OrderDetails, ToDetails},
+        dto::order_details::{AsDetails, OrderDetails},
     },
 };
 
 const API_V1_TYPE_BASE_URL: &str = "http://localhost";
 
 pub fn rnd_order_details(order_state: OrderState) -> OrderDetails {
-    order_with_state(order_state).to_details()
+    order_with_state(order_state).as_details()
 }
 
 #[derive(SmartDefault, Debug)]

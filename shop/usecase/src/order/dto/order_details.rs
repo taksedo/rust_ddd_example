@@ -23,12 +23,12 @@ pub struct OrderDetails {
     pub version: Version,
 }
 
-pub trait ToDetails {
-    fn to_details(&self) -> OrderDetails;
+pub trait AsDetails {
+    fn as_details(&self) -> OrderDetails;
 }
 
-impl ToDetails for ShopOrder {
-    fn to_details(&self) -> OrderDetails {
+impl AsDetails for ShopOrder {
+    fn as_details(&self) -> OrderDetails {
         let items: Vec<OrderItemDetails> = self
             .order_items()
             .iter()

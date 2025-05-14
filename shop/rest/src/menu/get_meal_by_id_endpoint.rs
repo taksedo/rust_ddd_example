@@ -60,20 +60,21 @@ pub async fn get_meal_by_id_endpoint<T>(
 where
     T: GetMealById + Send + Debug,
 {
-    let id: i64 = req.match_info().get("id").unwrap().parse().unwrap();
-
     let error_list = RCell::new_rc(vec![]);
 
-    if let Ok(meal_id) = MealId::validated(id, error_list.clone()) {
-        match shared_state.lock_un().execute(&meal_id) {
+    let result = req
+        .match_info()
+        .get("id")
+        .and_then(|v| v.parse::<i64>().ok())
+        .and_then(|id| MealId::validated(id, error_list.clone()))
+        .map(|meal_id| match shared_state.lock_un().execute(&meal_id) {
             Ok(meal_info) => HttpResponse::Ok()
                 .content_type(ContentType::json())
                 .body(serde_json::to_string(&MealModel::from(meal_info)).unwrap()),
             Err(e) => e.to_rest_error(),
-        }
-    } else {
-        to_invalid_param_bad_request(error_list)
-    }
+        });
+
+    result.unwrap_or_else(|| to_invalid_param_bad_request(error_list))
 }
 
 impl ToRestError for GetMealByIdUseCaseError {
