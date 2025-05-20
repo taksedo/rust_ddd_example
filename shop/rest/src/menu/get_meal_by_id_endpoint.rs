@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
+    types::base::{AM, RCell, RcRefCellTrait},
 };
 use domain::menu::value_objects::meal_id::MealId;
 use usecase::menu::{GetMealById, GetMealByIdUseCaseError, scenario::GetMealByIdUseCase};
@@ -62,19 +62,22 @@ where
 {
     let error_list = RCell::new_rc(vec![]);
 
-    let result = req
+    let maybe_meal_id = req
         .match_info()
         .get("id")
         .and_then(|v| v.parse::<i64>().ok())
-        .and_then(|id| MealId::validated(id, error_list.clone()))
-        .map(|meal_id| match shared_state.lock_un().execute(&meal_id) {
+        .and_then(|id| MealId::validated(id, error_list.clone()));
+
+    if let Some(meal_id) = maybe_meal_id {
+        match shared_state.lock().await.execute(&meal_id).await {
             Ok(meal_info) => HttpResponse::Ok()
                 .content_type(ContentType::json())
                 .body(serde_json::to_string(&MealModel::from(meal_info)).unwrap()),
             Err(e) => e.to_rest_error(),
-        });
-
-    result.unwrap_or_else(|| to_invalid_param_bad_request(error_list))
+        }
+    } else {
+        to_invalid_param_bad_request(error_list)
+    }
 }
 
 impl ToRestError for GetMealByIdUseCaseError {
@@ -98,7 +101,7 @@ mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
     use common::{
         common_rest::{GenericErrorResponse, not_found_type_url},
-        types::base::AM,
+        types::base::AMTrait,
     };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
@@ -114,7 +117,7 @@ mod tests {
         let mock_get_meal_by_id = mock_get_meal_by_id();
         let mock_shared_state = mock_shared_state(&mock_get_meal_by_id);
 
-        mock_get_meal_by_id.lock_un().response = Ok(meal_info.clone());
+        mock_get_meal_by_id.lock().await.response = Ok(meal_info.clone());
 
         let req = TestRequest::default()
             .param("id", meal_info.id.to_i64().to_string())
@@ -130,7 +133,8 @@ mod tests {
         assert_eq!(body_json, &meal_info_json);
 
         mock_get_meal_by_id
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&MealId::try_from(meal_info.id).unwrap());
     }
 
@@ -140,7 +144,7 @@ mod tests {
         let mock_get_meal_by_id = mock_get_meal_by_id();
         let mock_shared_state = mock_shared_state(&mock_get_meal_by_id);
 
-        mock_get_meal_by_id.lock_un().response = Err(MealNotFound);
+        mock_get_meal_by_id.lock().await.response = Err(MealNotFound);
 
         let meal_id = rnd_meal_id().to_i64();
 

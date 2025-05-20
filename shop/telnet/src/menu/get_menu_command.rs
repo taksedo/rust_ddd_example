@@ -1,14 +1,10 @@
-use std::{
-    error::Error,
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::{error::Error, fmt::Debug, sync::Arc};
 
 use actix_web::web::Data;
 use futures_util::SinkExt;
 use nectar::{TelnetCodec, event::TelnetEvent};
 use prettytable::{Table, row};
-use tokio::net::TcpStream;
+use tokio::{net::TcpStream, sync::Mutex};
 use tokio_util::codec::Framed;
 use usecase::menu::GetMenu;
 
@@ -19,7 +15,7 @@ pub async fn get_menu_command<T>(
 where
     T: GetMenu + Send + Debug,
 {
-    let menu = usecase.lock().unwrap().execute();
+    let menu = usecase.lock().await.execute().await;
 
     let mut table = Table::new();
     table.add_row(row!["Id", "Name", "Description", "Price"]);

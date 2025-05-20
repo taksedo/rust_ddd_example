@@ -1,4 +1,5 @@
-use common::types::base::{AM, AMTrait};
+use async_trait::async_trait;
+use common::types::base::AM;
 use derive_new::new;
 use domain::{
     menu::value_objects::{meal_id::MealId, price::Price},
@@ -7,9 +8,10 @@ use domain::{
 
 use crate::menu::access::meal_extractor::MealExtractor;
 
+#[async_trait]
 impl GetMealPrice for GetMealPriceUsingExtractor {
-    fn invoke(&self, for_meal_id: &MealId) -> Price {
-        let meal = &self.extractor.lock_un().get_by_id(for_meal_id);
+    async fn invoke(&self, for_meal_id: &MealId) -> Price {
+        let meal = &self.extractor.lock().await.get_by_id(for_meal_id);
         assert!(meal.is_some(), "Meal #{:?} not found", for_meal_id);
         meal.clone().unwrap().price().clone()
     }
@@ -22,35 +24,52 @@ pub struct GetMealPriceUsingExtractor {
 
 #[cfg(test)]
 mod tests {
-    use assert_panic::assert_panic;
+    use common::types::base::AMTrait;
     use domain::test_fixtures::*;
 
     use super::*;
     use crate::test_fixtures::MockMealExtractor;
 
-    #[test]
-    fn price_has_been_provided() {
+    #[tokio::test]
+    async fn price_has_been_provided() {
         let meal = rnd_meal();
 
         let extractor = AM::new_am(MockMealExtractor::new());
-        extractor.lock_un().meal = Some(meal.clone());
+        extractor.lock().await.meal = Some(meal.clone());
 
         let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
-        let result = get_meal_price.invoke(meal.id());
+        let result = get_meal_price.invoke(meal.id()).await;
 
-        extractor.lock_un().verify_invoked_get_by_id(meal.id());
+        extractor.lock().await.verify_invoked_get_by_id(meal.id());
         assert_eq!(result, meal.price().to_owned());
     }
 
     #[test]
     fn meal_not_found() {
-        let extractor = AM::new_am(MockMealExtractor::new());
-        let get_meal_price = GetMealPriceUsingExtractor::new(extractor.clone());
+        use std::panic::AssertUnwindSafe;
+
+        use assert_panic::assert_panic;
 
         let meal_id = rnd_meal_id();
+        let extractor = AM::new_am(MockMealExtractor::new());
+        let usecase = GetMealPriceUsingExtractor::new(extractor.clone());
 
-        assert_panic!( {get_meal_price.invoke(&meal_id);}, String, starts with &format!("Meal #{:?} not found", meal_id));
+        let safe_usecase = AssertUnwindSafe(&usecase);
 
-        extractor.lock_un().verify_invoked_get_by_id(&meal_id);
+        assert_panic!({
+            let runtime = tokio::runtime::Runtime::new().unwrap();
+            runtime.block_on(async {
+                safe_usecase.invoke(&meal_id).await;
+            })
+        },
+        String,
+        starts with &format!("Meal #{:?} not found", meal_id));
+
+        tokio::runtime::Runtime::new()
+            .unwrap()
+            .block_on(async move {
+                extractor.lock().await.verify_invoked_get_by_id(&meal_id);
+            });
+        // extractor.lock().await.verify_invoked_get_by_id(&meal_id);
     }
 }

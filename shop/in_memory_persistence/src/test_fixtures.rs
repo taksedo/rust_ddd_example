@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use std::fmt::Debug;
 
+use async_trait::async_trait;
 use common::{events::DomainEventPublisher, types::base::DomainEventTrait};
 use derive_new::new;
 use domain::{cart::cart::Cart, menu::meal::Meal, order::shop_order::ShopOrder, test_fixtures::*};
@@ -31,10 +32,11 @@ pub struct TestEventPublisher<Event> {
     pub storage: Vec<Event>,
 }
 
-impl<Event: Debug + Send + Clone + DomainEventTrait> DomainEventPublisher<Event>
+#[async_trait]
+impl<Event: Debug + Send + Clone + DomainEventTrait + Sync> DomainEventPublisher<Event>
     for TestEventPublisher<Event>
 {
-    fn publish(&mut self, events: &Vec<Event>) {
+    async fn publish(&mut self, events: &Vec<Event>) {
         events.iter().for_each(|it| self.storage.push(it.clone()))
     }
 }

@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
+    types::base::{AM, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{GetOrderById, GetOrderByIdUseCaseError};
@@ -68,7 +68,7 @@ where
     let error_list = RCell::new_rc(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
-        Some(order_id) => match shared_state.lock_un().execute(&order_id) {
+        Some(order_id) => match shared_state.lock().await.execute(&order_id).await {
             Ok(it) => HttpResponse::Ok()
                 .content_type(ContentType::json())
                 .body(serde_json::to_string(&ToModel::<OrderModel>::to_model(it)).unwrap()),
@@ -99,7 +99,10 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::common_rest::{GenericErrorResponse, not_found_type_url};
+    use common::{
+        common_rest::{GenericErrorResponse, not_found_type_url},
+        types::base::AMTrait,
+    };
     use domain::{order::shop_order::OrderState, test_fixtures::*};
     use dotenvy::dotenv;
 
@@ -184,7 +187,10 @@ mod tests {
             item_details.count.to_i32()
         );
         assert_eq!(response_dto.version, details.version.to_i64());
-        mock_get_order_by_id.lock_un().verify_invoked(&details.id);
+        mock_get_order_by_id
+            .lock()
+            .await
+            .verify_invoked(&details.id);
     }
 
     #[actix_web::test]
@@ -234,6 +240,9 @@ mod tests {
         );
         assert_eq!(response_dto.version, details.version.to_i64());
 
-        mock_get_order_by_id.lock_un().verify_invoked(&details.id);
+        mock_get_order_by_id
+            .lock()
+            .await
+            .verify_invoked(&details.id);
     }
 }

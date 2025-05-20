@@ -16,6 +16,7 @@ smart-default.workspace = true
 bigdecimal.workspace = true
 dotenvy.workspace = true
 utoipa.workspace = true
+async-trait.workspace = true
 
 domain.workspace = true
 usecase.workspace = true
@@ -23,6 +24,7 @@ common.workspace = true
 
 [dev-dependencies]
 rest = { path = ".", features = ["testing"] }
+tokio.workspace = true
 
 [features]
 testing = ["common/testing", "domain/testing", "usecase/testing"]

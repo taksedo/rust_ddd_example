@@ -20,7 +20,9 @@ url.workspace = true
 common.workspace = true
 usecase.workspace = true
 domain.workspace = true
+async-trait.workspace = true
 
 [dev-dependencies]
+tokio.workspace = true
 testcontainers.workspace = true
 domain = { workspace = true, features = ["testing"] }

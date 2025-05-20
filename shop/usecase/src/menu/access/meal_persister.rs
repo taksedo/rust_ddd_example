@@ -1,9 +1,11 @@
 use std::fmt::Debug;
 
+use async_trait::async_trait;
 use domain::menu::meal::Meal;
 
+#[async_trait]
 pub trait MealPersister: Debug + Send {
-    fn save(&mut self, meal: Meal);
+    async fn save(&mut self, meal: Meal);
 }
 
 impl dyn MealPersister + 'static {

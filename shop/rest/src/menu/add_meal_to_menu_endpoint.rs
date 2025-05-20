@@ -6,7 +6,7 @@ use common::{
     common_rest::{
         GenericErrorResponse, created, rest_business_error, to_invalid_param_bad_request,
     },
-    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
+    types::base::{AM, RCell, RcRefCellTrait},
 };
 use derive_new::new;
 use domain::menu::value_objects::{
@@ -100,8 +100,10 @@ where
     match (meal_name, meal_description, price) {
         (Some(meal_name), Some(meal_description), Some(price)) => {
             match shared_state
-                .lock_un()
+                .lock()
+                .await
                 .execute(&meal_name, &meal_description, &price)
+                .await
             {
                 Ok(meal_id) => created(
                     API_V1_MENU_GET_BY_ID
@@ -142,7 +144,7 @@ mod tests {
     use bigdecimal::{ToPrimitive, num_bigint::BigInt};
     use common::{
         common_rest::{bad_request_type_url, error_type_url},
-        types::base::AM,
+        types::base::AMTrait,
     };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
@@ -159,7 +161,7 @@ mod tests {
         let price = rnd_price();
 
         let mock_add_meal_to_menu = mock_add_meal_to_menu();
-        mock_add_meal_to_menu.lock_un().response = Ok(meal_id);
+        mock_add_meal_to_menu.lock().await.response = Ok(meal_id);
 
         let mock_shared_state = mock_shared_state(&mock_add_meal_to_menu);
 
@@ -172,7 +174,8 @@ mod tests {
         let resp = add_meal_to_menu_endpoint(mock_shared_state, meal).await;
 
         mock_add_meal_to_menu
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&meal_name, &meal_description, &price);
 
         let header = resp
@@ -225,7 +228,7 @@ mod tests {
         dotenv().ok();
         let mock_add_meal_to_menu = mock_add_meal_to_menu();
         let mock_shared_state = mock_shared_state(&mock_add_meal_to_menu);
-        mock_add_meal_to_menu.lock_un().response = Err(AddMealToMenuUseCaseError::AlreadyExists);
+        mock_add_meal_to_menu.lock().await.response = Err(AddMealToMenuUseCaseError::AlreadyExists);
         let meal = Json(AddMealToMenuRestRequest::new(
             rnd_meal_name().to_string(),
             rnd_meal_description().to_string(),

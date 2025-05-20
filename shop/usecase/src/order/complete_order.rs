@@ -1,9 +1,11 @@
 use std::fmt::Debug;
 
+use async_trait::async_trait;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
+#[async_trait]
 pub trait CompleteOrder: Debug + Send {
-    fn execute(&self, order_id: &ShopOrderId) -> Result<(), CompleteOrderUseCaseError>;
+    async fn execute(&self, order_id: &ShopOrderId) -> Result<(), CompleteOrderUseCaseError>;
 }
 
 #[derive(Debug, Clone, PartialEq)]

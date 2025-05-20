@@ -1,7 +1,5 @@
-use common::{
-    events::DomainEventPublisher,
-    types::base::{AM, AMTrait},
-};
+use async_trait::async_trait;
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl, SelectableHelper};
@@ -54,8 +52,9 @@ impl PostgresMealRepository {
     }
 }
 
+#[async_trait]
 impl MealPersister for PostgresMealRepository {
-    fn save(&mut self, mut meal_param: Meal) {
+    async fn save(&mut self, mut meal_param: Meal) {
         let events = meal_param.pop_events();
         if !events.is_empty() {
             let mut flag = false;
@@ -70,7 +69,7 @@ impl MealPersister for PostgresMealRepository {
             if !flag {
                 self.update(meal_param);
             }
-            self.event_publisher.lock_un().publish(&events);
+            self.event_publisher.lock().await.publish(&events).await;
         }
     }
 }

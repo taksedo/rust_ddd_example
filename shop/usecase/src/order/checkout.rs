@@ -1,4 +1,5 @@
 use actix_web::http::Uri;
+use async_trait::async_trait;
 use common::types::common::Address;
 use derive_new::new;
 use domain::{
@@ -8,8 +9,10 @@ use domain::{
 };
 use thiserror::Error;
 
+#[async_trait]
 pub trait Checkout {
-    fn execute(&self, request: &CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError>;
+    async fn execute(&self, request: &CheckoutRequest)
+    -> Result<PaymentInfo, CheckoutUseCaseError>;
 }
 
 #[derive(Debug)]

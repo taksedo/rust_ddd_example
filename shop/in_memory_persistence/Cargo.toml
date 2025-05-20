@@ -12,9 +12,11 @@ derivative.workspace = true
 common.workspace = true
 domain.workspace = true
 usecase.workspace = true
+async-trait.workspace = true
 
 [dev-dependencies]
 in_memory_persistence = { path = ".", features = ["testing"] }
+tokio.workspace = true
 
 [features]
 testing = ["common/testing", "domain/testing", "usecase/testing"]

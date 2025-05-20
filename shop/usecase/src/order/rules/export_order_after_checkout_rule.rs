@@ -1,9 +1,7 @@
 use std::mem::{Discriminant, discriminant};
 
-use common::{
-    events::DomainEventListener,
-    types::base::{AM, AMTrait},
-};
+use async_trait::async_trait;
+use common::{events::DomainEventListener, types::base::AM};
 use derive_new::new;
 use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 
@@ -14,6 +12,7 @@ pub struct ExportOrderAfterCheckoutRule<OExporter: OrderExporter> {
     pub order_exporter: AM<OExporter>,
 }
 
+#[async_trait]
 impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
     for ExportOrderAfterCheckoutRule<OExported>
 {
@@ -22,11 +21,11 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
         discriminant(&event)
     }
 
-    fn handle(&mut self, event: &ShopOrderEventEnum) {
+    async fn handle(&mut self, event: &ShopOrderEventEnum) {
         let event_struct: ShopOrderCreatedDomainEvent =
             event.clone().try_into().expect("Wrong type of event");
 
-        self.order_exporter.lock_un().export_order(
+        self.order_exporter.lock().await.export_order(
             event_struct.order_id,
             event_struct.for_customer,
             event_struct.total_price,
@@ -40,14 +39,14 @@ impl<OExported: OrderExporter> DomainEventListener<ShopOrderEventEnum>
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
+    use common::types::base::AMTrait;
     use domain::test_fixtures::*;
 
     use super::*;
     use crate::test_fixtures::MockOrderExporter;
 
-    #[test]
-    fn order_has_been_exported() {
+    #[tokio::test]
+    async fn order_has_been_exported() {
         let order_id = rnd_order_id();
         let customer_id = rnd_customer_id();
         let total_price = rnd_price();
@@ -58,10 +57,11 @@ mod tests {
         let event: ShopOrderEventEnum =
             ShopOrderCreatedDomainEvent::new(order_id, customer_id, total_price.clone()).into();
 
-        rule.handle(&event);
+        rule.handle(&event).await;
 
         exporter
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(order_id, customer_id, total_price);
     }
 }

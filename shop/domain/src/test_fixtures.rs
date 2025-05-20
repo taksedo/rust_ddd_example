@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use async_trait::async_trait;
 use bigdecimal::{BigDecimal, FromPrimitive};
 use common::{
     test_fixtures::rnd_count,
@@ -195,8 +196,9 @@ pub struct TestMealAlreadyExists {
     pub value: bool,
 }
 
+#[async_trait]
 impl MealAlreadyExists for TestMealAlreadyExists {
-    fn invoke(&mut self, _name: &MealName) -> bool {
+    async fn invoke(&mut self, _name: &MealName) -> bool {
         self.value
     }
 }

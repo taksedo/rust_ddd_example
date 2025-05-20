@@ -1,4 +1,5 @@
-use common::types::base::{AM, AMTrait};
+use async_trait::async_trait;
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -13,10 +14,15 @@ pub struct GetOrderByIdUseCase<ShOExtractor: ShopOrderExtractor> {
     shop_order_extractor: AM<ShOExtractor>,
 }
 
+#[async_trait]
 impl<ShOExtractor: ShopOrderExtractor> GetOrderById for GetOrderByIdUseCase<ShOExtractor> {
-    fn execute(&mut self, id: &ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
+    async fn execute(
+        &mut self,
+        id: &ShopOrderId,
+    ) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
         self.shop_order_extractor
-            .lock_un()
+            .lock()
+            .await
             .get_by_id(id)
             .ok_or(GetOrderByIdUseCaseError::OrderNotFound)
             .map(|order| order.as_details())

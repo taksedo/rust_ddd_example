@@ -3,6 +3,7 @@ use std::{
     fmt::{Debug, Formatter},
 };
 
+use async_trait::async_trait;
 use common::events::DomainEventPublisher;
 use derive_new::new;
 use domain::{menu::meal_events::MealEventEnum, order::customer_order_events::ShopOrderEventEnum};
@@ -29,9 +30,10 @@ impl Debug for KafkaEventPublisherImpl {
 pub(crate) const MEAL_TOPIC_NAME: &str = "meal_topic";
 pub(super) const ORDER_TOPIC_NAME: &str = "order_topic";
 
+#[async_trait]
 impl DomainEventPublisher<MealEventEnum> for KafkaEventPublisherImpl {
-    fn publish(&mut self, events: &Vec<MealEventEnum>) {
-        events.iter().for_each(|event| {
+    async fn publish(&mut self, events: &Vec<MealEventEnum>) {
+        for event in events {
             let event_serialized: String = serde_json::to_string(event).unwrap();
             let msg = BaseRecord::to(MEAL_TOPIC_NAME)
                 .key(&[1, 2, 3, 4])
@@ -39,12 +41,13 @@ impl DomainEventPublisher<MealEventEnum> for KafkaEventPublisherImpl {
             self.producer
                 .send(msg)
                 .expect("Something is wrong with sending to Kafka");
-        })
+        }
     }
 }
 
+#[async_trait]
 impl DomainEventPublisher<ShopOrderEventEnum> for KafkaEventPublisherImpl {
-    fn publish(&mut self, events: &Vec<ShopOrderEventEnum>) {
+    async fn publish(&mut self, events: &Vec<ShopOrderEventEnum>) {
         events.iter().for_each(|event| {
             let event_serialized: String = serde_json::to_string(event).unwrap();
             let msg = BaseRecord::to(ORDER_TOPIC_NAME)
@@ -112,7 +115,7 @@ mod test {
         let topic_name = MEAL_TOPIC_NAME;
 
         let mut publisher = KafkaEventPublisherImpl::new(topic_name.to_owned(), producer);
-        publisher.publish(&events_enum);
+        publisher.publish(&events_enum).await;
 
         let receiver = MockReceiver::new(
             MEAL_TOPIC_NAME.to_string(),

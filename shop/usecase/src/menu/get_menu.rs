@@ -1,5 +1,8 @@
+use async_trait::async_trait;
+
 use crate::menu::dto::meal_info::MealInfo;
 
+#[async_trait]
 pub trait GetMenu {
-    fn execute(&self) -> Vec<MealInfo>;
+    async fn execute(&self) -> Vec<MealInfo>;
 }

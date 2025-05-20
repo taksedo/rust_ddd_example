@@ -6,6 +6,7 @@ use std::{
     mem::{Discriminant, discriminant},
 };
 
+use async_trait::async_trait;
 use common::{
     events::{DomainEventListener, DomainEventPublisher},
     types::base::{AM, AMTrait, DomainEventTrait},
@@ -13,7 +14,7 @@ use common::{
 use derive_new::new;
 use log::info;
 
-type VecOfDomainEventListenerType<Event> = Vec<AM<dyn DomainEventListener<Event>>>;
+type VecOfDomainEventListenerType<Event> = Vec<AM<dyn DomainEventListener<Event> + Send>>;
 
 #[derive(new, Debug, Default, Clone)]
 pub(crate) struct EventPublisherImpl<Event: Debug> {
@@ -24,42 +25,51 @@ impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
     fn register_listener(&mut self, listener: impl DomainEventListener<Event> + 'static) {
         let event_type = listener.event_type();
         self.listener_map.entry(event_type).or_insert_with(|| {
-            let vector: Vec<AM<(dyn DomainEventListener<Event> + 'static)>> =
-                vec![AM::new_am(listener)];
+            let vector: VecOfDomainEventListenerType<Event> = vec![AM::new_am(listener)];
             vector
         });
     }
 
-    fn send_events(&self, listeners: Vec<AM<dyn DomainEventListener<Event>>>, event: Event) {
-        listeners.iter().for_each(|l| l.lock_un().handle(&event))
+    async fn send_events(
+        &self,
+        listeners: Vec<AM<dyn DomainEventListener<Event> + Send>>,
+        event: Event,
+    ) {
+        for l in listeners.iter() {
+            l.lock().await.handle(&event).await;
+        }
     }
 }
 
+#[async_trait]
 impl<Event> DomainEventPublisher<Event> for EventPublisherImpl<Event>
 where
-    Event: Debug + Clone + 'static + Hash + Eq + Default + DomainEventTrait,
+    Event: Debug + Clone + 'static + Hash + Eq + Default + DomainEventTrait + Sync + Send,
 {
-    fn publish(&mut self, events: &Vec<Event>) {
-        events.iter().for_each(|e| {
+    async fn publish(&mut self, events: &Vec<Event>) {
+        for e in events.iter() {
             info!("Processing event: {:?}", &e);
             let listener_map = &self.listener_map;
             let e_type = discriminant(e);
             if listener_map.contains_key(&e_type) {
                 let listeners_from_listener_map = listener_map.get(&e_type).unwrap();
                 self.send_events(listeners_from_listener_map.to_vec(), e.clone())
+                    .await;
             }
-        })
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
+    use async_trait::async_trait;
     use common::types::base::DomainEventTrait;
     use smart_default::SmartDefault;
+    use tokio::test;
 
     use super::*;
     #[test]
-    fn publish_events() {
+    async fn publish_events() {
         if std::env::var("RUST_LOG").is_err() {
             unsafe {
                 std::env::set_var("RUST_LOG", "debug");
@@ -79,17 +89,19 @@ mod test {
             AnotherTestEvent::new("AnotherTestEvent".to_string()).into();
         let events: Vec<DomainEventEnum> = vec![test_event.clone(), another_test_event.clone()];
 
-        publisher.publish(&events);
+        publisher.publish(&events).await;
 
         let test_event_listener = &publisher
             .get_listener(DomainEventEnum::TestEvent(TestEvent::default()))
-            .lock_un();
+            .lock()
+            .await;
 
         let another_test_event_listener = &publisher
             .get_listener(DomainEventEnum::AnotherTestEvent(
                 AnotherTestEvent::default(),
             ))
-            .lock_un();
+            .lock()
+            .await;
 
         assert_eq!(test_event_listener.get_events(), &vec![test_event]);
         assert_eq!(
@@ -103,13 +115,14 @@ mod test {
         events: Vec<DomainEventEnum>,
     }
 
+    #[async_trait]
     impl DomainEventListener<DomainEventEnum> for TestEventListener {
         fn event_type(&self) -> Discriminant<DomainEventEnum> {
             let event: DomainEventEnum = TestEvent::default().into();
             discriminant(&event)
         }
 
-        fn handle(&mut self, event: &DomainEventEnum) {
+        async fn handle(&mut self, event: &DomainEventEnum) {
             self.events.push(event.clone());
         }
 
@@ -123,13 +136,14 @@ mod test {
         events: Vec<DomainEventEnum>,
     }
 
+    #[async_trait]
     impl DomainEventListener<DomainEventEnum> for AnotherTestEventListener {
         fn event_type(&self) -> Discriminant<DomainEventEnum> {
             let event: DomainEventEnum = AnotherTestEvent::default().into();
             discriminant(&event)
         }
 
-        fn handle(&mut self, event: &DomainEventEnum) {
+        async fn handle(&mut self, event: &DomainEventEnum) {
             self.events.push(event.to_owned());
         }
         fn get_events(&self) -> &Vec<DomainEventEnum> {
@@ -156,7 +170,7 @@ mod test {
     }
 
     impl<Event: Debug> EventPublisherImpl<Event> {
-        fn get_listener(&self, event_type: Event) -> &AM<dyn DomainEventListener<Event>> {
+        fn get_listener(&self, event_type: Event) -> &AM<dyn DomainEventListener<Event> + Send> {
             let result = self.listener_map.get(&discriminant(&event_type)).unwrap();
             result.first().unwrap()
         }

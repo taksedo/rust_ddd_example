@@ -1,4 +1,5 @@
-use common::types::base::{AM, AMTrait};
+use async_trait::async_trait;
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::{
     customer_has_active_order::CustomerHasActiveOrder, get_meal_price::GetMealPrice,
@@ -38,6 +39,7 @@ pub struct CheckoutUseCase<
     shop_order_persister: AM<ShOPersister>,
 }
 
+#[async_trait]
 impl<ShOIdGenerator, CExtractor, CustomerHasActiveO, GetMPrice, PaymUrlProvider, ShOPersister>
     Checkout
     for CheckoutUseCase<
@@ -56,12 +58,17 @@ where
     PaymUrlProvider: PaymentUrlProvider,
     ShOPersister: ShopOrderPersister,
 {
-    fn execute(&self, request: &CheckoutRequest) -> Result<PaymentInfo, CheckoutUseCaseError> {
+    async fn execute(
+        &self,
+        request: &CheckoutRequest,
+    ) -> Result<PaymentInfo, CheckoutUseCaseError> {
         // Fetch cart or return error
         let cart = self
             .cart_extractor
-            .lock_un()
+            .lock()
+            .await
             .get_cart(&request.for_customer)
+            .await
             .ok_or(CheckoutUseCaseError::CartNotFound)?;
 
         // Create shop order
@@ -71,10 +78,15 @@ where
             self.active_order.clone(),
             request.delivery_to.clone(),
             self.get_meal_price.clone(),
-        )?;
+        )
+        .await?;
 
         // Persist the order
-        self.shop_order_persister.lock_un().save(order.clone());
+        self.shop_order_persister
+            .lock()
+            .await
+            .save(order.clone())
+            .await;
 
         // Generate payment info
         Ok(PaymentInfo {
@@ -82,7 +94,8 @@ where
             price: order.total_price(),
             payment_url: self
                 .payment_url_provider
-                .lock_un()
+                .lock()
+                .await
                 .provide_url(order.id(), order.total_price()),
         })
     }
@@ -95,10 +108,7 @@ mod tests {
     use actix_web::http::Uri;
     use common::{
         test_fixtures::*,
-        types::{
-            base::{AM, AMTrait},
-            common::Address,
-        },
+        types::{base::AMTrait, common::Address},
     };
     use domain::{
         cart::value_objects::customer_id::CustomerId,
@@ -113,8 +123,8 @@ mod tests {
         MockCartExtractor, MockCustomerHasActiveOrder, MockShopOrderPersister,
     };
 
-    #[test]
-    fn order_created_successfully() {
+    #[tokio::test]
+    async fn order_created_successfully() {
         let meal = rnd_meal();
         let address = rnd_address();
         let count = rnd_count();
@@ -125,7 +135,7 @@ mod tests {
         let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
 
         let cart_extractor = AM::new_am(MockCartExtractor::default());
-        cart_extractor.lock_un().cart = Some(cart.clone());
+        cart_extractor.lock().await.cart = Some(cart.clone());
 
         let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(false));
         let order_persister = AM::new_am(MockShopOrderPersister::default());
@@ -144,15 +154,19 @@ mod tests {
         );
 
         let checkout_request = checkout_request(address.clone(), customer_id);
-        let result = use_case.execute(&checkout_request);
+        let result = use_case.execute(&checkout_request).await;
 
-        let order_id = id_generator.lock_un().id;
+        let order_id = id_generator.lock().await.id;
 
         active_order_rule
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(cart.for_customer());
-        cart_extractor.lock_un().verify_invoked(cart.for_customer());
-        order_persister.lock_un().verify_invoked(
+        cart_extractor
+            .lock()
+            .await
+            .verify_invoked(cart.for_customer());
+        order_persister.lock().await.verify_invoked(
             &order_id,
             &address,
             &customer_id,
@@ -165,13 +179,13 @@ mod tests {
         assert_eq!(result.order_id, order_id);
         assert_eq!(
             result.payment_url.to_string(),
-            payment_url_provider.lock_un().payment_url
+            payment_url_provider.lock().await.payment_url
         );
-        order_persister.lock_un().verify_price(&result.price);
+        order_persister.lock().await.verify_price(&result.price);
     }
 
-    #[test]
-    fn cart_not_found() {
+    #[tokio::test]
+    async fn cart_not_found() {
         let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
         let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(false));
 
@@ -191,27 +205,28 @@ mod tests {
         );
 
         let checkout_request = checkout_request(rnd_address(), rnd_customer_id());
-        let result = use_case.execute(&checkout_request);
+        let result = use_case.execute(&checkout_request).await;
 
-        order_persister.lock_un().verify_empty();
-        active_order_rule.lock_un().verify_empty();
+        order_persister.lock().await.verify_empty();
+        active_order_rule.lock().await.verify_empty();
         cart_extractor
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&checkout_request.for_customer);
 
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), CheckoutUseCaseError::CartNotFound);
     }
 
-    #[test]
-    fn cart_is_empty() {
+    #[tokio::test]
+    async fn cart_is_empty() {
         let cart = rnd_cart();
         let customer_id = cart.for_customer();
 
         let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
 
         let cart_extractor = AM::new_am(MockCartExtractor::default());
-        cart_extractor.lock_un().cart = Some(cart.clone());
+        cart_extractor.lock().await.cart = Some(cart.clone());
 
         let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(false));
         let order_persister = AM::new_am(MockShopOrderPersister::default());
@@ -230,27 +245,29 @@ mod tests {
         );
 
         let checkout_request = checkout_request(rnd_address(), *customer_id);
-        let result = use_case.execute(&checkout_request);
+        let result = use_case.execute(&checkout_request).await;
 
-        order_persister.lock_un().verify_empty();
+        order_persister.lock().await.verify_empty();
         active_order_rule
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&checkout_request.for_customer);
         cart_extractor
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&checkout_request.for_customer);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), CheckoutUseCaseError::EmptyCart);
     }
 
-    #[test]
-    fn already_has_active_order() {
+    #[tokio::test]
+    async fn already_has_active_order() {
         let cart = rnd_cart();
 
         let id_generator = AM::new_am(TestShopOrderIdGenerator::default());
 
         let cart_extractor = AM::new_am(MockCartExtractor::default());
-        cart_extractor.lock_un().cart = Some(cart.clone());
+        cart_extractor.lock().await.cart = Some(cart.clone());
 
         let active_order_rule = AM::new_am(MockCustomerHasActiveOrder::new(true));
         let order_persister = AM::new_am(MockShopOrderPersister::default());
@@ -267,10 +284,12 @@ mod tests {
             order_persister.clone(),
         );
 
-        order_persister.lock_un().verify_empty();
-        cart_extractor.lock_un().verify_empty();
-        active_order_rule.lock_un().verify_empty();
-        let result = use_case.execute(&checkout_request(rnd_address(), *cart.for_customer()));
+        order_persister.lock().await.verify_empty();
+        cart_extractor.lock().await.verify_empty();
+        active_order_rule.lock().await.verify_empty();
+        let result = use_case
+            .execute(&checkout_request(rnd_address(), *cart.for_customer()))
+            .await;
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
@@ -295,8 +314,9 @@ mod tests {
         price: Price,
     }
 
+    #[async_trait]
     impl GetMealPrice for MockGetMealPrice {
-        fn invoke(&self, _: &MealId) -> Price {
+        async fn invoke(&self, _: &MealId) -> Price {
             self.price.clone()
         }
     }

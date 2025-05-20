@@ -4,7 +4,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found, rest_business_error,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
+    types::base::{AM, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{CancelOrder, CancelOrderUseCaseError};
@@ -57,7 +57,7 @@ pub async fn cancel_order_endpoint<T: CancelOrder>(
     let error_list = RCell::new_rc(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
-        Some(order_id) => match shared_state.lock_un().execute(&order_id) {
+        Some(order_id) => match shared_state.lock().await.execute(&order_id).await {
             Ok(_) => HttpResponse::new(StatusCode::NO_CONTENT),
             Err(e) => e.to_rest_error(),
         },
@@ -86,7 +86,10 @@ pub fn cancel_order_endpoint_config<T: CancelOrder + 'static>(cfg: &mut web::Ser
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, test::TestRequest, web::Data};
-    use common::common_rest::{GenericErrorResponse, error_type_url, not_found_type_url};
+    use common::{
+        common_rest::{GenericErrorResponse, error_type_url, not_found_type_url},
+        types::base::AMTrait,
+    };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -98,7 +101,7 @@ mod tests {
         dotenv().ok();
         let order_id = rnd_order_id();
         let mock_cancel_order = AM::new_am(MockCancelOrder::default());
-        mock_cancel_order.lock_un().response = Err(CancelOrderUseCaseError::OrderNotFound);
+        mock_cancel_order.lock().await.response = Err(CancelOrderUseCaseError::OrderNotFound);
 
         let mock_shared_state = Data::new(mock_cancel_order.clone());
 
@@ -128,7 +131,7 @@ mod tests {
         dotenv().ok();
         let order_id = rnd_order_id();
         let mock_cancel_order = AM::new_am(MockCancelOrder::default());
-        mock_cancel_order.lock_un().response = Err(CancelOrderUseCaseError::InvalidOrderState);
+        mock_cancel_order.lock().await.response = Err(CancelOrderUseCaseError::InvalidOrderState);
 
         let mock_shared_state = Data::new(mock_cancel_order.clone());
 
@@ -161,7 +164,7 @@ mod tests {
         dotenv().ok();
         let order_id = rnd_order_id();
         let mock_cancel_order = AM::new_am(MockCancelOrder::default());
-        mock_cancel_order.lock_un().response = Ok(());
+        mock_cancel_order.lock().await.response = Ok(());
 
         let mock_shared_state = Data::new(mock_cancel_order.clone());
 
