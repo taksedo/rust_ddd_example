@@ -1,9 +1,7 @@
 use std::{collections::HashMap, fmt::Debug};
 
-use common::{
-    events::DomainEventPublisher,
-    types::base::{AM, AMTrait},
-};
+use async_trait::async_trait;
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use domain::menu::{
@@ -20,9 +18,14 @@ pub struct InMemoryMealRepository {
     pub storage: HashMap<MealId, Meal>,
 }
 
+#[async_trait]
 impl MealPersister for InMemoryMealRepository {
-    fn save(&mut self, mut meal: Meal) {
-        self.event_publisher.lock_un().publish(&meal.pop_events());
+    async fn save(&mut self, mut meal: Meal) {
+        self.event_publisher
+            .lock()
+            .await
+            .publish(&meal.pop_events())
+            .await;
         self.storage.insert(*meal.id(), meal);
     }
 }
@@ -54,24 +57,25 @@ impl MealExtractor for InMemoryMealRepository {
 mod tests {
     use std::any::{type_name, type_name_of_val};
 
+    use common::types::base::AMTrait;
     use domain::{menu::meal_events::MealRemovedFromMenuDomainEvent, test_fixtures::*};
 
     use super::*;
     use crate::test_fixtures::*;
 
-    #[test]
-    fn saving_meal__meal_doesnt_exist() {
+    #[tokio::test]
+    async fn saving_meal__meal_doesnt_exist() {
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let storage_binding = event_publisher.clone();
         let mut meal_repository = InMemoryMealRepository::new(event_publisher);
         let meal = meal_with_events();
 
-        meal_repository.save(meal.clone());
+        meal_repository.save(meal.clone()).await;
 
         let stored_meal = meal_repository.storage.get(meal.id()).unwrap();
         assert_eq!(&meal, stored_meal);
 
-        let storage = &storage_binding.lock_un().storage;
+        let storage = &storage_binding.lock().await.storage;
         assert_eq!(storage.len(), 1);
 
         let event: MealRemovedFromMenuDomainEvent =
@@ -79,8 +83,8 @@ mod tests {
         assert_eq!(event.meal_id, *meal.id());
     }
 
-    #[test]
-    fn saving_meal__meal_exists() {
+    #[tokio::test]
+    async fn saving_meal__meal_exists() {
         let existing_meal = rnd_meal();
 
         let event_publisher = AM::new_am(TestEventPublisher::new());
@@ -91,9 +95,9 @@ mod tests {
             .insert(*existing_meal.id(), existing_meal);
 
         let updated_meal = meal_with_events();
-        meal_repository.save(updated_meal.clone());
+        meal_repository.save(updated_meal.clone()).await;
 
-        let storage = &storage_binding.lock_un().storage;
+        let storage = &storage_binding.lock().await.storage;
         let event = storage.first().unwrap().to_owned();
         let event: MealRemovedFromMenuDomainEvent = event.try_into().unwrap();
         assert_eq!(
@@ -133,12 +137,12 @@ mod tests {
         assert!(meal.is_none());
     }
 
-    #[test]
-    fn get_meal_by_name__success() {
+    #[tokio::test]
+    async fn get_meal_by_name__success() {
         let stored_meal = rnd_meal();
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryMealRepository::new(event_publisher);
-        repository.save(stored_meal.clone());
+        repository.save(stored_meal.clone()).await;
 
         let meal = repository.get_by_name(stored_meal.clone().name()).unwrap();
         assert_eq!(type_name_of_val(&meal), type_name_of_val(&stored_meal));

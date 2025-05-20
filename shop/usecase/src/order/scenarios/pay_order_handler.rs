@@ -1,4 +1,5 @@
-use common::types::base::{AM, AMTrait};
+use async_trait::async_trait;
+use common::types::base::AM;
 use derive_new::new;
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 
@@ -13,11 +14,13 @@ pub struct PayOrderHandler {
     shop_order_persister: AM<dyn ShopOrderPersister>,
 }
 
+#[async_trait]
 impl PayOrder for PayOrderHandler {
-    fn execute(&self, order_id: &ShopOrderId) -> Result<(), PayOrderHandlerError> {
+    async fn execute(&self, order_id: &ShopOrderId) -> Result<(), PayOrderHandlerError> {
         let mut order = self
             .shop_order_extractor
-            .lock_un()
+            .lock()
+            .await
             .get_by_id(order_id)
             .ok_or(PayOrderHandlerError::OrderNotFound)?;
 
@@ -25,14 +28,16 @@ impl PayOrder for PayOrderHandler {
             .pay()
             .map_err(|_| PayOrderHandlerError::InvalidOrderState)?;
 
-        self.shop_order_persister.lock_un().save(order);
+        self.shop_order_persister.lock().await.save(order).await;
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMTrait;
     use domain::test_fixtures::*;
+    use tokio::test;
 
     use super::*;
     use crate::test_fixtures::{
@@ -41,54 +46,57 @@ mod tests {
     };
 
     #[test]
-    fn successfully_payed() {
+    async fn successfully_payed() {
         let order = order_ready_for_pay();
         let extractor = AM::new_am(MockShopOrderExtractor::default());
-        extractor.lock_un().order = Some(order.clone());
+        extractor.lock().await.order = Some(order.clone());
         let persister = AM::new_am(MockShopOrderPersister::default());
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
-        let result = handler.execute(order.id());
+        let result = handler.execute(order.id()).await;
 
         assert!(result.is_ok());
 
-        let order = persister.lock_un().order.clone().unwrap();
+        let order = persister.lock().await.order.clone().unwrap();
 
-        persister.lock_un().verify_invoked_order(&order);
-        extractor.lock_un().verify_invoked_get_by_id(order.id());
-        persister.lock_un().verify_events_after_payment(order.id());
+        persister.lock().await.verify_invoked_order(&order);
+        extractor.lock().await.verify_invoked_get_by_id(order.id());
+        persister
+            .lock()
+            .await
+            .verify_events_after_payment(order.id());
     }
 
     #[test]
-    fn invalid_state() {
+    async fn invalid_state() {
         let order = order_not_ready_for_pay();
         let extractor = AM::new_am(MockShopOrderExtractor::default());
-        extractor.lock_un().order = Some(order.clone());
+        extractor.lock().await.order = Some(order.clone());
         let persister = AM::new_am(MockShopOrderPersister::default());
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
-        let result = handler.execute(order.id());
+        let result = handler.execute(order.id()).await;
 
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), PayOrderHandlerError::InvalidOrderState);
 
-        persister.lock_un().verify_empty();
-        extractor.lock_un().verify_invoked_get_by_id(order.id());
+        persister.lock().await.verify_empty();
+        extractor.lock().await.verify_invoked_get_by_id(order.id());
     }
 
     #[test]
-    fn order_not_found() {
+    async fn order_not_found() {
         let extractor = AM::new_am(MockShopOrderExtractor::default());
         let persister = AM::new_am(MockShopOrderPersister::default());
 
         let handler = PayOrderHandler::new(extractor.clone(), persister.clone());
         let order_id = rnd_order_id();
-        let result = handler.execute(&order_id);
+        let result = handler.execute(&order_id).await;
 
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), PayOrderHandlerError::OrderNotFound);
 
-        persister.lock_un().verify_empty();
-        extractor.lock_un().verify_invoked_get_by_id(&order_id);
+        persister.lock().await.verify_empty();
+        extractor.lock().await.verify_invoked_get_by_id(&order_id);
     }
 }

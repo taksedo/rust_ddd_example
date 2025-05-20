@@ -1,9 +1,7 @@
 use std::collections::HashMap;
 
-use common::{
-    events::DomainEventPublisher,
-    types::base::{AM, AMTrait},
-};
+use async_trait::async_trait;
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use domain::cart::{
@@ -20,18 +18,24 @@ pub struct InMemoryCartRepository {
     pub storage: HashMap<CustomerId, Cart>,
 }
 
+#[async_trait]
 impl CartExtractor for InMemoryCartRepository {
-    fn get_cart(&mut self, for_customer: &CustomerId) -> Option<Cart> {
+    async fn get_cart(&mut self, for_customer: &CustomerId) -> Option<Cart> {
         Some(self.storage.get(for_customer)?.clone())
     }
 }
 
+#[async_trait]
 impl CartPersister for InMemoryCartRepository {
-    fn save(&mut self, mut cart: Cart) {
+    async fn save(&mut self, mut cart: Cart) {
         dbg!(&cart);
         let popped_events = cart.pop_events();
         dbg!(&popped_events);
-        self.event_publisher.lock_un().publish(&popped_events);
+        self.event_publisher
+            .lock()
+            .await
+            .publish(&popped_events)
+            .await;
         self.storage.insert(*cart.for_customer(), cart);
     }
 }
@@ -44,31 +48,32 @@ impl CartRemover for InMemoryCartRepository {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMTrait;
     use domain::{cart::cart_events::MealAddedToCartDomainEvent, test_fixtures::*};
 
     use super::*;
     use crate::test_fixtures::*;
 
-    #[test]
-    fn saving_cart_cart_doesnt_exist() {
+    #[tokio::test]
+    async fn saving_cart_cart_doesnt_exist() {
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryCartRepository::new(event_publisher.clone());
         let cart = cart_with_events();
 
-        repository.save(cart.clone());
+        repository.save(cart.clone()).await;
 
         let stored_cart = repository.storage.get(cart.for_customer()).unwrap();
         assert_eq!(stored_cart, &cart);
-        assert_eq!(event_publisher.lock_un().storage.len(), 1);
+        assert_eq!(event_publisher.lock().await.storage.len(), 1);
 
-        let binding = event_publisher.lock_un();
+        let binding = event_publisher.lock().await;
         let event: &CartEventEnum = binding.storage.first().unwrap();
         let event_struct: MealAddedToCartDomainEvent = event.clone().try_into().unwrap();
         assert_eq!(event_struct.cart_id, *cart.id());
     }
 
-    #[test]
-    fn saving_cart_cart_exists() {
+    #[tokio::test]
+    async fn saving_cart_cart_exists() {
         let customer_id = rnd_customer_id();
         let existing_cart = rnd_cart_with_customer_id(customer_id);
 
@@ -77,18 +82,18 @@ mod tests {
         repository.storage.insert(customer_id, existing_cart);
 
         let updated_cart = cart_with_events();
-        repository.save(updated_cart.clone());
+        repository.save(updated_cart.clone()).await;
         repository.storage.insert(customer_id, updated_cart.clone());
 
-        let binding = event_publisher.lock_un();
+        let binding = event_publisher.lock().await;
         let event: &CartEventEnum = binding.storage.first().unwrap();
         let event_struct: Result<MealAddedToCartDomainEvent, _> = event.clone().try_into();
         assert!(event_struct.is_ok());
         assert_eq!(event_struct.unwrap().cart_id, *updated_cart.id());
     }
 
-    #[test]
-    fn get_by_id_cart_exists() {
+    #[tokio::test]
+    async fn get_by_id_cart_exists() {
         let customer_id = rnd_customer_id();
         let existing_cart = rnd_cart_with_customer_id(customer_id);
 
@@ -98,7 +103,7 @@ mod tests {
             .storage
             .insert(customer_id, existing_cart.clone());
 
-        let cart = repository.get_cart(&customer_id);
+        let cart = repository.get_cart(&customer_id).await;
 
         assert!(cart.is_some());
 
@@ -110,11 +115,11 @@ mod tests {
         assert_eq!(cart.meals(), existing_cart.meals());
     }
 
-    #[test]
-    fn get_by_id_cart_doesnt_exist() {
+    #[tokio::test]
+    async fn get_by_id_cart_doesnt_exist() {
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryCartRepository::new(event_publisher.clone());
-        let cart = repository.get_cart(&rnd_customer_id());
+        let cart = repository.get_cart(&rnd_customer_id()).await;
 
         assert!(cart.is_none());
     }

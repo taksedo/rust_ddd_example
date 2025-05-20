@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use actix_web::{HttpResponse, http::header::ContentType, web};
-use common::types::base::{AM, AMTrait};
+use common::types::base::AM;
 use usecase::menu::GetMenu;
 
 use crate::{endpoint_url::API_V1_MENU_GET_ALL, menu::meal_model::MealModel};
@@ -24,8 +24,10 @@ pub async fn get_menu_endpoint<T: GetMenu + Send + Debug>(
     shared_state: web::Data<AM<T>>,
 ) -> HttpResponse {
     let meal_model_list: Vec<MealModel> = shared_state
-        .lock_un()
+        .lock()
+        .await
         .execute()
+        .await
         .into_iter()
         .map(MealModel::from)
         .collect();
@@ -42,7 +44,7 @@ pub fn get_menu_endpoint_config<T: GetMenu + Send + Debug + 'static>(cfg: &mut w
 #[cfg(test)]
 mod tests {
     use actix_web::body::MessageBody;
-    use common::types::base::{AM, AMTrait};
+    use common::types::base::AMTrait;
 
     use super::*;
     use crate::test_fixtures::{MockGetMenu, rnd_meal_info};
@@ -51,7 +53,7 @@ mod tests {
     async fn get_menu() {
         let meal_info = rnd_meal_info();
         let mock_get_menu = AM::new_am(MockGetMenu::default());
-        mock_get_menu.lock_un().meal_info = meal_info.clone();
+        mock_get_menu.lock().await.meal_info = meal_info.clone();
         let mock_shared_state = web::Data::new(mock_get_menu.clone());
 
         let resp = get_menu_endpoint(mock_shared_state).await;

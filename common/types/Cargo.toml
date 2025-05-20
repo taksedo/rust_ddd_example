@@ -15,6 +15,8 @@ enum_delegate.workspace = true
 smart-default.workspace = true
 uuid.workspace = true
 derive-getters.workspace = true
+tokio.workspace = true
+async-trait.workspace = true
 
 [dev-dependencies]
 rand.workspace = true

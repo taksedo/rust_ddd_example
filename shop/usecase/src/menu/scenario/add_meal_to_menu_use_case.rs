@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
-use common::types::base::{AM, AMTrait, DomainEventTrait};
+use async_trait::async_trait;
+use common::types::base::{AM, DomainEventTrait};
 use derive_new::new;
 use domain::menu::{
     meal::Meal,
@@ -25,8 +26,9 @@ pub struct AddMealToMenuUseCase {
     pub meal_exists: AM<dyn MealAlreadyExists>,
 }
 
+#[async_trait]
 impl AddMealToMenu for AddMealToMenuUseCase {
-    fn execute(
+    async fn execute(
         &mut self,
         name: &MealName,
         description: &MealDescription,
@@ -38,8 +40,13 @@ impl AddMealToMenu for AddMealToMenuUseCase {
             name.clone(),
             description.clone(),
             price.clone(),
-        )?;
-        self.meal_persister.lock_un().save(new_meal_in_menu.clone());
+        )
+        .await?;
+        self.meal_persister
+            .lock()
+            .await
+            .save(new_meal_in_menu.clone())
+            .await;
         Ok(*new_meal_in_menu.id())
     }
 }
@@ -48,13 +55,14 @@ impl DomainEventTrait for AddMealToMenuUseCase {}
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMTrait;
     use domain::test_fixtures::*;
 
     use super::*;
     use crate::test_fixtures::MockMealPersister;
 
-    #[test]
-    fn successfully_added() {
+    #[tokio::test]
+    async fn successfully_added() {
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();
@@ -66,13 +74,15 @@ mod tests {
             id_generator.clone(),
             AM::new_am(TestMealAlreadyExists { value: false }),
         );
-        let result = add_to_menu_use_case.execute(&name, &description, &price);
+        let result = add_to_menu_use_case
+            .execute(&name, &description, &price)
+            .await;
 
-        let id = id_generator.lock_un().id;
+        let id = id_generator.lock().await.id;
 
         assert_eq!(result.unwrap(), id.to_owned());
 
-        meal_persister.lock_un().verify_invoked(
+        meal_persister.lock().await.verify_invoked(
             Some(&id),
             Some(&name),
             Some(&description),
@@ -80,8 +90,8 @@ mod tests {
         );
     }
 
-    #[test]
-    fn meal_already_exists() {
+    #[tokio::test]
+    async fn meal_already_exists() {
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();
@@ -94,7 +104,9 @@ mod tests {
             id_generator,
             AM::new_am(TestMealAlreadyExists { value: true }),
         );
-        let result = add_to_menu_use_case.execute(&name, &description, &price);
+        let result = add_to_menu_use_case
+            .execute(&name, &description, &price)
+            .await;
 
         assert_eq!(result, Err(AddMealToMenuUseCaseError::AlreadyExists));
     }

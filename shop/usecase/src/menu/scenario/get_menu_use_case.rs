@@ -1,4 +1,5 @@
-use common::types::base::{AM, AMTrait};
+use async_trait::async_trait;
+use common::types::base::AM;
 use derive_new::new;
 
 use crate::menu::{
@@ -10,10 +11,12 @@ pub struct GetMenuUseCase {
     pub(crate) meal_extractor: AM<dyn MealExtractor>,
 }
 
+#[async_trait]
 impl GetMenu for GetMenuUseCase {
-    fn execute(&self) -> Vec<MealInfo> {
+    async fn execute(&self) -> Vec<MealInfo> {
         self.meal_extractor
-            .lock_un()
+            .lock()
+            .await
             .get_all()
             .into_iter()
             .map(MealInfo::from)
@@ -23,36 +26,39 @@ impl GetMenu for GetMenuUseCase {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMTrait;
     use domain::test_fixtures::*;
+    use tokio::test;
 
     use super::*;
     use crate::test_fixtures::MockMealExtractor;
 
     #[test]
     #[allow(non_snake_case)]
-    fn get_menu__menu_is_empty() {
+    async fn get_menu__menu_is_empty() {
         let meal_extractor = MockMealExtractor::new();
         let use_case = GetMenuUseCase::new(AM::new_am(meal_extractor));
-        let menu = use_case.execute();
+        let menu = use_case.execute().await;
 
         assert!(menu.is_empty());
         use_case
             .meal_extractor
-            .lock_un()
+            .lock()
+            .await
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_all();
     }
 
     #[test]
-    fn get_menu() {
+    async fn get_menu() {
         let meal = rnd_meal();
         let meal_extractor = MockMealExtractor {
             meal: Option::from(meal.to_owned()),
             ..MockMealExtractor::default()
         };
         let use_case = GetMenuUseCase::new(AM::new_am(meal_extractor));
-        let menu = use_case.execute();
+        let menu = use_case.execute().await;
 
         assert_eq!(
             menu,
@@ -66,7 +72,8 @@ mod tests {
         );
         use_case
             .meal_extractor
-            .lock_un()
+            .lock()
+            .await
             .downcast_ref::<MockMealExtractor>()
             .unwrap()
             .verify_invoked_get_all();

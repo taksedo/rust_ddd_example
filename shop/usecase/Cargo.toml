@@ -16,12 +16,13 @@ serde.workspace = true
 
 common.workspace = true
 domain.workspace = true
+async-trait.workspace = true
 
 [dev-dependencies]
 usecase = { path = ".", features = ["testing"] }
-
-assert-panic.workspace = true
+tokio.workspace = true
 tracing-test.workspace = true
+assert-panic.workspace = true
 
 [features]
 testing = ["common/testing", "domain/testing"]

@@ -1,9 +1,6 @@
 use std::collections::BTreeMap;
 
-use common::{
-    events::DomainEventPublisher,
-    types::base::{AM, AMTrait},
-};
+use common::{events::DomainEventPublisher, types::base::AM};
 use derivative::Derivative;
 use derive_new::new;
 use domain::{
@@ -24,9 +21,14 @@ pub struct InMemoryShopOrderRepository {
     pub storage: BTreeMap<ShopOrderId, ShopOrder>,
 }
 
+#[async_trait::async_trait]
 impl ShopOrderPersister for InMemoryShopOrderRepository {
-    fn save(&mut self, mut order: ShopOrder) {
-        self.event_publisher.lock_un().publish(&order.pop_events());
+    async fn save(&mut self, mut order: ShopOrder) {
+        self.event_publisher
+            .lock()
+            .await
+            .publish(&order.pop_events())
+            .await;
         self.storage.insert(*order.id(), order);
     }
 }
@@ -57,24 +59,26 @@ impl ShopOrderExtractor for InMemoryShopOrderRepository {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMTrait;
     use domain::{order::customer_order_events::ShopOrderCompletedDomainEvent, test_fixtures::*};
+    use tokio::test;
 
     use super::*;
     use crate::test_fixtures::{TestEventPublisher, order_with_events};
 
     #[test]
-    fn saving_order_order_doesnt_exist() {
+    async fn saving_order_order_doesnt_exist() {
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = order_with_events();
 
-        repository.save(order.clone());
+        repository.save(order.clone()).await;
 
         let stored_order = repository.storage.get(order.id()).unwrap();
         assert_eq!(stored_order, &order);
-        assert_eq!(event_publisher.lock_un().storage.len(), 1);
+        assert_eq!(event_publisher.lock().await.storage.len(), 1);
 
-        let binding = event_publisher.lock_un();
+        let binding = event_publisher.lock().await;
         let event: &ShopOrderEventEnum = binding.storage.first().unwrap();
         let event_struct = TryInto::<ShopOrderCompletedDomainEvent>::try_into(event.clone());
         assert!(event_struct.is_ok());
@@ -83,7 +87,7 @@ mod tests {
     }
 
     #[test]
-    fn saving_order_order_exist() {
+    async fn saving_order_order_exist() {
         let updated_order = order_with_events();
         let id = updated_order.id();
 
@@ -96,9 +100,9 @@ mod tests {
             .storage
             .insert(*existing_order.id(), existing_order);
 
-        repository.save(updated_order.clone());
+        repository.save(updated_order.clone()).await;
 
-        let binding = event_publisher.lock_un();
+        let binding = event_publisher.lock().await;
         let event: &ShopOrderEventEnum = binding.storage.first().unwrap();
         let event_struct = TryInto::<ShopOrderCompletedDomainEvent>::try_into(event.clone());
 
@@ -108,7 +112,7 @@ mod tests {
     }
 
     #[test]
-    fn get_by_id_order_exist() {
+    async fn get_by_id_order_exist() {
         let existing_order = rnd_order(Default::default());
 
         let event_publisher = AM::new_am(TestEventPublisher::new());
@@ -123,7 +127,7 @@ mod tests {
     }
 
     #[test]
-    fn get_by_id_order_doesnt_exist() {
+    async fn get_by_id_order_doesnt_exist() {
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_by_id(&rnd_order_id());
@@ -131,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn get_last_doesnt_exist() {
+    async fn get_last_doesnt_exist() {
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
         let order = repository.get_last_order(&rnd_customer_id());
@@ -139,7 +143,7 @@ mod tests {
     }
 
     #[test]
-    fn get_last_success() {
+    async fn get_last_success() {
         let customer_id = rnd_customer_id();
         let first_order = rnd_order_with_customer_id(customer_id);
         let last_order = rnd_order_with_customer_id(customer_id);
@@ -148,16 +152,16 @@ mod tests {
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
 
-        repository.save(first_order);
-        repository.save(last_order.clone());
-        repository.save(one_more_order);
+        repository.save(first_order).await;
+        repository.save(last_order.clone()).await;
+        repository.save(one_more_order).await;
 
         let order = repository.get_last_order(&customer_id);
         assert_eq!(order.unwrap(), last_order);
     }
 
     #[test]
-    fn get_all_storage_is_empty() {
+    async fn get_all_storage_is_empty() {
         let order_id = rnd_order_id();
         let event_publisher = AM::new_am(TestEventPublisher::new());
         let mut repository = InMemoryShopOrderRepository::new(event_publisher.clone());
@@ -166,7 +170,7 @@ mod tests {
     }
 
     #[test]
-    fn get_all_limit_is_less_than_collection() {
+    async fn get_all_limit_is_less_than_collection() {
         let limit = 10;
         let collection_size = 20;
 
@@ -186,7 +190,7 @@ mod tests {
     }
 
     #[test]
-    fn get_all_limit_is_bigger_than_collection() {
+    async fn get_all_limit_is_bigger_than_collection() {
         let limit = 10;
         let collection_size = 5;
 

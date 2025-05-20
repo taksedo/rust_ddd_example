@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use async_trait::async_trait;
 use common::types::common::Count;
 use derive_new::new;
 use domain::{
@@ -8,8 +9,9 @@ use domain::{
 };
 use thiserror::Error;
 
+#[async_trait]
 pub trait GetCart: Debug + Send {
-    fn execute(&self, for_customer: CustomerId) -> Result<CartInfo, GetCartUseCaseError>;
+    async fn execute(&self, for_customer: CustomerId) -> Result<CartInfo, GetCartUseCaseError>;
 }
 
 #[derive(new, Debug)]

@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
+    types::base::{AM, RCell, RcRefCellTrait},
 };
 use domain::menu::value_objects::meal_id::MealId;
 use usecase::menu::{RemoveMealFromMenu, RemoveMealFromMenuUseCaseError};
@@ -58,17 +58,20 @@ where
 {
     let error_list = RCell::new_rc(vec![]);
 
-    let result = req
+    let opt_meal_id = req
         .match_info()
         .get("id")
         .and_then(|v| v.parse::<i64>().ok())
-        .and_then(|id| MealId::validated(id, error_list.clone()))
-        .map(|meal_id| match shared_state.lock_un().execute(&meal_id) {
+        .and_then(|id| MealId::validated(id, error_list.clone()));
+
+    if let Some(meal_id) = opt_meal_id {
+        match shared_state.lock().await.execute(&meal_id).await {
             Ok(_) => HttpResponse::new(StatusCode::NO_CONTENT),
             Err(e) => e.to_rest_error(),
-        });
-
-    result.unwrap_or_else(|| to_invalid_param_bad_request(error_list))
+        }
+    } else {
+        to_invalid_param_bad_request(error_list)
+    }
 }
 
 impl ToRestError for RemoveMealFromMenuUseCaseError {
@@ -90,7 +93,10 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, test::TestRequest, web::Data};
-    use common::common_rest::{GenericErrorResponse, not_found_type_url};
+    use common::{
+        common_rest::{GenericErrorResponse, not_found_type_url},
+        types::base::AMTrait,
+    };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -101,7 +107,7 @@ mod tests {
         dotenv().ok();
         let meal_id = rnd_meal_id();
         let mock_remove_meal_from_menu = AM::new_am(MockRemoveMealFromMenu::default());
-        mock_remove_meal_from_menu.lock_un().response =
+        mock_remove_meal_from_menu.lock().await.response =
             Err(RemoveMealFromMenuUseCaseError::MealNotFound);
         let mock_shared_state = Data::new(mock_remove_meal_from_menu.clone());
 

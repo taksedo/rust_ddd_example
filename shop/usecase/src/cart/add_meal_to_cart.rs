@@ -1,10 +1,12 @@
 use std::fmt::Debug;
 
+use async_trait::async_trait;
 use domain::{cart::value_objects::customer_id::CustomerId, menu::value_objects::meal_id::MealId};
 use thiserror::Error;
 
+#[async_trait]
 pub trait AddMealToCart: Debug + Send {
-    fn execute(
+    async fn execute(
         &mut self,
         for_customer: CustomerId,
         meal_id: &MealId,

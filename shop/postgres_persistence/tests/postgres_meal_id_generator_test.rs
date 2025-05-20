@@ -10,15 +10,16 @@ use domain::{
 use postgres_persistence::{
     database_start::MIGRATIONS, postgres_meal_id_generator::PostgresMealIdGenerator,
 };
+use tokio::test;
 
 use crate::test_fixtures::TestDb;
 
 mod test_fixtures;
 
 #[test]
-fn generate_id_integration_test() {
+async fn generate_id_integration_test() {
     let rnd_id = rnd_meal_id();
-    let db = TestDb::new();
+    let db = TestDb::new().await;
     let mut conn = db.conn();
 
     conn.run_pending_migrations(MIGRATIONS).unwrap();

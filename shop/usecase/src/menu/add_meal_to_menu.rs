@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use async_trait::async_trait;
 use domain::menu::{
     meal::MealError,
     value_objects::{
@@ -7,8 +8,9 @@ use domain::menu::{
     },
 };
 
+#[async_trait]
 pub trait AddMealToMenu: Debug + Send {
-    fn execute(
+    async fn execute(
         &mut self,
         name: &MealName,
         description: &MealDescription,

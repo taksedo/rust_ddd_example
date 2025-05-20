@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use common::types::{
-    base::{AM, AMTrait, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait, Version},
     errors::BusinessError,
 };
 use derive_getters::Getters;
@@ -46,17 +46,17 @@ impl Meal {
             removed,
         }
     }
-    pub fn add_meal_to_menu(
+    pub async fn add_meal_to_menu(
         id_generator: AM<dyn MealIdGenerator>,
         meal_exists: AM<dyn MealAlreadyExists>,
         name: MealName,
         description: MealDescription,
         price: Price,
     ) -> Result<Meal, MealError> {
-        if meal_exists.lock_un().invoke(&name) {
+        if meal_exists.lock().await.invoke(&name).await {
             Err(MealError::AlreadyExistsWithSameNameError)
         } else {
-            let id = id_generator.lock_un().generate();
+            let id = id_generator.lock().await.generate();
 
             //     .map_err(|_e: Error| MealError::IdGenerationError)?;
             let mut meal = Meal::new(
@@ -109,6 +109,9 @@ impl BusinessError for MealError {}
 mod tests {
     use std::{any::type_name_of_val, sync::atomic::AtomicI64};
 
+    use async_trait::async_trait;
+    use common::types::base::AMTrait;
+
     use super::*;
     use crate::test_fixtures::{
         rnd_meal, rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, rnd_removed_meal,
@@ -134,14 +137,15 @@ mod tests {
         pub value: bool,
     }
 
+    #[async_trait]
     impl MealAlreadyExists for TestMealAlreadyExists {
-        fn invoke(&mut self, _name: &MealName) -> bool {
+        async fn invoke(&mut self, _name: &MealName) -> bool {
             self.value
         }
     }
 
-    #[test]
-    fn add_meal__success() {
+    #[tokio::test]
+    async fn add_meal__success() {
         let id_generator = AM::new_am(TestMealIdGenerator::new());
         let meal_exists = AM::new_am(TestMealAlreadyExists { value: false });
         let name = rnd_meal_name();
@@ -153,10 +157,11 @@ mod tests {
             name.to_owned(),
             description.to_owned(),
             price.to_owned(),
-        );
+        )
+        .await;
 
         let mut test_meal = result.unwrap();
-        assert_eq!(test_meal.id(), &id_generator.lock_un().meal_id);
+        assert_eq!(test_meal.id(), &id_generator.lock().await.meal_id);
         assert_eq!(*test_meal.name(), name);
         assert_eq!(*test_meal.description(), description);
         assert_eq!(*test_meal.price(), price);
@@ -166,21 +171,22 @@ mod tests {
         let popped_event = popped_events.first().unwrap();
 
         let expected_event: &MealEventEnum =
-            &MealAddedToMenuDomainEvent::new(id_generator.lock_un().meal_id).into();
+            &MealAddedToMenuDomainEvent::new(id_generator.lock().await.meal_id).into();
         assert_eq!(
             type_name_of_val(popped_event),
             type_name_of_val(expected_event)
         );
     }
 
-    #[test]
-    fn add_meal_to_menu__already_exists_with_the_same_name() {
+    #[tokio::test]
+    async fn add_meal_to_menu__already_exists_with_the_same_name() {
         let id_generator = AM::new_am(TestMealIdGenerator::new());
         let meal_exists = AM::new_am(TestMealAlreadyExists { value: true });
         let name = rnd_meal_name();
         let description = rnd_meal_description();
         let price = rnd_price();
-        let result = Meal::add_meal_to_menu(id_generator, meal_exists, name, description, price);
+        let result =
+            Meal::add_meal_to_menu(id_generator, meal_exists, name, description, price).await;
 
         assert_eq!(
             result.unwrap_err(),

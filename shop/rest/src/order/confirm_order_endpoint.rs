@@ -6,7 +6,7 @@ use common::{
         GenericErrorResponse, get_json_from_http_response, resource_not_found, rest_business_error,
         to_invalid_param_bad_request,
     },
-    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
+    types::base::{AM, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{ConfirmOrder, ConfirmOrderUseCaseError};
@@ -64,7 +64,7 @@ where
     let error_list = RCell::new_rc(vec![]);
 
     match ShopOrderId::validated(id, error_list.clone()) {
-        Some(order_id) => match shared_state.lock_un().execute(&order_id) {
+        Some(order_id) => match shared_state.lock().await.execute(&order_id).await {
             Ok(_) => HttpResponse::new(StatusCode::NO_CONTENT),
             Err(e) => e.to_rest_error(),
         },
@@ -96,7 +96,10 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, test::TestRequest, web::Data};
-    use common::common_rest::{GenericErrorResponse, error_type_url, not_found_type_url};
+    use common::{
+        common_rest::{GenericErrorResponse, error_type_url, not_found_type_url},
+        types::base::AMTrait,
+    };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -108,7 +111,7 @@ mod tests {
         dotenv().ok();
         let order_id = rnd_order_id();
         let mock_confirm_order = AM::new_am(MockConfirmOrder::default());
-        mock_confirm_order.lock_un().response = Err(ConfirmOrderUseCaseError::OrderNotFound);
+        mock_confirm_order.lock().await.response = Err(ConfirmOrderUseCaseError::OrderNotFound);
 
         let mock_shared_state = Data::new(mock_confirm_order.clone());
 
@@ -132,7 +135,7 @@ mod tests {
         );
         assert_eq!(&response_dto.response_title, "Resource not found");
 
-        mock_confirm_order.lock_un().verify_invoked(&order_id);
+        mock_confirm_order.lock().await.verify_invoked(&order_id);
     }
 
     #[actix_web::test]
@@ -140,7 +143,7 @@ mod tests {
         dotenv().ok();
         let order_id = rnd_order_id();
         let mock_confirm_order = AM::new_am(MockConfirmOrder::default());
-        mock_confirm_order.lock_un().response = Err(ConfirmOrderUseCaseError::InvalidOrderState);
+        mock_confirm_order.lock().await.response = Err(ConfirmOrderUseCaseError::InvalidOrderState);
 
         let mock_shared_state = Data::new(mock_confirm_order.clone());
 
@@ -167,7 +170,7 @@ mod tests {
         );
         assert_eq!(&response_dto.response_title, "Invalid state");
 
-        mock_confirm_order.lock_un().verify_invoked(&order_id);
+        mock_confirm_order.lock().await.verify_invoked(&order_id);
     }
 
     #[actix_web::test]
@@ -175,7 +178,7 @@ mod tests {
         dotenv().ok();
         let order_id = rnd_order_id();
         let mock_confirm_order = AM::new_am(MockConfirmOrder::default());
-        mock_confirm_order.lock_un().response = Ok(());
+        mock_confirm_order.lock().await.response = Ok(());
 
         let mock_shared_state = Data::new(mock_confirm_order.clone());
 
@@ -190,6 +193,6 @@ mod tests {
         let body = resp.into_body().try_into_bytes().unwrap();
 
         assert!(body.is_empty());
-        mock_confirm_order.lock_un().verify_invoked(&order_id);
+        mock_confirm_order.lock().await.verify_invoked(&order_id);
     }
 }

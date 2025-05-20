@@ -1,28 +1,25 @@
-use std::{
-    cell::RefCell,
-    rc::Rc,
-    sync::{Arc, Mutex, MutexGuard},
-};
+use std::{cell::RefCell, rc::Rc, sync::Arc};
 
-/// `Arc<Mutex<T>>` alias type
+use async_trait::async_trait;
+use tokio::sync::Mutex;
+
+/// `Arc<tokio::sync::Mutex<T>>` alias type
 pub type AM<T> = Arc<Mutex<T>>;
+
+#[async_trait]
 pub trait AMTrait<T: ?Sized> {
     fn new_am(t: T) -> AM<T>
     where
         T: Sized;
-    fn lock_un(&self) -> MutexGuard<T>;
 }
 
-impl<T: ?Sized> AMTrait<T> for AM<T> {
+#[async_trait]
+impl<T: ?Sized + Send> AMTrait<T> for AM<T> {
     fn new_am(t: T) -> AM<T>
     where
         T: Sized,
     {
         Arc::new(Mutex::new(t))
-    }
-
-    fn lock_un(&self) -> MutexGuard<T> {
-        self.lock().unwrap()
     }
 }
 

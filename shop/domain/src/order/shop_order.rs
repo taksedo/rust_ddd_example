@@ -4,7 +4,7 @@ use std::{
 };
 
 use common::types::{
-    base::{AM, AMTrait, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait, Version},
     common::{Address, Count},
 };
 use derive_getters::Getters;
@@ -42,7 +42,7 @@ pub struct ShopOrder {
 }
 
 impl ShopOrder {
-    pub fn checkout(
+    pub async fn checkout(
         cart: Cart,
         id_generator: AM<dyn ShopOrderIdGenerator>,
         customer_has_active_order: AM<dyn CustomerHasActiveOrder>,
@@ -50,8 +50,10 @@ impl ShopOrder {
         get_meal_price: AM<dyn GetMealPrice>,
     ) -> Result<ShopOrder, CheckoutError> {
         if customer_has_active_order
-            .lock_un()
+            .lock()
+            .await
             .invoke(cart.for_customer())
+            .await
         {
             return Err(CheckoutError::AlreadyHasActiveOrder);
         }
@@ -60,10 +62,10 @@ impl ShopOrder {
             let mut set = HashSet::new();
 
             for (meal_id, count) in meals.iter() {
-                let price = get_meal_price.lock_un().invoke(meal_id);
+                let price = get_meal_price.lock().await.invoke(meal_id).await;
                 set.insert(OrderItem::new(*meal_id, price, *count));
             }
-            let id = id_generator.lock_un().generate();
+            let id = id_generator.lock().await.generate();
             let mut shop_order = ShopOrder::new(
                 DomainEntity::new(id, Default::default()),
                 OffsetDateTime::now_utc(),
@@ -232,18 +234,19 @@ pub enum ShopOrderError {
 mod tests {
     use std::{collections::HashMap, str::FromStr};
 
+    use async_trait::async_trait;
     use bigdecimal::{BigDecimal, num_bigint::BigInt};
-    use common::test_fixtures::rnd_count;
+    use common::{test_fixtures::rnd_count, types::base::AMTrait};
 
     use super::*;
     use crate::test_fixtures::{
         order_with_state, rnd_address, rnd_cart, rnd_meal_id, rnd_order, rnd_order_id, rnd_price,
     };
 
-    #[test]
-    fn checkout_success() {
+    #[tokio::test]
+    async fn checkout_success() {
         let id_generator = AM::new_am(MockOrderIdGenerator::default());
-        let id = id_generator.lock_un().id;
+        let id = id_generator.lock().await.id;
         let meal_id = rnd_meal_id();
         let count = rnd_count();
         let price = rnd_price();
@@ -251,7 +254,8 @@ mod tests {
 
         let get_meal_price = AM::new_am(HashMapStoragePriceProvider::default());
         get_meal_price
-            .lock_un()
+            .lock()
+            .await
             .storage
             .insert(meal_id, price.clone());
         let mut cart = rnd_cart();
@@ -263,7 +267,8 @@ mod tests {
             AM::new_am(MockCustomerHasActiveOrder::new(false)),
             address.clone(),
             get_meal_price.clone(),
-        );
+        )
+        .await;
 
         let mut order = result.unwrap();
 
@@ -287,8 +292,8 @@ mod tests {
         assert_eq!(event.total_price, order.total_price());
     }
 
-    #[test]
-    fn checkout_already_has_active_user() {
+    #[tokio::test]
+    async fn checkout_already_has_active_user() {
         let id_generator = AM::new_am(MockOrderIdGenerator::default());
         let meal_id = rnd_meal_id();
         let count = rnd_count();
@@ -297,7 +302,8 @@ mod tests {
 
         let meal_price_only_for_special_meal = AM::new_am(HashMapStoragePriceProvider::default());
         meal_price_only_for_special_meal
-            .lock_un()
+            .lock()
+            .await
             .storage
             .insert(meal_id, price);
 
@@ -310,19 +316,21 @@ mod tests {
             AM::new_am(MockCustomerHasActiveOrder::new(true)),
             address.clone(),
             meal_price_only_for_special_meal.clone(),
-        );
+        )
+        .await;
 
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), CheckoutError::AlreadyHasActiveOrder);
     }
 
-    #[test]
-    fn checkout_empty_cart() {
+    #[tokio::test]
+    async fn checkout_empty_cart() {
         let id_generator = AM::new_am(MockOrderIdGenerator::default());
         let cart = rnd_cart();
         let get_meal_price = AM::new_am(HashMapStoragePriceProvider::default());
         get_meal_price
-            .lock_un()
+            .lock()
+            .await
             .storage
             .insert(rnd_meal_id(), rnd_price());
         let result = ShopOrder::checkout(
@@ -331,7 +339,8 @@ mod tests {
             AM::new_am(MockCustomerHasActiveOrder::new(false)),
             rnd_address(),
             get_meal_price.clone(),
-        );
+        )
+        .await;
 
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), CheckoutError::EmptyCart)
@@ -556,8 +565,9 @@ mod tests {
         storage: HashMap<MealId, Price>,
     }
 
+    #[async_trait]
     impl GetMealPrice for HashMapStoragePriceProvider {
-        fn invoke(&self, for_meal_id: &MealId) -> Price {
+        async fn invoke(&self, for_meal_id: &MealId) -> Price {
             let result = &self.storage.get(for_meal_id);
             result.unwrap().clone()
         }
@@ -580,8 +590,9 @@ mod tests {
         status: bool,
     }
 
+    #[async_trait]
     impl CustomerHasActiveOrder for MockCustomerHasActiveOrder {
-        fn invoke(&mut self, _for_customer: &CustomerId) -> bool {
+        async fn invoke(&mut self, _for_customer: &CustomerId) -> bool {
             self.status
         }
     }

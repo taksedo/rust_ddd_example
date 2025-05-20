@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use domain::{
     menu::value_objects::{
         meal_description::MealDescription, meal_id::MealId, meal_name::MealName, price::Price,
@@ -30,8 +31,9 @@ pub struct MockGetMenu {
     pub meal_info: MealInfo,
 }
 
+#[async_trait]
 impl GetMenu for MockGetMenu {
-    fn execute(&self) -> Vec<MealInfo> {
+    async fn execute(&self) -> Vec<MealInfo> {
         vec![self.meal_info.clone()]
     }
 }
@@ -55,8 +57,9 @@ impl Default for MockAddMealToMenu {
     }
 }
 
+#[async_trait]
 impl AddMealToMenu for MockAddMealToMenu {
-    fn execute(
+    async fn execute(
         &mut self,
         name: &MealName,
         description: &MealDescription,
@@ -84,8 +87,9 @@ pub struct MockGetMealById {
     pub id: MealId,
 }
 
+#[async_trait]
 impl GetMealById for MockGetMealById {
-    fn execute(&mut self, id: &MealId) -> Result<MealInfo, GetMealByIdUseCaseError> {
+    async fn execute(&mut self, id: &MealId) -> Result<MealInfo, GetMealByIdUseCaseError> {
         self.id = *id;
         self.response.clone()
     }
@@ -137,8 +141,9 @@ pub struct MockRemoveMealFromMenu {
     pub id: MealId,
 }
 
+#[async_trait]
 impl RemoveMealFromMenu for MockRemoveMealFromMenu {
-    fn execute(&mut self, id: &MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
+    async fn execute(&mut self, id: &MealId) -> Result<(), RemoveMealFromMenuUseCaseError> {
         self.id = *id;
         self.response
     }
@@ -151,8 +156,9 @@ pub struct MockCancelOrder {
     pub id: ShopOrderId,
 }
 
+#[async_trait]
 impl CancelOrder for MockCancelOrder {
-    fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
+    async fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), CancelOrderUseCaseError> {
         self.id = *order_id;
         self.response
     }
@@ -171,8 +177,9 @@ impl MockConfirmOrder {
     }
 }
 
+#[async_trait]
 impl ConfirmOrder for MockConfirmOrder {
-    fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
+    async fn execute(&mut self, order_id: &ShopOrderId) -> Result<(), ConfirmOrderUseCaseError> {
         self.id = *order_id;
         self.response
     }
@@ -190,8 +197,12 @@ impl MockGetOrderById {
     }
 }
 
+#[async_trait]
 impl GetOrderById for MockGetOrderById {
-    fn execute(&mut self, id: &ShopOrderId) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
+    async fn execute(
+        &mut self,
+        id: &ShopOrderId,
+    ) -> Result<OrderDetails, GetOrderByIdUseCaseError> {
         self.id = *id;
         self.clone().response
     }
@@ -204,8 +215,9 @@ pub struct MockGetOrders {
     pub limit: usize,
 }
 
+#[async_trait]
 impl GetOrders for MockGetOrders {
-    fn execute(
+    async fn execute(
         &mut self,
         start_id: &ShopOrderId,
         limit: usize,

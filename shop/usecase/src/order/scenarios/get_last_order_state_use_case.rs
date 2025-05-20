@@ -1,4 +1,5 @@
-use common::types::base::{AM, AMTrait};
+use async_trait::async_trait;
+use common::types::base::AM;
 use derive_new::new;
 use domain::{cart::value_objects::customer_id::CustomerId, order::shop_order::OrderState};
 
@@ -12,13 +13,15 @@ pub struct GetLastOrderStateUseCase {
     shop_order_extractor: AM<dyn ShopOrderExtractor>,
 }
 
+#[async_trait]
 impl GetLastOrderState for GetLastOrderStateUseCase {
-    fn execute(
+    async fn execute(
         &self,
         for_customer: &CustomerId,
     ) -> Result<OrderState, GetLastOrderStateUseCaseError> {
         self.shop_order_extractor
-            .lock_un()
+            .lock()
+            .await
             .get_last_order(for_customer)
             .ok_or(GetLastOrderStateUseCaseError::OrderNotFound)
             .map(|order| order.state().clone())
@@ -27,7 +30,9 @@ impl GetLastOrderState for GetLastOrderStateUseCase {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::AMTrait;
     use domain::test_fixtures::*;
+    use tokio::test;
 
     use super::*;
     use crate::{
@@ -39,42 +44,43 @@ mod tests {
     };
 
     #[test]
-    fn status_successfully_received() {
+    async fn status_successfully_received() {
         let order = rnd_order(Default::default());
         let extractor = AM::new_am(MockShopOrderExtractor::default());
-        extractor.lock_un().order = Some(order.clone());
+        extractor.lock().await.order = Some(order.clone());
 
         let use_case = GetLastOrderStateUseCase::new(extractor.clone());
-        let result = use_case.execute(order.for_customer());
+        let result = use_case.execute(order.for_customer()).await;
 
         extractor
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked_get_last_order(order.for_customer());
         assert!(result.is_ok());
         assert_eq!(&result.unwrap(), order.state())
     }
 
     #[test]
-    fn order_not_found() {
+    async fn order_not_found() {
         let extractor = AM::new_am(MockShopOrderExtractor::default());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
         let order_id = rnd_order_id();
-        let result = use_case.execute(&order_id);
+        let result = use_case.execute(&order_id).await;
 
-        extractor.lock_un().verify_invoked_get_by_id(&order_id);
+        extractor.lock().await.verify_invoked_get_by_id(&order_id);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), GetOrderByIdUseCaseError::OrderNotFound)
     }
 
     #[test]
-    fn order_expected_successfully() {
+    async fn order_expected_successfully() {
         let order = rnd_order(Default::default());
         let extractor = AM::new_am(MockShopOrderExtractor::default());
-        extractor.lock_un().order = Some(order.clone());
+        extractor.lock().await.order = Some(order.clone());
         let mut use_case = GetOrderByIdUseCase::new(extractor.clone());
 
-        let result = use_case.execute(order.id());
+        let result = use_case.execute(order.id()).await;
         assert!(result.is_ok());
         let details = result.unwrap();
 
@@ -96,6 +102,6 @@ mod tests {
                 .collect();
             assert_eq!(src_item.len(), 1);
         });
-        extractor.lock_un().verify_invoked_get_by_id(order.id());
+        extractor.lock().await.verify_invoked_get_by_id(order.id());
     }
 }

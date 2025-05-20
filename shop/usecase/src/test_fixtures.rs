@@ -4,6 +4,7 @@ use std::{
     mem::discriminant,
 };
 
+use async_trait::async_trait;
 use common::types::common::{Address, Count};
 use derive_new::new;
 use domain::{
@@ -139,8 +140,9 @@ impl MockMealPersister {
     }
 }
 
+#[async_trait]
 impl MealPersister for MockMealPersister {
-    fn save(&mut self, meal: Meal) {
+    async fn save(&mut self, meal: Meal) {
         self.meal = Some(meal);
     }
 }
@@ -246,8 +248,9 @@ impl MockCartPersister {
     }
 }
 
+#[async_trait]
 impl CartPersister for MockCartPersister {
-    fn save(&mut self, cart: Cart) {
+    async fn save(&mut self, cart: Cart) {
         self.cart = Some(cart);
     }
 }
@@ -267,6 +270,7 @@ impl MockCartRemover {
     }
 }
 
+#[async_trait]
 impl CartRemover for MockCartRemover {
     fn delete_cart(&mut self, cart: Cart) {
         self.id = Some(*cart.id());
@@ -279,8 +283,9 @@ pub struct MockCartExtractor {
     pub for_customer: Option<CustomerId>,
 }
 
+#[async_trait]
 impl CartExtractor for MockCartExtractor {
-    fn get_cart(&mut self, for_customer: &CustomerId) -> Option<Cart> {
+    async fn get_cart(&mut self, for_customer: &CustomerId) -> Option<Cart> {
         self.for_customer = Some(*for_customer);
         self.cart.as_ref().map(ToOwned::to_owned)
     }
@@ -364,8 +369,9 @@ pub struct MockShopOrderPersister {
     pub order: Option<ShopOrder>,
 }
 
+#[async_trait]
 impl ShopOrderPersister for MockShopOrderPersister {
-    fn save(&mut self, order: ShopOrder) {
+    async fn save(&mut self, order: ShopOrder) {
         self.order = Some(order);
     }
 }
@@ -495,8 +501,9 @@ impl MockCustomerHasActiveOrder {
     }
 }
 
+#[async_trait]
 impl CustomerHasActiveOrder for MockCustomerHasActiveOrder {
-    fn invoke(&mut self, for_customer: &CustomerId) -> bool {
+    async fn invoke(&mut self, for_customer: &CustomerId) -> bool {
         self.for_customer = Some(*for_customer);
         self.has_active
     }

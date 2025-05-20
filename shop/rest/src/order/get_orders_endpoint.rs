@@ -5,7 +5,7 @@ use common::{
     common_rest::{
         CursorPagedModel, GenericErrorResponse, ValidationError, to_invalid_param_bad_request,
     },
-    types::base::{AM, AMTrait, RCell, RcRefCellTrait},
+    types::base::{AM, RCell, RcRefCellTrait},
 };
 use domain::order::value_objects::shop_order_id::ShopOrderId;
 use usecase::order::{GetOrders, GetOrdersUseCaseError};
@@ -63,24 +63,31 @@ pub async fn get_orders_endpoint<T: GetOrders + Send + Debug>(
         },
         validate_query_string::<usize>(req, "limit", error_list.clone()),
     ) {
-        (Some(start_id), Ok(limit)) => match shared_state.lock_un().execute(&start_id, limit + 1) {
-            Ok(order_details_list) => {
-                let list: Vec<OrderModel> = order_details_list
-                    .into_iter()
-                    .map(|it| it.to_model())
-                    .collect();
-                let model = if list.len() > limit {
-                    let next_id = list[limit].id;
-                    CursorPagedModel::new(list[..limit].to_vec(), Some(next_id))
-                } else {
-                    CursorPagedModel::new(list, Option::<i64>::None)
-                };
-                HttpResponse::Ok()
-                    .content_type(ContentType::json())
-                    .body(serde_json::to_string(&model).unwrap())
+        (Some(start_id), Ok(limit)) => {
+            match shared_state
+                .lock()
+                .await
+                .execute(&start_id, limit + 1)
+                .await
+            {
+                Ok(order_details_list) => {
+                    let list: Vec<OrderModel> = order_details_list
+                        .into_iter()
+                        .map(|it| it.to_model())
+                        .collect();
+                    let model = if list.len() > limit {
+                        let next_id = list[limit].id;
+                        CursorPagedModel::new(list[..limit].to_vec(), Some(next_id))
+                    } else {
+                        CursorPagedModel::new(list, Option::<i64>::None)
+                    };
+                    HttpResponse::Ok()
+                        .content_type(ContentType::json())
+                        .body(serde_json::to_string(&model).unwrap())
+                }
+                Err(e) => e.to_rest_error(),
             }
-            Err(e) => e.to_rest_error(),
-        },
+        }
         (_, _) => to_invalid_param_bad_request(error_list),
     }
 }
@@ -113,7 +120,10 @@ where
 #[cfg(test)]
 mod tests {
     use actix_web::{body::MessageBody, http::StatusCode, test::TestRequest, web::Data};
-    use common::common_rest::{GenericErrorResponse, bad_request_type_url};
+    use common::{
+        common_rest::{GenericErrorResponse, bad_request_type_url},
+        types::base::AMTrait,
+    };
     use domain::test_fixtures::*;
     use dotenvy::dotenv;
 
@@ -159,7 +169,8 @@ mod tests {
             "Max limit is 10"
         );
         mock_get_orders
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&start_id, &(limit + 1));
     }
 
@@ -217,7 +228,8 @@ mod tests {
             first_item.count.to_i32()
         );
         mock_get_orders
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&single.id, &(limit + 1));
     }
 
@@ -278,7 +290,8 @@ mod tests {
             first_item.count.to_i32()
         );
         mock_get_orders
-            .lock_un()
+            .lock()
+            .await
             .verify_invoked(&first.id, &(limit + 1));
     }
 }

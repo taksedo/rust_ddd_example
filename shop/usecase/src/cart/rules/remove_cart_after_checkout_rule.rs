@@ -1,9 +1,7 @@
 use std::mem::{Discriminant, discriminant};
 
-use common::{
-    events::DomainEventListener,
-    types::base::{AM, AMTrait},
-};
+use async_trait::async_trait;
+use common::{events::DomainEventListener, types::base::AM};
 use derive_new::new;
 use domain::order::customer_order_events::{ShopOrderCreatedDomainEvent, ShopOrderEventEnum};
 use tracing::info;
@@ -20,6 +18,7 @@ where
     cart_remover: AM<CRemover>,
 }
 
+#[async_trait]
 impl<CExtractor, CRemover> DomainEventListener<ShopOrderEventEnum>
     for RemoveCartAfterCheckoutRule<CExtractor, CRemover>
 where
@@ -31,14 +30,16 @@ where
         discriminant(&event)
     }
 
-    fn handle(&mut self, event: &ShopOrderEventEnum) {
+    async fn handle(&mut self, event: &ShopOrderEventEnum) {
         let event_struct: ShopOrderCreatedDomainEvent =
             event.clone().try_into().expect("Wrong type of event");
 
         let result = &self
             .cart_extractor
-            .lock_un()
-            .get_cart(&event_struct.for_customer);
+            .lock()
+            .await
+            .get_cart(&event_struct.for_customer)
+            .await;
 
         if result.is_none() {
             let _ = tracing_subscriber::fmt::try_init();
@@ -48,7 +49,8 @@ where
             )
         } else {
             self.cart_remover
-                .lock_un()
+                .lock()
+                .await
                 .delete_cart(result.clone().unwrap())
         }
     }
@@ -60,20 +62,20 @@ where
 
 #[cfg(test)]
 mod tests {
-    use common::types::base::{AM, AMTrait};
+    use common::types::base::AMTrait;
     use domain::test_fixtures::*;
     use tracing_test::traced_test;
 
     use super::*;
     use crate::test_fixtures::{MockCartExtractor, MockCartRemover};
 
-    #[test]
-    fn successfully_removed() {
+    #[tokio::test]
+    async fn successfully_removed() {
         let cart_remover = AM::new_am(MockCartRemover::default());
         let cart = rnd_cart();
 
         let cart_extractor = AM::new_am(MockCartExtractor::default());
-        cart_extractor.lock_un().cart = Some(cart.clone());
+        cart_extractor.lock().await.cart = Some(cart.clone());
 
         let mut rule =
             RemoveCartAfterCheckoutRule::new(cart_extractor.clone(), cart_remover.clone());
@@ -84,15 +86,18 @@ mod tests {
         )
         .into();
 
-        rule.handle(&event);
+        rule.handle(&event).await;
 
-        cart_extractor.lock_un().verify_invoked(cart.for_customer());
-        cart_remover.lock_un().verify_invoked(cart.id());
+        cart_extractor
+            .lock()
+            .await
+            .verify_invoked(cart.for_customer());
+        cart_remover.lock().await.verify_invoked(cart.id());
     }
 
-    #[test]
+    #[tokio::test]
     #[traced_test]
-    fn cart_not_found() {
+    async fn cart_not_found() {
         let cart_remover = AM::new_am(MockCartRemover::default());
 
         let cart_extractor = AM::new_am(MockCartExtractor::default());
@@ -103,10 +108,10 @@ mod tests {
         let event: ShopOrderEventEnum =
             ShopOrderCreatedDomainEvent::new(rnd_order_id(), customer_id, rnd_price()).into();
 
-        rule.handle(&event);
+        rule.handle(&event).await;
 
-        cart_extractor.lock_un().verify_invoked(&customer_id);
-        cart_remover.lock_un().verify_empty();
+        cart_extractor.lock().await.verify_invoked(&customer_id);
+        cart_remover.lock().await.verify_empty();
 
         assert!(logs_contain(&format!(
             "Cart for customer #{customer_id} is already removed"
