@@ -4,7 +4,7 @@ use domain::order::value_objects::shop_order_id::ShopOrderId;
 
 use crate::order::{
     access::shop_order_extractor::ShopOrderExtractor,
-    dto::order_details::{OrderDetails, ToDetails},
+    dto::order_details::{AsDetails, OrderDetails},
     get_order_by_id::{GetOrderById, GetOrderByIdUseCaseError},
 };
 
@@ -19,6 +19,6 @@ impl<ShOExtractor: ShopOrderExtractor> GetOrderById for GetOrderByIdUseCase<ShOE
             .lock_un()
             .get_by_id(id)
             .ok_or(GetOrderByIdUseCaseError::OrderNotFound)
-            .map(|order| order.to_details())
+            .map(|order| order.as_details())
     }
 }
