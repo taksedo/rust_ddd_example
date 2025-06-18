@@ -36,7 +36,7 @@ pub struct TestEventPublisher<Event> {
 impl<Event: Debug + Send + Clone + DomainEventTrait + Sync> DomainEventPublisher<Event>
     for TestEventPublisher<Event>
 {
-    async fn publish(&mut self, events: &Vec<Event>) {
+    async fn publish(&mut self, events: &[Event]) {
         events.iter().for_each(|it| self.storage.push(it.clone()))
     }
 }

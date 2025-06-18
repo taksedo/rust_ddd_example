@@ -48,7 +48,7 @@ mod tests {
         let meal_id1 = MealId::try_from(id).unwrap();
         let meal_id2 = MealId::try_from(id).unwrap();
         assert_eq!(meal_id1, meal_id2);
-        assert!(!std::ptr::eq(&meal_id1, &meal_id2)); //check not same instance
+        assert!(!std::ptr::eq(&meal_id1, &meal_id2)); //assert instances are different
         assert_eq!(meal_id1.to_i64(), meal_id2.to_i64());
     }
 

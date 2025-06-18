@@ -134,8 +134,8 @@ impl MockEventPublisher {
 
 #[async_trait]
 impl DomainEventPublisher<MealEventEnum> for MockEventPublisher {
-    async fn publish(&mut self, events: &Vec<MealEventEnum>) {
-        self.events.extend(events.clone())
+    async fn publish(&mut self, events: &[MealEventEnum]) {
+        self.events.extend_from_slice(events)
     }
 }
 

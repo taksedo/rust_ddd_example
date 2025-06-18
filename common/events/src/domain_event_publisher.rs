@@ -5,6 +5,5 @@ use types::base::DomainEventTrait;
 
 #[async_trait]
 pub trait DomainEventPublisher<Event: DomainEventTrait>: Debug + Send {
-    #[allow(clippy::ptr_arg)]
-    async fn publish(&mut self, events: &Vec<Event>);
+    async fn publish(&mut self, events: &[Event]);
 }

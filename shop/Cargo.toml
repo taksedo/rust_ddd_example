@@ -65,7 +65,7 @@ const_format = "0"
 diesel = { version = "2.2", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
 diesel_migrations = "2.2"
 diesel_logger = "0.4"
-lapin = "2"
+lapin = "3"
 async-trait = "0"
 futures-lite = "2"
 testcontainers = { version = "0.24", features = ["blocking"] }
