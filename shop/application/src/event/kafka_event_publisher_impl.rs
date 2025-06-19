@@ -32,12 +32,12 @@ pub(super) const ORDER_TOPIC_NAME: &str = "order_topic";
 
 #[async_trait]
 impl DomainEventPublisher<MealEventEnum> for KafkaEventPublisherImpl {
-    async fn publish(&mut self, events: &Vec<MealEventEnum>) {
+    async fn publish(&mut self, events: &[MealEventEnum]) {
         for event in events {
-            let event_serialized: String = serde_json::to_string(event).unwrap();
+            let payload = serde_json::to_string(event).unwrap();
             let msg = BaseRecord::to(MEAL_TOPIC_NAME)
                 .key(&[1, 2, 3, 4])
-                .payload(&event_serialized);
+                .payload(&payload);
             self.producer
                 .send(msg)
                 .expect("Something is wrong with sending to Kafka");
@@ -47,16 +47,16 @@ impl DomainEventPublisher<MealEventEnum> for KafkaEventPublisherImpl {
 
 #[async_trait]
 impl DomainEventPublisher<ShopOrderEventEnum> for KafkaEventPublisherImpl {
-    async fn publish(&mut self, events: &Vec<ShopOrderEventEnum>) {
-        events.iter().for_each(|event| {
-            let event_serialized: String = serde_json::to_string(event).unwrap();
+    async fn publish(&mut self, events: &[ShopOrderEventEnum]) {
+        for event in events {
+            let payload = serde_json::to_string(event).unwrap();
             let msg = BaseRecord::to(ORDER_TOPIC_NAME)
                 .key(&[1, 2, 3, 4])
-                .payload(&event_serialized);
+                .payload(&payload);
             self.producer
                 .send(msg)
                 .expect("Something is wrong with sending to Kafka");
-        })
+        }
     }
 }
 

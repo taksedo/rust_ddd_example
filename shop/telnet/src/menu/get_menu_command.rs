@@ -20,7 +20,7 @@ where
     let mut table = Table::new();
     table.add_row(row!["Id", "Name", "Description", "Price"]);
 
-    for meal_info in menu.iter() {
+    for meal_info in menu {
         table.add_row(row![
             meal_info.id.to_i64(),
             meal_info.name.to_string(),

@@ -61,7 +61,7 @@ impl ShopOrder {
         if !meals.is_empty() {
             let mut set = HashSet::new();
 
-            for (meal_id, count) in meals.iter() {
+            for (meal_id, count) in meals {
                 let price = get_meal_price.lock().await.invoke(meal_id).await;
                 set.insert(OrderItem::new(*meal_id, price, *count));
             }

@@ -14,28 +14,29 @@ use common::{
 use derive_new::new;
 use log::info;
 
-type VecOfDomainEventListenerType<Event> = Vec<AM<dyn DomainEventListener<Event> + Send>>;
+type ListenerVec<Event> = Vec<AM<dyn DomainEventListener<Event> + Send>>;
 
 #[derive(new, Debug, Default, Clone)]
 pub(crate) struct EventPublisherImpl<Event: Debug> {
-    pub(crate) listener_map: HashMap<Discriminant<Event>, VecOfDomainEventListenerType<Event>>,
+    listener_map: HashMap<Discriminant<Event>, ListenerVec<Event>>,
 }
 
-impl<Event: Debug + Clone + Hash + Eq> EventPublisherImpl<Event> {
+impl<Event> EventPublisherImpl<Event>
+where
+    Event: Debug + Clone + Hash + Eq,
+{
     fn register_listener(&mut self, listener: impl DomainEventListener<Event> + 'static) {
         let event_type = listener.event_type();
-        self.listener_map.entry(event_type).or_insert_with(|| {
-            let vector: VecOfDomainEventListenerType<Event> = vec![AM::new_am(listener)];
-            vector
-        });
+        let entry = self.listener_map.entry(event_type).or_default();
+        entry.push(AM::new_am(listener));
     }
 
     async fn send_events(
         &self,
-        listeners: Vec<AM<dyn DomainEventListener<Event> + Send>>,
+        listeners: &[AM<dyn DomainEventListener<Event> + Send>],
         event: Event,
     ) {
-        for l in listeners.iter() {
+        for l in listeners {
             l.lock().await.handle(&event).await;
         }
     }
@@ -46,14 +47,14 @@ impl<Event> DomainEventPublisher<Event> for EventPublisherImpl<Event>
 where
     Event: Debug + Clone + 'static + Hash + Eq + Default + DomainEventTrait + Sync + Send,
 {
-    async fn publish(&mut self, events: &Vec<Event>) {
-        for e in events.iter() {
-            info!("Processing event: {:?}", &e);
+    async fn publish(&mut self, events: &[Event]) {
+        for event in events.iter() {
+            info!("Processing event: {:?}", &event);
             let listener_map = &self.listener_map;
-            let e_type = discriminant(e);
-            if listener_map.contains_key(&e_type) {
-                let listeners_from_listener_map = listener_map.get(&e_type).unwrap();
-                self.send_events(listeners_from_listener_map.to_vec(), e.clone())
+            let event_type = discriminant(event);
+            if listener_map.contains_key(&event_type) {
+                let listeners_from_listener_map = listener_map.get(&event_type).unwrap();
+                self.send_events(listeners_from_listener_map, event.clone())
                     .await;
             }
         }
@@ -144,8 +145,9 @@ mod test {
         }
 
         async fn handle(&mut self, event: &DomainEventEnum) {
-            self.events.push(event.to_owned());
+            self.events.push(event.clone());
         }
+
         fn get_events(&self) -> &Vec<DomainEventEnum> {
             &self.events
         }
