@@ -7,7 +7,7 @@ name: Release Packaging
 
 jobs:
   release:
-    name: Release Packaging    
+    name: Release Packaging
     env:
       PROJECT_NAME_UNDERSCORE: rust_ddd_example_shop
     runs-on: ubuntu-latest
@@ -21,10 +21,8 @@ jobs:
       - name: Release Build
         working-directory: shop
         run: cargo build --release
-      - name: 'Upload Artifact'
-        working-directory: shop
-        uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME_UNDERSCORE }}
-          path: target/release/${{ env.PROJECT_NAME_UNDERSCORE }}
+          path: ./shop/target/release/${{ env.PROJECT_NAME_UNDERSCORE }}
 
