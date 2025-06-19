@@ -2,11 +2,9 @@
 
 Reference project with Rust and DDD
 
-[![codecov](https://codecov.io/gh/taksedo/rust_ddd_example/graph/badge.svg?token=BFGRXLQFI3)](https://codecov.io/gh/taksedo/rust_ddd_example)
+![codecov](https://codecov.io/gh/taksedo/rust_ddd_example/graph/badge.svg?token=BFGRXLQFI3)
 
 ![image](https://codecov.io/gh/taksedo/rust_ddd_example/graphs/sunburst.svg?token=BFGRXLQFI3)
-
-https://codecov.io/gh/taksedo/rust_ddd_example/graphs/sunburst.svg?token=BFGRXLQFI3
 
 ```
 build_and_run_local_image.sh
