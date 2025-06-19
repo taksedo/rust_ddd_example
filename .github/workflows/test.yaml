@@ -1,38 +1,41 @@
-language: rust
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
-sudo: required
+env:
+  CARGO_TERM_COLOR: always
 
-rust:
-  - stable
-  - beta
-  - nightly
+jobs:
+  build:
 
-matrix:
-  allow_failures:
-    - rust: nightly
+    runs-on: ubuntu-latest
 
-addons:
-  apt:
-    packages:
-      - libcurl4-openssl-dev
-      - libelf-dev
-      - libdw-dev
-      - cmake
-      - gcc
-      - binutils-dev
-      - libiberty-dev
-
-after_success: |
-  wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
-  tar xzf master.tar.gz &&
-  cd kcov-master &&
-  mkdir build &&
-  cd build &&
-  cmake .. &&
-  make &&
-  make install DESTDIR=../../kcov-build &&
-  cd ../.. &&
-  rm -rf kcov-master &&
-  for file in target/debug/examplerust-*; do [ -x "${file}" ] || continue; mkdir -p "target/cov/$(basename $file)"; ./kcov-build/usr/local/bin/kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
-  bash <(curl -s https://codecov.io/bash) &&
-  echo "Uploaded code coverage"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+      - name: Build
+        run: cargo build --verbose --manifest-path shop/Cargo.toml
+      - name: Run tests
+        run: cargo test --verbose --manifest-path shop/Cargo.toml
+        env:
+          CARGO_INCREMENTAL: '0'
+          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+          RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+      - name: rust-grcov
+        # You may pin to the exact commit or the version.
+        # uses: actions-rs/grcov@bb47b1ed7883a1502fa6875d562727ace2511248
+        uses: actions-rs/grcov@v0.1
+      - name: Codecov
+        # You may pin to the exact commit or the version.
+        # uses: codecov/codecov-action@81cd2dc8148241f03f5839d295e000b8f761e378
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+        with:
+          # Repository upload token - get it from codecov.io. Required only for private repositories
+          # token: # optional
+          # Specify whether the Codecov output should be verbose
+          verbose: true
+          fail_ci_if_error: true
