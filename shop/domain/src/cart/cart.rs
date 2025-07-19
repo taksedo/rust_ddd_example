@@ -4,6 +4,7 @@ use common::types::{
     base::{AM, DomainEntity, DomainEntityTrait, Version},
     common::Count,
 };
+use delegate_method::delegate_fields;
 use derive_getters::Getters;
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
@@ -24,6 +25,7 @@ use crate::{
 };
 
 #[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Getters)]
+#[delegate_fields(entity_params)]
 pub struct Cart {
     #[getter(skip)]
     pub(crate) entity_params: DomainEntity<CartId, CartEventEnum>,
@@ -81,15 +83,7 @@ impl Cart {
         }
     }
 
-    pub fn id(&self) -> &CartId {
-        self.entity_params.id()
-    }
-
-    pub fn version(&self) -> &Version {
-        self.entity_params.version()
-    }
-
-    pub(self) fn add_event(&mut self, event: CartEventEnum) {
+    fn add_event(&mut self, event: CartEventEnum) {
         self.entity_params.add_event(event)
     }
 

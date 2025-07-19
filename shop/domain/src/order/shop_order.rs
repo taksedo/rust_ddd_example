@@ -7,6 +7,7 @@ use common::types::{
     base::{AM, DomainEntity, DomainEntityTrait, Version},
     common::{Address, Count},
 };
+use delegate_method::delegate_fields;
 use derive_getters::Getters;
 use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
@@ -30,6 +31,7 @@ use crate::{
 };
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, SmartDefault, Getters)]
+#[delegate_fields(entity_params)]
 pub struct ShopOrder {
     #[getter(skip)]
     pub(crate) entity_params: DomainEntity<ShopOrderId, ShopOrderEventEnum>,
@@ -148,15 +150,7 @@ impl ShopOrder {
         matches!(&self.state, Paid(_))
     }
 
-    pub fn id(&self) -> &ShopOrderId {
-        self.entity_params.id()
-    }
-
-    pub fn version(&self) -> &Version {
-        self.entity_params.version()
-    }
-
-    pub(self) fn add_event(&mut self, event: ShopOrderEventEnum) {
+    fn add_event(&mut self, event: ShopOrderEventEnum) {
         self.entity_params.add_event(event)
     }
 

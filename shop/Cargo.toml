@@ -95,6 +95,7 @@ in_memory_persistence = { path = "in_memory_persistence" }
 rest = { path = "rest" }
 application = { path = "application" }
 telnet = { path = "telnet" }
+delegate_method = {path = "../delegate_method"}
 
 [dependencies]
 application = { path = "application" }

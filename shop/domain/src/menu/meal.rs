@@ -4,6 +4,7 @@ use common::types::{
     base::{AM, DomainEntity, DomainEntityTrait, Version},
     errors::BusinessError,
 };
+use delegate_method::delegate_fields;
 use derive_getters::Getters;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -20,6 +21,7 @@ use crate::menu::{
 };
 
 #[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getters)]
+#[delegate_fields(entity_params)]
 pub struct Meal {
     #[getter(skip)]
     entity_params: DomainEntity<MealId, MealEventEnum>,
@@ -82,14 +84,6 @@ impl Meal {
             self.entity_params
                 .add_event(MealRemovedFromMenuDomainEvent::new(id).into())
         }
-    }
-
-    pub fn id(&self) -> &MealId {
-        self.entity_params.id()
-    }
-
-    pub fn version(&self) -> &Version {
-        self.entity_params.version()
     }
 
     pub fn pop_events(&mut self) -> Vec<MealEventEnum> {
