@@ -1,10 +1,11 @@
 use std::fmt::Debug;
 
+use ambassador::Delegate;
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait, Version, ambassador_impl_DomainEntityTrait},
     errors::BusinessError,
 };
-use delegate_method::delegate_fields;
+use delegate_method::DelegateAllFields;
 use derive_getters::Getters;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -20,10 +21,22 @@ use crate::menu::{
     },
 };
 
-#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getters)]
-#[delegate_fields(entity_params)]
+#[derive(
+    new,
+    Debug,
+    Clone,
+    PartialEq,
+    Default,
+    Serialize,
+    Deserialize,
+    Getters,
+    DelegateAllFields,
+    Delegate,
+)]
+#[delegate(DomainEntityTrait<MealEventEnum>, target = "entity_params")]
 pub struct Meal {
     #[getter(skip)]
+    #[delegate_target]
     entity_params: DomainEntity<MealId, MealEventEnum>,
     name: MealName,
     description: MealDescription,
@@ -86,9 +99,9 @@ impl Meal {
         }
     }
 
-    pub fn pop_events(&mut self) -> Vec<MealEventEnum> {
-        self.entity_params.pop_events()
-    }
+    // pub fn pop_events(&mut self) -> Vec<MealEventEnum> {
+    //     self.entity_params.pop_events()
+    // }
 }
 
 #[derive(Debug, PartialEq)]

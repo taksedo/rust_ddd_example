@@ -27,6 +27,7 @@ uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics", "serd
 derive-getters = "0"
 async-trait = "0.1"
 tokio = "1"
+ambassador = "0.4"
 
 rstest = "0"
 fake = "4"

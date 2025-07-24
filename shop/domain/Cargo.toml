@@ -17,6 +17,7 @@ uuid.workspace = true
 derive_more.workspace = true
 derive-getters.workspace = true
 async-trait.workspace = true
+ambassador.workspace = true
 
 common.workspace = true
 delegate_method.workspace = true

@@ -5,7 +5,10 @@ use std::{
 };
 
 use async_trait::async_trait;
-use common::types::common::{Address, Count};
+use common::types::{
+    base::DomainEntityTrait,
+    common::{Address, Count},
+};
 use derive_new::new;
 use domain::{
     cart::{

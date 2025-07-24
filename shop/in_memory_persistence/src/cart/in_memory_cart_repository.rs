@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 
 use async_trait::async_trait;
-use common::{events::DomainEventPublisher, types::base::AM};
+use common::{
+    events::DomainEventPublisher,
+    types::base::{AM, DomainEntityTrait},
+};
 use derivative::Derivative;
 use derive_new::new;
 use domain::cart::{

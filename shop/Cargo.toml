@@ -86,6 +86,7 @@ futures-util = { version = "0", default-features = false, features = ["sink"] }
 utoipa-swagger-ui = { version = "9", features = ["actix-web"] }
 utoipa = { version = "5", features = ["actix_extras", "chrono"] }
 derive-getters = "0"
+ambassador = "0.4"
 
 common = { path = "../common", package = "rust_ddd_example_common" }
 domain = { path = "domain" }
@@ -95,7 +96,7 @@ in_memory_persistence = { path = "in_memory_persistence" }
 rest = { path = "rest" }
 application = { path = "application" }
 telnet = { path = "telnet" }
-delegate_method = {path = "../delegate_method"}
+delegate_method = { path = "../delegate_method" }
 
 [dependencies]
 application = { path = "application" }

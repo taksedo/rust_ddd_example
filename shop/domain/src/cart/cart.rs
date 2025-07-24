@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 
+use ambassador::Delegate;
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait, Version, ambassador_impl_DomainEntityTrait},
     common::Count,
 };
-use delegate_method::delegate_fields;
+use delegate_method::DelegateAllFields;
 use derive_getters::Getters;
 use serde_derive::{Deserialize, Serialize};
 use smart_default::SmartDefault;
@@ -24,10 +25,21 @@ use crate::{
     menu::{meal::Meal, value_objects::meal_id::MealId},
 };
 
-#[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Getters)]
-#[delegate_fields(entity_params)]
+#[derive(
+    Debug,
+    Clone,
+    PartialEq,
+    SmartDefault,
+    Serialize,
+    Deserialize,
+    Getters,
+    DelegateAllFields,
+    Delegate,
+)]
+#[delegate(DomainEntityTrait<CartEventEnum>, target = "entity_params")]
 pub struct Cart {
     #[getter(skip)]
+    #[delegate_target]
     pub(crate) entity_params: DomainEntity<CartId, CartEventEnum>,
     #[default(Default::default())]
     pub(crate) for_customer: CustomerId,
@@ -81,14 +93,6 @@ impl Cart {
         if self.meals.remove(meal_id).is_some() {
             self.add_event(MealRemovedFromCartDomainEvent::new(*self.id(), *meal_id).into())
         }
-    }
-
-    fn add_event(&mut self, event: CartEventEnum) {
-        self.entity_params.add_event(event)
-    }
-
-    pub fn pop_events(&mut self) -> Vec<CartEventEnum> {
-        self.entity_params.pop_events()
     }
 }
 
