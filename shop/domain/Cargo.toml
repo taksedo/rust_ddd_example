@@ -20,7 +20,6 @@ async-trait.workspace = true
 ambassador.workspace = true
 
 common.workspace = true
-delegate_method.workspace = true
 
 fake = { workspace = true, optional = true }
 rand = { workspace = true, optional = true }
@@ -28,8 +27,9 @@ rstest = { workspace = true, optional = true }
 mockall = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio.workspace = true
 domain = { path = ".", features = ["testing"] }
+
+tokio.workspace = true
 
 [features]
 testing = ["common/testing", "fake", "rand", "rstest", "mockall"]

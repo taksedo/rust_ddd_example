@@ -144,9 +144,10 @@ mod test {
     }
 
     impl MockReceiver {
-        fn new(topic_name: String, test_group: String) -> Self {
+        fn new(topic_name: String, test_group: impl AsRef<str>) -> Self {
+            let test_group = test_group.as_ref();
             let consumer = ClientConfig::new()
-                .set("group.id", test_group.clone())
+                .set("group.id", test_group)
                 .set("bootstrap.servers", KAFKA_ADDRESS.get().unwrap())
                 .set("session.timeout.ms", "6000")
                 .set("enable.auto.commit", "false")

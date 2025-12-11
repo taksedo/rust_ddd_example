@@ -25,4 +25,4 @@ tracing-test.workspace = true
 assert-panic.workspace = true
 
 [features]
-testing = ["common/testing", "domain/testing"]
+testing = ["domain/testing"]

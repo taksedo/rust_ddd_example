@@ -19,7 +19,12 @@ tokio.workspace = true
 async-trait.workspace = true
 ambassador.workspace = true
 
+rand = { workspace = true, optional = true }
+fake = { workspace = true, optional = true }
+rstest = { workspace = true, optional = true }
+
 [dev-dependencies]
-rand.workspace = true
-rstest.workspace = true
-fake.workspace = true
+types = { path = ".", features = ["testing"] }
+
+[features]
+testing = ["rand", "fake", "rstest"]

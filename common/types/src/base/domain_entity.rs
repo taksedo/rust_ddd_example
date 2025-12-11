@@ -102,7 +102,7 @@ mod domain_entity_test {
 
         entity.do_something();
 
-        assert_eq!(entity.domain_entity_field.id.clone(), id.clone());
+        assert_eq!(entity.domain_entity_field.id, id);
         assert_eq!(entity.domain_entity_field.version, version.next());
         let events = entity.domain_entity_field.pop_events();
         assert_eq!(&events.len(), &1);

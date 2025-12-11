@@ -15,7 +15,7 @@ pub fn meal_with_events() -> Meal {
 
 pub fn cart_with_events() -> Cart {
     let mut cart = rnd_cart();
-    cart.add_meal(rnd_meal());
+    cart.add_meal(rnd_meal()).unwrap();
     cart
 }
 

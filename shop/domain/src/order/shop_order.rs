@@ -1,13 +1,13 @@
 use std::{
     collections::{HashSet, hash_map::DefaultHasher},
     hash::{Hash, Hasher},
+    ops::{Deref, DerefMut},
 };
 
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait},
     common::{Address, Count},
 };
-use delegate_method::delegate_fields;
 use derive_getters::Getters;
 use derive_new::new;
 use serde_derive::{Deserialize, Serialize};
@@ -31,7 +31,6 @@ use crate::{
 };
 
 #[derive(new, Debug, Clone, PartialEq, Serialize, Deserialize, SmartDefault, Getters)]
-#[delegate_fields(entity_params)]
 pub struct ShopOrder {
     #[getter(skip)]
     pub(crate) entity_params: DomainEntity<ShopOrderId, ShopOrderEventEnum>,
@@ -41,6 +40,20 @@ pub struct ShopOrder {
     pub(crate) address: Address,
     pub(crate) order_items: HashSet<OrderItem>,
     pub(crate) state: OrderState,
+}
+
+impl Deref for ShopOrder {
+    type Target = DomainEntity<ShopOrderId, ShopOrderEventEnum>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.entity_params
+    }
+}
+
+impl DerefMut for ShopOrder {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.entity_params
+    }
 }
 
 impl ShopOrder {

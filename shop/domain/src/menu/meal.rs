@@ -1,11 +1,13 @@
-use std::fmt::Debug;
+use std::{
+    fmt::Debug,
+    ops::{Deref, DerefMut},
+};
 
 use ambassador::Delegate;
 use common::types::{
     base::{AM, DomainEntity, DomainEntityTrait, Version, ambassador_impl_DomainEntityTrait},
     errors::BusinessError,
 };
-use delegate_method::DelegateAllFields;
 use derive_getters::Getters;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -21,28 +23,30 @@ use crate::menu::{
     },
 };
 
-#[derive(
-    new,
-    Debug,
-    Clone,
-    PartialEq,
-    Default,
-    Serialize,
-    Deserialize,
-    Getters,
-    DelegateAllFields,
-    Delegate,
-)]
+#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getters, Delegate)]
 #[delegate(DomainEntityTrait<MealEventEnum>, target = "entity_params")]
 pub struct Meal {
     #[getter(skip)]
-    #[delegate_target]
     entity_params: DomainEntity<MealId, MealEventEnum>,
     name: MealName,
     description: MealDescription,
     price: Price,
     #[new(value = "false")]
     removed: bool,
+}
+
+impl Deref for Meal {
+    type Target = DomainEntity<MealId, MealEventEnum>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.entity_params
+    }
+}
+
+impl DerefMut for Meal {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.entity_params
+    }
 }
 
 impl Meal {
