@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use ambassador::delegatable_trait;
 use derivative::Derivative;
 use derive_getters::Getters;
 use derive_new::new;
@@ -28,6 +29,7 @@ impl<T, Event> DomainEntity<T, Event> {
     }
 }
 
+#[delegatable_trait]
 pub trait DomainEntityTrait<Event> {
     /// Add `Event` to a struct
     fn add_event(&mut self, event: Event);
@@ -100,7 +102,7 @@ mod domain_entity_test {
 
         entity.do_something();
 
-        assert_eq!(entity.domain_entity_field.id.clone(), id.clone());
+        assert_eq!(entity.domain_entity_field.id, id);
         assert_eq!(entity.domain_entity_field.version, version.next());
         let events = entity.domain_entity_field.pop_events();
         assert_eq!(&events.len(), &1);

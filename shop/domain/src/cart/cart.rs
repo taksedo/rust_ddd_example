@@ -1,7 +1,11 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    ops::{Deref, DerefMut},
+};
 
+use ambassador::Delegate;
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait, Version, ambassador_impl_DomainEntityTrait},
     common::Count,
 };
 use derive_getters::Getters;
@@ -23,7 +27,8 @@ use crate::{
     menu::{meal::Meal, value_objects::meal_id::MealId},
 };
 
-#[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Getters)]
+#[derive(Debug, Clone, PartialEq, SmartDefault, Serialize, Deserialize, Getters, Delegate)]
+#[delegate(DomainEntityTrait<CartEventEnum>, target = "entity_params")]
 pub struct Cart {
     #[getter(skip)]
     pub(crate) entity_params: DomainEntity<CartId, CartEventEnum>,
@@ -32,6 +37,20 @@ pub struct Cart {
     #[default(_code = "OffsetDateTime::now_utc()")]
     pub(crate) created: OffsetDateTime,
     pub(crate) meals: HashMap<MealId, Count>,
+}
+
+impl Deref for Cart {
+    type Target = DomainEntity<CartId, CartEventEnum>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.entity_params
+    }
+}
+
+impl DerefMut for Cart {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.entity_params
+    }
 }
 
 impl Cart {
@@ -55,23 +74,26 @@ impl Cart {
         self.add_event(MealAddedToCartDomainEvent::new(*self.id(), *meal_id).into());
     }
 
-    pub fn update_existing_meal(&mut self, meal_id: &MealId, count: Count) {
+    pub fn update_existing_meal(
+        &mut self,
+        meal_id: &MealId,
+        count: Count,
+    ) -> Result<(), CartError> {
         count
             .increment()
             .map(|increment_count| {
-                if let Some(x) = self.meals.get_mut(meal_id) {
-                    *x = increment_count
-                }
+                *self.meals.get_mut(meal_id).expect("Meal not found in cart") = increment_count;
             })
-            .expect("You have too much the same meals in you cart")
+            .map_err(|_| CartError::TooManyMealsInCart)
     }
-    pub fn add_meal(&mut self, meal: Meal) {
+    pub fn add_meal(&mut self, meal: Meal) -> Result<(), CartError> {
         let meal_id = meal.id();
         let count_of_currently_meals_in_cart = self.meals.get(meal_id);
         if let Some(unwrapped_count) = count_of_currently_meals_in_cart {
             self.update_existing_meal(meal_id, *unwrapped_count)
         } else {
-            self.create_new_meal(meal_id)
+            self.create_new_meal(meal_id);
+            Ok(())
         }
     }
 
@@ -80,27 +102,12 @@ impl Cart {
             self.add_event(MealRemovedFromCartDomainEvent::new(*self.id(), *meal_id).into())
         }
     }
-
-    pub fn id(&self) -> &CartId {
-        self.entity_params.id()
-    }
-
-    pub fn version(&self) -> &Version {
-        self.entity_params.version()
-    }
-
-    pub(self) fn add_event(&mut self, event: CartEventEnum) {
-        self.entity_params.add_event(event)
-    }
-
-    pub fn pop_events(&mut self) -> Vec<CartEventEnum> {
-        self.entity_params.pop_events()
-    }
 }
 
 #[derive(Debug, PartialEq)]
 pub enum CartError {
     IdGenerationError,
+    TooManyMealsInCart,
 }
 
 #[cfg(test)]
@@ -132,7 +139,7 @@ mod tests {
         let mut cart = rnd_cart();
         let meal = rnd_meal();
 
-        cart.add_meal(meal.clone());
+        cart.add_meal(meal.clone()).unwrap();
         assert!(
             cart.pop_events()
                 .iter()
@@ -151,7 +158,7 @@ mod tests {
         let mut cart = rnd_cart();
         cart.meals.insert(*meal.id(), count);
 
-        cart.add_meal(meal.clone());
+        cart.add_meal(meal.clone()).unwrap();
         assert!(cart.pop_events().iter().all(|event| {
             event == &MealAddedToCartDomainEvent::new(*cart.id(), *meal.id()).into()
         }));

@@ -17,6 +17,7 @@ uuid.workspace = true
 derive_more.workspace = true
 derive-getters.workspace = true
 async-trait.workspace = true
+ambassador.workspace = true
 
 common.workspace = true
 
@@ -26,8 +27,9 @@ rstest = { workspace = true, optional = true }
 mockall = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio.workspace = true
 domain = { path = ".", features = ["testing"] }
+
+tokio.workspace = true
 
 [features]
 testing = ["common/testing", "fake", "rand", "rstest", "mockall"]

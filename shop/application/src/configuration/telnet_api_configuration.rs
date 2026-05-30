@@ -43,7 +43,7 @@ pub(super) async fn handle_telnet_client(stream: TcpStream) -> Result<(), Box<dy
                     // // ...or just echo back whatever the user has said!
                     _ => {
                         frame
-                            .send(TelnetEvent::Message(format!("You said: {}\n", string)))
+                            .send(TelnetEvent::Message(format!("You said: {string}\n")))
                             .await?;
                     }
                 }

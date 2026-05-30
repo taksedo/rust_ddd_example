@@ -46,13 +46,17 @@ mod tests {
 
     #[test]
     fn restore_cart_success() {
+        // given
         let cart_id = rnd_cart_id();
         let guest_id = rnd_customer_id();
         let version = version();
         let meals = HashMap::from([(rnd_meal_id(), rnd_count())]);
         let created = OffsetDateTime::now_utc();
+
+        // when
         let cart = CartRestorer::restore_cart(cart_id, guest_id, created, meals.clone(), version);
 
+        // then
         assert_eq!(cart.id(), &cart_id);
         assert_eq!(cart.for_customer(), &guest_id);
         assert_eq!(cart.version(), &version);

@@ -30,6 +30,8 @@ impl MealRestorer {
 
 #[cfg(test)]
 mod tests {
+    use common::types::base::DomainEntityTrait;
+
     use super::*;
     use crate::test_fixtures::{
         rnd_meal_description, rnd_meal_id, rnd_meal_name, rnd_price, version,

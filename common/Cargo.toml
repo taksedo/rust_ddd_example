@@ -26,28 +26,27 @@ utoipa = "5"
 uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
 derive-getters = "0"
 async-trait = "0.1"
-tokio = "1"
+tokio = { version = "1", features = ["sync"] }
+ambassador = "0.5"
 
 rstest = "0"
-fake = "4"
+fake = "5"
 rand = "0"
 
 types = { path = "types" }
 
 [dependencies]
 rand = { workspace = true, optional = true }
+fake = { workspace = true, optional = true }
+rstest = { workspace = true, optional = true }
 
 events = { path = "events" }
 common_rest = { path = "common_rest" }
 types = { path = "types" }
 common_telnet = { path = "common_telnet" }
 
-
-
-[features]
-testing = ["rand"]
-
 [dev-dependencies]
 rust_ddd_example_common = { path = ".", features = ["testing"] }
 
-
+[features]
+testing = ["types/testing", "rand", "fake", "rstest"]

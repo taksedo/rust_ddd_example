@@ -55,21 +55,21 @@ serde = { version = "1", features = ["derive", "rc", "alloc"] }
 serde_json = "1.0"
 bigdecimal = { version = "0", features = ["serde"] }
 mockall = "0"
-fake = { version = "4", features = ["derive", "bigdecimal"] }
-rand = "0"
+fake = { version = "5", features = ["derive", "bigdecimal"] }
+rand = "0.10"
 rstest = "0"
 time = { version = "0", features = ["default", "serde-well-known"] }
 enum_delegate = "0"
 smart-default = "0"
 const_format = "0"
-diesel = { version = "2.2", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
-diesel_migrations = "2.2"
+diesel = { version = "=2.2", features = ["postgres", "chrono", "numeric"] }# no backend features need to be enabled
+diesel_migrations = "=2.2"
 diesel_logger = "0.4"
 lapin = "3"
 async-trait = "0"
 futures-lite = "2"
-testcontainers = { version = "0.24", features = ["blocking"] }
-testcontainers-modules = { version = "0.12", features = ["kafka", "postgres", "rabbitmq"] }
+testcontainers = { version = "0.27.0", features = ["blocking"] }
+testcontainers-modules = { version = "0.15.0", features = ["kafka", "postgres", "rabbitmq"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0"
 tracing-subscriber = "0"
@@ -86,6 +86,7 @@ futures-util = { version = "0", default-features = false, features = ["sink"] }
 utoipa-swagger-ui = { version = "9", features = ["actix-web"] }
 utoipa = { version = "5", features = ["actix_extras", "chrono"] }
 derive-getters = "0"
+ambassador = "0.5"
 
 common = { path = "../common", package = "rust_ddd_example_common" }
 domain = { path = "domain" }

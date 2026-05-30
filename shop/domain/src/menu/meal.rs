@@ -1,7 +1,11 @@
-use std::fmt::Debug;
+use std::{
+    fmt::Debug,
+    ops::{Deref, DerefMut},
+};
 
+use ambassador::Delegate;
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait, Version, ambassador_impl_DomainEntityTrait},
     errors::BusinessError,
 };
 use derive_getters::Getters;
@@ -19,7 +23,8 @@ use crate::menu::{
     },
 };
 
-#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getters)]
+#[derive(new, Debug, Clone, PartialEq, Default, Serialize, Deserialize, Getters, Delegate)]
+#[delegate(DomainEntityTrait<MealEventEnum>, target = "entity_params")]
 pub struct Meal {
     #[getter(skip)]
     entity_params: DomainEntity<MealId, MealEventEnum>,
@@ -28,6 +33,20 @@ pub struct Meal {
     price: Price,
     #[new(value = "false")]
     removed: bool,
+}
+
+impl Deref for Meal {
+    type Target = DomainEntity<MealId, MealEventEnum>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.entity_params
+    }
+}
+
+impl DerefMut for Meal {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.entity_params
+    }
 }
 
 impl Meal {
@@ -84,17 +103,9 @@ impl Meal {
         }
     }
 
-    pub fn id(&self) -> &MealId {
-        self.entity_params.id()
-    }
-
-    pub fn version(&self) -> &Version {
-        self.entity_params.version()
-    }
-
-    pub fn pop_events(&mut self) -> Vec<MealEventEnum> {
-        self.entity_params.pop_events()
-    }
+    // pub fn pop_events(&mut self) -> Vec<MealEventEnum> {
+    //     self.entity_params.pop_events()
+    // }
 }
 
 #[derive(Debug, PartialEq)]

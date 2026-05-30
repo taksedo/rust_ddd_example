@@ -1,10 +1,11 @@
 use std::{
     collections::{HashSet, hash_map::DefaultHasher},
     hash::{Hash, Hasher},
+    ops::{Deref, DerefMut},
 };
 
 use common::types::{
-    base::{AM, DomainEntity, DomainEntityTrait, Version},
+    base::{AM, DomainEntity, DomainEntityTrait},
     common::{Address, Count},
 };
 use derive_getters::Getters;
@@ -39,6 +40,20 @@ pub struct ShopOrder {
     pub(crate) address: Address,
     pub(crate) order_items: HashSet<OrderItem>,
     pub(crate) state: OrderState,
+}
+
+impl Deref for ShopOrder {
+    type Target = DomainEntity<ShopOrderId, ShopOrderEventEnum>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.entity_params
+    }
+}
+
+impl DerefMut for ShopOrder {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.entity_params
+    }
 }
 
 impl ShopOrder {
@@ -148,15 +163,7 @@ impl ShopOrder {
         matches!(&self.state, Paid(_))
     }
 
-    pub fn id(&self) -> &ShopOrderId {
-        self.entity_params.id()
-    }
-
-    pub fn version(&self) -> &Version {
-        self.entity_params.version()
-    }
-
-    pub(self) fn add_event(&mut self, event: ShopOrderEventEnum) {
+    fn add_event(&mut self, event: ShopOrderEventEnum) {
         self.entity_params.add_event(event)
     }
 

@@ -57,7 +57,7 @@ where
         let mut cart = self.get_or_create_cart(for_customer).await;
 
         // Add meal to cart
-        cart.add_meal(meal);
+        cart.add_meal(meal).unwrap();
 
         // Persist updated cart
         self.cart_persister.lock().await.save(cart).await;

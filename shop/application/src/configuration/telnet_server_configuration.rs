@@ -15,11 +15,11 @@ pub(crate) fn telnet_backend_startup() -> JoinHandle<()> {
                 Ok((stream, _)) => {
                     tokio::spawn(async move {
                         if let Err(e) = handle_telnet_client(stream).await {
-                            error!("error: {}", e);
+                            error!("error: {e}");
                         }
                     });
                 }
-                Err(e) => println!("couldn't get client: {:?}", e),
+                Err(e) => println!("couldn't get client: {e:?}"),
             }
         }
     })

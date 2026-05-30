@@ -36,11 +36,14 @@ mod tests {
 
     #[test]
     fn check_equality() {
+        // given
         let id = random_range(0..i64::MAX);
 
+        // when
         let cart_id1 = CartId::try_from(id).unwrap();
         let cart_id2 = CartId::try_from(id).unwrap();
 
+        // then
         assert_eq!(cart_id1, cart_id1);
         assert_eq!(cart_id1.to_i64(), cart_id2.to_i64())
     }
